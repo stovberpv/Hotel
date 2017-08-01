@@ -1,19 +1,155 @@
 <DOCTYPE html>
-<html>
+    <html>
+
+    <!--Head section begin-->
+
     <head>
-        <meta charset="utf-8"/>
-        <title>Hotel</title>
-        <link rel="stylesheet" href="style.css">
+        <meta charset="utf-8" />
+        <title>H</title>
+        <link rel="stylesheet" href="main.css">
+        <link rel="stylesheet" href="calendar.css">
+        <link rel="stylesheet" href="dialog.css">
+        <link rel="stylesheet" href="guestlist.css">
     </head>
+    <!--Head section end-->
+
+    <!--Body section begin-->
+
     <body>
+        <!--Select option select month begin-->
         <select id="selectMonth"></select>
+        <!--Select option select month end-->
+
+        <!--Input year begin-->
         <input type="text" id="selectYear" size=1>
+        <!--Input year end-->
+
+        <hr>
+
+        <!--Table calendar begin-->
         <table id="calendar">
+
             <thead>
             </thead>
+
             <tbody>
             </tbody>
+
         </table>
-        <script type="application/javascript" src="scripts.js"></script>
+        <!--Table calendar end-->
+
+        <hr>
+
+        <!--Dialog and button add guest begin-->
+        <div id="dialog" title="Add guest">
+            <form action="" method="post">
+                <table>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <label>dayin</label>
+                            </td>
+                            <td>
+                                <input id="dayin" name="dayin" type="text">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label>dayout</label>
+                            </td>
+                            <td>
+                                <input id="dayout" name="dayout" type="text">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label>room</label>
+                            </td>
+                            <td>
+                                <input id="room" name="room" type="text">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label>price</label>
+                            </td>
+                            <td>
+                                <input id="price" name="price" type="text">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label>paid</label>
+                            </td>
+                            <td>
+                                <input id="paid" name="paid" type="text">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label>name</label>
+                            </td>
+                            <td>
+                                <input id="name" name="name" type="text">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label>tel</label>
+                            </td>
+                            <td>
+                                <input id="tel" name="tel" type="text">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label>text</label>
+                            </td>
+                            <td>
+                                <input id="text" name="text" type="text">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </form>
+        </div>
+        <input id="addGuest" type="button" value="Добавить">
+        <!--Dialog and button add guest end-->
+        
+        <input id="editGuest" type="button" value="Редактировать">
+        <input id="delGuest" type="button" value="Удалить">
+
+        <hr>
+
+        <!--Table guest list begin-->
+        <table id="guestlist">
+
+            <thead>
+                <tr>
+                    <th>№</th>
+                    <th>Въезд</th>
+                    <th>Выезд</th>
+                    <th>Номер</th>
+                    <th>Цена</th>
+                    <th>Оплачено</th>
+                    <th>ФИО</th>
+                    <th>Телефон</th>
+                    <th>Информация</th>
+                </tr>
+            </thead>
+
+            <tbody>
+            </tbody>
+
+        </table>
+        <!--Table guest list end-->
+
+        <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/themes/ui-lightness/jquery-ui.min.css" rel="stylesheet">
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js"></script>
+        <script src="scripts.js" type="text/javascript"></script>
+        <script src="dialog.js" type="text/javascript"></script>
+
     </body>
-</html>
+
+    </html>

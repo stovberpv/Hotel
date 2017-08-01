@@ -1,0 +1,77 @@
+#addGuest, #editGuest {
+    border: 1px solid #0c799e;
+    width: auto;
+    padding: 5px;
+    font-size: 15px;
+    font-weight: 600;
+    /*    border-radius:3px;*/
+    color: black;
+    background: linear-gradient(to bottom, #59d0f8 5%, #49c0e8 100%);
+    cursor: pointer;
+    margin: 5px 0px 5px 0px;
+}
+
+#addGuest:hover, #editGuest:hover {
+    background: linear-gradient(to bottom, #49c0e8 5%, #59d0f8 100%)
+}
+
+#delGuest {
+    border: 1px solid #0c799e;
+    width: auto;
+    padding: 5px;
+    font-size: 15px;
+    font-weight: 600;
+    /*    border-radius:3px;*/
+    color: black;
+    background: linear-gradient(to bottom, #59d0f8 5%, #49c0e8 100%);
+    cursor: pointer;
+    margin: 5px 0px 5px 0px;
+}
+
+#delGuest:hover {
+    background: linear-gradient(to bottom, #49c0e8 5%, #59d0f8 100%)
+}
+
+input[type=text] {
+    /*margin-top:1px;*/
+    /*margin-bottom:1px;*/
+    /*width:96%;*/
+    /*border-radius:5px;*/
+    /*border:0;*/
+    /*padding:5px 0*/
+}
+
+label {
+    color: #dddd;
+}
+
+#name,
+#email {
+    /*padding-left:10px*/
+}
+
+input[type=submit] {
+    /*width:30%;*/
+    border: 0px solid #59b4d4;
+    background: #0078a3;
+    color: #eee;
+    /*padding:3px 0;*/
+    /*border-radius:5px;*/
+    /*margin-left:50%;*/
+    cursor: pointer
+}
+
+input[type=submit]:hover {
+    /*border:1px solid #666;*/
+    background: #555;
+    color: #fff
+}
+
+.ui-dialog .ui-dialog-content {
+    /*padding:2em*/
+    background: #555;
+}
+
+.ui-dialog .ui-dialog-titlebar {
+    /*display: none;*/
+}
