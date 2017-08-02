@@ -1,6 +1,6 @@
-﻿var selected = new Array();
+var selectedRooms = new Array();
 var rooms = [11, 12, 13, 21, 22, 23, 31, 32, 33, 34];
-var guestList = new Array();
+
 //
 window.onload = function onload() {
     "use strict";
@@ -51,7 +51,7 @@ function createCalendarTable() {
     delRowDays();
     setRowDays();
     addRooms();
-    coloringSelected();
+    coloringSelectedDay();
 }
 
 //
@@ -85,7 +85,7 @@ function setRowDays(month) {
     for (var i = 0; i <= days; i++) {
         var td = document.createElement('th');
         if (i == 0) {
-            td.appendChild(document.createTextNode("R"));
+            td.appendChild(document.createTextNode(""));
         } else {
             td.appendChild(document.createTextNode(i));
         }
@@ -121,7 +121,7 @@ function addRooms() {
             } else {
                 var node = document.createElement('td');
                 node.id = rooms[i];
-                node.addEventListener('click', cellClick);
+                node.addEventListener('click', dayCellClick);
                 node.appendChild(document.createTextNode(""));
             }
             tr.appendChild(node);
@@ -131,23 +131,23 @@ function addRooms() {
 }
 
 //
-function coloringSelected() {
-    if (selected.length == 0) {
+function coloringSelectedDay() {
+    if (selectedRooms.length == 0) {
         return;
     }
     var tbody = document.getElementById('calendar').getElementsByTagName('tbody')[0];
     for (var i = 1; i < tbody.childNodes.length; i++) {
         for (var j = 1; j < tbody.childNodes[i].childNodes.length; j++) {
-            for (var k = 0; k < selected.length; k++) {
+            for (var k = 0; k < selectedRooms.length; k++) {
                 var day = j;
                 var month = document.getElementById("selectMonth").value;
                 var year = document.getElementById('selectYear').value;
                 var room = rooms[i - 1];
-                if (selected[k][0] == year &&
-                    selected[k][1] == month &&
-                    selected[k][2] == day &&
-                    selected[k][3] == room) {
-                    tbody.childNodes[i].childNodes[j].setAttribute('class', 'selected');
+                if (selectedRooms[k][0] == year &&
+                    selectedRooms[k][1] == month &&
+                    selectedRooms[k][2] == day &&
+                    selectedRooms[k][3] == room) {
+                    tbody.childNodes[i].childNodes[j].setAttribute('class', 'selectedDays');
                 }
             }
         }
@@ -155,7 +155,7 @@ function coloringSelected() {
 }
 
 //
-function cellClick() {
+function dayCellClick() {
     var year = document.getElementById('selectYear').value;
     var month = document.getElementById("selectMonth").value;
     var day = this.cellIndex;
@@ -164,21 +164,21 @@ function cellClick() {
     var res = isSelected([year, month, day, room]);
 
     if (res[0]) {
-        selected.splice(res[1], 1);
+        selectedRooms.splice(res[1], 1);
         this.removeAttribute('class');
     } else {
-        selected.push([year, month, day, room]);
-        this.setAttribute('class', 'selected');
+        selectedRooms.push([year, month, day, room]);
+        this.setAttribute('class', 'selectedDays');
     }
 }
 
 //
 function isSelected(item) {
-    for (var i = 0; i < selected.length; i++) {
-        if (selected[i][0] == item[0] &&
-            selected[i][1] == item[1] &&
-            selected[i][2] == item[2] &&
-            selected[i][3] == item[3]) {
+    for (var i = 0; i < selectedRooms.length; i++) {
+        if (selectedRooms[i][0] == item[0] &&
+            selectedRooms[i][1] == item[1] &&
+            selectedRooms[i][2] == item[2] &&
+            selectedRooms[i][3] == item[3]) {
             return [true, i];
         }
     }

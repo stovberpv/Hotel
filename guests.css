@@ -1,33 +1,30 @@
-table#guestlist {
+table#guests {
     border-collapse: collapse;
-    table-layout: fixed;
+/*    table-layout: fixed;*/
 }
 
-table#guestlist td {
+table#guests td {
     border: 1px solid #ddd;
     padding: 3px;
     width: 1.4rem;
     text-align: center;
     cursor: pointer;
+    white-space: nowrap;
 }
 
-table#guestlist th {
+table#guests th {
     border: 1px solid black;
     padding: 3px;
     width: 1.4rem;
     text-align: center;
-    background: lightblue;
+    background: #a9ed2a;
     cursor: default;
 }
 
-table#guestlist tbody tr:hover {
+table#guests tbody tr:hover {
     background-color: #f5f5f5
 }
 
-table#guestlist tbody td:hover {
-    background-color: #91CBEB
-}
-
-.selected {
-    background-color: gray;
+table#guests tbody td:hover {
+/*     background-color: #91CBEB */
 }

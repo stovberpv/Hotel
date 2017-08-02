@@ -1,43 +1,84 @@
+var index;
+
 $(document).ready(function() {
     $(function() {
-        $("#dialog").dialog({
-            autoOpen: false,
-            buttons: [{
-                text: "Save",
-                click: function(e) {
-                    getDialogVal(e);
-                }
-            }],
-            modal: true,
-            draggable: true,
-            resizable: false,
-            width: 280,
-            height: 400,
-            show: {
-                effect: "fade",
-                duration: 500
-            },
-            hide: {
-                effect: "fade",
-                duration: 500
-            },
-            dialogClass: "ui-dialog"
-        });
-        $("#addGuest").on("click", function() {
-            setDialogValue();
-            $("#dialog").dialog("open");
-        });
+        createDialog();
     });
 });
 
-function setDialogValue() {
-    $("#dayin").val(selected[0][2]);
-    $("#dayout").val(selected[selected.length - 1][2]);
-    $("#room").val(selected[0][3]);
+$("#addGuest").on("click", function() {
+    index = 0;
+    setDialogVal(index);
+    dialogOpen();
+});
+
+function createDialog() {
+    $("#dialog").dialog({
+        dialogClass: "ui-dialog",
+        autoOpen: false,
+        modal: true,
+        draggable: true,
+        resizable: false,
+        width: 'auto',
+        height: 'auto',
+        show: {
+            effect: "drop",
+            duration: 400
+        },
+        hide: {
+            effect: "drop",
+            duration: 400
+        },
+        buttons: [{
+            id: "save",
+            text: "Добавить",
+            click: function(e) {
+                addGuest();
+                closeDialog();
+                index++;
+                nextRoom();
+//                return true;
+            }
+        }, {
+            id: "close",
+            text: "Отменить",
+            click: function(e) {
+                closeDialog();
+//                return false;
+            }
+        }, ]
+    });
+}
+
+function nextRoom() {
+    for (index; index < selectedRooms.length; index++) {
+        setDialogVal(index);
+        dialogOpen();
+    }
+}
+
+function setDialogVal(i) {
+    // Clear values
+    $("#dayin").val("");
+    $("#dayout").val("");
+    $("#room").val("");
+    $("#price").val("");
+    $("#paid").val("");
+    $("#name").val("");
+    $("#tel").val("");
+    $("#text").val("");
+
+    // Set values
+    if (selectedRooms.length == 0) {
+        return;
+    }
+    $("#dayin").val(selectedRooms[i][1]);
+    $("#dayout").val(selectedRooms[i][2]);
+    $("#room").val(selectedRooms[i][3]);
     $("#price").val();
 }
 
-function getDialogVal(e) {
+function addGuest() {
     var dayin = $("#dayin").val();
     var dayout = $("#dayout").val();
     var room = $("#room").val();
@@ -46,6 +87,14 @@ function getDialogVal(e) {
     var name = $("#name").val();
     var tel = $("#tel").val();
     var text = $("#text").val();
-    guestList.push(["dayin:", dayin, "dayout:", dayout, "room:", room, "price:", price, "paid:", paid, "name:", name, "tel:", tel, "text:", text]);
+    guestList.push([dayin, dayout, room, price, paid, name, tel, text]);
+    refreshTable();
+}
+
+function dialogOpen() {
+    $("#dialog").dialog("open");
+}
+
+function closeDialog() {
     $("#dialog").dialog("close");
 }

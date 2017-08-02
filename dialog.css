@@ -1,77 +1,262 @@
-#addGuest, #editGuest {
-    border: 1px solid #0c799e;
+/*************************************************************************/
+
+
+/* Button addGuest */
+
+
+/*************************************************************************/
+
+#addGuest {
+    border: 1px solid #ddd;
+    /*#0c799e;*/
     width: auto;
     padding: 5px;
     font-size: 15px;
     font-weight: 600;
-    /*    border-radius:3px;*/
     color: black;
-    background: linear-gradient(to bottom, #59d0f8 5%, #49c0e8 100%);
+    background: white;
     cursor: pointer;
     margin: 5px 0px 5px 0px;
 }
 
-#addGuest:hover, #editGuest:hover {
-    background: linear-gradient(to bottom, #49c0e8 5%, #59d0f8 100%)
+#addGuest:hover {
+    background: #9dea20;
+    color: white;
 }
 
-#delGuest {
-    border: 1px solid #0c799e;
+
+/*************************************************************************/
+
+
+/* Button editGuest */
+
+
+/*************************************************************************/
+
+#editGuest {
+    border: 1px solid #ddd;
+    /*#0c799e;*/
     width: auto;
     padding: 5px;
     font-size: 15px;
     font-weight: 600;
-    /*    border-radius:3px;*/
     color: black;
-    background: linear-gradient(to bottom, #59d0f8 5%, #49c0e8 100%);
+    background: white;
+    cursor: pointer;
+    margin: 5px 0px 5px 0px;
+}
+
+#editGuest:hover {
+    background: #42b3f4;
+    color: white;
+}
+
+
+/*************************************************************************/
+
+
+/* Button delGuest */
+
+
+/*************************************************************************/
+
+#delGuest {
+    border: 1px solid #ddd;
+    /*#0c799e;*/
+    width: auto;
+    padding: 5px;
+    font-size: 15px;
+    font-weight: 600;
+    color: black;
+    background: white;
     cursor: pointer;
     margin: 5px 0px 5px 0px;
 }
 
 #delGuest:hover {
-    background: linear-gradient(to bottom, #49c0e8 5%, #59d0f8 100%)
+    background: #f4425f;
+    color: white;
 }
+
+
+/*************************************************************************/
+
+
+/* Buttons */
+
+
+/*************************************************************************/
+
+#save {
+    font-size: 13px;
+    margin: 0px 0px 0px 3px;
+    color: black;
+    border-radius: 0px;
+    width: 150px;
+    background: white;
+}
+
+#save:hover {
+    color: white;
+    border: 1px solid #9dea20;
+    background: #9dea20;
+}
+
+#close {
+    font-size: 13px;
+    margin: 0px 3px 0px 3px;
+    color: black;
+    border-radius: 0px;
+    width: 150px;
+    background: white;
+}
+
+#close:hover {
+    color: white;
+    border: 1px solid #f4425f;
+    background: #f4425f;
+}
+
+
+/*************************************************************************/
+
+
+/* Input/output field */
+
+
+/*************************************************************************/
 
 input[type=text] {
     /*margin-top:1px;*/
     /*margin-bottom:1px;*/
-    /*width:96%;*/
+    /*width:50%;*/
     /*border-radius:5px;*/
     /*border:0;*/
     /*padding:5px 0*/
 }
 
-label {
-    color: #dddd;
+
+/*************************************************************************/
+
+
+/* Span text */
+
+
+/*************************************************************************/
+
+[data-tip] {
+    position: relative;
 }
 
-#name,
-#email {
-    /*padding-left:10px*/
+[data-tip]:before {
+    content: '';
+    display: none;
+    content: '';
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-bottom: 5px solid #1a1a1a;
+    position: absolute;
+    top: 30px;
+    left: 35px;
+    z-index: 8;
+    font-size: 0;
+    line-height: 0;
+    width: 0;
+    height: 0;
 }
 
-input[type=submit] {
-    /*width:30%;*/
-    border: 0px solid #59b4d4;
-    background: #0078a3;
-    color: #eee;
-    /*padding:3px 0;*/
-    /*border-radius:5px;*/
-    /*margin-left:50%;*/
-    cursor: pointer
+[data-tip]:after {
+    display: none;
+    content: attr(data-tip);
+    position: absolute;
+    top: 35px;
+    left: 0px;
+    padding: 5px 8px;
+    background: #1a1a1a;
+    color: #fff;
+    z-index: 9;
+    font-size: 0.75em;
+    height: 18px;
+    line-height: 18px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    white-space: nowrap;
+    word-wrap: normal;
 }
 
-input[type=submit]:hover {
-    /*border:1px solid #666;*/
-    background: #555;
-    color: #fff
+[data-tip]:hover:before,
+[data-tip]:hover:after {
+    display: block;
 }
+
+
+/*************************************************************************/
+
+
+/* Input fields */
+
+
+/*************************************************************************/
+
+input#dayin {
+    text-align: center;
+}
+
+input#dayout {
+    text-align: center;
+}
+
+input#room {
+    text-align: center;
+}
+
+input#price {
+    text-align: center;
+}
+
+input#paid {
+    text-align: center;
+}
+
+input#name {
+    text-align: left;
+}
+
+input#tel {
+    text-align: left;
+}
+
+input#text {
+    text-align: left;
+}
+
+
+/*************************************************************************/
+
+
+/* GUI */
+
+
+/*************************************************************************/
 
 .ui-dialog .ui-dialog-content {
     /*padding:2em*/
     background: #555;
 }
 
+
+/*************************************************************************/
+
+
+/* GUI titlebar */
+
+
+/*************************************************************************/
+
 .ui-dialog .ui-dialog-titlebar {
-    /*display: none;*/
+    display: none;
+    background: #a9ed2a;
+    border: none;
+    color: black;
 }
