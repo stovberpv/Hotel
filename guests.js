@@ -1,52 +1,92 @@
-var guestList = new Array();
+'use strict';
+class Guest {
 
-//
-function refreshTable() {
-  var table = document.getElementById('guests');
-  var tbody = table.getElementsByTagName('tbody')[0];
+    constructor() {
+        this._document = window.document;
+        this._guestsList = [];
 
-  var tr = tbody.getElementsByTagName('tr');
-  for (var i = tr.length; i > 0; i--) {
-    tbody.removeChild(tr[0]);
-  }
-
-  for (var i = 0; i < guestList.length; i++) {
-    var tr = document.createElement('tr');
-    var td = document.createElement('td');
-    td.appendChild(document.createTextNode(i + 1));
-    tr.appendChild(td);
-    tr.addEventListener('click', guestSelect);
-
-    for (var j = 0; j < guestList[i].length; j++) {
-      var td = document.createElement('td');
-      td.appendChild(document.createTextNode(guestList[i][j]));
-      tr.appendChild(td);
+        this._clickListener_select = (function (e) {
+            if (e.currentTarget.getAttribute('class') === 'selected') {
+                e.currentTarget.removeAttribute('class');
+            } else {
+                e.currentTarget.setAttribute('class', 'selected');
+            }
+        });
+        this._guestTableColumns = 9;
     }
-    tbody.appendChild(tr);
-  }
-//  $( "#guests" ).load( "index.html #guests" );
-}
 
+    get getDocument() {
+        return this._document;
+    }
 
+    get getGuestsList() {
+        return this._guestsList;
+    }
 
-//
-function guestSelect() {
-    var attr = this.getAttribute('guestSelect');
-    /*if (res[0]) {
-        selectedDays.splice(res[1], 1);
-        this.removeAttribute('class');
-    } else {
-        selectedDays.push([year, month, day, room]);
-        this.setAttribute('class', 'selectedDays');
-    }*/
-}
+    getGuest(index_a) {
+        return this._guestsList[index_a];
+    }
 
-//
-function guestEdit() {
+    getGuest(index_a, index_b) {
+        return this._guestsList[index_a][index_b];
+    }
     
-}
+    guestsListInsert(dayin, dayout, room, price, paid, name, tel, text) {
+        this._guestsList.push(dayin, dayout, room, price, paid, name, tel, text);
+    }
 
-//
-function guestDelete() {
+    //TODO SQL
+    refreshTable() {
+        /*
+        var table = this.getDocument.getElementById('guests'),
+            tbody = table.getElementsByTagName('tbody')[0],
+            tr,
+            td;
+
+        tr = tbody.getElementsByTagName('tr')
+        for (let i = tr.length; i > 0; i--) {
+            tbody.removeChild(tr[0]);
+        }
+
+        for (let i = 0; i < this.getGuestsList.length; i++) {
+            td = this.getDocument.createElement('td');
+            td.appendChild(this.getDocument.createTextNode(i + 1));
+
+            tr = this.getDocument.createElement('tr');
+            tr.appendChild(td);
+            tr.addEventListener('click', this._clickListener_select);
+
+            for (let j = 0; j < this._guestTableColumns; j++) {
+                td = this.getDocument.createElement('td');
+                td.appendChild(this.getDocument.createTextNode(this.getGuest(i, j)));
+                tr.appendChild(td);
+            }
+            tbody.appendChild(tr);
+        }
+        //  $( "#guests" ).load( "index.html #guests" ); TODO ???
+        */
+    }
+
+    guestAdd(val) {
+        var dayin = val["dayin"];
+        var dayout = val["dayout"];
+        var room = val["room"];
+        var price = val["price"];
+        var paid = val["paid"];
+        var name = val["name"];
+        var tel = val["tel"];
+        var text = val["text"];
+        this.guestsListInsert([dayin, dayout, room, price, paid, name, tel, text]);
+        this.refreshTable();
+    }
+
+    //TODO Edit Guest
+    guestEdit() {
+
+    }
     
+    //TODO Delete Guest
+    guestDelete() {
+
+    }
 }

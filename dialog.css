@@ -1,89 +1,92 @@
 /*************************************************************************/
 
-
 /* Button addGuest */
-
 
 /*************************************************************************/
 
 #addGuest {
-    border: 1px solid #ddd;
-    /*#0c799e;*/
-    width: auto;
-    padding: 5px;
+    font-family: "Courier New", Courier, monospace;
+    cursor: pointer;
     font-size: 15px;
     font-weight: 600;
-    color: black;
-    background: white;
-    cursor: pointer;
-    margin: 5px 0px 5px 0px;
+    padding: 4px;
+    border: none;
+    border-radius: 2px;
+    background-color: transparent;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+    transition: all 0.3s;
 }
 
 #addGuest:hover {
-    background: #9dea20;
     color: white;
+    background: #9dea20;
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+    transition: all 0.3s;
+    transform: translateZ(10px);
 }
 
 
 /*************************************************************************/
 
-
 /* Button editGuest */
-
 
 /*************************************************************************/
 
 #editGuest {
-    border: 1px solid #ddd;
-    /*#0c799e;*/
-    width: auto;
-    padding: 5px;
+    font-family: "Courier New", Courier, monospace;
+    cursor: pointer;
     font-size: 15px;
     font-weight: 600;
-    color: black;
-    background: white;
-    cursor: pointer;
-    margin: 5px 0px 5px 0px;
+    padding: 4px;
+    margin-right: 5px;
+    margin-left: 5px;
+    border: none;
+    border-radius: 2px;
+    background-color: transparent;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+    transition: all 0.3s;
 }
 
 #editGuest:hover {
-    background: #42b3f4;
     color: white;
+    background: #42b3f4;
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+    transition: all 0.3s;
+    transform: translateZ(10px);
 }
 
 
 /*************************************************************************/
 
-
 /* Button delGuest */
-
 
 /*************************************************************************/
 
 #delGuest {
-    border: 1px solid #ddd;
-    /*#0c799e;*/
-    width: auto;
-    padding: 5px;
+    font-family: "Courier New", Courier, monospace;
+    cursor: pointer;
     font-size: 15px;
     font-weight: 600;
-    color: black;
-    background: white;
-    cursor: pointer;
-    margin: 5px 0px 5px 0px;
+    padding: 4px;
+    border: none;
+    border-radius: 2px;
+    background-color: transparent;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+    transition: all 0.3s;
 }
 
 #delGuest:hover {
-    background: #f4425f;
     color: white;
+    background: #f4425f;
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+    transition: all 0.3s;
+    transform: translateZ(10px);
 }
 
 
 /*************************************************************************/
 
-
 /* Buttons */
-
 
 /*************************************************************************/
 
@@ -91,7 +94,7 @@
     font-size: 13px;
     margin: 0px 0px 0px 3px;
     color: black;
-    border-radius: 0px;
+    border-radius: 2px;
     width: 150px;
     background: white;
 }
@@ -106,7 +109,7 @@
     font-size: 13px;
     margin: 0px 3px 0px 3px;
     color: black;
-    border-radius: 0px;
+    border-radius: 2px;
     width: 150px;
     background: white;
 }
@@ -120,13 +123,11 @@
 
 /*************************************************************************/
 
-
 /* Input/output field */
-
 
 /*************************************************************************/
 
-input[type=text] {
+input[type=text]:not(#selectYear) {
     /*margin-top:1px;*/
     /*margin-bottom:1px;*/
     /*width:50%;*/
@@ -138,9 +139,7 @@ input[type=text] {
 
 /*************************************************************************/
 
-
 /* Span text */
-
 
 /*************************************************************************/
 
@@ -178,9 +177,9 @@ input[type=text] {
     font-size: 0.75em;
     height: 18px;
     line-height: 18px;
-    -webkit-border-radius: 3px;
-    -moz-border-radius: 3px;
-    border-radius: 3px;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
     white-space: nowrap;
     word-wrap: normal;
 }
@@ -193,9 +192,7 @@ input[type=text] {
 
 /*************************************************************************/
 
-
 /* Input fields */
-
 
 /*************************************************************************/
 
@@ -234,9 +231,7 @@ input#text {
 
 /*************************************************************************/
 
-
 /* GUI */
-
 
 /*************************************************************************/
 
@@ -248,9 +243,7 @@ input#text {
 
 /*************************************************************************/
 
-
 /* GUI titlebar */
-
 
 /*************************************************************************/
 

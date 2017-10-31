@@ -1,6 +1,18 @@
 table#guests {
     border-collapse: collapse;
-/*    table-layout: fixed;*/
+    /*    table-layout: fixed;*/
+    border: none;
+    border-radius: 3px;
+    background: Transparent;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+    transition: all 0.3s;
+}
+
+table#guests:hover {
+    background: #fff;
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+    transition: all 0.3s;
+    transform: translateZ(10px);
 }
 
 table#guests td {
@@ -26,5 +38,5 @@ table#guests tbody tr:hover {
 }
 
 table#guests tbody td:hover {
-/*     background-color: #91CBEB */
+    /*     background-color: #91CBEB */
 }

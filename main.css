@@ -1,12 +1,24 @@
-hr {
-    border-top: 1px dashed #8c8b8b;
-}
-
 table {
     margin-left: auto;
     margin-right: auto;
 }
 
 html {
+    font-family: "Courier New", Courier, monospace;
     text-align: center;
+}
+
+body {
+    /*    nature-1 color-5 dark-3 white-2*/
+    background-image: url("res/background/white-2.jpg");
+    /*    background-color: #f1f1f1;*/
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 0;
+    height: 100%;
+    background-size: calc(100% + 50px);
 }
