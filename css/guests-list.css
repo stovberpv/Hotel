@@ -30,8 +30,14 @@
     padding: 3px;
     width: 1.4rem;
     text-align: center;
-/*    background: #a9ed2a;*/
+    /*    background: #a9ed2a;*/
     cursor: default;
+}
+
+#guests-table:hover th#table-name { /* TODO*/
+    /*    border: 1px solid #222;*/
+    background-color: #42b3f4;
+
 }
 
 #guests-table tbody tr:hover {

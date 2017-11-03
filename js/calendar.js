@@ -83,32 +83,61 @@ function createCalendarTableBody() {
 }
 
 function coloringSelectedDay() {
-    /* TODo
-    if (this.getSelectedRooms.length == 0) {
-        return;
-    }
-    var tbody = this.getDocument.getElementById('calendar-table').getElementsByTagName('tbody')[0];
-    for (let i = 1; i < tbody.childNodes.length; i++) {
-        for (let j = 1; j < tbody.childNodes[i].childNodes.length; j++) {
-            for (let k = 0; k < this.getSelectedRooms.length; k++) {
-                var day = j;
-                var month = this.getMonth;
-                var year = this.getYear;
-                var room = this.getRoom(i - 1);
-                if (this.getSelectedRoom(k, 0) == year &&
-                    this.getSelectedRoom(k, 1) == month &&
-                    this.getSelectedRoom(k, 2) == day &&
-                    this.getSelectedRoom(k, 3) == room) {
-                    tbody.childNodes[i].childNodes[j].setAttribute('class', 'selected');
-                }
+
+    var tbody = document.getElementById('calendar-table').getElementsByTagName('tbody')[0];
+
+    var oneDay = 86400000;
+    var firstDay = Date.parse(year + "-" + month + "-" + 1);
+    var lastDay = Date.parse(year + "-" + month + "-" + getDaysInMonth(month, year));
+    var today = Date.parse(new Date());
+
+    for (let guest = 0; guest < guestsList.length; guest++) {
+
+        var dayin = Date.parse(guestsList[guest].dayin);
+        var dayout = Date.parse(guestsList[guest].dayout);
+        var room = guestsList[guest].room;
+        var rows = tbody.childNodes.length;
+        var childRow = -1;
+
+        for (let row = 1; row < rows; row++) {
+
+            if (tbody.childNodes[row].textContent == room) {
+                childRow = row;
+                break;
             }
         }
+
+        while (dayin <= dayout) {
+
+            if (dayin >= firstDay && dayin <= lastDay) {
+                var date = new Date(dayin);
+                var day = date.getDate();
+                var childCell = day;
+
+                var newAttr;
+                if (dayin < today) {
+                    newAttr = class_redeemed; /*выкупленный*/
+                } else if (dayin >= today) {
+                    newAttr = class_reserver; /*зарезервирован*/
+                }
+                
+                if (tbody.childNodes[childRow].childNodes[childCell].hasAttribute('class')) {
+                    newAttr = class_adjacent; /*смежный*/
+                }
+
+                tbody.childNodes[childRow].childNodes[childCell].setAttribute('class', newAttr);
+            }
+            dayin += oneDay;
+        }
     }
-    */
 }
 
 function overlay(val, char, len) {
     var overlayedVal = val + "";
     while (overlayedVal.length < len) overlayedVal = char + "" + overlayedVal;
     return overlayedVal;
+}
+
+function getDaysInMonth(m, y) {
+    return m === 2 ? y & 3 || !(y % 25) && y & 15 ? 28 : 29 : 30 + (m + (m >> 3) & 1);
 }

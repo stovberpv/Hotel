@@ -39,9 +39,10 @@ function createDialog() {
             id: "save",
             text: "Сохранить",
             click: function (e) {
-                /*
+                //TODO
                 addGuest();
                 closeDialog();
+                /*
                 index++;
                 nextRoom();
                 */

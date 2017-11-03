@@ -22,7 +22,7 @@ function modGuest(id, guest) {
 
 function createGuestListTableBody() {
 
-    var table = document.getElementById('guests'),
+    var table = document.getElementById('guests-table'),
         tbody = table.getElementsByTagName('tbody')[0],
         tr,
         td;
@@ -33,18 +33,28 @@ function createGuestListTableBody() {
     }
 
     for (let i = 0; i < guestsList.length; i++) {
-        td = document.createElement('td');
-        td.appendChild(document.createTextNode(i + 1));
-
         tr = document.createElement('tr');
-        tr.appendChild(td);
         tr.addEventListener('click', clickListener_select);
 
         for (let j = 0; j < guestsTableColumns; j++) {
             td = document.createElement('td');
-            td.appendChild(document.createTextNode(guestsList[i, j]));
+            td.appendChild(document.createTextNode(getKeyValue(guestsList[i], j)));
             tr.appendChild(td);
         }
         tbody.appendChild(tr);
+    }
+}
+
+function getKeyValue(data, index) {
+    var iteration = 0;
+    for (var propName in data) {
+        if (iteration == index) {
+            if (data.hasOwnProperty(propName)) {
+                return data[propName];
+            }
+        } else if(iteration> index) {
+            return "";
+        }
+        iteration += 1;
     }
 }

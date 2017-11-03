@@ -13,7 +13,7 @@ window.onload = function onload() {
         } else {
             month = 12;
         }
-
+        ajax.select();
         createCalendarTable();
     });
 
@@ -23,7 +23,7 @@ window.onload = function onload() {
         } else {
             month++;
         }
-
+        ajax.select();
         createCalendarTable();
     });
 
@@ -51,6 +51,7 @@ window.onload = function onload() {
                 info: infoMsg
             }, function () {
                 year = value;
+                setYear(year);
                 ajax.select();
                 dialogE.modal('hide');
             });
@@ -63,4 +64,5 @@ window.onload = function onload() {
     });
 */
     document.getElementById('year').textContent = year;
+    ajax.select();
 };

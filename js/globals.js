@@ -21,10 +21,20 @@ var month = (new Date()).getMonth() + 1,
                     ["Декабрь", 12]
                  ],
 
+    class_selected = "selected",
+    class_reserver = "reserver",
+    class_adjacent = "adjacent",
+    class_redeemed = "redeemed",
+
     clickListener_select = (function (e) {
-        if (e.currentTarget.getAttribute('class') === 'selected') {
-            e.currentTarget.removeAttribute('class');
+        if (e.currentTarget.hasAttribute('class')) {
+            if (e.currentTarget.getAttribute('class') === class_selected) {
+                e.currentTarget.removeAttribute('class');
+            } else {
+                // do nothing!
+            }
         } else {
-            e.currentTarget.setAttribute('class', 'selected');
+            e.currentTarget.setAttribute('class', class_selected);
         }
+
     });

@@ -6,12 +6,13 @@ var ajax = {
 
     select: function () {
         $.ajax({
-            url: './php/db_api.php',
-            data: "year=" + year + "&month=" + month,
+            url: './php/db_api/db-select.php',
+            data: { year: year, month: month }, /*"year=" + encodeURIComponent(year) + "&month=" + month*/
             dataType: 'json',
             success: function (data) {
-                guests.addGuest() = [{dayin: 1, dayout: 2, room: 3, price: 4, paid: 5, name: 6, tel: 7, info: data }];
-                console.log(data);
+                guestsList = data.data;
+                createGuestListTableBody();
+                coloringSelectedDay();
             },
             error: function (xhr, textStatus, errorThrown) {
                 console.log(xhr);
