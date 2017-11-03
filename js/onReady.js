@@ -1,8 +1,5 @@
 'use strict';
 (function (window) {
-    var $ = window.$,
-        document = window.document;
-
     //transition effect begin
     $(document).ready(function () {
         var movementStrength = 25;

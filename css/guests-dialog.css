@@ -5,10 +5,7 @@
 /*************************************************************************/
 
 #addGuest {
-    font-family: "Courier New", Courier, monospace;
     cursor: pointer;
-    font-size: 15px;
-    font-weight: 600;
     padding: 4px;
     border: none;
     border-radius: 2px;
@@ -18,7 +15,7 @@
 }
 
 #addGuest:hover {
-    color: white;
+    color: #fff;
     background: #9dea20;
     box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
     transition: all 0.3s;
@@ -33,10 +30,7 @@
 /*************************************************************************/
 
 #editGuest {
-    font-family: "Courier New", Courier, monospace;
     cursor: pointer;
-    font-size: 15px;
-    font-weight: 600;
     padding: 4px;
     margin-right: 5px;
     margin-left: 5px;
@@ -48,7 +42,7 @@
 }
 
 #editGuest:hover {
-    color: white;
+    color: #fff;
     background: #42b3f4;
     box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
     transition: all 0.3s;
@@ -63,10 +57,7 @@
 /*************************************************************************/
 
 #delGuest {
-    font-family: "Courier New", Courier, monospace;
     cursor: pointer;
-    font-size: 15px;
-    font-weight: 600;
     padding: 4px;
     border: none;
     border-radius: 2px;
@@ -76,7 +67,7 @@
 }
 
 #delGuest:hover {
-    color: white;
+    color: #fff;
     background: #f4425f;
     box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
     transition: all 0.3s;
@@ -91,33 +82,49 @@
 /*************************************************************************/
 
 #save {
-    font-size: 13px;
-    margin: 0px 0px 0px 3px;
-    color: black;
+    background: #f1f1f1;
+    color: #222;
+    padding: 4px;
+    width: auto;
+    height: auto;
+
+    border: none;
     border-radius: 2px;
-    width: 150px;
-    background: white;
+    background-color: transparent;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+    transition: all 0.3s;
 }
 
 #save:hover {
-    color: white;
-    border: 1px solid #9dea20;
+    color: #fff;
     background: #9dea20;
+
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+    transition: all 0.3s;
+    transform: translateZ(10px);
 }
 
 #close {
-    font-size: 13px;
-    margin: 0px 3px 0px 3px;
-    color: black;
-    border-radius: 2px;
-    width: 150px;
-    background: white;
+    background: #f1f1f1;
+    color: #222;
+    padding: 4px;
+    width: auto;
+    height: auto;
+
+    border: none;
+    border-radius: 3px;
+    background-color: transparent;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+    transition: all 0.3s;
 }
 
 #close:hover {
-    color: white;
-    border: 1px solid #f4425f;
+    color: #fff;
     background: #f4425f;
+
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+    transition: all 0.3s;
+    transform: translateZ(10px);
 }
 
 
@@ -127,13 +134,9 @@
 
 /*************************************************************************/
 
-input[type=text]:not(#selectYear) {
-    /*margin-top:1px;*/
-    /*margin-bottom:1px;*/
-    /*width:50%;*/
-    /*border-radius:5px;*/
-    /*border:0;*/
-    /*padding:5px 0*/
+[data-tip] > input {
+    margin-top: 6px;
+    margin-right: 3px;
 }
 
 
@@ -150,43 +153,84 @@ input[type=text]:not(#selectYear) {
 [data-tip]:before {
     content: '';
     display: none;
-    content: '';
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    border-bottom: 5px solid #1a1a1a;
     position: absolute;
     top: 30px;
-    left: 35px;
+    left: 25px;
     z-index: 8;
     font-size: 0;
     line-height: 0;
-    width: 0;
     height: 0;
+    width: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-bottom: 5px solid #9dea20;
 }
 
 [data-tip]:after {
-    display: none;
     content: attr(data-tip);
+    display: none;
     position: absolute;
     top: 35px;
     left: 0px;
-    padding: 5px 8px;
-    background: #1a1a1a;
-    color: #fff;
     z-index: 9;
-    font-size: 0.75em;
-    height: 18px;
+    font-size: 14px;
     line-height: 18px;
-    -webkit-border-radius: 2px;
-    -moz-border-radius: 2px;
+    /*    height: 18px;*/
+    padding: 5px 8px;
+    background: #9dea20;
+    color: #fff;
     border-radius: 2px;
-    white-space: nowrap;
+    /*    white-space: nowrap;*/
     word-wrap: normal;
+
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+    transition: all 0.3s;
+    transform: translateZ(10px);
 }
 
 [data-tip]:hover:before,
 [data-tip]:hover:after {
     display: block;
+}
+
+
+/*************************************************************************/
+
+/* GUI */
+
+/*************************************************************************/
+
+.ui-dialog .ui-dialog-content {
+    /*    padding: 2em;*/
+    background: #555;
+    height: 180px !important;
+}
+
+.ui-widget-content {
+    border: none !important;
+    color: #222 !important;
+}
+
+.ui-dialog-buttonpane {
+    text-align: center !important;
+    margin-top: 0px !important;
+}
+
+.ui-dialog-buttonset {
+    margin-left: auto;
+    margin-right: auto;
+    float: none !important;
+}
+
+
+/*************************************************************************/
+
+/* GUI titlebar */
+
+/*************************************************************************/
+
+.ui-dialog .ui-dialog-titlebar {
+    display: none;
 }
 
 
@@ -231,25 +275,61 @@ input#text {
 
 /*************************************************************************/
 
-/* GUI */
+/* Prompt bootstrap dialog custom style */
 
 /*************************************************************************/
 
-.ui-dialog .ui-dialog-content {
-    /*padding:2em*/
-    background: #555;
+.modal-dialog .modal-own {
+    border-radius: 3px !important;
 }
 
+.modal-own-button-ok {
+    color: #222 !important;
+    background-color: #f1f1f1 !important;
+    border-radius: 3px !important;
+    border: none !important;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+    transition: all 0.3s;
+}
 
-/*************************************************************************/
+.modal-own-button-ok:hover {
+    color: #fff !important;
+    background: #9dea20 !important;
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+    transition: all 0.3s;
+    transform: translateZ(10px);
+}
 
-/* GUI titlebar */
+.modal-own-button-cancel {
+    color: #222 !important;
+    background-color: #f1f1f1 !important;
+    border-radius: 3px !important;
+    border: none !important;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+    transition: all 0.3s;
+}
 
-/*************************************************************************/
+.modal-own-button-cancel:hover {
+    color: #fff !important;
+    background: #f4425f !important;
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+    transition: all 0.3s;
+    transform: translateZ(10px);
+}
 
-.ui-dialog .ui-dialog-titlebar {
-    display: none;
-    background: #a9ed2a;
-    border: none;
-    color: black;
+.modal-own-input {
+    text-align: center;
+    width: 60px !important;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.modal-own-input::-webkit-outer-spin-button,
+.modal-own-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.modal-own-footer {
+    text-align: center !important;
 }
