@@ -5,12 +5,12 @@
                 <tr>
                     <td>
                         <div data-tip="День заезда">
-                            <input id="dayin" name="dayin" type="text" size="5" maxlength="2" placeholder="Заезд">
+                            <input id="dayin" name="dayin" type="text" size="5" maxlength="5" placeholder="Заезд">
                         </div>
                     </td>
                     <td>
                         <div data-tip="День выезда">
-                            <input id="dayout" name="dayout" type="text" size="5" maxlength="2" placeholder="Выезд">
+                            <input id="dayout" name="dayout" type="text" size="5" maxlength="5" placeholder="Выезд">
                         </div>
                     </td>
                     <td>

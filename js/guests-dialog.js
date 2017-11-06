@@ -40,7 +40,8 @@ function createDialog() {
             text: "Сохранить",
             click: function (e) {
                 //TODO
-                addGuest();
+                getDialogVal(); // todo rename
+                ajax.insert();
                 closeDialog();
                 /*
                 index++;
@@ -78,7 +79,7 @@ function setDialogVal(i) {
         */
 }
 
-function addGuest() {
+function getDialogVal() {
     var dayin = $("#dayin").val();
     var dayout = $("#dayout").val();
     var room = $("#room").val();
@@ -86,9 +87,18 @@ function addGuest() {
     var paid = $("#paid").val();
     var name = $("#name").val();
     var tel = $("#tel").val();
-    var text = $("#text").val();
-    guestList.push([dayin, dayout, room, price, paid, name, tel, text]);
-    refreshTable();
+    var info = $("#text").val();
+    globals.newGuest = [{
+        id: -1,
+        dayin: dayin,
+        dayout: dayout,
+        room: room,
+        price: price,
+        paid: paid,
+        name: name,
+        tel: tel,
+        info: info
+    }];
 }
 
 function dialogOpen() {

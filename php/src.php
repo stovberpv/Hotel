@@ -3,6 +3,7 @@
 <script src="http://netdna.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 
 <script src="js/globals.js" type="text/javascript"></script>
+<script src="js/utils.js" type="text/javascript"></script>
 <script src="js/calendar.js" type="text/javascript"></script>
 <script src="js/guests-dialog.js" type="text/javascript"></script>
 <script src="js/guests-list.js" type="text/javascript"></script>

@@ -2,26 +2,26 @@
 window.onload = function onload() {
 
     var createCalendarTable = function () {
-        deleteCalendarTableHead();
-        createCalendarTableHead();
-        createCalendarTableBody();
+        calendar.deleteCalendarTableHead();
+        calendar.createCalendarTableHead();
+        calendar.createCalendarTableBody();
     };
 
     $('#month-button-left').click(function () {
-        if (month > 1) {
-            month--;
+        if (globals.month > 1) {
+            globals.month--;
         } else {
-            month = 12;
+            globals.month = 12;
         }
         ajax.select();
         createCalendarTable();
     });
 
     $('#month-button-right').click(function () {
-        if (month > 11) {
-            month = 1;
+        if (globals.month > 11) {
+            globals.month = 1;
         } else {
-            month++;
+            globals.month++;
         }
         ajax.select();
         createCalendarTable();
@@ -35,7 +35,7 @@ window.onload = function onload() {
             title: 'Новая выборка',
             info: 'Год выборки',
             width: '220px',
-            value: year
+            value: globals.year
         }, function (dialogE, value) {
             var infoMsg = "";
             var beg = 1900, end = 9999;
@@ -50,8 +50,8 @@ window.onload = function onload() {
                 title: 'Ожидайте',
                 info: infoMsg
             }, function () {
-                year = value;
-                setYear(year);
+                globals.year = value;
+                calendar.setYear(globals.year);
                 ajax.select();
                 dialogE.modal('hide');
             });
@@ -63,6 +63,6 @@ window.onload = function onload() {
         console.log("debug:" + guestsList.length);
     });
 */
-    document.getElementById('year').textContent = year;
+    document.getElementById('year').textContent = globals.year;
     ajax.select();
 };
