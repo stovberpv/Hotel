@@ -12,6 +12,10 @@ $("#addGuest").on("click", function () {
     dialogOpen();
 });
 
+$("#delGuest").on("click", function (e) {
+    var id = e;
+});
+
 function createDialog() {
     $("#dialog").dialog({
         dialogClass: "ui-dialog",

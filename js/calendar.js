@@ -107,7 +107,7 @@ var calendar = {
                     break;
                 }
             }
-            
+
             if (childRow == -1) {
                 console.log("calendar.coloringCalendar.childRow = " + childRow + ", room =" + room);
                 return;
@@ -138,17 +138,20 @@ var calendar = {
         }
     },
 
-    resetCalendarColors: function () {
+    resetCalendarColors: function (opts) {
         var tbody = document.getElementById('calendar-table').getElementsByTagName('tbody')[0];
-        for (let i = 1; i < tbody.children.length; i++) {
-            var row = tbody.children[i];
-            for (let j = 1; j < row.children.length; j++) {
-                var cell = row.children[j];
-                if (cell.hasAttribute('class')) {
-                    cell.removeAttribute('class');
+        if (opts !== undefined) {
+            //todo
+        } else {
+            for (let i = 1; i < tbody.children.length; i++) {
+                var row = tbody.children[i];
+                for (let j = 1; j < row.children.length; j++) {
+                    var cell = row.children[j];
+                    if (cell.hasAttribute('class')) {
+                        cell.removeAttribute('class');
+                    }
                 }
             }
         }
     }
-
 }

@@ -14,7 +14,17 @@ var guestsList = {
     },
 
     delGuest: function (id) {
-        globals.guestsList.slice(id, 1);
+        for (let i = globals.guestsList.length - 1; i--;) {
+            if (globals.guestsList[i].id == id) globals.guestsList.splice(i, 1);
+        }
+        //TODO delete guest-list table body only deleted id by id == child.td.id
+        var tbody = document.getElementById('guest-table').getElementsByTagName('tbody')[0];
+        for (let i = 0; i < tbody.childElementCount; i++) {
+            var curId = tbody.children[i].getElementsByTagName('tr')[0].getElementsByTagName('td')[0];
+            if(curId == id) {
+                tbody.removeChild[i];
+            }
+        }
     },
 
     modGuest: function (id, guest) {
@@ -35,7 +45,7 @@ var guestsList = {
 
         for (let i = 0; i < globals.guestsList.length; i++) {
             tr = document.createElement('tr');
-            tr.addEventListener('click', utils.clickListener_select);
+            tr.addEventListener('click', clickListener_select);
 
             for (let j = 0; j < globals.guestsTableColumns; j++) {
                 td = document.createElement('td');

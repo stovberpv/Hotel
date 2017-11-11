@@ -58,7 +58,28 @@ var ajax = {
     },
 
     delete: function (opts) {
-        console.log(opts.id);
+        $.ajax({
+            url: './php/db_api/db-delete.php',
+            data: {
+                id: opts.id
+            },
+            dataType: 'json',
+            success: function (data) {
+                if (data.rows != 0) {
+                    guestsList.delGuest(data.id);
+                    calendar.resetCalendarColors(); //TODO reset ony del
+                    calendar.coloringCalendar(globals.guestsList);
+                }
+                /*
+                guestsList.createGuestListTableBody();
+                */
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                console.log(xhr);
+                console.log(textStatus);
+                console.log(errorThrown);
+            }
+        });
     }
 
 };
