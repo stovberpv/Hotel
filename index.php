@@ -4,19 +4,19 @@
 <head>
     <meta charset="utf-8">
     <title>Hotel Manager</title>
-    <?php include ('./php/styles.php'); ?>
+    <?php include ('./php/inc/inc-styles.php'); ?>
 </head>
 
 <body>
-    <?php include ('./php/calendar.php'); ?>
+    <?php include ('./php/inc/inc-calendar.php'); ?>
     <br/>
-    <?php include ('./php/guests-dialog.php'); ?>
-    <?php include ('./php/guests-control.php'); ?>
+    <?php include ('./php/inc/inc-guests-dialog.php'); ?>
+    <?php include ('./php/inc/inc-guests-control.php'); ?>
     <br/>
     <br/>
-    <?php include ('./php/guests-list.php'); ?>
-<!--    < include ('./php/api.php'); ?>-->
-    <?php include ('./php/src.php'); ?>
+    <?php include ('./php/inc/inc-guests-list.php'); ?>
+    <?php include ('./php/inc/inc-src.php'); ?>
+    <div id="ajax-msg"></div>
 </body>
 
 </html>

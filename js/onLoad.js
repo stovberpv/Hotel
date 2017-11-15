@@ -1,35 +1,34 @@
 'use strict';
 window.onload = function onload() {
 
-    var createCalendarTable = function () {
-        calendar.deleteCalendarTableHead();
-        calendar.createCalendarTableHead();
-        calendar.createCalendarTableBody();
+    const createCalendarTable = function () {
+        calendarTable.del();
+        calendarTable.addHead();
+        calendarTable.addBody();
     };
 
     $('#month-button-left').click(function () {
+        //TODO set month from html element
         if (globals.month > 1) {
             globals.month--;
         } else {
             globals.month = 12;
         }
-        ajax.select();
+        utils.getGuestsList();
         createCalendarTable();
     });
 
     $('#month-button-right').click(function () {
+        //TODO set month from html element
         if (globals.month > 11) {
             globals.month = 1;
         } else {
             globals.month++;
         }
-        ajax.select();
+        utils.getGuestsList();
         createCalendarTable();
     });
 
-    createCalendarTable();
-
-    /* Input year dialog begin */
     $('#year-button-pick').click(function () {
         $.bs.popup.prompt({
             title: 'Новая выборка',
@@ -51,18 +50,15 @@ window.onload = function onload() {
                 info: infoMsg
             }, function () {
                 globals.year = value;
-                calendar.setYear(globals.year);
-                ajax.select();
+                utils.setYear(globals.year);
+                utils.getGuestsList();
                 dialogE.modal('hide');
             });
         });
     });
-    /* Input year dialog end */
-/*
-    $('#debug').click(function () {
-        console.log("debug:" + guestsList.length);
-    });
-*/
-    document.getElementById('year').textContent = globals.year;
-    ajax.select();
+
+    //TODO initialize get and set year and month
+    utils.initialize();
+    //createCalendarTable();
+    //document.getElementById('year').textContent = globals.year;
 };

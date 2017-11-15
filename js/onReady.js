@@ -1,5 +1,6 @@
 'use strict';
 (function (window) {
+    
     //transition effect begin
     $(document).ready(function () {
         var movementStrength = 25;
@@ -14,5 +15,11 @@
         });
     });
     //transition effect end
+
+    //guest input dialog begin
+    $(function () {
+        createDialog();
+    });
+    //guest input dialog end
 
 }(window));
