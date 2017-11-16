@@ -1,32 +1,44 @@
 'use strict';
 window.onload = function onload() {
 
+    //-------------------------------------------------------------------------------------------------
+        // VALUES DEFINITION BEGIN
+    //-------------------------------------------------------------------------------------------------
     const createCalendarTable = function () {
-        calendarTable.del();
-        calendarTable.addHead();
-        calendarTable.addBody();
+        tableCalendar.reset();
+        tableCalendar.addHead();
+        tableCalendar.addBody();
     };
+    //-------------------------------------------------------------------------------------------------
+        // VALUES DEFINITION END
+    //-------------------------------------------------------------------------------------------------
 
+
+    //-------------------------------------------------------------------------------------------------
+        // CLICK LISTENERS BEGIN
+    //-------------------------------------------------------------------------------------------------
     $('#month-button-left').click(function () {
-        //TODO set month from html element
-        if (globals.month > 1) {
-            globals.month--;
+        var month = globals.monthNames.indexOf($('#month')[0].textContent);
+        if (month > 1) {
+            month--;
         } else {
-            globals.month = 12;
+            month = 12;
         }
-        utils.getGuestsList();
+        utils.setMonth(month);
         createCalendarTable();
+        db.gl001.select();
     });
 
     $('#month-button-right').click(function () {
-        //TODO set month from html element
-        if (globals.month > 11) {
-            globals.month = 1;
+        var month = globals.monthNames.indexOf($('#month')[0].textContent);
+        if (month > 11) {
+            month = 1;
         } else {
-            globals.month++;
+            month++;
         }
-        utils.getGuestsList();
+        utils.setMonth(month);
         createCalendarTable();
+        db.gl001.select();
     });
 
     $('#year-button-pick').click(function () {
@@ -36,8 +48,10 @@ window.onload = function onload() {
             width: '220px',
             value: globals.year
         }, function (dialogE, value) {
-            var infoMsg = "";
-            var beg = 1900, end = 9999;
+            var infoMsg = "",
+                beg = 1900, 
+                end = 9999;
+
             if (value >= beg && value <= end) {
                 infoMsg = 'Идет выборка данных за ' + value + ' год...';
             } else {
@@ -49,16 +63,22 @@ window.onload = function onload() {
                 title: 'Ожидайте',
                 info: infoMsg
             }, function () {
-                globals.year = value;
-                utils.setYear(globals.year);
-                utils.getGuestsList();
+                utils.setYear(value);
+                db.gl001.select();
                 dialogE.modal('hide');
             });
         });
     });
+    //-------------------------------------------------------------------------------------------------
+        // CLICK LISTENERS END
+    //-------------------------------------------------------------------------------------------------
 
-    //TODO initialize get and set year and month
-    utils.initialize();
-    //createCalendarTable();
-    //document.getElementById('year').textContent = globals.year;
+
+    //-------------------------------------------------------------------------------------------------
+        // INITIALIZE BEGIN
+    //-------------------------------------------------------------------------------------------------
+    db.initialize();
+    //-------------------------------------------------------------------------------------------------
+        // INITIALIZE END
+    //-------------------------------------------------------------------------------------------------
 };

@@ -4,13 +4,10 @@
 //  GLOBALS BEGIN
 //---------------------------------------------------------------------
 const globals = {
-    month: "", //(new Date()).getMonth() + 1
-    year: "", //(new Date()).getFullYear()
+    year: "",
+    month: "",
     guestsTableColumns: 9,
-    guestsList: [],
-    newGuest: [],
-    selectedRooms: [],
-    rooms: [11, 12, 13, 21, 22, 23, 31, 32, 33, 34],
+    rooms: [],
     monthNames: ["", "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"],
     class_selected: "selected",
     class_reserver: "reserver",
@@ -27,30 +24,6 @@ const globals = {
 //---------------------------------------------------------------------
 const utils = {
 
-    initialize: function () {
-        $.ajax({
-            url: './php/func/initialize.php',
-            data: { sessionId: 'root' }, //TODO session id
-            dataType: 'json',
-            success: function (data) {
-                utils.setYear(data['year']);
-                globals.month = data['month'];
-                globals.rooms = data['rooms'];
-                globals.guestsList = data['guestList'];
-                calendarTable.del();
-                calendarTable.addHead();
-                calendarTable.addBody();
-                calendarTable.setRoomsStatus(globals.guestsList);
-                guestsTable.addBody();
-            },
-            error: function (xhr, textStatus, errorThrown) {
-                $( "#ajax-msg" ).append( xhr.responseText );
-                console.log(textStatus);
-                console.log(errorThrown);
-            }
-        });
-    },
-
     setYear: function (val) {
         globals.year = val;
         document.getElementById('year').textContent = globals.year;
@@ -59,40 +32,6 @@ const utils = {
     setMonth: function (val) {
         globals.month = val;
         document.getElementById('month').value = globals.monthNames[val, 0];
-    },
-
-    getYear: function () {
-
-    },
-
-    getMonth: function () {
-
-    },
-
-    getRooms: function () {
-
-    },
-
-    getGuestsList: function () {
-        $.ajax({
-            url: './php/guests/db-select.php',
-            data: { /*"year=" + encodeURIComponent(year) + "&month=" + month*/
-                year: globals.year,
-                month: globals.month
-            },
-            dataType: 'json',
-            success: function (data) {
-                calendarTable.delRoomsStatus();
-                globals.guestsList = data.data;
-                guestsTable.addBody();
-                calendarTable.setRoomsStatus(globals.guestsList);
-            },
-            error: function (xhr, textStatus, errorThrown) {
-                $( "#ajax-msg" ).append( xhr.responseText );
-                console.log(textStatus);
-                console.log(errorThrown);
-            }
-        });
     },
 
     overlay: function (val, char, len) {
@@ -137,19 +76,6 @@ const utils = {
             default:
                 break;
         }
-        /*
-        var iteration = 0;
-        for (var propName in data) {
-            if (iteration == index) {
-                if (data.hasOwnProperty(propName)) {
-                    return data[propName];
-                }
-            } else if(iteration> index) {
-                return "";
-            }
-            iteration += 1;
-        }
-        */
     }
 
 }
@@ -181,7 +107,7 @@ var clickListener_select = (function (e) {
 //  INITIALIZE BEGIN
 //---------------------------------------------------------------------
 const initialize = {
-    
+
 }
 //---------------------------------------------------------------------
 //  INITIALIZE END
@@ -191,9 +117,9 @@ const initialize = {
 //---------------------------------------------------------------------
 //  CALENDAR TABLE BEGIN
 //---------------------------------------------------------------------
-const calendarTable = {
+const tableCalendar = {
 
-    del: function () {
+    reset: function () {
         var calendar = document.getElementById('calendar-table'),
             thead = calendar.getElementsByTagName('thead')[0],
             tbody = calendar.getElementsByTagName('tbody')[0],
@@ -261,18 +187,80 @@ const calendarTable = {
         }
     },
 
-    setRoomsStatus: function (data) {
+    setRoomsStatus: function (delList, addList) {
+        //DELETE
         var tbody = document.getElementById('calendar-table').getElementsByTagName('tbody')[0],
-            oneDay = 86400000,
             firstDay = Date.parse(globals.year + "-" + globals.month + "-" + 1),
             lastDay = Date.parse(globals.year + "-" + globals.month + "-" + utils.getDaysInMonth(globals.month, globals.year)),
-            today = Date.parse(new Date());
+            today = Date.parse(new Date()),
+            oneDay = 86400000;
 
-        for (let guest = 0; guest < data.length; guest++) {
+        if (delList != null) {
 
-            var dayin = Date.parse(data[guest].dayin),
-                dayout = Date.parse(data[guest].dayout),
-                room = data[guest].room,
+            for (let guest = 0; guest < delList.length; guest++) {
+
+                var dayin = Date.parse(delList[guest].dayin),
+                    dayout = Date.parse(delList[guest].dayout),
+                    room = delList[guest].room,
+                    rows = tbody.children.length,
+                    childRow = -1;
+
+                for (let row = 0; row < rows; row++) {
+
+                    if (tbody.children[row].textContent == room) {
+                        childRow = row;
+                        break;
+                    }
+                }
+
+                if (childRow == -1) {
+                    return;
+                }
+
+                while (dayin <= dayout) {
+
+                    if (dayin >= firstDay && dayin <= lastDay) {
+                        var date = new Date(dayin),
+                            childCell = date.getDate(),
+                            oldAttr = tbody.children[childRow].children[childCell].getAttribute('class'),
+                            newAttr;
+
+                        if (oldAttr == globals.class_adjacent) /*смежный*/ {
+                            if (dayin < today) {
+                                newAttr = globals.class_redeemed; /*выкупленный*/
+                            } else if (dayin >= today) {
+                                newAttr = globals.class_reserver; /*зарезервирован*/
+                            }
+                            tbody.children[childRow].children[childCell].setAttribute('class', newAttr);
+                        } else {
+                            tbody.children[childRow].children[childCell].removeAttribute('class');
+                        }
+
+                    }
+                    dayin += oneDay;
+                }
+            }
+
+        } else {
+
+            for (let i = 1; i < tbody.children.length; i++) {
+                var row = tbody.children[i];
+                for (let j = 1; j < row.children.length; j++) {
+                    var cell = row.children[j];
+                    if (cell.hasAttribute('class')) {
+                        cell.removeAttribute('class');
+                    }
+                }
+            }
+
+        }
+
+        //ADD
+        for (let guest = 0; guest < addList.length; guest++) {
+
+            var dayin = Date.parse(addList[guest].dayin),
+                dayout = Date.parse(addList[guest].dayout),
+                room = addList[guest].room,
                 rows = tbody.children.length,
                 childRow = -1;
 
@@ -285,7 +273,6 @@ const calendarTable = {
             }
 
             if (childRow == -1) {
-                console.log("calendarTable.setRoomsStatus.childRow = " + childRow + ", room =" + room);
                 return;
             }
 
@@ -312,23 +299,6 @@ const calendarTable = {
                 dayin += oneDay;
             }
         }
-    },
-
-    delRoomsStatus: function (opts) {
-        var tbody = document.getElementById('calendar-table').getElementsByTagName('tbody')[0];
-        if (opts !== undefined) {
-            //todo
-        } else {
-            for (let i = 1; i < tbody.children.length; i++) {
-                var row = tbody.children[i];
-                for (let j = 1; j < row.children.length; j++) {
-                    var cell = row.children[j];
-                    if (cell.hasAttribute('class')) {
-                        cell.removeAttribute('class');
-                    }
-                }
-            }
-        }
     }
 }
 //---------------------------------------------------------------------
@@ -339,110 +309,66 @@ const calendarTable = {
 //---------------------------------------------------------------------
 //  GUESTS TABLE BEGIN
 //---------------------------------------------------------------------
-const guestsTable = {
+const tableGuests = {
 
     addGuest: function (data) {
-        var tbody = document.getElementById('guests-table').getElementsByTagName('tbody')[0],
-            tr = document.createElement('tr');
 
-        for (let i = 0; i < globals.guestsTableColumns; i++) {
-            var td = document.createElement('td');
-            td.appendChild(document.createTextNode(utils.getKeyValue(globals.newGuest[0], i)));
-            tr.appendChild(td);
-        }
-        tbody.appendChild(tr);
+        var tbody = document.getElementById('guests-table').getElementsByTagName('tbody')[0];
 
-        $.ajax({
-            url: './php/guest-list/db-insert.php',
-            data: {
-                year: globals.year,
-                month: globals.month,
-                dayin: globals.newGuest[0].dayin,
-                dayout: globals.newGuest[0].dayout,
-                room: globals.newGuest[0].room,
-                price: globals.newGuest[0].price,
-                paid: globals.newGuest[0].paid,
-                name: globals.newGuest[0].name,
-                tel: globals.newGuest[0].tel,
-                info: globals.newGuest[0].info
-            },
-            dataType: 'json',
-            success: function (data) {
-                globals.newGuest[0].id = data.id;
-                this.addGuest();
-                calendarTable.setRoomsStatus(globals.newGuest);
-            },
-            error: function (xhr, textStatus, errorThrown) {
-                console.log(xhr);
-                console.log(textStatus);
-                console.log(errorThrown);
+        for (let i = 0; i < data.length; i++) {
+            var tr = document.createElement('tr');
+            tr.addEventListener('click', clickListener_select);
+
+            for (let j = 0; j < globals.guestsTableColumns; j++) {
+                var td = document.createElement('td');
+                td.appendChild(document.createTextNode(utils.getKeyValue(data[i], j)));
+                tr.appendChild(td);
             }
-        });
+            tbody.appendChild(tr);
+        }
     },
 
     delGuest: function (id) {
-        for (let i = globals.guestsList.length - 1; i--;) {
-            if (globals.guestsList[i].id == id) globals.guestsList.splice(i, 1);
-        }
-        //TODO delete guest-list table body only deleted id by id == child.td.id
+
         var tbody = document.getElementById('guest-table').getElementsByTagName('tbody')[0];
+
         for (let i = 0; i < tbody.childElementCount; i++) {
             var curId = tbody.children[i].getElementsByTagName('tr')[0].getElementsByTagName('td')[0];
             if (curId == id) {
                 tbody.removeChild[i];
             }
         }
+    },
 
-        $.ajax({
-            url: './php/guest-list/db-delete.php',
-            data: {
-                id: opts.id
-            },
-            dataType: 'json',
-            success: function (data) {
-                if (data.rows != 0) {
-                    this.delGuest(data.id);
-                    calendarTable.delRoomsStatus(); //TODO reset ony del
-                    calendarTable.setRoomsStatus(globals.guestsList);
-                }
-                /*
-                guestsList.createGuestListTableBody();
-                */
-            },
-            error: function (xhr, textStatus, errorThrown) {
-                console.log(xhr);
-                console.log(textStatus);
-                console.log(errorThrown);
+    modGuest: function (id, newVal) {
+
+        var tbody = document.getElementById('guest-table').getElementsByTagName('tbody')[0];
+
+        for (let i = 0; i < tbody.childElementCount; i++) {
+
+            var child = tbody.children[i].getElementsByTagName('tr')[0],
+                td = child.getElementsByTagName('td');
+
+            if (td[0] == id) {
+                td[1] = newVal.dayin;
+                td[2] = newVal.dayout;
+                td[3] = newVal.room;
+                td[4] = newVal.price;
+                td[5] = newVal.paid;
+                td[6] = newVal.name;
+                td[7] = newVal.tel;
+                td[8] = newVal.info;
             }
-        });
+        }
     },
 
-    modGuest: function (id, guest) {
-        globals.guestsList[id] = guest;
-        //TODO
-    },
+    reset: function () {
 
-    addBody: function () {
-        var table = document.getElementById('guests-table'),
-            tbody = table.getElementsByTagName('tbody')[0],
-            tr,
-            td;
+        var tbody = document.getElementById('guests-table').getElementsByTagName('tbody')[0],
+            tr = tbody.getElementsByTagName('tr');
 
-        tr = tbody.getElementsByTagName('tr')
         for (let i = tr.length; i > 0; i--) {
             tbody.removeChild(tr[0]);
-        }
-
-        for (let i = 0; i < globals.guestsList.length; i++) {
-            tr = document.createElement('tr');
-            tr.addEventListener('click', clickListener_select);
-
-            for (let j = 0; j < globals.guestsTableColumns; j++) {
-                td = document.createElement('td');
-                td.appendChild(document.createTextNode(utils.getKeyValue(globals.guestsList[i], j)));
-                tr.appendChild(td);
-            }
-            tbody.appendChild(tr);
         }
     },
 }
@@ -454,18 +380,216 @@ const guestsTable = {
 //---------------------------------------------------------------------
 //   BEGIN
 //---------------------------------------------------------------------
-
+/* 
+    TODO:
+            update db table config
+*/
 //---------------------------------------------------------------------
 //   END
 //---------------------------------------------------------------------
 
 
 //---------------------------------------------------------------------
-//   BEGIN
+//  DB BEGIN
 //---------------------------------------------------------------------
+const db = {
 
+    initialize: function() {
+        $.ajax({
+            url: './php/db/init.php',
+            /* 
+            TODO:
+                    SESSION ID
+            */
+            data: { sessionId: 'root' },
+            dataType: 'json',
+            success: function (data) {
+                utils.setYear(data['year']);
+                globals.month = data['month'];
+                globals.rooms = data['rooms'];
+                tableCalendar.reset();
+                tableCalendar.addHead();
+                tableCalendar.addBody();
+                tableCalendar.setRoomsStatus([], data['guestList']);
+                tableGuests.addGuest(data['guestList']);
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                $("#ajax-msg").append(xhr.responseText);
+                console.log(textStatus);
+                console.log(errorThrown);
+            }
+        });
+    },
+
+    us001: {
+
+        select: function () {
+
+        }
+    },
+
+    cf001: {
+
+        select: function () {
+            $.ajax({
+                url: './php/db/cf001/select.php',
+                /* 
+                TODO:
+                        session id
+                */
+                data: {
+                    sessionId: 'root'
+                },
+                dataType: 'json',
+                success: function (data) {
+                    utils.setYear(data['year']);
+                    utils.setMonth(data['month']);
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    $("#ajax-msg").append(xhr.responseText);
+                    console.log(textStatus);
+                    console.log(errorThrown);
+                }
+            });
+        }
+    },
+
+    rm001: {
+
+        select: function() {
+            $.ajax({
+                url: './php/db/rm001/select.php',
+                data: { },
+                dataType: 'json',
+                success: function (data) {
+                    globals.rooms = data;
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    $("#ajax-msg").append(xhr.responseText);
+                    console.log(textStatus);
+                    console.log(errorThrown);
+                }
+            });
+        }
+    },
+
+    gl001: {
+
+        insert: function (opts) {
+            $.ajax({
+                url: './php/db/gl001/insert.php',
+                data: {
+                    year: $('#year')[0].textContent,
+                    month: globals.monthNames.indexOf($('#month')[0].textContent),
+                    dayin: opts.dayin,
+                    dayout: opts.dayout,
+                    room: opts.room,
+                    price: opts.price,
+                    paid: opts.paid,
+                    name: opts.name,
+                    tel: opts.tel,
+                    info: opts.info,
+                    /* 
+                    TODO:
+                            sessionID    
+                    */
+                    sessionId: 'root'
+                },
+                dataType: 'json',
+                success: function (data) {
+                    tableGuests.addGuest(data);
+                    tableCalendar.setRoomsStatus([], data);
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    $("#ajax-msg").append(xhr.responseText);
+                    console.log(textStatus);
+                    console.log(errorThrown);
+                }
+            });
+        },
+
+        select: function () {
+            $.ajax({
+                url: './php/db/gl001/select.php',
+                data: { /*"year=" + encodeURIComponent(year) + "&month=" + month*/
+                    year: $('#year')[0].textContent,
+                    month: globals.monthNames.indexOf($('#month')[0].textContent),
+                },
+                dataType: 'json',
+                success: function (data) {
+                    tableCalendar.reset();
+                    tableGuests.reset();
+
+                    tableCalendar.addHead();
+                    tableCalendar.addBody();
+                    tableCalendar.setRoomsStatus([], data.data);
+                    tableGuests.addGuest(data.data);
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    $("#ajax-msg").append(xhr.responseText);
+                    console.log(textStatus);
+                    console.log(errorThrown);
+                }
+            });
+        },
+
+        modify: function (opts) {
+            $.ajax({
+                url: './php/db/gl001/modify.php',
+                data: {
+                    id: opts.id,
+                    dayin: opts.dayin,
+                    dayout: opts.dayout,
+                    room: opts.room,
+                    price: opts.price,
+                    paid: opts.paid,
+                    name: opts.name,
+                    tel: opts.tel,
+                    info: opts.info
+                },
+                dataType: 'json',
+                success: function (data) {
+                    tableGuests.modGuest(data.old.id, data.new);
+                    tableCalendar.setRoomsStatus(data.old, data.new);
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    $("#ajax-msg").append(xhr.responseText);
+                    console.log(textStatus);
+                    console.log(errorThrown);
+                }
+            });
+        },
+
+        delete: function (opts) {
+            $.ajax({
+                url: './php/db/gl001/delete.php',
+                data: {
+                    id: opts.id
+                },
+                dataType: 'json',
+                success: function (data) {
+                    tableGuests.delGuest(data.id);
+                    tableCalendar.setRoomsStatus(data, []);
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    $("#ajax-msg").append(xhr.responseText);
+                    console.log(textStatus);
+                    console.log(errorThrown);
+                }
+            });
+        }
+    },
+
+    lg001: {
+
+        select: function () {
+
+        }
+    }
+
+}
 //---------------------------------------------------------------------
-//   END
+//  DB END
 //---------------------------------------------------------------------
 
 

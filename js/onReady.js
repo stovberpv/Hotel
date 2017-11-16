@@ -1,7 +1,9 @@
 'use strict';
 (function (window) {
     
-    //transition effect begin
+    //---------------------------------------------------------------------
+        //  TRANSITION EFFECT BEGIN
+    //---------------------------------------------------------------------
     $(document).ready(function () {
         var movementStrength = 25;
         var height = movementStrength / $(window).height();
@@ -14,12 +16,17 @@
             $('body').css("background-position", newvalueX + "px " + newvalueY + "px");
         });
     });
-    //transition effect end
+    //---------------------------------------------------------------------
+        //  TRANSITION EFFECT END
+    //---------------------------------------------------------------------
 
-    //guest input dialog begin
-    $(function () {
-        createDialog();
-    });
-    //guest input dialog end
+
+    //---------------------------------------------------------------------
+        //  GUEST INPUT DIALOG BEGIN
+    //---------------------------------------------------------------------
+    $(function () { createDialog(); });
+    //---------------------------------------------------------------------
+        //  GUEST INPUT DIALOG END
+    //---------------------------------------------------------------------
 
 }(window));

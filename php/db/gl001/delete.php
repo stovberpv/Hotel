@@ -1,15 +1,6 @@
 <?php 
 
-    require $_SERVER['DOCUMENT_ROOT'] . '/hm/php/db/hm.php';
-
-    //-------------------------------------------------------------------------------------------------
-        // connection to db
-    //-------------------------------------------------------------------------------------------------
-    $mysqli = mysqli_connect($db_host, $db_user, $db_pass, $db_name);
-
-    if(mysqli_connect_errno()) {
-        echo "Не удалось подключиться к MySQL: (" . $mysqli->connect_errno . ") " . $mysqli->connect_error;
-    }
+    require $_SERVER['DOCUMENT_ROOT'] . '/hm/php/db/conn.php';
 
     //-------------------------------------------------------------------------------------------------
         // get values from ajax
@@ -42,6 +33,7 @@
 
     $data['id'] = $id;
     $data['rows'] = mysqli_affected_rows($mysqli);
+    
     //-------------------------------------------------------------------------------------------------
         // send result
     //-------------------------------------------------------------------------------------------------
@@ -54,4 +46,18 @@
     $stmt->close();
 
     $mysqli->close();
+
+    function err2echo($id, $text, $conn) {
+        switch ($id) {
+            case 0 : echo $text . "Не удалось подключиться к MySQL: (" . $conn->connect_errno . ") " . $conn->connect_error; break;
+            case 10: echo $text . "Ошибка подготовки: (" . $conn->errno . ") " . $conn->error; break;
+            case 11: echo $text . "Ошибка привязки: : (" . $conn->errno . ") " . $conn->error; break;
+            case 12: echo $text . "Ошибка выполнения: (" . $conn->errno . ") " . $conn->error; break;
+            case 13: echo $text . "Ошибка переменных: (" . $conn->errno . ") " . $conn->error; break;
+            case 14: echo $text . "Ошибка выборки:  : (" . $conn->errno . ") " . $conn->error; break;
+            case 15: echo $text . "Ошибка результата: (" . $conn->errno . ") " . $conn->error; break;
+            default: break;
+        }
+    }
+
 ?>

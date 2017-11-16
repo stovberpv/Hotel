@@ -1,5 +1,5 @@
 //---------------------------------------------------------------------
-//  INPUT YEAR BEGIN (bootstrap-popup)
+    //  INPUT YEAR BEGIN (bootstrap-popup)
 //---------------------------------------------------------------------
 (function (factory) {
         'use strict';
@@ -167,23 +167,39 @@
         $.bs.popup = popup();
     }));
 //---------------------------------------------------------------------
-//  INPUT YEAR END (bootstrap-popup)
+    //  INPUT YEAR END (bootstrap-popup)
 //---------------------------------------------------------------------
 
 
 //---------------------------------------------------------------------
-//  GUEST INPUT BEGIN
+    //  GUEST INPUT BEGIN
 //---------------------------------------------------------------------
 var index;
 
 $("#addGuest").on("click", function () {
+    /* 
+    TODO:
+            add guest
+    */
     index = 0;
     setDialogVal(index);
     dialogOpen();
 });
 
 $("#delGuest").on("click", function (e) {
-    var id = e;
+    /* 
+    TODO:
+            del guest
+    */
+    var tbody = document.getElementById('guest-table').getElementsByTagName('tbody')[0];
+
+    for (let i = 0; i < tbody.childElementCount; i++) {
+        var child = tbody.children[i].getElementsByTagName('tr')[0];
+        if (child.hasAttribute('class')) {
+            var id = child.getElementsByTagName('td')[0];
+            db.gl001.delete(id);
+        }
+    }
 });
 
 function createDialog() {
@@ -213,11 +229,12 @@ function createDialog() {
             id: "save",
             text: "Сохранить",
             click: function (e) {
-                //TODO
-                getDialogVal(); // todo rename
-                ajax.insert();
+                db.gl001.insert(getDialogVal());
                 closeDialog();
-                /*
+                /* 
+                TODO:
+                        multiroom selection
+
                 index++;
                 nextRoom();
                 */
@@ -227,9 +244,28 @@ function createDialog() {
 }
 
 function nextRoom() {
+    /* 
+    TODO:
+            open dialog for next selection
+
     for (index; index < selectedRooms.length; index++) {
         setDialogVal(index);
         dialogOpen();
+    }
+    */
+}
+
+function getDialogVal() {
+    return {
+        id: -1,
+        dayin: $("#dayin").val(),
+        dayout: $("#dayout").val(),
+        room: $("#room").val(),
+        price: $("#price").val(),
+        paid: $("#paid").val(),
+        name: $("#name").val(),
+        tel: $("#tel").val(),
+        info: $("#text").val()
     }
 }
 
@@ -243,36 +279,17 @@ function setDialogVal(i) {
     $("#tel").val("");
     $("#text").val("");
     /*
-        if (selectedRooms.length == 0) {
-            return;
-        }
-        $("#dayin").val(selectedRooms[i][1]);
-        $("#dayout").val(selectedRooms[i][2]);
-        $("#room").val(selectedRooms[i][3]);
-        $("#price").val();
-        */
-}
-
-function getDialogVal() {
-    var dayin = $("#dayin").val();
-    var dayout = $("#dayout").val();
-    var room = $("#room").val();
-    var price = $("#price").val();
-    var paid = $("#paid").val();
-    var name = $("#name").val();
-    var tel = $("#tel").val();
-    var info = $("#text").val();
-    globals.newGuest = [{
-        id: -1,
-        dayin: dayin,
-        dayout: dayout,
-        room: room,
-        price: price,
-        paid: paid,
-        name: name,
-        tel: tel,
-        info: info
-    }];
+    TODO:
+            set dialog val
+            
+    if (selectedRooms.length == 0) {
+        return;
+    }
+    $("#dayin").val(selectedRooms[i][1]);
+    $("#dayout").val(selectedRooms[i][2]);
+    $("#room").val(selectedRooms[i][3]);
+    $("#price").val();
+    */
 }
 
 function dialogOpen() {
@@ -283,5 +300,5 @@ function closeDialog() {
     $("#dialog").dialog("close");
 }
 //---------------------------------------------------------------------
-//  GUEST INPUT END
+    //  GUEST INPUT END
 //---------------------------------------------------------------------
