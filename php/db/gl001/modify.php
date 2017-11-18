@@ -49,10 +49,10 @@
         $date = explode(".", $dayin);
         $m = $date[1];
         $d = $date[0];
-        if(checkdate($m, $d, $year)) {
+        if(checkdate($m, $d, (float)$year)) {
             $begda = $year . "-" . $m . "-" . $d;
         } else {
-            die(err2echo(22, 'Обновление гостя', $mysqli));
+            die(err2echo(22, 'Обновление гостя ', $mysqli));
         }
     } else {
         $begda = $year . "-" . $month . "-" . $dayin;
@@ -63,7 +63,7 @@
         $date = explode(".", $dayout);
         $m = $date[1];
         $d = $date[0];
-        if(checkdate($m, $d, $year)) {
+        if(checkdate($m, $d, $year + 0)) {
             $endda = $year . "-" . $m . "-" . $d;
         } else {
             die(err2echo(21, 'Обновление гостя', $mysqli));
@@ -81,6 +81,27 @@
     //-------------------------------------------------------------------------------------------------
         // prepare queryes
     //-------------------------------------------------------------------------------------------------
+    $query = "SELECT * 
+                FROM gl001 
+                WHERE id = ?";
+
+    //-------------------------------------------------------------------------------------------------
+        // execute query 0
+    //-------------------------------------------------------------------------------------------------
+    if (!($stmt = $mysqli->prepare($query))) { die(err2echo(10, 'Обновление гостя', $mysqli)); }
+    if (!$stmt->bind_param('i', $id)) { die(err2echo(11, 'Обновление гостя', $mysqli)); }
+    if (!$stmt->execute()) { die(err2echo(12, 'Обновление гостя', $mysqli)); }
+
+    $result = $stmt->get_result();
+    $rows = []; 
+    while($row = $result->fetch_assoc()) {
+        $rows[] = $row;
+    }
+    $data['old'] = $rows;
+
+    //-------------------------------------------------------------------------------------------------
+        // prepare queryes
+    //-------------------------------------------------------------------------------------------------
     $query = "UPDATE gl001
                 SET dayin = ?, dayout = ?, room = ?, price = ?, paid = ?, name = ?, tel = ?, info = ?, user = ?, timestamp = ?
                 WHERE id = ?";
@@ -89,21 +110,29 @@
         // execute query 1
     //-------------------------------------------------------------------------------------------------
     if (!($stmt = $mysqli->prepare($query))) { die(err2echo(10, 'Обновление гостя', $mysqli)); }
-    if (!$stmt->bind_param('ssiddsssss', $begda, $endda, $room, $price, $paid, $name, $tel, $info, $user, $timestamp, $id)) { die(err2echo(11, 'Обновление гостя', $mysqli)); }
+    if (!$stmt->bind_param('ssiddsssssi', $begda, $endda, $room, $price, $paid, $name, $tel, $info, $user, $timestamp, $id)) { die(err2echo(11, 'Обновление гостя', $mysqli)); }
     if (!$stmt->execute()) { die(err2echo(12, 'Обновление гостя', $mysqli)); }
 
     //-------------------------------------------------------------------------------------------------
-        // 
+        // prepare queryes
     //-------------------------------------------------------------------------------------------------
-    $data[0]['id'] = mysqli_insert_id($mysqli);
-    $data[0]['dayin'] = $begda;
-    $data[0]['dayout'] = $endda;
-    $data[0]['room'] = $room;
-    $data[0]['price'] = $price;
-    $data[0]['paid'] = $paid;
-    $data[0]['name'] = $name;
-    $data[0]['tel'] = $tel;
-    $data[0]['info'] = $info;
+    $query = "SELECT * 
+                FROM gl001 
+                WHERE id = ?";
+
+    //-------------------------------------------------------------------------------------------------
+        // execute query 2
+    //-------------------------------------------------------------------------------------------------
+    if (!($stmt = $mysqli->prepare($query))) { die(err2echo(10, 'Обновление гостя', $mysqli)); }
+    if (!$stmt->bind_param('i', $id)) { die(err2echo(11, 'Обновление гостя', $mysqli)); }
+    if (!$stmt->execute()) { die(err2echo(12, 'Обновление гостя', $mysqli)); }
+
+    $result = $stmt->get_result();
+    $rows = []; 
+    while($row = $result->fetch_assoc()) {
+        $rows[] = $row;
+    }
+    $data['new'] = $rows;
 
     //-------------------------------------------------------------------------------------------------
         // send result
@@ -119,6 +148,8 @@
     $mysqli->close();
 
     function err2echo($id, $text, $conn) {
+        $error = "";
+        $errno = 666;
         switch ($id) {
             case 0 : $error = "Ошибка подключения: (" . $conn->connect_error . ") "; $errno = $conn->connect_errno;   break;
             case 10: $error = "Ошибка подготовки: ("  . $conn->error         . ") "; $errno = $conn->errno;           break;

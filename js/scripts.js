@@ -1,4 +1,4 @@
-// 'use strict';
+'use strict';
 
 //---------------------------------------------------------------------
 //  GLOBALS BEGIN
@@ -8,12 +8,14 @@ const globals = {
     month: "",
     guestsTableColumns: 9,
     rooms: [],
-    newGuests: [],
+    guestsProcessing: [],
     monthNames: ["", "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"],
     class_selected: "selected",
     class_reserver: "reserver",
     class_adjacent: "adjacent",
-    class_redeemed: "redeemed"
+    class_redeemed: "redeemed",
+    intent_add: 'add',
+    intent_edit: 'edit'
 }
 //---------------------------------------------------------------------
 //  GLOBALS END
@@ -105,15 +107,7 @@ const utils = {
 //  CLICK LISTENERS BEGIN
 //---------------------------------------------------------------------
 const clickListener_select = function (e) {
-    if (e.currentTarget.hasAttribute('class')) {
-        if (e.currentTarget.getAttribute('class') === globals.class_selected) {
-            e.currentTarget.removeAttribute('class');
-        } else {
-            // do nothing!
-        }
-    } else {
-        e.currentTarget.setAttribute('class', globals.class_selected);
-    }
+    $(this).toggleClass(globals.class_selected);
 }
 
 $('#year-button-pick').click(function () {
@@ -176,8 +170,11 @@ $('#month-button-right').click(function () {
 $("#addGuest").on("click", function (e) {
     /* 
     FIX:
-            когда-нибудь переделать весь этот вертолет
+    когда-нибудь переделать весь этот вертолет
     */
+    //  чистим список на добавление перед добавлением новых записей
+    globals.guestsProcessing = globals.guestsProcessing.filter(e => e.intent != globals.intent_add);
+
     // выбираем все выделенные ячейки в таблице Календарь
     var selected = [];
     $('#calendar-table tbody tr td.' + globals.class_selected).each(function () {
@@ -195,12 +192,20 @@ $("#addGuest").on("click", function (e) {
         var room = group[0].room,
             begda = 999,
             endda = 0;
+
         group.forEach(entry => {
             if (endda != 0 && (endda + 1) != entry.day) {
-                globals.newGuests.push({
-                    room: room,
+                globals.guestsProcessing.push({
+                    intent: globals.intent_add,
+                    id: -1,
                     dayin: begda,
-                    dayout: endda
+                    dayout: endda,
+                    room: room,
+                    price: "",
+                    paid: "",
+                    name: "",
+                    tel: "",
+                    info: ""
                 });
                 begda = entry.day;
                 endda = entry.day;
@@ -213,54 +218,67 @@ $("#addGuest").on("click", function (e) {
                 endda = entry.day;
             }
         });
-        globals.newGuests.push({
-            room: room,
-            dayin: begda,
-            dayout: endda
-        });
-    });
-
-    var val;
-    if (globals.newGuests.length != 0) {
-        val = {
+        globals.guestsProcessing.push({
+            intent: globals.intent_add,
             id: -1,
-            dayin: globals.newGuests[0].dayin,
-            dayout: globals.newGuests[0].dayout,
-            room: globals.newGuests[0].room,
+            dayin: begda,
+            dayout: endda,
+            room: room,
             price: "",
             paid: "",
             name: "",
             tel: "",
             info: ""
-        }
+        });
+    });
+
+    // ициализируем поля диалога
+    var initVal = globals.guestsProcessing.filter(e => e.intent == globals.intent_add);
+
+    if (initVal.length != 0) {
+        tableCalendar.removeSelection(initVal[0].room, initVal[0].dayin, initVal[0].dayout);
+        globals.guestsProcessing.splice(globals.guestsProcessing.indexOf(initVal[0]), 1);
+        guestDialog.setVal(initVal[0]);
+        guestDialog.open(initVal[0].intent);
+    } else {
+        guestDialog.setVal();
+        guestDialog.open(globals.intent_add);
     }
-    guestDialog.setVal(val);
-    guestDialog.open();
+
 });
 
-$('#modGuest').on('click', function (e) {
+$('#editGuest').on('click', function (e) {
+
+    //  чистим список на редактирование перед добавлением новых записей
+    globals.guestsProcessing = globals.guestsProcessing.filter(e => e.intent != globals.intent_edit);
 
     $('#guests-table tbody tr.' + globals.class_selected).each(function () {
         var fulldayin = $(this).children('td')[1].textContent,
-            dayin = fulldayin.substring(8) + "." + fulldayin.substring(5, 7)
-        fulldayout = $(this).children('td')[2].textContent,
-            dayout = fulldayout.substring(8) + "." + fulldayout.substring(5, 7);
+            fulldayout = $(this).children('td')[2].textContent;
 
-        var val = {
+        globals.guestsProcessing.push({
+            intent: globals.intent_edit,
             id: $(this).children('td')[0].textContent,
-            dayin: dayin,
-            dayout: dayout,
+            dayin: fulldayin.substring(8) + "." + fulldayin.substring(5, 7),
+            dayout: fulldayout.substring(8) + "." + fulldayout.substring(5, 7),
             room: $(this).children('td')[3].textContent,
             price: $(this).children('td')[4].textContent,
             paid: $(this).children('td')[5].textContent,
             name: $(this).children('td')[6].textContent,
             tel: $(this).children('td')[7].textContent,
             info: $(this).children('td')[8].textContent
-        }
-
-        guestDialog.setVal(val);
-        guestDialog.open();
+        });
     });
+
+    // ициализируем поля диалога
+    var initVal = globals.guestsProcessing.filter(e => e.intent == globals.intent_edit);
+
+    if (initVal.length != 0) {
+        tableGuests.removeSelection(initVal[0].id);
+        globals.guestsProcessing.splice(globals.guestsProcessing.indexOf(initVal[0]), 1);
+        guestDialog.setVal(initVal[0]);
+        guestDialog.open(initVal[0].intent);
+    }
 });
 
 $("#delGuest").on("click", function (e) {
@@ -277,17 +295,6 @@ $("#delGuest").on("click", function (e) {
 });
 //---------------------------------------------------------------------
 //  CLICK LISTENERS END
-//---------------------------------------------------------------------
-
-
-//---------------------------------------------------------------------
-//  INITIALIZE BEGIN
-//---------------------------------------------------------------------
-const initialize = {
-
-}
-//---------------------------------------------------------------------
-//  INITIALIZE END
 //---------------------------------------------------------------------
 
 
@@ -342,6 +349,7 @@ const tableCalendar = {
     },
 
     addBody: function () {
+        
         var totalCells = document.getElementById('calendar-table').getElementsByTagName('thead')[0].getElementsByTagName('tr')[1].childElementCount,
             tbody = document.getElementById('calendar-table').getElementsByTagName('tbody')[0];
 
@@ -366,6 +374,7 @@ const tableCalendar = {
     },
 
     setRoomsStatus: function (delList, addList) {
+
         var tmp = globals.year + "-" + globals.month + "-" + utils.getDaysInMonth(globals.month, globals.year);
 
         var tbody = document.getElementById('calendar-table').getElementsByTagName('tbody')[0],
@@ -471,7 +480,10 @@ const tableCalendar = {
                     }
 
                     if (tbody.children[childRow].children[childCell].hasAttribute('class')) {
-                        newAttr = globals.class_adjacent; /*смежный*/
+                        var cellClassName = tbody.children[childRow].children[childCell].getAttribute('class');
+                        if (cellClassName != "" && cellClassName != globals.class_selected) {
+                            newAttr = globals.class_adjacent; /*смежный*/
+                        }
                     }
 
                     tbody.children[childRow].children[childCell].setAttribute('class', newAttr);
@@ -527,26 +539,21 @@ const tableGuests = {
         });
     },
 
-    modGuest: function (id, newVal) {
+    editGuest: function (id, newVal) {
 
-        var tbody = document.getElementById('guests-table').getElementsByTagName('tbody')[0];
+        var row = $('#guests-table tbody tr')
+            .filter(function () {
+                return $(this).children()[0].textContent == id;
+            });
 
-        for (let i = 0; i < tbody.childElementCount; i++) {
-
-            var child = tbody.children[i].getElementsByTagName('tr')[0],
-                td = child.getElementsByTagName('td');
-
-            if (td[0] == id) {
-                td[1] = newVal.dayin;
-                td[2] = newVal.dayout;
-                td[3] = newVal.room;
-                td[4] = newVal.price;
-                td[5] = newVal.paid;
-                td[6] = newVal.name;
-                td[7] = newVal.tel;
-                td[8] = newVal.info;
-            }
-        }
+        row[0].children[1].textContent = newVal.dayin;
+        row[0].children[2].textContent = newVal.dayout;
+        row[0].children[3].textContent = newVal.room;
+        row[0].children[4].textContent = newVal.price;
+        row[0].children[5].textContent = newVal.paid;
+        row[0].children[6].textContent = newVal.name;
+        row[0].children[7].textContent = newVal.tel;
+        row[0].children[8].textContent = newVal.info;   
     },
 
     reset: function () {
@@ -557,22 +564,19 @@ const tableGuests = {
         for (let i = tr.length; i > 0; i--) {
             tbody.removeChild(tr[0]);
         }
+    },
+
+    removeSelection: function (id) {
+
+        $('#guests-table tbody tr.' + globals.class_selected + ' td:first-child')
+            .filter(function () {
+                return $(this)[0].textContent == id;
+            }).parent().toggleClass(globals.class_selected);
     }
+
 }
 //---------------------------------------------------------------------
 //  GUESTS TABLE END
-//---------------------------------------------------------------------
-
-
-//---------------------------------------------------------------------
-//   BEGIN
-//---------------------------------------------------------------------
-/* 
-    TODO:
-            update db table config
-*/
-//---------------------------------------------------------------------
-//   END
 //---------------------------------------------------------------------
 
 
@@ -599,6 +603,17 @@ const db = {
                 tableCalendar.reset();
                 tableCalendar.addHead();
                 tableCalendar.addBody();
+                
+                data['guestList'].sort(function (a, b) {
+                    if (a.id > b.id) {
+                        return 1;
+                    } else if (a.id < b.id) {
+                        return -1;
+                    } else {
+                        return 0;
+                    }
+                });
+
                 tableCalendar.setRoomsStatus([], data['guestList']);
                 tableGuests.addGuest(data['guestList']);
             },
@@ -641,6 +656,11 @@ const db = {
                 }
             });
         }
+
+        /* 
+        TODO:
+                update db table config
+        */
     },
 
     rm001: {
@@ -712,6 +732,15 @@ const db = {
                     tableCalendar.addHead();
                     tableCalendar.addBody();
                     tableCalendar.setRoomsStatus([], data.data);
+                    data.data.sort(function(a, b) {
+                        if (a.id > b.id) {
+                            return 1;
+                        } else if (a.id < b.id ) {
+                            return -1;
+                        } else {
+                            return 0;
+                        }
+                    });
                     tableGuests.addGuest(data.data);
                 },
                 error: function (xhr, textStatus, errorThrown) {
@@ -726,6 +755,8 @@ const db = {
             $.ajax({
                 url: './php/db/gl001/modify.php',
                 data: {
+                    year: $('#year')[0].textContent,
+                    month: globals.monthNames.indexOf($('#month')[0].textContent),
                     id: opts.id,
                     dayin: opts.dayin,
                     dayout: opts.dayout,
@@ -738,8 +769,8 @@ const db = {
                 },
                 dataType: 'json',
                 success: function (data) {
-                    tableGuests.modGuest(data.old.id, data.new);
-                    tableCalendar.setRoomsStatus(data.old, data.new);
+                    tableGuests.editGuest(data['old'][0].id, data['new'][0]);
+                    tableCalendar.setRoomsStatus(data['old'], data['new']);
                 },
                 error: function (xhr, textStatus, errorThrown) {
                     $("#ajax-msg").append(xhr.responseText);
@@ -789,11 +820,16 @@ const guestDialog = {
 
     create: function () {
 
-        /* 
-        TODO:
-                multi guest edit
-        FIX:
-                globals.newGuests -> globals.guestsProcessing
+        /*
+        INFO:
+        При отработке событий "Закрыть" и "Сохранить" - окно должно
+        открываться снова для следующей записи в таблице 
+        globals.guestsProcessing по тому же самому намерению, по 
+        которому было открыто в прошлый раз. Тобишь, если окно было
+        открыто через кнопку "Исправить" и в списке гостей было выбрано
+        несколько строк то оно должно открыться для исправления
+        следущей записи, а не для добавление нового гостя, если
+        в это же самое время было выбрано несколько ячеек в календаре.
         */
         $("#dialog").dialog({
             dialogClass: "ui-dialog",
@@ -815,10 +851,19 @@ const guestDialog = {
                 id: "close",
                 text: "Отменить",
                 click: function (e) {
-                    var val = guestDialog.getVal();
-                    tableCalendar.removeSelection(val.room, val.dayin, val.dayout);
-                    globals.newGuests.shift();
+                    if (globals.guestsProcessing.length != 0) {
+                        var intent = $("#dialog").data('intent');
+                        var intentList = globals.guestsProcessing.filter(e => e.intent == intent);
+
+                        if (intentList.length != 0) {
+                            tableGuests.removeSelection(intentList[0].id);
+                            tableCalendar.removeSelection(intentList[0].room, intentList[0].dayin, intentList[0].dayout);
+                            globals.guestsProcessing.splice(globals.guestsProcessing.indexOf(intentList[0]), 1);
+                        }
+                    }
+                    guestDialog.setVal();
                     guestDialog.close();
+
                 }
             }, {
                 id: "save",
@@ -832,31 +877,26 @@ const guestDialog = {
                     }
                     guestDialog.close();
 
-                    if (globals.newGuests.length != 0) {
-                        val = {
-                            id: -1,
-                            dayin: globals.newGuests[0].dayin,
-                            dayout: globals.newGuests[0].dayout,
-                            room: globals.newGuests[0].room,
-                            price: "",
-                            paid: "",
-                            name: "",
-                            tel: "",
-                            info: ""
-                        }
-                        guestDialog.setVal(val);
-                        tableCalendar.removeSelection(val.room, val.dayin, val.dayout);
-                        globals.newGuests.shift();
-                        guestDialog.open();
-                    }
+                    if (globals.guestsProcessing.length != 0) {
+                        var intent = $("#dialog").data('intent');
+                        var intentList = globals.guestsProcessing.filter(e => e.intent == intent);
 
+                        if (intentList.length != 0) {
+                            guestDialog.setVal(intentList[0]);
+                            tableGuests.removeSelection(intentList[0].id);
+                            tableCalendar.removeSelection(intentList[0].room, intentList[0].dayin, intentList[0].dayout);
+                            globals.guestsProcessing.splice(globals.guestsProcessing.indexOf(intentList[0]), 1);
+                            guestDialog.open(intent);
+                        }
+                    }
                 }
             }, ]
         });
     },
 
-    open: function () {
+    open: function (intent) {
 
+        $("#dialog").data('intent', intent);
         $("#dialog").dialog("open");
     },
 
