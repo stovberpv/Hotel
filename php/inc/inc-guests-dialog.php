@@ -3,6 +3,9 @@
         <table>
             <tbody>
                 <tr>
+                    <td style="display:none">
+                        <input id="id" name="id" type="text">
+                    </td>
                     <td>
                         <div data-tip="День заезда">
                             <input id="dayin" name="dayin" type="text" size="5" maxlength="5" placeholder="Заезд">
@@ -47,7 +50,7 @@
                 <tr>
                     <td colspan="5">
                         <div data-tip="Примечание">
-                            <input id="text" name="text" type="text" size="36" placeholder="Примечание">
+                            <input id="info" name="info" type="text" size="36" placeholder="Примечание">
                         </div>
                     </td>
                 </tr>

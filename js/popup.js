@@ -1,5 +1,5 @@
 //---------------------------------------------------------------------
-    //  INPUT YEAR BEGIN (bootstrap-popup)
+//  INPUT YEAR BEGIN (bootstrap-popup)
 //---------------------------------------------------------------------
 (function (factory) {
         'use strict';
@@ -167,138 +167,14 @@
         $.bs.popup = popup();
     }));
 //---------------------------------------------------------------------
-    //  INPUT YEAR END (bootstrap-popup)
+//  INPUT YEAR END (bootstrap-popup)
 //---------------------------------------------------------------------
 
 
 //---------------------------------------------------------------------
-    //  GUEST INPUT BEGIN
+//  GUEST INPUT BEGIN
 //---------------------------------------------------------------------
-var index;
 
-$("#addGuest").on("click", function () {
-    /* 
-    TODO:
-            add guest
-    */
-    index = 0;
-    setDialogVal(index);
-    dialogOpen();
-});
-
-$("#delGuest").on("click", function (e) {
-    /* 
-    TODO:
-            del guest
-    */
-    var tbody = document.getElementById('guest-table').getElementsByTagName('tbody')[0];
-
-    for (let i = 0; i < tbody.childElementCount; i++) {
-        var child = tbody.children[i].getElementsByTagName('tr')[0];
-        if (child.hasAttribute('class')) {
-            var id = child.getElementsByTagName('td')[0];
-            db.gl001.delete(id);
-        }
-    }
-});
-
-function createDialog() {
-    $("#dialog").dialog({
-        dialogClass: "ui-dialog",
-        autoOpen: false,
-        modal: true,
-        draggable: true,
-        resizable: false,
-        width: 'auto',
-        height: 'auto',
-        show: {
-            effect: "drop",
-            duration: 400
-        },
-        hide: {
-            effect: "drop",
-            duration: 400
-        },
-        buttons: [{
-            id: "close",
-            text: "Отменить",
-            click: function (e) {
-                closeDialog();
-            }
-        }, {
-            id: "save",
-            text: "Сохранить",
-            click: function (e) {
-                db.gl001.insert(getDialogVal());
-                closeDialog();
-                /* 
-                TODO:
-                        multiroom selection
-
-                index++;
-                nextRoom();
-                */
-            }
-        }, ]
-    });
-}
-
-function nextRoom() {
-    /* 
-    TODO:
-            open dialog for next selection
-
-    for (index; index < selectedRooms.length; index++) {
-        setDialogVal(index);
-        dialogOpen();
-    }
-    */
-}
-
-function getDialogVal() {
-    return {
-        id: -1,
-        dayin: $("#dayin").val(),
-        dayout: $("#dayout").val(),
-        room: $("#room").val(),
-        price: $("#price").val(),
-        paid: $("#paid").val(),
-        name: $("#name").val(),
-        tel: $("#tel").val(),
-        info: $("#text").val()
-    }
-}
-
-function setDialogVal(i) {
-    $("#dayin").val("");
-    $("#dayout").val("");
-    $("#room").val("");
-    $("#price").val("");
-    $("#paid").val("");
-    $("#name").val("");
-    $("#tel").val("");
-    $("#text").val("");
-    /*
-    TODO:
-            set dialog val
-            
-    if (selectedRooms.length == 0) {
-        return;
-    }
-    $("#dayin").val(selectedRooms[i][1]);
-    $("#dayout").val(selectedRooms[i][2]);
-    $("#room").val(selectedRooms[i][3]);
-    $("#price").val();
-    */
-}
-
-function dialogOpen() {
-    $("#dialog").dialog("open");
-}
-
-function closeDialog() {
-    $("#dialog").dialog("close");
-}
 //---------------------------------------------------------------------
-    //  GUEST INPUT END
+//  GUEST INPUT END
 //---------------------------------------------------------------------

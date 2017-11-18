@@ -1,4 +1,4 @@
-'use strict';
+// 'use strict';
 
 //---------------------------------------------------------------------
 //  GLOBALS BEGIN
@@ -8,6 +8,7 @@ const globals = {
     month: "",
     guestsTableColumns: 9,
     rooms: [],
+    newGuests: [],
     monthNames: ["", "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"],
     class_selected: "selected",
     class_reserver: "reserver",
@@ -41,7 +42,10 @@ const utils = {
     },
 
     getDaysInMonth: function (m, y) {
-        return m === 2 ? y & 3 || !(y % 25) && y & 15 ? 28 : 29 : 30 + (m + (m >> 3) & 1);
+        m--;
+        var isLeap = ((y % 4) == 0 && ((y % 100) != 0 || (y % 400) == 0));
+        return [31, (isLeap ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][m];
+        // return m === 2 ? y & 3 || !(y % 25) && y & 15 ? 28 : 29 : 30 + (m + (m >> 3) & 1);
     },
 
     getKeyValue: function (data, index) {
@@ -76,6 +80,19 @@ const utils = {
             default:
                 break;
         }
+    },
+
+    groupBy: function (list, keyGetter) {
+        const map = new Map();
+        list.forEach((item) => {
+            const key = keyGetter(item);
+            if (!map.has(key)) {
+                map.set(key, [item]);
+            } else {
+                map.get(key).push(item);
+            }
+        });
+        return map;
     }
 
 }
@@ -87,7 +104,7 @@ const utils = {
 //---------------------------------------------------------------------
 //  CLICK LISTENERS BEGIN
 //---------------------------------------------------------------------
-var clickListener_select = (function (e) {
+const clickListener_select = function (e) {
     if (e.currentTarget.hasAttribute('class')) {
         if (e.currentTarget.getAttribute('class') === globals.class_selected) {
             e.currentTarget.removeAttribute('class');
@@ -97,6 +114,166 @@ var clickListener_select = (function (e) {
     } else {
         e.currentTarget.setAttribute('class', globals.class_selected);
     }
+}
+
+$('#year-button-pick').click(function () {
+    $.bs.popup.prompt({
+        title: 'Новая выборка',
+        info: 'Год выборки',
+        width: '220px',
+        value: globals.year
+    }, function (dialogE, value) {
+        var infoMsg = "",
+            beg = 1900,
+            end = 9999;
+
+        if (value >= beg && value <= end) {
+            infoMsg = 'Идет выборка данных за ' + value + ' год...';
+        } else {
+            infoMsg = 'Некорректный ввод!';
+            value = new Date().getFullYear();
+        }
+
+        $.bs.popup.toast({
+            title: 'Ожидайте',
+            info: infoMsg
+        }, function () {
+            utils.setYear(value);
+            db.gl001.select();
+            dialogE.modal('hide');
+        });
+    });
+});
+
+$('#month-button-left').click(function () {
+    var month = globals.monthNames.indexOf($('#month')[0].textContent);
+    if (month > 1) {
+        month--;
+    } else {
+        month = 12;
+    }
+    utils.setMonth(month);
+    tableCalendar.reset();
+    tableCalendar.addHead();
+    tableCalendar.addBody();
+    db.gl001.select();
+});
+
+$('#month-button-right').click(function () {
+    var month = globals.monthNames.indexOf($('#month')[0].textContent);
+    if (month > 11) {
+        month = 1;
+    } else {
+        month++;
+    }
+    utils.setMonth(month);
+    tableCalendar.reset();
+    tableCalendar.addHead();
+    tableCalendar.addBody();
+    db.gl001.select();
+});
+
+$("#addGuest").on("click", function (e) {
+    /* 
+    FIX:
+            когда-нибудь переделать весь этот вертолет
+    */
+    // выбираем все выделенные ячейки в таблице Календарь
+    var selected = [];
+    $('#calendar-table tbody tr td.' + globals.class_selected).each(function () {
+        selected.push({
+            room: $(this)[0].id.substring(0, 2),
+            day: $(this)[0].cellIndex
+        });
+    });
+
+    // группировка по комнате
+    var grouped = utils.groupBy(selected, sel => sel.room);
+
+    // формируем итоговый список
+    grouped.forEach(group => {
+        var room = group[0].room,
+            begda = 999,
+            endda = 0;
+        group.forEach(entry => {
+            if (endda != 0 && (endda + 1) != entry.day) {
+                globals.newGuests.push({
+                    room: room,
+                    dayin: begda,
+                    dayout: endda
+                });
+                begda = entry.day;
+                endda = entry.day;
+            }
+
+            if (begda > entry.day) {
+                begda = entry.day;
+            }
+            if (endda < entry.day) {
+                endda = entry.day;
+            }
+        });
+        globals.newGuests.push({
+            room: room,
+            dayin: begda,
+            dayout: endda
+        });
+    });
+
+    var val;
+    if (globals.newGuests.length != 0) {
+        val = {
+            id: -1,
+            dayin: globals.newGuests[0].dayin,
+            dayout: globals.newGuests[0].dayout,
+            room: globals.newGuests[0].room,
+            price: "",
+            paid: "",
+            name: "",
+            tel: "",
+            info: ""
+        }
+    }
+    guestDialog.setVal(val);
+    guestDialog.open();
+});
+
+$('#modGuest').on('click', function (e) {
+
+    $('#guests-table tbody tr.' + globals.class_selected).each(function () {
+        var fulldayin = $(this).children('td')[1].textContent,
+            dayin = fulldayin.substring(8) + "." + fulldayin.substring(5, 7)
+        fulldayout = $(this).children('td')[2].textContent,
+            dayout = fulldayout.substring(8) + "." + fulldayout.substring(5, 7);
+
+        var val = {
+            id: $(this).children('td')[0].textContent,
+            dayin: dayin,
+            dayout: dayout,
+            room: $(this).children('td')[3].textContent,
+            price: $(this).children('td')[4].textContent,
+            paid: $(this).children('td')[5].textContent,
+            name: $(this).children('td')[6].textContent,
+            tel: $(this).children('td')[7].textContent,
+            info: $(this).children('td')[8].textContent
+        }
+
+        guestDialog.setVal(val);
+        guestDialog.open();
+    });
+});
+
+$("#delGuest").on("click", function (e) {
+    $.bs.popup.confirm({
+        title: 'Удаление записей',
+        info: 'Вы уверены?'
+    }, function (e) {
+        $('#guests-table tbody tr.' + globals.class_selected).each(function () {
+            var id = $(this).children('td')[0].textContent;
+            db.gl001.delete(id);
+        });
+        e.modal('hide');
+    });
 });
 //---------------------------------------------------------------------
 //  CLICK LISTENERS END
@@ -170,6 +347,7 @@ const tableCalendar = {
 
         for (let i = 0; i < globals.rooms.length; i++) {
             var tr = document.createElement('tr');
+            tr.id = globals.rooms[i].room;
             for (let j = 0; j < totalCells; j++) {
                 var node;
                 if (0 == j) {
@@ -177,7 +355,7 @@ const tableCalendar = {
                     node.appendChild(document.createTextNode(globals.rooms[i].room));
                 } else {
                     node = document.createElement('td');
-                    node.id = globals.rooms[i];
+                    node.id = globals.rooms[i].room + '-' + j;
                     node.addEventListener('click', clickListener_select);
                     node.appendChild(document.createTextNode(""));
                 }
@@ -188,13 +366,15 @@ const tableCalendar = {
     },
 
     setRoomsStatus: function (delList, addList) {
-        //DELETE
+        var tmp = globals.year + "-" + globals.month + "-" + utils.getDaysInMonth(globals.month, globals.year);
+
         var tbody = document.getElementById('calendar-table').getElementsByTagName('tbody')[0],
             firstDay = Date.parse(globals.year + "-" + globals.month + "-" + 1),
-            lastDay = Date.parse(globals.year + "-" + globals.month + "-" + utils.getDaysInMonth(globals.month, globals.year)),
+            lastDay = Date.parse(tmp),
             today = Date.parse(new Date()),
             oneDay = 86400000;
 
+        //DELETE
         if (delList != null) {
 
             for (let guest = 0; guest < delList.length; guest++) {
@@ -299,6 +479,15 @@ const tableCalendar = {
                 dayin += oneDay;
             }
         }
+    },
+
+    removeSelection(row, aCell, bCell) {
+        $('#calendar-table tbody tr#' + row + ' td.' + globals.class_selected).each(function () {
+            var day = $(this)[0].id.substring(3);
+            if (day >= aCell && day <= bCell) {
+                $(this).removeClass(globals.class_selected);
+            }
+        });
     }
 }
 //---------------------------------------------------------------------
@@ -330,19 +519,17 @@ const tableGuests = {
 
     delGuest: function (id) {
 
-        var tbody = document.getElementById('guest-table').getElementsByTagName('tbody')[0];
-
-        for (let i = 0; i < tbody.childElementCount; i++) {
-            var curId = tbody.children[i].getElementsByTagName('tr')[0].getElementsByTagName('td')[0];
+        $('#guests-table > tbody > tr').each(function () {
+            var curId = $(this).children('td')[0].textContent;
             if (curId == id) {
-                tbody.removeChild[i];
+                $(this).remove();
             }
-        }
+        });
     },
 
     modGuest: function (id, newVal) {
 
-        var tbody = document.getElementById('guest-table').getElementsByTagName('tbody')[0];
+        var tbody = document.getElementById('guests-table').getElementsByTagName('tbody')[0];
 
         for (let i = 0; i < tbody.childElementCount; i++) {
 
@@ -370,7 +557,7 @@ const tableGuests = {
         for (let i = tr.length; i > 0; i--) {
             tbody.removeChild(tr[0]);
         }
-    },
+    }
 }
 //---------------------------------------------------------------------
 //  GUESTS TABLE END
@@ -394,14 +581,16 @@ const tableGuests = {
 //---------------------------------------------------------------------
 const db = {
 
-    initialize: function() {
+    initialize: function () {
         $.ajax({
             url: './php/db/init.php',
             /* 
             TODO:
                     SESSION ID
             */
-            data: { sessionId: 'root' },
+            data: {
+                sessionId: 'root'
+            },
             dataType: 'json',
             success: function (data) {
                 utils.setYear(data['year']);
@@ -456,10 +645,10 @@ const db = {
 
     rm001: {
 
-        select: function() {
+        select: function () {
             $.ajax({
                 url: './php/db/rm001/select.php',
-                data: { },
+                data: {},
                 dataType: 'json',
                 success: function (data) {
                     globals.rooms = data;
@@ -564,12 +753,12 @@ const db = {
             $.ajax({
                 url: './php/db/gl001/delete.php',
                 data: {
-                    id: opts.id
+                    id: opts
                 },
                 dataType: 'json',
                 success: function (data) {
                     tableGuests.delGuest(data.id);
-                    tableCalendar.setRoomsStatus(data, []);
+                    tableCalendar.setRoomsStatus(data.data, []);
                 },
                 error: function (xhr, textStatus, errorThrown) {
                     $("#ajax-msg").append(xhr.responseText);
@@ -594,9 +783,129 @@ const db = {
 
 
 //---------------------------------------------------------------------
-//   BEGIN
+//  GUEST DIALOG BEGIN
 //---------------------------------------------------------------------
+const guestDialog = {
 
+    create: function () {
+
+        /* 
+        TODO:
+                multi guest edit
+        FIX:
+                globals.newGuests -> globals.guestsProcessing
+        */
+        $("#dialog").dialog({
+            dialogClass: "ui-dialog",
+            autoOpen: false,
+            modal: true,
+            draggable: true,
+            resizable: false,
+            width: 'auto',
+            height: 'auto',
+            show: {
+                effect: "drop",
+                duration: 400
+            },
+            hide: {
+                effect: "drop",
+                duration: 400
+            },
+            buttons: [{
+                id: "close",
+                text: "Отменить",
+                click: function (e) {
+                    var val = guestDialog.getVal();
+                    tableCalendar.removeSelection(val.room, val.dayin, val.dayout);
+                    globals.newGuests.shift();
+                    guestDialog.close();
+                }
+            }, {
+                id: "save",
+                text: "Сохранить",
+                click: function (e) {
+                    var val = guestDialog.getVal();
+                    if (val.id == -1) {
+                        db.gl001.insert(val);
+                    } else {
+                        db.gl001.modify(val);
+                    }
+                    guestDialog.close();
+
+                    if (globals.newGuests.length != 0) {
+                        val = {
+                            id: -1,
+                            dayin: globals.newGuests[0].dayin,
+                            dayout: globals.newGuests[0].dayout,
+                            room: globals.newGuests[0].room,
+                            price: "",
+                            paid: "",
+                            name: "",
+                            tel: "",
+                            info: ""
+                        }
+                        guestDialog.setVal(val);
+                        tableCalendar.removeSelection(val.room, val.dayin, val.dayout);
+                        globals.newGuests.shift();
+                        guestDialog.open();
+                    }
+
+                }
+            }, ]
+        });
+    },
+
+    open: function () {
+
+        $("#dialog").dialog("open");
+    },
+
+    close: function () {
+
+        $("#dialog").dialog("close");
+    },
+
+    getVal: function () {
+
+        return {
+            id: $("#id").val(),
+            dayin: $("#dayin").val(),
+            dayout: $("#dayout").val(),
+            room: $("#room").val(),
+            price: $("#price").val(),
+            paid: $("#paid").val(),
+            name: $("#name").val(),
+            tel: $("#tel").val(),
+            info: $("#info").val()
+        }
+    },
+
+    setVal(opts) {
+
+        if (opts == undefined) {
+            $("#id").val("-1");
+            $("#dayin").val("");
+            $("#dayout").val("");
+            $("#room").val("");
+            $("#price").val("");
+            $("#paid").val("");
+            $("#name").val("");
+            $("#tel").val("");
+            $("#info").val("");
+        } else {
+            $("#id").val(opts.id);
+            $("#dayin").val(opts.dayin);
+            $("#dayout").val(opts.dayout);
+            $("#room").val(opts.room);
+            $("#price").val(opts.price);
+            $("#paid").val(opts.paid);
+            $("#name").val(opts.name);
+            $("#tel").val(opts.tel);
+            $("#info").val(opts.info);
+        }
+    }
+
+}
 //---------------------------------------------------------------------
-//   END
+//  GUEST DIALOG END
 //---------------------------------------------------------------------

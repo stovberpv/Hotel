@@ -1,6 +1,7 @@
 /*-------------------------------------------------------------------
     MAIN BEGIN
 -------------------------------------------------------------------*/
+
 html {
     /*    font-family: "Courier New", Courier, monospace;*/
     text-align: center;
@@ -27,6 +28,8 @@ body {
     margin-left: auto;
     margin-right: auto;
 }
+
+
 /*-------------------------------------------------------------------
     MAIN END
 -------------------------------------------------------------------*/
@@ -35,6 +38,7 @@ body {
 /*-------------------------------------------------------------------
     TABLE GUESTS BEGIN
 -------------------------------------------------------------------*/
+
 #guests-table {
     border-collapse: collapse;
     /*    table-layout: fixed;*/
@@ -74,6 +78,8 @@ body {
 #guests-table tbody tr:hover {
     background-color: #a9ed2a;
 }
+
+
 /*-------------------------------------------------------------------
     TABLE GUESTS END
 -------------------------------------------------------------------*/
@@ -82,6 +88,7 @@ body {
 /*-------------------------------------------------------------------
     BUTTONS BEGIN
 -------------------------------------------------------------------*/
+
 .button-left,
 .button-right {
     background: #f1f1f1;
@@ -124,7 +131,7 @@ body {
     transform: translateZ(10px);
 }
 
-#editGuest {
+#modGuest {
     cursor: pointer;
     padding: 4px;
     margin-right: 5px;
@@ -136,7 +143,7 @@ body {
     transition: all 0.3s;
 }
 
-#editGuest:hover {
+#modGuest:hover {
     color: #fff;
     background: #42b3f4;
     box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
@@ -203,6 +210,35 @@ body {
     transition: all 0.3s;
     transform: translateZ(10px);
 }
+
+#year-button-pick {
+    background: #f1f1f1;
+    cursor: pointer;
+    font-size: 15px;
+    width: 60px;
+    height: 30px;
+    border: 0px;
+    border-radius: 3px;
+    cursor: pointer;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+    transition: all 0.3s;
+}
+
+#year-button-pick>label {
+    padding: 3px;
+    text-align: center;
+    vertical-align: middle;
+    font-size: initial !important;
+    font-weight: 200 !important;
+}
+
+#year-button-pick:hover {
+    background: #fff;
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+    transition: all 0.3s;
+    transform: translateZ(10px);
+}
+
 /*-------------------------------------------------------------------
     BUTTONS END
 -------------------------------------------------------------------*/
@@ -211,6 +247,8 @@ body {
 /*-------------------------------------------------------------------
     INPUT/OUTPUT FIELDS BEGIN
 -------------------------------------------------------------------*/
+
+
 /* Input fields */
 
 input#dayin {
@@ -244,6 +282,8 @@ input#tel {
 input#text {
     text-align: left;
 }
+
+
 /*-------------------------------------------------------------------
     INPUT/OUTPUT FIELDS END
 -------------------------------------------------------------------*/
@@ -252,12 +292,15 @@ input#text {
 /*-------------------------------------------------------------------
     DATA-TIP BEGIN
 -------------------------------------------------------------------*/
+
 [data-tip]>input {
     margin-top: 6px;
     margin-right: 3px;
 }
 
+
 /* Span text */
+
 [data-tip] {
     position: relative;
 }
@@ -303,6 +346,8 @@ input#text {
 [data-tip]:hover:after {
     display: block;
 }
+
+
 /*-------------------------------------------------------------------
     DATA-TIP END
 -------------------------------------------------------------------*/
@@ -311,6 +356,7 @@ input#text {
 /*-------------------------------------------------------------------
     UI DIALOG BEGIN
 -------------------------------------------------------------------*/
+
 .ui-dialog .ui-dialog-content {
     /*    padding: 2em;*/
     background: #555;
@@ -333,10 +379,14 @@ input#text {
     float: none !important;
 }
 
+
 /* GUI titlebar */
+
 .ui-dialog .ui-dialog-titlebar {
     display: none;
 }
+
+
 /*-------------------------------------------------------------------
     UI DIALOG END
 -------------------------------------------------------------------*/
@@ -346,6 +396,7 @@ input#text {
     PROMPT BOOTSTRAP DIALOG BEGIN
     override bootstrap
 -------------------------------------------------------------------*/
+
 .modal-dialog .modal-own {
     border-radius: 3px !important;
 }
@@ -416,6 +467,8 @@ input#text {
     /*    position: relative;*/
     padding: 10px !important;
 }
+
+
 /*-------------------------------------------------------------------
     PROMPT BOOTSTRAP DIALOG END
 -------------------------------------------------------------------*/
@@ -424,6 +477,7 @@ input#text {
 /*-------------------------------------------------------------------
     TABLE CALENDAR BEGIN
 -------------------------------------------------------------------*/
+
 .selected {
     /*выбран*/
     background-color: #9dea20;
@@ -480,12 +534,7 @@ input#text {
     font-weight: 200 !important;
 }
 
-#calendar-table:hover th {
-    /*    border: 1px solid #222;*/
-}
-
 #calendar-table:hover th#month {
-    /*    background-color: #a9ed2a;*/
     font-weight: bold;
 }
 
@@ -502,33 +551,6 @@ input#text {
     vertical-align: middle;
 }
 
-#year-button-pick {
-    background: #f1f1f1;
-    cursor: pointer;
-    font-size: 15px;
-    width: 60px;
-    height: 30px;
-    border: 0px;
-    border-radius: 3px;
-    cursor: pointer;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
-    transition: all 0.3s;
-}
-
-#year-button-pick>label {
-    padding: 3px;
-    text-align: center;
-    vertical-align: middle;
-    font-size: initial !important;
-    font-weight: 200 !important;
-}
-
-#year-button-pick:hover {
-    background: #fff;
-    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
-    transition: all 0.3s;
-    transform: translateZ(10px);
-}
 /*-------------------------------------------------------------------
     TABLE CALENDAR END
 -------------------------------------------------------------------*/
