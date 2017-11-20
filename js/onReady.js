@@ -6,7 +6,7 @@
         //---------------------------------------------------------------------
         //  TRANSITION EFFECT BEGIN
         //---------------------------------------------------------------------
-        var movementStrength = 25;
+/*         var movementStrength = 25;
         var height = movementStrength / $(window).height();
         var width = movementStrength / $(window).width();
         $("body").mousemove(function (e) {
@@ -15,7 +15,7 @@
             var newvalueX = width * pageX * -1 - 25;
             var newvalueY = height * pageY * -1 - 50;
             $('body').css("background-position", newvalueX + "px " + newvalueY + "px");
-        });
+        }); */
         //---------------------------------------------------------------------
         //  TRANSITION EFFECT END
         //---------------------------------------------------------------------
@@ -35,58 +35,89 @@
         //---------------------------------------------------------------------
         $(function () {
             var isMouseDown = false,
-                isSelected; // одиночное нажатие         
+                isSelected; // одиночное нажатие   
+            
+            //---------------------------------------------------------------------
+                // CALENDAR TABLE BEGIN
+            //---------------------------------------------------------------------
             $("#calendar-table tbody").on({
+
                 mousedown: function (e) { // мышь нажата
+
                     isMouseDown = true;
-                    $(this).toggleClass(globals.class_selected);
+                    var has = $(this).hasClass(globals.class_selected)
+                    var isEpmty = $(this).hasClass("")
+                    if (isEpmty || has) {
+                        $(this).toggleClass(globals.class_selected);
+                    }
                     isSelected = $(this).hasClass(globals.class_selected);
                     return false;
                 },
+
                 mouseover: function (e) { // мышь наведена
+
                     if (isMouseDown) {
                         $(this).toggleClass(globals.class_selected, isSelected);
                     }
+
                     if ($(this).children('div').length > 0) {
                         var ids = this.children[0].children[0].id.split('/');
                         for (let i = 0; i < ids.length; i++) {
-                            var tr = $('#guests-table tbody tr#' + ids[i]).addClass('viewed');
+                            $('#calendar-table tbody tr td div span#' + ids[i]).parents('td').addClass('viewed');
+                            $('#guests-table tbody tr#' + ids[i]).addClass('viewed');
                         }
                     }
                 },
+
                 mouseleave: function (e) {
+
                     if ($(this).children('div').length > 0) {
                         var ids = this.children[0].children[0].id.split('/');
                         for (let i = 0; i < ids.length; i++) {
-                            var tr = $('#guests-table tbody tr#' + ids[i]).removeClass('viewed');
+                            $('#calendar-table tbody tr td div span#' + ids[i]).parents('td').removeClass('viewed');
+                            $('#guests-table tbody tr#' + ids[i]).removeClass('viewed');
                         }
                     }
                 }
             }, 'td');
+            //---------------------------------------------------------------------
+                //  CALENDAR TABLE END
+            //---------------------------------------------------------------------
 
-            /*
-            TODO:
-            Переделать на фильтр с regex для выбора ячеек где id состоит из двух номеров = "12/26" и из одного = "6"  
-            var regex = new RegExp("[0-9]"); // expression here
-            $('#calendar-table tbody tr td div span').filter(function () {
-                return regex.test($(this).text()); 
-            });
-            */
+
+            //---------------------------------------------------------------------
+                //  GUESTS TABLE BEGIN
+            //---------------------------------------------------------------------
             $("#guests-table tbody").on({
+
                 mouseover: function (e) { // мышь наведена
+
                     var id = $(this).attr('id');
-                    $('#calendar-table tbody tr td div span#' + id).each(function () { //[id*="' + id + '"]'
-                        $(this).parents('td').addClass('viewed');
+                    $(this).addClass('viewed');
+                    var span = $('#calendar-table tbody tr td div span').filter(function () {
+                        var regex = new RegExp('(^.*\/' + id + '$)|(^' + id + '\/.*$)|(^' + id + '$)');
+                        if (regex.test($(this).attr('id'))) {
+                            $(this).parents('td').addClass('viewed');
+                        }
                     });
 
                 },
+
                 mouseleave: function (e) {
+
                     var id = $(this).attr('id');
-                    $('#calendar-table tbody tr td div span#' + id).each(function () {
-                        $(this).parents('td').removeClass('viewed');
+                    $(this).removeClass('viewed');
+                    var span = $('#calendar-table tbody tr td div span').filter(function () {
+                        var regex = new RegExp('(^.*\/' + id + '$)|(^' + id + '\/.*$)|(^' + id + '$)');
+                        if (regex.test($(this).attr('id'))) {
+                            $(this).parents('td').removeClass('viewed');
+                        }
                     });
                 }
             }, 'tr');
+            //---------------------------------------------------------------------
+                //  GUESTS TABLE END
+            //---------------------------------------------------------------------
 
             $(document).mouseup(function () {
                 isMouseDown = false;
