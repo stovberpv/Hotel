@@ -66,18 +66,18 @@
             that.confirm = function (opts, callback) {
                 id = 'J_PopupConfirm' + randomNum();
                 html = '<div id="' + id + '" class="modal "' + opts.animated + ' tabindex="-1">' +
-                    '<div class="modal-dialog">' +
-                    '<div class="modal-content">' +
+                    '<div class="modal-dialog modal-dialog-own">' +
+                    '<div class="modal-content modal-own">' +
                     '<div class="modal-header">' +
-                    '<button type="button" class="close" data-dismiss="modal">&times;</button>' +
+                    // '<button type="button" class="close" data-dismiss="modal">&times;</button>' +
                     '<h4 class="modal-title">' + opts.title + '</h4>' +
                     '</div>' +
                     '<div class="modal-body">' +
                     '<p>' + opts.info + '</p>' +
                     '</div>' +
-                    '<div class="modal-footer">' +
-                    '<button type="button" class="btn btn-default J_Cancel">Отмена</button>' +
-                    '<button type="button" class="btn btn-primary J_Ok">Ок</button>' +
+                    '<div class="modal-footer modal-own-footer">' +
+                    '<button type="button" class="btn btn-default J_Cancel modal-own-button-cancel">Отменить</button>' +
+                    '<button type="button" class="btn btn-primary J_Ok modal-own-button-ok">Подтвердить</button>' +
                     '</div>' +
                     '</div>' +
                     '</div>' +

@@ -65,7 +65,7 @@
         $endda = $year . "-" . $month . "-" . $dayout;
     }
 
-    if ($begda > $endda) {
+    if (strtotime($begda) > strtotime($endda)) {
         die(err2echo(20, 'Добавление гостя', $mysqli));
     }
 
@@ -112,6 +112,8 @@
     $mysqli->close();
 
     function err2echo($id, $text, $conn) {
+        $error = "";
+        $errno = 666;
         switch ($id) {
             case 0 : $error = "Ошибка подключения: (" . $conn->connect_error . ") "; $errno = $conn->connect_errno;   break;
             case 10: $error = "Ошибка подготовки: ("  . $conn->error         . ") "; $errno = $conn->errno;           break;

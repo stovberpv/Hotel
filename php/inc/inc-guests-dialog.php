@@ -23,12 +23,12 @@
                     </td>
                     <td>
                         <div data-tip="Цена номера за сутки">
-                            <input id="price" name="price" type="text" size="5" maxlength="5" placeholder="Цена">
+                            <input id="price" name="price" type="text" size="6" maxlength="6" placeholder="Цена">
                         </div>
                     </td>
                     <td>
                         <div data-tip="Оплачено">
-                            <input id="paid" name="paid" type="text" size="6" maxlength="5" placeholder="Оплата">
+                            <input id="paid" name="paid" type="text" size="6" maxlength="6" placeholder="Оплата">
                         </div>
                     </td>
 

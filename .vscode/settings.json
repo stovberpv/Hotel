@@ -1,2 +1,6 @@
 {
+    "editor.formatOnType": true,
+    "editor.formatOnPaste": false,
+    "editor.mouseWheelZoom": true,
+    "editor.cursorStyle": "line-thin"
 }

@@ -47,8 +47,47 @@
                     if (isMouseDown) {
                         $(this).toggleClass(globals.class_selected, isSelected);
                     }
+                    if ($(this).children('div').length > 0) {
+                        var ids = this.children[0].children[0].id.split('/');
+                        for (let i = 0; i < ids.length; i++) {
+                            var tr = $('#guests-table tbody tr#' + ids[i]).addClass('viewed');
+                        }
+                    }
+                },
+                mouseleave: function (e) {
+                    if ($(this).children('div').length > 0) {
+                        var ids = this.children[0].children[0].id.split('/');
+                        for (let i = 0; i < ids.length; i++) {
+                            var tr = $('#guests-table tbody tr#' + ids[i]).removeClass('viewed');
+                        }
+                    }
                 }
             }, 'td');
+
+            /*
+            TODO:
+            Переделать на фильтр с regex для выбора ячеек где id состоит из двух номеров = "12/26" и из одного = "6"  
+            var regex = new RegExp("[0-9]"); // expression here
+            $('#calendar-table tbody tr td div span').filter(function () {
+                return regex.test($(this).text()); 
+            });
+            */
+            $("#guests-table tbody").on({
+                mouseover: function (e) { // мышь наведена
+                    var id = $(this).attr('id');
+                    $('#calendar-table tbody tr td div span#' + id).each(function () { //[id*="' + id + '"]'
+                        $(this).parents('td').addClass('viewed');
+                    });
+
+                },
+                mouseleave: function (e) {
+                    var id = $(this).attr('id');
+                    $('#calendar-table tbody tr td div span#' + id).each(function () {
+                        $(this).parents('td').removeClass('viewed');
+                    });
+                }
+            }, 'tr');
+
             $(document).mouseup(function () {
                 isMouseDown = false;
             });

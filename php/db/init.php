@@ -73,15 +73,7 @@
     $stmt->close();
     
     $mysqli->close();
-    /*
-    printf($data['year']);
-    printf(' / ');
-    printf($data['month']);
-    printf(' / ');
-    printf(count($data['rooms']));
-    printf(' / ');
-    printf(count($data['guestList']));
-    */
+
     echo json_encode($data);
         
     function err2echo($id, $text, $conn) {

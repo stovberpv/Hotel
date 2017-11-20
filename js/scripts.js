@@ -15,7 +15,8 @@ const globals = {
     class_adjacent: "adjacent",
     class_redeemed: "redeemed",
     intent_add: 'add',
-    intent_edit: 'edit'
+    intent_edit: 'edit',
+    intent_del: 'del'
 }
 //---------------------------------------------------------------------
 //  GLOBALS END
@@ -56,10 +57,10 @@ const utils = {
                 return data.id;
                 break;
             case 1:
-                return data.dayin;
+                return data.dayin.substring(8) + '.' + data.dayin.substring(5, 7);
                 break;
             case 2:
-                return data.dayout;
+                return data.dayout.substring(8) + '.' + data.dayout.substring(5, 7);
                 break;
             case 3:
                 return data.room;
@@ -259,8 +260,8 @@ $('#editGuest').on('click', function (e) {
         globals.guestsProcessing.push({
             intent: globals.intent_edit,
             id: $(this).children('td')[0].textContent,
-            dayin: fulldayin.substring(8) + "." + fulldayin.substring(5, 7),
-            dayout: fulldayout.substring(8) + "." + fulldayout.substring(5, 7),
+            dayin: $(this).children('td')[1].textContent, //fulldayin.substring(8) + "." + fulldayin.substring(5, 7),
+            dayout: $(this).children('td')[2].textContent, //fulldayout.substring(8) + "." + fulldayout.substring(5, 7),
             room: $(this).children('td')[3].textContent,
             price: $(this).children('td')[4].textContent,
             paid: $(this).children('td')[5].textContent,
@@ -282,16 +283,30 @@ $('#editGuest').on('click', function (e) {
 });
 
 $("#delGuest").on("click", function (e) {
-    $.bs.popup.confirm({
-        title: 'Удаление записей',
-        info: 'Вы уверены?'
-    }, function (e) {
-        $('#guests-table tbody tr.' + globals.class_selected).each(function () {
-            var id = $(this).children('td')[0].textContent;
-            db.gl001.delete(id);
-        });
-        e.modal('hide');
+
+    var intentList = [];
+
+    $('#guests-table tbody tr.' + globals.class_selected).each(function () {
+        intentList.push($(this).children('td')[0].textContent);
     });
+
+    if (intentList.length != 0) {
+        /* 
+        FIX:
+        Непонятно как вызывать окно вручную.
+        Непонятно как передать функцию в кнопку отмены.
+        Переделать на свою версию вызова
+        Хотя с другой стороны в целях надежности и безопасности
+        надо для каждого гостя в отдельности нажимать кнопку удалить
+        */
+        $.bs.popup.confirm({
+            title: 'Удаление записей',
+            info: 'Удалить запись гостя под номером "' + intentList[0] + '" из гостевой книги? <br> Это действие нельзя будет отменить!'
+        }, function (e) {
+            db.gl001.delete(intentList[0]);
+            e.modal('hide');
+        });
+    }
 });
 //---------------------------------------------------------------------
 //  CLICK LISTENERS END
@@ -349,7 +364,7 @@ const tableCalendar = {
     },
 
     addBody: function () {
-        
+
         var totalCells = document.getElementById('calendar-table').getElementsByTagName('thead')[0].getElementsByTagName('tr')[1].childElementCount,
             tbody = document.getElementById('calendar-table').getElementsByTagName('tbody')[0];
 
@@ -396,7 +411,7 @@ const tableCalendar = {
 
                 for (let row = 0; row < rows; row++) {
 
-                    if (tbody.children[row].textContent == room) {
+                    if (tbody.children[row].id == room) {
                         childRow = row;
                         break;
                     }
@@ -445,17 +460,17 @@ const tableCalendar = {
         }
 
         //ADD
-        for (let guest = 0; guest < addList.length; guest++) {
+        for (let i = 0; i < addList.length; i++) {
 
-            var dayin = Date.parse(addList[guest].dayin),
-                dayout = Date.parse(addList[guest].dayout),
-                room = addList[guest].room,
+            var dayin = Date.parse(addList[i].dayin),
+                dayout = Date.parse(addList[i].dayout),
+                room = addList[i].room,
                 rows = tbody.children.length,
                 childRow = -1;
 
             for (let row = 0; row < rows; row++) {
 
-                if (tbody.children[row].textContent == room) {
+                if (tbody.children[row].id == room) {
                     childRow = row;
                     break;
                 }
@@ -479,17 +494,72 @@ const tableCalendar = {
                         newAttr = globals.class_reserver; /*зарезервирован*/
                     }
 
-                    if (tbody.children[childRow].children[childCell].hasAttribute('class')) {
-                        var cellClassName = tbody.children[childRow].children[childCell].getAttribute('class');
+                    var td = tbody.children[childRow].children[childCell];
+                    if (td.hasAttribute('class')) {
+                        var cellClassName = td.getAttribute('class');
                         if (cellClassName != "" && cellClassName != globals.class_selected) {
                             newAttr = globals.class_adjacent; /*смежный*/
                         }
                     }
 
-                    tbody.children[childRow].children[childCell].setAttribute('class', newAttr);
+                    td.setAttribute('class', newAttr);
+
+                    // добавление высплывающей подсказки при наведении на заняту комнату
+
                 }
                 dayin += oneDay;
             }
+        }
+    },
+
+    setHint: function () {
+
+        $('#calendar-table tbody tr td div').each(function () {
+            $(this).remove();
+        });
+
+        var list = $('#guests-table tbody tr');
+        for (let i = 0; i < list.length; i++) {
+            var id = list[i].children[0].innerText,
+                dayin = list[i].children[1].innerText,
+                dayout = list[i].children[2].innerText,
+                room = list[i].children[3].innerText,
+                name = list[i].children[6].innerText,
+                year = $('#year')[0].textContent,
+                month = globals.monthNames.indexOf($('#month')[0].textContent),
+                begda = new Date(year, (dayin.split('.')[1] - 1), dayin.split('.')[0]).getTime(),
+                endda = new Date(year, (dayout.split('.')[1] - 1), dayout.split('.')[0]).getTime(),
+                oneDay = 86400000;
+            
+            while (begda <= endda) {
+
+                if (month == (new Date(begda).getMonth() + 1)) {
+                    
+                    var hintText = name + " (с " + dayin + " по " + dayout + ")",
+                        td = $('#calendar-table tbody tr#' + room + ' td#' + room + '-' + (new Date(begda).getDate())),
+                        div = td.children('div');
+                    
+                    if (div.length == 0) {
+                        var span = document.createElement('span');
+                        span.setAttribute('class', 'hintText');
+                        span.id = id;
+                        span.appendChild(document.createTextNode(hintText));
+
+                        div = document.createElement('div');
+                        div.setAttribute('class', 'hint');
+                        div.appendChild(span);
+
+                        td.append(div);
+                    } else {
+                        var oldId = div.children('span').attr('id');
+                        div.children('span').attr('id', oldId + '/' + id);
+                        div.children('span').append('<br>' + hintText);
+                    }
+                }
+                    
+                begda += oneDay;
+            }
+            
         }
     },
 
@@ -518,10 +588,16 @@ const tableGuests = {
 
         for (let i = 0; i < data.length; i++) {
             var tr = document.createElement('tr');
+            tr.setAttribute('id', data[i].id)
             tr.addEventListener('click', clickListener_select);
 
             for (let j = 0; j < globals.guestsTableColumns; j++) {
                 var td = document.createElement('td');
+                if (j == 6 || j == 8) {
+                    td.setAttribute('class', 'alignLeft');
+                } else if (j == 7) {
+                    td.setAttribute('class', 'alignRight');
+                }
                 td.appendChild(document.createTextNode(utils.getKeyValue(data[i], j)));
                 tr.appendChild(td);
             }
@@ -546,14 +622,14 @@ const tableGuests = {
                 return $(this).children()[0].textContent == id;
             });
 
-        row[0].children[1].textContent = newVal.dayin;
-        row[0].children[2].textContent = newVal.dayout;
+        row[0].children[1].textContent = utils.getKeyValue(newVal, 1);
+        row[0].children[2].textContent = utils.getKeyValue(newVal, 2);
         row[0].children[3].textContent = newVal.room;
         row[0].children[4].textContent = newVal.price;
         row[0].children[5].textContent = newVal.paid;
         row[0].children[6].textContent = newVal.name;
         row[0].children[7].textContent = newVal.tel;
-        row[0].children[8].textContent = newVal.info;   
+        row[0].children[8].textContent = newVal.info;
     },
 
     reset: function () {
@@ -573,7 +649,6 @@ const tableGuests = {
                 return $(this)[0].textContent == id;
             }).parent().toggleClass(globals.class_selected);
     }
-
 }
 //---------------------------------------------------------------------
 //  GUESTS TABLE END
@@ -597,13 +672,6 @@ const db = {
             },
             dataType: 'json',
             success: function (data) {
-                utils.setYear(data['year']);
-                globals.month = data['month'];
-                globals.rooms = data['rooms'];
-                tableCalendar.reset();
-                tableCalendar.addHead();
-                tableCalendar.addBody();
-                
                 data['guestList'].sort(function (a, b) {
                     if (a.id > b.id) {
                         return 1;
@@ -614,8 +682,15 @@ const db = {
                     }
                 });
 
-                tableCalendar.setRoomsStatus([], data['guestList']);
+                utils.setYear(data['year']);
+                globals.month = data['month'];
+                globals.rooms = data['rooms'];
                 tableGuests.addGuest(data['guestList']);
+                tableCalendar.reset();
+                tableCalendar.addHead();
+                tableCalendar.addBody();
+                tableCalendar.setRoomsStatus([], data['guestList']);
+                tableCalendar.setHint();
             },
             error: function (xhr, textStatus, errorThrown) {
                 $("#ajax-msg").append(xhr.responseText);
@@ -708,6 +783,7 @@ const db = {
                 success: function (data) {
                     tableGuests.addGuest(data);
                     tableCalendar.setRoomsStatus([], data);
+                    tableCalendar.setHint();
                 },
                 error: function (xhr, textStatus, errorThrown) {
                     $("#ajax-msg").append(xhr.responseText);
@@ -726,22 +802,22 @@ const db = {
                 },
                 dataType: 'json',
                 success: function (data) {
-                    tableCalendar.reset();
-                    tableGuests.reset();
-
-                    tableCalendar.addHead();
-                    tableCalendar.addBody();
-                    tableCalendar.setRoomsStatus([], data.data);
-                    data.data.sort(function(a, b) {
+                    data.data.sort(function (a, b) {
                         if (a.id > b.id) {
                             return 1;
-                        } else if (a.id < b.id ) {
+                        } else if (a.id < b.id) {
                             return -1;
                         } else {
                             return 0;
                         }
                     });
+                    tableGuests.reset();
                     tableGuests.addGuest(data.data);
+                    tableCalendar.reset();
+                    tableCalendar.addHead();
+                    tableCalendar.addBody();
+                    tableCalendar.setRoomsStatus([], data.data);
+                    tableCalendar.setHint();
                 },
                 error: function (xhr, textStatus, errorThrown) {
                     $("#ajax-msg").append(xhr.responseText);
@@ -771,6 +847,7 @@ const db = {
                 success: function (data) {
                     tableGuests.editGuest(data['old'][0].id, data['new'][0]);
                     tableCalendar.setRoomsStatus(data['old'], data['new']);
+                    tableCalendar.setHint();
                 },
                 error: function (xhr, textStatus, errorThrown) {
                     $("#ajax-msg").append(xhr.responseText);
@@ -790,6 +867,7 @@ const db = {
                 success: function (data) {
                     tableGuests.delGuest(data.id);
                     tableCalendar.setRoomsStatus(data.data, []);
+                    tableCalendar.setHint();
                 },
                 error: function (xhr, textStatus, errorThrown) {
                     $("#ajax-msg").append(xhr.responseText);
@@ -851,15 +929,12 @@ const guestDialog = {
                 id: "close",
                 text: "Отменить",
                 click: function (e) {
-                    if (globals.guestsProcessing.length != 0) {
-                        var intent = $("#dialog").data('intent');
-                        var intentList = globals.guestsProcessing.filter(e => e.intent == intent);
-
-                        if (intentList.length != 0) {
-                            tableGuests.removeSelection(intentList[0].id);
-                            tableCalendar.removeSelection(intentList[0].room, intentList[0].dayin, intentList[0].dayout);
-                            globals.guestsProcessing.splice(globals.guestsProcessing.indexOf(intentList[0]), 1);
-                        }
+                    var intent = $("#dialog").data('intent');
+                    var intentList = globals.guestsProcessing.filter(e => e.intent == intent);
+                    if (intentList.length != 0) {
+                        tableGuests.removeSelection(intentList[0].id);
+                        tableCalendar.removeSelection(intentList[0].room, intentList[0].dayin, intentList[0].dayout);
+                        globals.guestsProcessing.splice(globals.guestsProcessing.indexOf(intentList[0]), 1);
                     }
                     guestDialog.setVal();
                     guestDialog.close();
@@ -877,17 +952,14 @@ const guestDialog = {
                     }
                     guestDialog.close();
 
-                    if (globals.guestsProcessing.length != 0) {
-                        var intent = $("#dialog").data('intent');
-                        var intentList = globals.guestsProcessing.filter(e => e.intent == intent);
-
-                        if (intentList.length != 0) {
-                            guestDialog.setVal(intentList[0]);
-                            tableGuests.removeSelection(intentList[0].id);
-                            tableCalendar.removeSelection(intentList[0].room, intentList[0].dayin, intentList[0].dayout);
-                            globals.guestsProcessing.splice(globals.guestsProcessing.indexOf(intentList[0]), 1);
-                            guestDialog.open(intent);
-                        }
+                    var intent = $("#dialog").data('intent');
+                    var intentList = globals.guestsProcessing.filter(e => e.intent == intent);
+                    if (intentList.length != 0) {
+                        guestDialog.setVal(intentList[0]);
+                        tableGuests.removeSelection(intentList[0].id);
+                        tableCalendar.removeSelection(intentList[0].room, intentList[0].dayin, intentList[0].dayout);
+                        globals.guestsProcessing.splice(globals.guestsProcessing.indexOf(intentList[0]), 1);
+                        guestDialog.open(intent);
                     }
                 }
             }, ]
