@@ -1,180 +1,250 @@
-//---------------------------------------------------------------------
-//  INPUT YEAR BEGIN (bootstrap-popup)
-//---------------------------------------------------------------------
-(function (factory) {
-        'use strict';
-        if (typeof define === 'function' && define.amd) {
-            define(['jquery', 'bootstrap'], factory);
-        } else if (typeof exports === 'object') {
-            factory(require('jquery'), require('bootstrap'));
-        } else {
-            if (typeof jQuery === 'undefined') {
-                throw new Error('bootstrap-popup requires jQuery to be loaded first');
-            } else if (typeof (jQuery.fn.modal) === 'undefined') {
-                throw new Error('bootstrap-popup requires Bootstrap to be loaded first');
-            }
-            factory(jQuery, jQuery.fn.modal);
+class Dialog {
+
+    constructor(opts) {
+        this.Opts = opts;
+        this.Id = Math.floor(Math.random() * 100000);
+        this.Doc = opts.source;
+    }
+
+    bind() {}
+    setVal() {}
+    show() {}
+    getVal() {}
+    unbind() {}
+}
+
+class ConfirmDialog extends Dialog {
+
+    bind() {
+        var additionalClass = "";
+        switch (this.Opts.flag) {
+            case -1:
+                additionalClass = "modal-header-negative";
+                break;
+            case 0:
+                additionalClass = "modal-header-neutral";
+                break;
+            case 1:
+                additionalClass = "modal-header-positive";
+                break;
+            case 2:
+                additionalClass = "modal-header-extend";
+                break;
+            default:
+                break;
+        }
+
+        this.Dialog =
+            '<div class="modal-content">' +
+            '<div class="modal-header ' + additionalClass + '">' +
+            '<a>' + this.Opts.dialog.title + '</a>' +
+            '</div>' +
+            '<div class="modal-body">' +
+            '<a>' + this.Opts.dialog.body + '</a>' +
+            '</div>' +
+            '<div class="modal-footer">' +
+            '<button type="button" id="btn-no" class="btn negative">Отменить</button>' +
+            '<button type="button" id="btn-ok" class="btn positive">Подтвердить</button>' +
+            '</div>' +
+            '</div>';
+
+        var div = this.Doc.createElement('div');
+        div.className = 'modal-dialog';
+        div.id = 'modal-dialog-' + this.Id;
+        div.innerHTML = this.Dialog;
+        this.Doc.body.appendChild(div);
+
+        var dialog = this.Doc.getElementById('modal-dialog-' + this.Id),
+            btnOk = dialog.children[0].children[2].children[1],
+            btnNo = dialog.children[0].children[2].children[0];
+
+        btnOk.addEventListener('click', this.Opts.buttons.btnOk);
+        btnNo.addEventListener('click', this.Opts.buttons.btnNo);
+    }
+
+    show() {
+        var dialog = this.Doc.getElementById('modal-dialog-' + this.Id);
+        dialog.style.display = 'block';
+    }
+
+    unbind() {
+        var dialog = this.Doc.getElementById('modal-dialog-' + this.Id);
+        dialog.style.display = 'none';
+        dialog.parentNode.removeChild(dialog);
+    }
+}
+
+class InOutDialog extends Dialog {
+
+    bind() {
+        let additionalClass, title;
+        switch (this.Opts.flag) {
+            case -1:
+                additionalClass = "modal-header-negative";
+                title = 'Удаление';
+                break;
+            case 0:
+                additionalClass = "modal-header-neutral";
+                title = 'Исправление';
+                break;
+            case 1:
+                additionalClass = "modal-header-positive";
+                title = 'Добавление';
+                break;
+            case 2:
+                additionalClass = "modal-header-extend";
+                title = 'Обработка';
+                break;
+            default:
+                break;
+        }
+
+        let td_st1 = 'display:none;',
+            td_st2 = '';
+
+        this.Dialog =
+            '<div class="modal-content">' +
+            '<div class="modal-header ' + additionalClass + '">' +
+            '<a>' + title + '</a>' +
+            '</div>' +
+            '<div class="modal-body">' +
+            '<table>' +
+            '<tbody>' +
+            '<tr>' +
+            '<td style="' + td_st1 + '"><input id="in_id"     class="input" name="id"     type="text">                                            </td>' +
+            '<td style="' + td_st2 + '"><input id="in_dayin"  class="input" name="dayin"  type="text" size="5" maxlength="5" placeholder="Заезд" ></td>' +
+            '<td style="' + td_st2 + '"><input id="in_dayout" class="input" name="dayout" type="text" size="5" maxlength="5" placeholder="Выезд" ></td>' +
+            '<td style="' + td_st2 + '"><input id="in_room"   class="input" name="room"   type="text" size="5" maxlength="2" placeholder="Номер" ></td>' +
+            '<td style="' + td_st2 + '"><input id="in_price"  class="input" name="price"  type="text" size="6" maxlength="6" placeholder="Цена"  ></td>' +
+            '<td style="' + td_st2 + '"><input id="in_paid"   class="input" name="paid"   type="text" size="6" maxlength="6" placeholder="Оплата"></td>' +
+            '</tr>' +
+            '<tr><td colspan="5"><input id="in_name" class="input" name="name" type="text" size="36" placeholder="ФИО"       ></td></tr>' +
+            '<tr><td colspan="5"><input id="in_tel"  class="input" name="tel"  type="text" size="36" placeholder="Телефон"   ></td></tr>' +
+            '<tr><td colspan="5"><input id="in_info" class="input" name="info" type="text" size="36" placeholder="Примечание"></td></tr>' +
+            '</tbody>' +
+            '</table>' +
+            '</div>' +
+            '<div class="modal-footer">' +
+            '<button type="button" id="btn-no" class="btn negative">Отменить</button>' +
+            '<button type="button" id="btn-ok" class="btn positive">Подтвердить</button>' +
+            '</div>' +
+            '</div>';
+        var div = this.Doc.createElement('div');
+        div.className = 'modal-dialog';
+        div.id = 'modal-dialog-' + this.Id;
+        div.innerHTML = this.Dialog;
+        this.Doc.body.appendChild(div);
+
+        var dialog = this.Doc.getElementById('modal-dialog-' + this.Id),
+            btnOk = dialog.children[0].children[2].children[1],
+            btnNo = dialog.children[0].children[2].children[0];
+
+        btnOk.addEventListener('click', this.Opts.buttons.btnOk);
+        btnNo.addEventListener('click', this.Opts.buttons.btnNo);
+    }
+
+    show() {
+        var dialog = this.Doc.getElementById('modal-dialog-' + this.Id);
+        dialog.style.display = 'block';
+    }
+
+    unbind() {
+        var dialog = this.Doc.getElementById('modal-dialog-' + this.Id);
+        dialog.style.display = 'none';
+        dialog.parentNode.removeChild(dialog);
+    }
+
+    setVal(val) {
+        if (val != undefined) {
+            $('#in_id').val(val.id);
+            $('#in_dayin').val(val.dayin);
+            $('#in_dayout').val(val.dayout);
+            $('#in_room').val(val.room);
+            $('#in_price').val(val.price);
+            $('#in_paid').val(val.paid);
+            $('#in_name').val(val.name);
+            $('#in_tel').val(val.tel);
+            $('#in_info').val(val.info);
         }
     }
 
-    (function ($, modal) {
-        'use strict';
-        $.bs = $.bs || {};
-        var popup = function () {
-            var that = {};
-            var id, html,
-                message,
-                dialogE,
-                dialogOk, dialogCancel;
+    getVal() {
+        return {
+            id: $('#in_id').val(),
+            dayin: $('#in_dayin').val(),
+            dayout: $('#in_dayout').val(),
+            room: $('#in_room').val(),
+            price: $('#in_price').val(),
+            paid: $('#in_paid').val(),
+            name: $('#in_name').val(),
+            tel: $('#in_tel').val(),
+            info: $('#in_info').val()
+        }
+    }
+}
 
-            var randomNum = function (scope) {
-                var scope = scope || 100000;
-                return Math.floor(Math.random() * scope);
-            };
+class InputDialog extends Dialog {
 
-            that.toast = function (opts, callback) {
-                id = 'J_PopupToast' + randomNum();
-                html = '<div id="' + id + '" class="modal "' + opts.animated + ' tabindex="-1">' +
-                    '<div class="modal-dialog">' +
-                    '<div class="modal-content">' +
-                    '<div class="modal-header">' +
-                    '<button type="button" class="close" data-dismiss="modal">&times;</button>' +
-                    '<h4 class="modal-title">' + opts.title + '</h4>' +
-                    '</div>' +
-                    '<div class="modal-body">' +
-                    '<p>' + opts.info + '</p>' +
-                    '</div>' +
-                    '</div>' +
-                    '</div>' +
-                    '</div>';
-                var delay = arguments[2] ? arguments[2] : 3000;
-                $('body').append(html);
-                dialogE = $('#' + id);
-                dialogE.find('.modal-dialog').css('width', opts.width);
-                dialogE.on('shown.bs.modal', function () {
-                    typeof (callback) === 'function' ? callback(dialogE): null;
-                    var that = this,
-                        t = setTimeout(function () {
-                            $(that).modal('hide');
-                        }, delay);
-                }).modal('show');
-                dialogE.on('hidden.bs.modal', function () {
-                    $(this).remove();
-                });
-            };
+    bind() {
+        var additionalClass = "";
+        switch (this.Opts.flag) {
+            case -1:
+                additionalClass = "modal-header-negative";
+                break;
+            case 0:
+                additionalClass = "modal-header-neutral";
+                break;
+            case 1:
+                additionalClass = "modal-header-positive";
+                break;
+            case 2:
+                additionalClass = "modal-header-extend";
+                break;
+            default:
+                break;
+        }
 
-            that.confirm = function (opts, callback) {
-                id = 'J_PopupConfirm' + randomNum();
-                html = '<div id="' + id + '" class="modal "' + opts.animated + ' tabindex="-1">' +
-                    '<div class="modal-dialog modal-dialog-own">' +
-                    '<div class="modal-content modal-own">' +
-                    '<div class="modal-header">' +
-                    // '<button type="button" class="close" data-dismiss="modal">&times;</button>' +
-                    '<h4 class="modal-title">' + opts.title + '</h4>' +
-                    '</div>' +
-                    '<div class="modal-body">' +
-                    '<p>' + opts.info + '</p>' +
-                    '</div>' +
-                    '<div class="modal-footer modal-own-footer">' +
-                    '<button type="button" class="btn btn-default J_Cancel modal-own-button-cancel">Отменить</button>' +
-                    '<button type="button" class="btn btn-primary J_Ok modal-own-button-ok">Подтвердить</button>' +
-                    '</div>' +
-                    '</div>' +
-                    '</div>' +
-                    '</div>';
-                $('body').append(html);
-                dialogE = $('#' + id);
-                dialogE.find('.modal-dialog').css('width', opts.width);
-                dialogE.modal('show');
-                dialogOk = dialogE.find('.J_Ok');
-                dialogCancel = dialogE.find('.J_Cancel');
-                dialogOk.on('click', function () {
-                    typeof (callback) === 'function' ? callback(dialogE): null;
-                });
-                dialogCancel.on('click', function () {
-                    dialogE.modal('hide');
-                });
-                dialogE.on('hidden.bs.modal', function () {
-                    $(this).remove();
-                });
-            };
+        this.Dialog =
+            '<div class="modal-content">' +
+            '<div class="modal-header ' + additionalClass + '">' +
+            '<a>' + this.Opts.dialog.title + '</a>' +
+            '</div>' +
+            '<div class="modal-body">' +
+            '<input id="in_year" class="input" name="year" type="text" size="4" maxlength="4" placeholder="Год">' +
+            '</div>' +
+            '<div class="modal-footer">' +
+            '<button type="button" id="btn-no" class="btn negative">Отменить</button>' +
+            '<button type="button" id="btn-ok" class="btn positive">Подтвердить</button>' +
+            '</div>' +
+            '</div>';
+        var div = this.Doc.createElement('div');
+        div.className = 'modal-dialog';
+        div.id = 'modal-dialog-' + this.Id;
+        div.innerHTML = this.Dialog;
+        this.Doc.body.appendChild(div);
 
-            that.prompt = function (opts, callback) {
-                id = 'J_PopupPrompt' + randomNum();
-                html = '<div id="' + id + '" class="modal "' + opts.animated + ' tabindex="-1">' +
-                    '<div class="modal-dialog">' +
-                    '<div class="modal-content modal-own">' +
-                    '<div class="modal-header">' +
-                    //                '<button type="button" class="close" data-dismiss="modal">&times;</button>' +
-                    '<h4 class="modal-title">' + opts.title + '</h4>' +
-                    '</div>' +
-                    '<div class="modal-body">' +
-                    //                '<p>' + opts.info + '</p>' +
-                    '<input min="1900" max="9999"' +
-                    'value="' + opts.value + '"' +
-                    'type="number" class="form-control J_Message modal-own-input" placeholder="' + opts.info + '">' +
-                    '</div>' +
-                    '<div class="modal-footer modal-own-footer">' +
-                    '<button type="button" class="btn btn-default J_Cancel modal-own-button-cancel">Отменить</button>' +
-                    '<button type="button" class="btn btn-primary J_Ok modal-own-button-ok">Сохранить</button>' +
-                    '</div>' +
-                    '</div>' +
-                    '</div>' +
-                    '</div>';
-                $('body').append(html);
-                dialogE = $('#' + id);
-                dialogE.find('.modal-dialog').css('width', opts.width);
-                dialogE.modal('show');
-                dialogOk = dialogE.find('.J_Ok');
-                dialogCancel = dialogE.find('.J_Cancel');
-                dialogOk.on('click', function () {
-                    message = dialogE.find('.J_Message').eq(0).val();
-                    typeof (callback) === 'function' ? callback(dialogE, message): null;
-                });
-                dialogCancel.on('click', function () {
-                    dialogE.modal('hide');
-                });
-                dialogE.on('hidden.bs.modal', function () {
-                    $(this).remove();
-                });
-            };
+        var dialog = this.Doc.getElementById('modal-dialog-' + this.Id),
+            btnOk = dialog.children[0].children[2].children[1],
+            btnNo = dialog.children[0].children[2].children[0];
 
-            that.custom = function (opts, callback) {
-                id = 'J_PopupCustom' + randomNum();
-                html = '<div id="' + id + '" class="modal "' + opts.animated + ' tabindex="-1">' +
-                    '<div class="modal-dialog">' +
-                    '<div class="modal-content">' +
-                    '<div class="modal-header">' +
-                    '<button type="button" class="close" data-dismiss="modal">&times;</button>' +
-                    '<h4 class="modal-title">' + opts.title + '</h4>' +
-                    '</div>' +
-                    '<div class="modal-body">' + opts.dom + '</div>' +
-                    '</div>' +
-                    '</div>' +
-                    '</div>';
-                $('body').append(html);
-                dialogE = $('#' + id);
-                dialogE.find('.modal-dialog').css('width', opts.width);
-                dialogE.modal('show');
-                typeof (callback) === 'function' ? callback(dialogE): null;
-                dialogE.on('hidden.bs.modal', function () {
-                    $(this).remove();
-                });
-            };
+        btnOk.addEventListener('click', this.Opts.buttons.btnOk);
+        btnNo.addEventListener('click', this.Opts.buttons.btnNo);
+    }
 
-            return that;
-        };
-        $.bs.popup = popup();
-    }));
-//---------------------------------------------------------------------
-//  INPUT YEAR END (bootstrap-popup)
-//---------------------------------------------------------------------
+    show() {
+        var dialog = this.Doc.getElementById('modal-dialog-' + this.Id);
+        dialog.style.display = 'block';
+    }
 
+    unbind() {
+        var dialog = this.Doc.getElementById('modal-dialog-' + this.Id);
+        dialog.style.display = 'none';
+        dialog.parentNode.removeChild(dialog);
+    }
 
-//---------------------------------------------------------------------
-//  GUEST INPUT BEGIN
-//---------------------------------------------------------------------
-
-//---------------------------------------------------------------------
-//  GUEST INPUT END
-//---------------------------------------------------------------------
+    getVal() {
+        return {
+            year: $('#in_year').val()
+        }
+    }
+}

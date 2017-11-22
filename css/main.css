@@ -1,4 +1,3 @@
-
 /*-------------------------------------------------------------------
 СПРАВКА
     box-shadow: 
@@ -7,6 +6,29 @@
     0px  размытие только в +
     0px  +в стороны, -в центр
     rgba(0, 0, 0, .0) цвет со степенью прозрачности
+
+    Opacity %   255 Step        2 digit HEX prefix
+    0%          0.00            00
+    5%          12.75           0C
+    10%         25.50           19
+    15%         38.25           26
+    20%         51.00           33
+    25%         63.75           3F
+    30%         76.50           4C
+    35%         89.25           59
+    40%         102.00          66
+    45%         114.75          72
+    50%         127.50          7F
+    55%         140.25          8C
+    60%         153.00          99
+    65%         165.75          A5
+    70%         178.50          B2
+    75%         191.25          BF
+    80%         204.00          CC
+    85%         216.75          D8
+    90%         229.50          E5
+    95%         242.25          F2
+    100%        255.00          FF
 -------------------------------------------------------------------*/
     
 :root {
@@ -15,6 +37,15 @@
     --c-doc-bck-nor    : #f1f1f1;
     --c-doc-bck-hov    : #ffffff;
     --c-doc-txt        : #2d2d2d;
+
+    /* ---------------------------- BORDER ---------------------------- */
+    /* radius-border-normal */
+    --r-bor-nor        : 4px;
+
+    /* ----------------------------- FONT ----------------------------- */
+    /* font-document: -normal -extend */
+    --f-doc-nor        : 20px;    
+    --f-doc-ext        : 15px;    
     
     /* ---------------------------- TABLES ---------------------------- */
     /* table-borders-body-normal */
@@ -22,11 +53,15 @@
     /* table-background-body: -normal -hovered */
     --c-tab-bck-bod-nor: transparent;
     --c-tab-bck-bod-hov: #ffffff;
-    /* table-background-columns: -selected -reserver -adjacent -redeemed */
-    --c-tab-bck-col-sel: #9DEA20;/*#42F47E;*/ 
-    --c-tab-bck-col-res: #42b3f4;
-    --c-tab-bck-col-adj: #F4425F;
-    --c-tab-bck-col-red: #696969;
+    /* table-background-columns: -selected -reserver -adjacent -redeemed -hovered*/
+    --c-tab-bck-col-sel: #9DEA20; /* #9DEA20 */ 
+    --c-tab-bck-col-res: #42b3f4; /* #42b3f4 */
+    --c-tab-bck-col-adj: #F4425F; /* #F4425F */
+    --c-tab-bck-col-red: #696969; /* #696969 */
+    --c-tab-bck-col-hov: #D5D5D5; /* #D5D5D5 */
+    /* table-background-line-hovered */
+    --c-tab-bck-lin-hov: #F6F6F4; /* F6F6F4 */
+
 
     /* ---------------------------- BUTTONS ---------------------------- */
     /* button-text-noraml: -positive -negative -neutral -extend */
@@ -37,7 +72,7 @@
     /* button-text-hovered: -positive -negative -neutral -extend */
     --c-btn-txt-hov-pos: #ffffff;
     --c-btn-txt-hov-neg: #ffffff;
-    --c-btn-txt-hov-neu: #ffffff;
+    --c-btn-txt-hov-neu: #2d2d2d;
     --c-btn-txt-hov-ext: #ffffff;
     /* button-background-noraml: -positive -negative -neutral -extend */
     --c-btn-bck-nor-pos: transparent;
@@ -52,7 +87,7 @@
 
     /* ---------------------------- TOOLTIP ---------------------------- */
     /* tooltip: -text -background*/
-    --c-tip-txt        : #42b3f4;
+    --c-tip-txt        : #42b3f4; /* 42b3f4 */
     --c-tip-bck        : #ffffff;
 
     /* ----------------------------- POPUP ----------------------------- */
@@ -81,8 +116,8 @@
     MAIN BEGIN
 -------------------------------------------------------------------*/
 html {
-    font-family: 'Roboto', sans-serif;
-    /*    font-family: "Courier New", Courier, monospace;*/
+    font-family: 'Century Gothic', sans-serif;
+    /* font-size: var(--f-doc-nor); */
     text-align: center;
 }
 
@@ -94,18 +129,34 @@ body {
     /* background-repeat: repeat-y; */
     /* background-position: center; */
     /* background-size: cover; */
-    position: sticky;
     top: 0;
     left: 0;
-    /* right: 0; */
     width: 100%;
     height: 100%;
     z-index: 0;
 }
 
+::-webkit-scrollbar { 
+    display: none; 
+}
+
 .my-table {
+    background: var(--c-tab-bck-bod-nor);
+    table-layout: fixed;
+    border-collapse: collapse;
     margin-left: auto;
     margin-right: auto;
+    border-radius: var(--r-bor-nor);
+    box-shadow: var(--s-nor);
+    transition: all 0.3s;
+}
+
+.my-table:hover {
+    background: var(--c-tab-bck-bod-hov);
+    box-shadow: var(--s-hov);
+    transition: all 0.3s;
+    transform: translateZ(10px);
+    z-index: 1;
 }
 /*-------------------------------------------------------------------
     MAIN END
@@ -115,63 +166,48 @@ body {
 /*-------------------------------------------------------------------
     TABLE CALENDAR BEGIN
 -------------------------------------------------------------------*/
-.selected { background-color: var(--c-tab-bck-col-sel); }
-.reserver { background-color: var(--c-tab-bck-col-res); }
-.adjacent { background-color: var(--c-tab-bck-col-adj); }
-.redeemed { background-color: var(--c-tab-bck-col-red); }
-
-#calendar-table {
-    background: var(--c-tab-bck-bod-nor);
-    border-collapse: collapse;
-    border-radius: 3px;
-    table-layout: fixed;
-    margin-left: 15px;
-    margin-right: 15px;
-    box-shadow: var(--s-nor);
-    transition: all 0.3s;
-}
-
-#calendar-table:hover {
-    background: var(--c-tab-bck-bod-hov);
-    box-shadow: var(--s-hov);
-    transition: all 0.3s;
-    transform: translateZ(10px);
-}
-
-#calendar-table td {
-    border: 1px solid var(--c-tab-bor-bod-nor);
-    padding: 3px;
-    width: 3rem;
-    text-align: center;
-    cursor: pointer;
-}
-
-#calendar-table th {
-    border: 1px solid var(--c-tab-bor-bod-nor);
-    color: var(--c-doc-txt);
-    padding: 3px;
-    width: 3rem;
-    text-align: center;
-    cursor: default;
-    font-weight: 200;
-}
-
-#calendar-table tbody tr:hover {
-    background-color: #f5f5f5; /* FIX: change ???*/
-}
-
-/* 
-FIX:
-Возможно стит передать эту задачу в ту же логику где присваивается кдасс
-(.viewed) что бы небыло путаницы...
-*/
-#calendar-table tbody td:hover {
-    background-color: var(--c-tab-bck-col-sel);
-}
-
 .calendar-block {
     display: inline-block;
     vertical-align: middle;
+}
+
+#calendar {
+    margin-left: 15px;
+    margin-right: 15px;
+}
+
+#calendar td,
+#calendar th {
+    border: 1px solid var(--c-tab-bor-bod-nor);
+    text-align: center;
+    cursor: pointer;
+    width: 1.5em;
+    padding: 3px;
+}
+
+#calendar th {
+    font-weight: 200;
+    cursor: default;
+}
+
+#calendar tbody tr:hover {
+    background-color: var(--c-tab-bck-lin-hov);
+}
+
+#calendar tbody td:hover {
+    background-color: var(--c-tab-bck-col-hov);
+}
+
+.selected { background-color: var(--c-tab-bck-col-sel); }
+.reserved { background-color: var(--c-tab-bck-col-res); }
+.adjacent { background-color: var(--c-tab-bck-col-adj); }
+.redeemed { background-color: var(--c-tab-bck-col-red); }
+
+#calendar tbody td:hover .hintText {
+    visibility: visible;
+    box-shadow: var(--s-hov);
+    transition: all 0.3s;
+    transform: translateZ(10px);
 }
 
 .hint {
@@ -185,7 +221,7 @@ FIX:
     opacity: 0.9;
     color: var(--c-tip-txt);
     text-align: center;
-    border-radius: 6px;
+    border-radius: var(--r-bor-nor);
     padding: 5px;
     position: absolute;
     z-index: 1;
@@ -205,19 +241,6 @@ FIX:
     border-style: solid;
     border-color: var(--c-tip-bck) transparent transparent transparent;
 }
-
-#calendar-table tbody td:hover .hintText {
-    visibility: visible;
-    box-shadow: var(--s-hov);
-    transition: all 0.3s;
-    transform: translateZ(10px);
-}
-
-#calendar-table tbody tr td.viewed {
-    /* border: none; */
-    /* border-color: var(--c-tab-bck-col-sel); */
-}
-
 /*-------------------------------------------------------------------
     TABLE CALENDAR END
 -------------------------------------------------------------------*/
@@ -226,60 +249,278 @@ FIX:
 /*-------------------------------------------------------------------
     TABLE GUESTS BEGIN
 -------------------------------------------------------------------*/
-#guests-table {
-    background: var(--c-tab-bck-bod-nor);
-    border-collapse: collapse;
-    border-radius: 3px;
-    table-layout: fixed;
-    box-shadow: var(--s-nor);
-    transition: all 0.3s;
+#book td,
+#book th {
+    /* width: 1.4rem; */
+    border: 1px solid var(--c-tab-bor-bod-nor);
+    padding: 3px;
+    cursor: pointer;
+    white-space: nowrap;
 }
 
-#guests-table:hover {
-    background: var(--c-tab-bck-bod-hov);
+#book th {
+    font-weight: 200;
+    cursor: default;
+    text-align: center;
+}
+
+.alignLeft { text-align: left; }
+.alignRight { text-align: right; }
+/*-------------------------------------------------------------------
+    TABLE GUESTS END
+-------------------------------------------------------------------*/
+
+
+/*-------------------------------------------------------------------
+    BUTTONS BEGIN
+-------------------------------------------------------------------*/
+.btn {
+    font-size: var(--f-doc-ext);
+    background-color: var(--c-btn-bck-nor-neu);
+    font-family: 'Century Gothic', sans-serif;
+    border-radius: var(--r-bor-nor);
+    box-shadow: var(--s-nor);
+    transition: all 0.3s;
+    vertical-align: middle;
+    text-align: center;
+    cursor: pointer;
+    border: none;
+    padding: 7px;
+    margin: 4px;
+    width: auto;
+    height: auto;
+}
+
+.btn:focus {
+    outline: none;
+}
+
+.btn:active {
+    outline: none;
+}
+
+.btn:hover {
     box-shadow: var(--s-hov);
     transition: all 0.3s;
     transform: translateZ(10px);
 }
 
-#guests-table td {
-    border: 1px solid var(--c-tab-bor-bod-nor);
-    padding: 4px;
-    width: 1.4rem;
-    cursor: pointer;
-    white-space: nowrap;
+.btn.positive:hover {
+    color: var(--c-btn-txt-hov-pos);
+    background: var(--c-btn-bck-hov-pos);
 }
 
-#guests-table th {
-    border: 1px solid var(--c-tab-bor-bod-nor);
-    font-weight: 200;
-    padding: 4px;
-    width: 1.4rem;
-    text-align: center;
-    cursor: default;
+.btn.negative:hover {
+    color: var(--c-btn-txt-hov-neg);
+    background: var(--c-btn-bck-hov-neg);
 }
 
-#guests-table tbody tr.viewed td {
-    /* border: none; */
-    /* border-color: var(--c-tab-bck-col-sel); */
+.btn.neutral:hover {
+    /* color: var(--c-btn-txt-hov-neu); */
+    /* background: var(--c-btn-bck-hov-neu); */
 }
 
-.alignLeft { text-align: left; }
+.btn.extend:hover {
+    color: var(--c-btn-txt-hov-ext);
+    background: var(--c-btn-bck-hov-ext);
+}
 
-.alignRight { text-align: right; }
+#year {
+    color: var(--c-btn-txt-nor-neu);
+    background: var(--c-btn-bck-nor-neu);
+}
 
-.viewed {
-    box-shadow: 0px 10px 0px  -2px rgba(0, 0, 0, .1);
+#year:hover {
+    color: var(--c-btn-txt-hov-neu);
+    background: var(--c-btn-bck-hov-neu);
+}
+
+#month-left,
+#month-right {
+    width: 45px;
+    height: 40px;
+}
+
+#month-right {
+    transform: perspective(1px) translateZ(0);
+    transition-property: color;
+    transition-duration: 0.3s;  
+}
+
+#month-right:before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #fff;
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+    transition-property: transform;
+    transition-duration: 0.3s;
+    transition-timing-function: ease-out;
+    border-radius: var(--r-bor-nor);
+}
+
+#month-right:hover,
+#month-right:focus,
+#month-right:active {
+    color: var(--c-btn-txt-hov-neu);
+}
+#month-right:hover:before,
+#month-right:focus:before,
+#month-right:active:before {
+    transform: scaleX(1);
+}
+
+#month-left {
+    transform: perspective(1px) translateZ(0);
+    transition-property: color;
+    transition-duration: 0.3s;  
+}
+
+#month-left:before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #fff;
+    transform: scaleX(0);
+    transform-origin: 100% 50%;
+    transition-property: transform;
+    transition-duration: 0.3s;
+    transition-timing-function: ease-out;
+    border-radius: var(--r-bor-nor);
+}
+
+#month-left:hover,
+#month-left:focus,
+#month-left:active {
+    color: var(--c-btn-txt-hov-neu);
+}
+#month-left:hover:before,
+#month-left:focus:before,
+#month-left:active:before {
+    transform: scaleX(1);
+}
+/*-------------------------------------------------------------------
+    BUTTONS END
+-------------------------------------------------------------------*/
+
+
+/*-------------------------------------------------------------------
+    POPUP DIALOG BEGIN
+-------------------------------------------------------------------*/
+.modal-dialog {
+    font-family: 'Century Gothic', sans-serif;
+    display: none;
     z-index: 1;
+    background-color: rgba(0, 0, 0, .3);
+    background-image: repeating-linear-gradient( -45deg,
+    rgba(180, 180, 180, .3),
+    rgba(180, 180, 180, .3) 6.5px,
+    rgba(150, 150, 150, .3) 6.5px,
+    rgba(150, 150, 150, .3) 13px);
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    padding-top: 100px;
+}
+
+.modal-content {
+    background-color: #f1f1f1;
+    display: inline-block;
+    border-radius: 3px;
+}
+
+.modal-header {
+    padding-top: 5.5px;
+    padding-left: 11px;
+    padding-right: 11px;
+    padding-bottom: 5.5px;
+}
+
+.modal-body {
+    font: 400 13.3333px Century Gothic;
+    padding-top: 11px;
+    padding-left: 11px;
+    padding-right: 11px;
+    padding-bottom: 5.5px;
+}
+
+.modal-header-negative {
+    color: #f1f1f1;
+    background-color: #F4425F;
+}
+.modal-header-positive {
+    color: #f1f1f1;
+    background-color: #AFCA54;
+}
+.modal-header-neutral {
+    color: #f1f1f1;
+    background-color: #42b3f4;
+}
+
+.modal-footer {
+    padding-top: 5.5px;
+    padding-left: 11px;
+    padding-right: 11px;
+    padding-bottom: 11px;
+}
+
+/* input*/
+.input {
+    font-family: 'Century Gothic', sans-serif;
+}
+#in_id      { float: left; width: 0px; }
+#in_dayin   { float: left; width: 40px; }
+#in_dayout  { float: left; width: 40px; }
+#in_room    { float: left; width: 50px; }
+#in_price   { float: left; width: 50px; }
+#in_paid    { float: left; width: 50px; }
+#in_name    { float: left; width: 262px; }
+#in_tel     { float: left; width: 262px; }
+#in_info    { float: left; width: 262px; }
+
+#in_year {
+    text-align: center;
+    border: none;
+    border-radius: 3px;
+    width: 60px;
+    height: 30px;
+}
+/*-------------------------------------------------------------------
+    POPUP DIALOG END
+-------------------------------------------------------------------*/
+
+
+/*-------------------------------------------------------------------
+    TOOLTIP BEGIN
+-------------------------------------------------------------------*/
+.viewed {
+    /*
+    box-shadow: 0px 10px 0px  -2px rgba(0, 0, 0, .1);
+    z-index: 2;
     transition: all .5s ease-in-out;
     transform: scale(1.1);
 
-    background-color: var(--c-tab-bck-col-sel) !important;
-    /* animation: blink 15s infinite !important; */
+    background-color: var(--c-tab-bck-col-sel) !important;*/
+    
+    animation: blink 5s infinite !important;
 }
 
 @keyframes blink {
-    0%   {        background-color: var(--c-custom-1);    }
+    0% { background-color: #44CF6C; }
+    50% { background-color: #44CF6C7F; }
+    100% { background-color: #44CF6C; } /*7D5BA6*/
+/*     0%   {        background-color: var(--c-custom-1);    }
     10%  {        background-color: var(--c-custom-2);    }
     20%  {        background-color: var(--c-custom-3);    }
     30%  {        background-color: var(--c-custom-4);    }
@@ -289,374 +530,10 @@ FIX:
     70%  {        background-color: var(--c-custom-4);    }
     80%  {        background-color: var(--c-custom-3);    }
     90%  {        background-color: var(--c-custom-2);    }
-    100% {        background-color: var(--c-custom-1);    }
+    100% {        background-color: var(--c-custom-1);    } */
 /*     from {background-color: #42b3f4;}
     to {background-color: #9dea20;} */
 }
 /*-------------------------------------------------------------------
-    TABLE GUESTS END
--------------------------------------------------------------------*/
-
-
-/*-------------------------------------------------------------------
-    BUTTONS BEGIN
--------------------------------------------------------------------*/
-#month-button-left,
-#month-button-right {
-    background-color: var(--c-btn-bck-nor-neu);
-    position: relative;
-    vertical-align: middle;
-    text-align: center;
-    font-size: 25px;
-    width: 45px;
-    height: 40px;
-    border: 0px;
-    border-radius: 3px;
-    cursor: pointer;
-    box-shadow: var(--s-nor);
-    transition: all 0.3s;
-}
-
-#month-button-left:hover,
-#month-button-right:hover {
-    background: var(--c-btn-bck-hov-neu);
-    box-shadow: var(--s-hov);
-    transition: all 0.3s;
-    transform: translateZ(10px);
-}
-
-#addGuest {
-    cursor: pointer;
-    padding: 4px;
-    border: none;
-    border-radius: 2px;
-    background-color: var(--c-btn-bck-nor-pos);
-    box-shadow: var(--s-nor);
-    transition: all 0.3s;
-}
-
-#addGuest:hover {
-    color: var(--c-btn-txt-hov-pos);
-    background: var(--c-btn-bck-hov-pos);
-    box-shadow: var(--s-hov);
-    transition: all 0.3s;
-    transform: translateZ(10px);
-}
-
-#editGuest {
-    cursor: pointer;
-    padding: 4px;
-    margin-right: 5px;
-    margin-left: 5px;
-    border: none;
-    border-radius: 2px;
-    background-color: var(--c-btn-bck-nor-ext);
-    box-shadow: var(--s-nor);
-    transition: all 0.3s;
-}
-
-#editGuest:hover {
-    color: var(--c-btn-txt-hov-ext);
-    background: var(--c-btn-bck-hov-ext);
-    box-shadow: var(--s-hov);
-    transition: all 0.3s;
-    transform: translateZ(10px);
-}
-
-#delGuest {
-    cursor: pointer;
-    padding: 4px;
-    border: none;
-    border-radius: 2px;
-    background-color: var(--c-btn-bck-nor-neg);
-    box-shadow: var(--s-nor);
-    transition: all 0.3s;
-}
-
-#delGuest:hover {
-    color: var(--c-btn-txt-hov-neg);
-    background: var(--c-btn-bck-hov-neg);
-    box-shadow: var(--s-hov);
-    transition: all 0.3s;
-    transform: translateZ(10px);
-}
-
-#save {
-    background: var(--c-btn-bck-nor-pos);
-    color: var(--c-btn-txt-nor-pos);
-    padding: 4px;
-    width: auto;
-    height: auto;
-    border: none;
-    border-radius: 2px;
-    background-color: transparent;
-    box-shadow: var(--s-nor);
-    transition: all 0.3s;
-}
-
-#save:hover {
-    color: var(--c-btn-txt-hov-pos);
-    background: var(--c-btn-bck-hov-pos);
-    box-shadow: var(--s-hov);
-    transition: all 0.3s;
-    transform: translateZ(10px);
-}
-
-#close {
-    background: var(--c-btn-bck-nor-neg);
-    color: var(--c-btn-txt-nor-neg);
-    padding: 4px;
-    width: auto;
-    height: auto;
-    border: none;
-    border-radius: 3px;
-    box-shadow: var(--s-nor);
-    transition: all 0.3s;
-}
-
-#close:hover {
-    color: var(--c-btn-txt-hov-neg);
-    background: var(--c-btn-bck-hov-neg);
-    box-shadow: var(--s-hov);
-    transition: all 0.3s;
-    transform: translateZ(10px);
-}
-
-#year-button-pick {
-    color: var(--c-btn-txt-nor-neu);
-    background-color: var(--c-btn-bck-nor-neu);
-    cursor: pointer;
-    font-size: 15px;
-    width: 60px;
-    height: 30px;
-    border: 0px;
-    border-radius: 3px;
-    cursor: pointer;
-    box-shadow: var(--s-nor);
-    transition: all 0.3s;
-}
-
-#year-button-pick>label {
-    padding: 3px;
-    text-align: center;
-    vertical-align: middle;
-    font-size: initial !important; /* bootstrap*/
-    font-weight: 200 !important;  /* bootstrap*/
-}
-
-#year-button-pick:hover {
-    background: var(--c-btn-bck-hov-neu);
-    box-shadow: var(--s-hov);
-    transition: all 0.3s;
-    transform: translateZ(10px);
-}
-/*-------------------------------------------------------------------
-    BUTTONS END
--------------------------------------------------------------------*/
-
-
-/*-------------------------------------------------------------------
-    INPUT/OUTPUT FIELDS BEGIN
--------------------------------------------------------------------*/
-input#dayin {    text-align: center;}
-input#dayout {    text-align: center;}
-input#room {    text-align: center;}
-input#price {    text-align: center;}
-input#paid {    text-align: center;}
-input#name {    text-align: left;}
-input#tel {    text-align: left;}
-input#text {    text-align: left;}
-/*-------------------------------------------------------------------
-    INPUT/OUTPUT FIELDS END
--------------------------------------------------------------------*/
-
-
-/*-------------------------------------------------------------------
-    DATA-TIP BEGIN
--------------------------------------------------------------------*/
-[data-tip]>input {
-    margin-top: 6px;
-    margin-right: 3px;
-}
-
-/* Span text */
-
-[data-tip] {
-    position: relative;
-}
-
-[data-tip]:before {
-    content: '';
-    display: none;
-    position: absolute;
-    top: 30px;
-    left: 25px;
-    z-index: 8;
-    font-size: 0;
-    line-height: 0;
-    height: 0;
-    width: 0;
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    border-bottom: 5px solid var(--c-tip-bck);
-}
-
-[data-tip]:after {
-    content: attr(data-tip);
-    display: none;
-    position: absolute;
-    top: 35px;
-    left: 0px;
-    z-index: 9;
-    font-size: 14px;
-    line-height: 18px;
-    /*    height: 18px;*/
-    padding: 5px 8px;
-    opacity: 0.9;
-    background: var(--c-tip-bck);
-    color: var(--c-tip-txt);
-    border-radius: 2px;
-    /*    white-space: nowrap;*/
-    word-wrap: normal;
-    box-shadow: var(--s-hov);
-    transition: all 0.3s;
-    transform: translateZ(10px);
-}
-
-[data-tip]:hover:before,
-[data-tip]:hover:after {
-    display: block;
-}
-/*-------------------------------------------------------------------
-    DATA-TIP END
--------------------------------------------------------------------*/
-
-
-/*-------------------------------------------------------------------
-    UI DIALOG BEGIN
--------------------------------------------------------------------*/
-.ui-dialog .ui-dialog-content {
-    /*    padding: 2em;*/
-    /* background: #fff; */
-    height: 180px !important;
-}
-
-.ui-widget-content {
-    border: none !important;
-    /* color: #222 !important; */
-    background: var(--c-pop-bck-bod) !important;
-}
-
-.ui-dialog-buttonpane {
-    text-align: center !important;
-    margin-top: 0px !important;
-}
-
-.ui-dialog-buttonset {
-    margin-left: auto;
-    margin-right: auto;
-    float: none !important;
-}
-
-/* GUI titlebar */
-.ui-dialog .ui-dialog-titlebar {
-    display: none;
-}
-/*-------------------------------------------------------------------
-    UI DIALOG END
--------------------------------------------------------------------*/
-
-
-/*-------------------------------------------------------------------
-    PROMPT BOOTSTRAP DIALOG BEGIN
-    override bootstrap
--------------------------------------------------------------------*/
-.modal-dialog .modal-own {
-    border-radius: 3px !important;
-    background: var(--c-pop-bck-bod);
-}
-
-.modal-own-button-ok {
-    color: var(--c-btn-txt-nor-pos) !important;
-    background-color: var(--c-btn-bck-nor-pos) !important;
-    border-radius: 3px !important;
-    border: none !important;
-    box-shadow:var(--s-nor);
-    transition: all 0.3s;
-}
-
-.modal-own-button-ok:hover {
-    color: var(--c-btn-txt-hov-pos) !important;
-    background: var(--c-btn-bck-hov-pos) !important;
-    box-shadow: var(--s-hov);
-    transition: all 0.3s;
-    transform: translateZ(10px);
-}
-
-.modal-own-button-cancel {
-    color: var(--c-btn-txt-nor-neg) !important;
-    background-color: var(--c-btn-bck-nor-neg) !important;
-    border-radius: 3px !important;
-    border: none !important;
-    box-shadow: var(--s-nor);
-    transition: all 0.3s;
-}
-
-.modal-own-button-cancel:hover {
-    color: var(--c-btn-txt-hov-neg) !important;
-    background: var(--c-btn-bck-hov-neg) !important;
-    box-shadow: var(--s-hov);
-    transition: all 0.3s;
-    transform: translateZ(10px);
-}
-
-.modal-own-input {
-    text-align: center;
-    width: 60px !important;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.modal-own-input::-webkit-outer-spin-button,
-.modal-own-input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
-
-.modal-own-footer {
-    text-align: center !important;
-}
-
-.modal-header {
-    /*    padding: 15px;*/
-    border-bottom: none !important;
-}
-
-.modal-footer {
-    /*    padding: 15px;*/
-    /*    text-align: right;*/
-    border-top: none !important;
-}
-
-.modal-body {
-    /*    position: relative;*/
-    padding: 10px !important;
-}
-
-/*DELETE USER POPUP*/
-.modal-dialog-own {
-    width: 410px !important;
-}
-
-/*
-.modal-content {
-    border-radius: 3px !important;
-}
-
-.modal-footer {
-    text-align: center !important;
-}
-*/
-/*-------------------------------------------------------------------
-    PROMPT BOOTSTRAP DIALOG END
+    TOOLTIP END
 -------------------------------------------------------------------*/

@@ -1,4 +1,4 @@
-<table id="guests-table" class="my-table">
+<table id="book" class="my-table">
 
     <thead>
         <tr>

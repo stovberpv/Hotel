@@ -46,7 +46,7 @@
     $query = "SELECT room FROM rm001";
     if (!($result = $mysqli->query($query))) { err2echo(12, "Выборка 2. ", $mysqli); }
     $rooms = [];
-    while($row = $result->fetch_array()) {
+    while($row = $result->fetch_assoc()) {
         $rooms[] = $row;
     }
     
@@ -68,7 +68,7 @@
         $guestList[] = $row;
     }
     
-    $data['guestList'] = $guestList;
+    $data['data'] = $guestList;
     
     $stmt->close();
     

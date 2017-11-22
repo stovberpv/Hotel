@@ -88,15 +88,18 @@
     //-------------------------------------------------------------------------------------------------
         // 
     //-------------------------------------------------------------------------------------------------
-    $data[0]['id'] = mysqli_insert_id($mysqli);
-    $data[0]['dayin'] = $begda;
-    $data[0]['dayout'] = $endda;
-    $data[0]['room'] = $room;
-    $data[0]['price'] = $price;
-    $data[0]['paid'] = $paid;
-    $data[0]['name'] = $name;
-    $data[0]['tel'] = $tel;
-    $data[0]['info'] = $info;
+    $data['data'][0]['id'] = mysqli_insert_id($mysqli);
+    $data['data'][0]['dayin'] = $begda;
+    $data['data'][0]['dayout'] = $endda;
+    $data['data'][0]['room'] = $room;
+    $data['data'][0]['price'] = $price;
+    $data['data'][0]['paid'] = $paid;
+    $data['data'][0]['name'] = $name;
+    $data['data'][0]['tel'] = $tel;
+    $data['data'][0]['info'] = $info;
+
+    $data['year'] = $year;
+    $data['month'] = $month;
 
     //-------------------------------------------------------------------------------------------------
         // send result

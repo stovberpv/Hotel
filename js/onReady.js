@@ -3,6 +3,8 @@
 
     $(document).ready(function () {
 
+        db.initialize();
+
         //---------------------------------------------------------------------
         //  TRANSITION EFFECT BEGIN
         //---------------------------------------------------------------------
@@ -22,16 +24,7 @@
 
 
         //---------------------------------------------------------------------
-        //  INFO:
-        //  Судя по тому что я нашел - jQuery получает для парсинга исходный
-        //  текст страницы. Из-за этого невозможно добавить слушателя на
-        //  динамически формирующийся элемент. Единственный выход - это 
-        //  использовать Delegate events.
-        //  Но и здесь возникают трудности. При попытке обработки одиночного
-        //  нажатия на элемент - это событие не обрабатывается корректно.
-        //  В результате получается, что  одиночное нажатие не работает. :(
-        //  FIX: 
-        //  когда-нибудь добавить одиночное нажатие
+        //  
         //---------------------------------------------------------------------
         $(function () {
             var isMouseDown = false,
@@ -40,7 +33,7 @@
             //---------------------------------------------------------------------
                 // CALENDAR TABLE BEGIN
             //---------------------------------------------------------------------
-            $("#calendar-table tbody").on({
+            $("#calendar tbody").on({
 
                 mousedown: function (e) { // мышь нажата
 
@@ -59,23 +52,27 @@
                     if (isMouseDown) {
                         $(this).toggleClass(globals.class_selected, isSelected);
                     }
-
-                    if ($(this).children('div').length > 0) {
-                        var ids = this.children[0].children[0].id.split('/');
+                    var cl = $(this).attr('class');
+                    if (cl != undefined) {
+                        let ids = cl.match(/N\d+/g) ? cl.match(/N\d+/g) : [];
                         for (let i = 0; i < ids.length; i++) {
-                            $('#calendar-table tbody tr td div span#' + ids[i]).parents('td').addClass('viewed');
-                            $('#guests-table tbody tr#' + ids[i]).addClass('viewed');
+                            $('#calendar tbody tr td.' + ids[i]).each(function () {
+                                $(this).addClass('viewed');
+                            });
+                            $('#book tbody tr#' + ids[i]).addClass('viewed');
                         }
                     }
                 },
 
                 mouseleave: function (e) {
-
-                    if ($(this).children('div').length > 0) {
-                        var ids = this.children[0].children[0].id.split('/');
-                        for (let i = 0; i < ids.length; i++) {
-                            $('#calendar-table tbody tr td div span#' + ids[i]).parents('td').removeClass('viewed');
-                            $('#guests-table tbody tr#' + ids[i]).removeClass('viewed');
+                    var cl = $(this).attr('class');
+                    if (cl != undefined) { 
+                        let ids = cl.match(/N\d+/g) ? cl.match(/N\d+/g) : [];
+                        for (let i = 0; i < ids.length; i++) { 
+                            $('#calendar tbody tr td.' + ids[i]).each(function () {
+                                $(this).removeClass('viewed');
+                            });
+                            $('#book tbody tr#' + ids[i]).removeClass('viewed');
                         }
                     }
                 }
@@ -86,37 +83,34 @@
 
 
             //---------------------------------------------------------------------
-                //  GUESTS TABLE BEGIN
+                //  BOOK TABLE BEGIN
             //---------------------------------------------------------------------
-            $("#guests-table tbody").on({
+            $("#book tbody").on({
 
                 mouseover: function (e) { // мышь наведена
 
                     var id = $(this).attr('id');
                     $(this).addClass('viewed');
-                    var span = $('#calendar-table tbody tr td div span').filter(function () {
-                        var regex = new RegExp('(^.*\/' + id + '$)|(^' + id + '\/.*$)|(^' + id + '$)');
-                        if (regex.test($(this).attr('id'))) {
-                            $(this).parents('td').addClass('viewed');
-                        }
+                    $('#calendar tbody tr td.' + id).each(function () {
+                        $(this).addClass('viewed');
                     });
-
                 },
 
                 mouseleave: function (e) {
 
                     var id = $(this).attr('id');
                     $(this).removeClass('viewed');
-                    var span = $('#calendar-table tbody tr td div span').filter(function () {
-                        var regex = new RegExp('(^.*\/' + id + '$)|(^' + id + '\/.*$)|(^' + id + '$)');
-                        if (regex.test($(this).attr('id'))) {
-                            $(this).parents('td').removeClass('viewed');
-                        }
+                    $('#calendar tbody tr td.' + id).each(function () {
+                        $(this).removeClass('viewed');
                     });
+                },
+
+                mousedown: function (e) {
+                    $(this).toggleClass(globals.class_selected);
                 }
             }, 'tr');
             //---------------------------------------------------------------------
-                //  GUESTS TABLE END
+                //  BOOK TABLE END
             //---------------------------------------------------------------------
 
             $(document).mouseup(function () {
@@ -128,15 +122,5 @@
         //---------------------------------------------------------------------
 
     });
-
-    //---------------------------------------------------------------------
-    //  GUEST INPUT DIALOG BEGIN
-    //---------------------------------------------------------------------
-    $(function () {
-        guestDialog.create();
-    });
-    //---------------------------------------------------------------------
-    //  GUEST INPUT DIALOG END
-    //---------------------------------------------------------------------
 
 }(window));
