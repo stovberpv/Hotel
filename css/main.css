@@ -2,7 +2,7 @@
 СПРАВКА
     box-shadow: 
     0px  +вправо, -влево
-    0px +вниз, -вверх
+    0px  +вниз, -вверх
     0px  размытие только в +
     0px  +в стороны, -в центр
     rgba(0, 0, 0, .0) цвет со степенью прозрачности
@@ -44,7 +44,7 @@
 
     /* ----------------------------- FONT ----------------------------- */
     /* font-document: -normal -extend */
-    --f-doc-nor        : 20px;    
+    --f-doc-nor        : 15px;    
     --f-doc-ext        : 15px;    
     
     /* ---------------------------- TABLES ---------------------------- */
@@ -54,14 +54,13 @@
     --c-tab-bck-bod-nor: transparent;
     --c-tab-bck-bod-hov: #ffffff;
     /* table-background-columns: -selected -reserver -adjacent -redeemed -hovered*/
-    --c-tab-bck-col-sel: #9DEA20; /* #9DEA20 */ 
-    --c-tab-bck-col-res: #42b3f4; /* #42b3f4 */
-    --c-tab-bck-col-adj: #F4425F; /* #F4425F */
-    --c-tab-bck-col-red: #696969; /* #696969 */
-    --c-tab-bck-col-hov: #D5D5D5; /* #D5D5D5 */
+    --c-tab-bck-col-sel: #c1d82f; /* #9DEA20 #BADA55*/ 
+    --c-tab-bck-col-res: #00a4e4; /* #42b3f4 */
+    --c-tab-bck-col-adj: #ff0000; /* #F4425F */
+    --c-tab-bck-col-red: #6a737b; /* #696969 */
+    --c-tab-bck-col-hov: #ffdd00; /* #D5D5D5 */
     /* table-background-line-hovered */
-    --c-tab-bck-lin-hov: #F6F6F4; /* F6F6F4 */
-
+    --c-tab-bck-lin-hov: #ffdd000C; /* F6F6F4 */
 
     /* ---------------------------- BUTTONS ---------------------------- */
     /* button-text-noraml: -positive -negative -neutral -extend */
@@ -80,14 +79,14 @@
     --c-btn-bck-nor-neu: transparent;
     --c-btn-bck-nor-ext: transparent;
     /* button-background-hovered: -positive -negative -neutral -extend */
-    --c-btn-bck-hov-pos: #9DEA20;
-    --c-btn-bck-hov-neg: #F4425F;
+    --c-btn-bck-hov-pos: #c1d82f;
+    --c-btn-bck-hov-neg: #ff0000;
     --c-btn-bck-hov-neu: #ffffff;
-    --c-btn-bck-hov-ext: #42b3f4;
+    --c-btn-bck-hov-ext: #00a4e4;
 
     /* ---------------------------- TOOLTIP ---------------------------- */
     /* tooltip: -text -background*/
-    --c-tip-txt        : #42b3f4; /* 42b3f4 */
+    --c-tip-txt        : #00a4e4; /* 42b3f4 */
     --c-tip-bck        : #ffffff;
 
     /* ----------------------------- POPUP ----------------------------- */
@@ -98,18 +97,39 @@
     --c-pop-bck-top    : #eeeeee;
     --c-pop-bck-bod    : #eeeeee;
 
-    /* ---------------------------- SHADOW ---------------------------- */
+    /* ----------------------------- MODAL ----------------------------- */
+    /* modal-back: -noraml -hovered */
+    --c-mod-bck-nor    : #f1f1f1;
+    --c-mod-bck-hov    : #ffffff;
+    /* modal-back-top: -negative -positive -neutral -extend */
+    --c-mod-bck-top-neg: #ff0000;
+    --c-mod-bck-top-pos: #c1d82f;
+    --c-mod-bck-top-neu: #ffffff;
+    --c-mod-bck-top-ext: #00a4e4;
+    /* modal-back: -body -bottom */
+    --c-mod-bck-bod    : #f1f1f1;
+    --c-mod-bck-bot    : #f1f1f1;
+    /* modal-text-top: -negative -positive -neutral -extend */
+    --c-mod-txt-top-neg: #ffffff;
+    --c-mod-txt-top-pos: #ffffff;
+    --c-mod-txt-top-neu: #2d2d2d;
+    --c-mod-txt-top-ext: #ffffff; 
+
+    /* ---------------------------- SHADOW ----------------------------- */
     /* box */
     --s-nor            : 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
     --s-hov            : 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
 
-    /* ---------------------------- CUSTOM ---------------------------- */
+    /* ---------------------------- CUSTOM ----------------------------- */
     --c-custom-1: #F06E58;
     --c-custom-2: #FEA45D;
     --c-custom-3: #FDF569;
     --c-custom-4: #B9EA7B;
     --c-custom-5: #B9ECFE;
     --c-custom-6: #82DDFF;
+    --c-custom-7: #B9ECFE;
+    --c-custom-8: #6969697F;
+    --c-custom-9: #B9ECFE;
 }
 
 /*-------------------------------------------------------------------
@@ -117,7 +137,7 @@
 -------------------------------------------------------------------*/
 html {
     font-family: 'Century Gothic', sans-serif;
-    /* font-size: var(--f-doc-nor); */
+    font-size: var(--f-doc-nor);
     text-align: center;
 }
 
@@ -140,24 +160,6 @@ body {
     display: none; 
 }
 
-.my-table {
-    background: var(--c-tab-bck-bod-nor);
-    table-layout: fixed;
-    border-collapse: collapse;
-    margin-left: auto;
-    margin-right: auto;
-    border-radius: var(--r-bor-nor);
-    box-shadow: var(--s-nor);
-    transition: all 0.3s;
-}
-
-.my-table:hover {
-    background: var(--c-tab-bck-bod-hov);
-    box-shadow: var(--s-hov);
-    transition: all 0.3s;
-    transform: translateZ(10px);
-    z-index: 1;
-}
 /*-------------------------------------------------------------------
     MAIN END
 -------------------------------------------------------------------*/
@@ -172,8 +174,22 @@ body {
 }
 
 #calendar {
+    background: var(--c-tab-bck-bod-nor);
+    table-layout: fixed;
+    border-collapse: collapse;
+    border-radius: var(--r-bor-nor);
+    /* box-shadow: var(--s-nor);
+    transition: all 0.3s; */
     margin-left: 15px;
     margin-right: 15px;
+}
+
+#calendar:hover {
+    background: var(--c-tab-bck-bod-hov);
+    box-shadow: var(--s-hov);
+    transition: all 0.3s;
+    transform: translateZ(10px);
+    z-index: 1;
 }
 
 #calendar td,
@@ -249,18 +265,85 @@ body {
 /*-------------------------------------------------------------------
     TABLE GUESTS BEGIN
 -------------------------------------------------------------------*/
-#book td,
-#book th {
-    /* width: 1.4rem; */
-    border: 1px solid var(--c-tab-bor-bod-nor);
-    padding: 3px;
+#book {
     cursor: pointer;
-    white-space: nowrap;
+    margin-left: auto;
+    margin-right: auto;
+    border-collapse: sollapse;
+    height: 50px;
+    width: 1000px;
+    text-align: center;
+    border-spacing: 3px 8px;
 }
 
-#book th {
-    font-weight: 200;
-    cursor: default;
+#book:hover > tbody > tr:hover > td {
+    animation: blink 5s infinite;
+    background: var(--c-tab-bck-bod-hov);
+    box-shadow: var(--s-hov);
+    transition: all 0.3s;
+    transform: translateZ(10px);
+    z-index: 1;
+}
+
+#book>tbody>tr>td {
+    /* background-color: white; */
+    border: 1px solid var(--c-tab-bor-bod-nor);
+    /* border-radius: var(--r-bor-nor);
+    box-shadow: var(--s-nor);
+    transition: all 0.3s; */
+}
+
+#book>tbody>tr>td:first-child {
+    width: 5%;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+}
+
+#book>tbody>tr>td:last-child {
+    width: 95%;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
+.innerBook {
+    border-collapse: collapse;
+    height: 100%;
+    width: 100%;
+}
+
+.innerBook>tbody>tr>td {
+    border: none;
+    padding: 4px;
+}
+
+.innerBook>tbody>tr>td:first-child {
+    width: 65%;
+}
+
+.innerBook>tbody>tr>td:nth-child(2) {
+    width: 20%;
+}
+
+.innerBook>tbody>tr>td:last-child {
+    width: 15%;
+}
+
+.person-name {
+    text-align: left;
+    font-weight: bold;
+}
+
+.person-info {
+    text-align: left;
+    font-style: italic;
+}
+
+.dates {
+    text-align: right;
+}
+
+.price,
+.paid {
     text-align: center;
 }
 
@@ -316,8 +399,8 @@ body {
 }
 
 .btn.neutral:hover {
-    /* color: var(--c-btn-txt-hov-neu); */
-    /* background: var(--c-btn-bck-hov-neu); */
+    color: var(--c-btn-txt-hov-neu);
+    background: var(--c-btn-bck-hov-neu);
 }
 
 .btn.extend:hover {
@@ -325,89 +408,19 @@ body {
     background: var(--c-btn-bck-hov-ext);
 }
 
-#year {
-    color: var(--c-btn-txt-nor-neu);
-    background: var(--c-btn-bck-nor-neu);
-}
-
-#year:hover {
-    color: var(--c-btn-txt-hov-neu);
-    background: var(--c-btn-bck-hov-neu);
-}
-
 #month-left,
 #month-right {
     width: 45px;
     height: 40px;
+    background-color: transparent;
+    box-shadow: none;
 }
 
-#month-right {
-    transform: perspective(1px) translateZ(0);
-    transition-property: color;
-    transition-duration: 0.3s;  
+#icon-left, 
+#icon-right {
+    width: 25px;
 }
 
-#month-right:before {
-    content: "";
-    position: absolute;
-    z-index: -1;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: #fff;
-    transform: scaleX(0);
-    transform-origin: 0 50%;
-    transition-property: transform;
-    transition-duration: 0.3s;
-    transition-timing-function: ease-out;
-    border-radius: var(--r-bor-nor);
-}
-
-#month-right:hover,
-#month-right:focus,
-#month-right:active {
-    color: var(--c-btn-txt-hov-neu);
-}
-#month-right:hover:before,
-#month-right:focus:before,
-#month-right:active:before {
-    transform: scaleX(1);
-}
-
-#month-left {
-    transform: perspective(1px) translateZ(0);
-    transition-property: color;
-    transition-duration: 0.3s;  
-}
-
-#month-left:before {
-    content: "";
-    position: absolute;
-    z-index: -1;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: #fff;
-    transform: scaleX(0);
-    transform-origin: 100% 50%;
-    transition-property: transform;
-    transition-duration: 0.3s;
-    transition-timing-function: ease-out;
-    border-radius: var(--r-bor-nor);
-}
-
-#month-left:hover,
-#month-left:focus,
-#month-left:active {
-    color: var(--c-btn-txt-hov-neu);
-}
-#month-left:hover:before,
-#month-left:focus:before,
-#month-left:active:before {
-    transform: scaleX(1);
-}
 /*-------------------------------------------------------------------
     BUTTONS END
 -------------------------------------------------------------------*/
@@ -435,7 +448,7 @@ body {
 }
 
 .modal-content {
-    background-color: #f1f1f1;
+    background-color: var(--c-mod-bck-nor);
     display: inline-block;
     border-radius: 3px;
 }
@@ -456,16 +469,20 @@ body {
 }
 
 .modal-header-negative {
-    color: #f1f1f1;
-    background-color: #F4425F;
+    color: var(--c-mod-txt-top-neg);
+    background-color: var(--c-mod-bck-top-neg);
 }
 .modal-header-positive {
-    color: #f1f1f1;
-    background-color: #AFCA54;
+    color: var(--c-mod-txt-top-pos);
+    background-color: var(--c-mod-bck-top-pos);
 }
 .modal-header-neutral {
-    color: #f1f1f1;
-    background-color: #42b3f4;
+    color: var(--c-mod-txt-top-neu);
+    background-color: var(--c-mod-bck-top-neu);
+}
+.modal-header-extend {
+    color: var(--c-mod-txt-top-ext);
+    background-color: var(--c-mod-bck-top-ext);
 }
 
 .modal-footer {
@@ -505,21 +522,18 @@ body {
     TOOLTIP BEGIN
 -------------------------------------------------------------------*/
 .viewed {
-    /*
-    box-shadow: 0px 10px 0px  -2px rgba(0, 0, 0, .1);
+/*     box-shadow: 0px 10px 0px  -2px rgba(0, 0, 0, .1);
     z-index: 2;
     transition: all .5s ease-in-out;
-    transform: scale(1.1);
-
-    background-color: var(--c-tab-bck-col-sel) !important;*/
-    
+    transform: scale(1.05);
+    background-color: var(--c-tab-bck-col-sel) !important; */
     animation: blink 5s infinite !important;
 }
 
 @keyframes blink {
-    0% { background-color: #44CF6C; }
-    50% { background-color: #44CF6C7F; }
-    100% { background-color: #44CF6C; } /*7D5BA6*/
+    0% { background-color: var(--c-custom-7); }
+    50% { background-color: var(--c-custom-8); }
+    100% { background-color: var(--c-custom-9); }
 /*     0%   {        background-color: var(--c-custom-1);    }
     10%  {        background-color: var(--c-custom-2);    }
     20%  {        background-color: var(--c-custom-3);    }

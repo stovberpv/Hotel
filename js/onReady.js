@@ -85,12 +85,12 @@
             //---------------------------------------------------------------------
                 //  BOOK TABLE BEGIN
             //---------------------------------------------------------------------
-            $("#book tbody").on({
+            $("#book").on({
 
                 mouseover: function (e) { // мышь наведена
-
+                    
                     var id = $(this).attr('id');
-                    $(this).addClass('viewed');
+                    $(this).parents('tr').addClass('viewed');
                     $('#calendar tbody tr td.' + id).each(function () {
                         $(this).addClass('viewed');
                     });
@@ -99,14 +99,15 @@
                 mouseleave: function (e) {
 
                     var id = $(this).attr('id');
-                    $(this).removeClass('viewed');
+                    $(this).parents('tr').removeClass('viewed');
                     $('#calendar tbody tr td.' + id).each(function () {
                         $(this).removeClass('viewed');
                     });
                 },
 
                 mousedown: function (e) {
-                    $(this).toggleClass(globals.class_selected);
+
+                    $(this).parents('tr').toggleClass(globals.class_selected);
                 }
             }, 'tr');
             //---------------------------------------------------------------------
