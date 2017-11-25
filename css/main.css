@@ -34,13 +34,13 @@
 :root {
     /* ---------------------------- GLOBAL ---------------------------- */
     /* document: -background -text */
-    --c-doc-bck-nor    : #f1f1f1;
+    --c-doc-bck-nor    : #f9f9f9; /* f1f1f1 */
     --c-doc-bck-hov    : #ffffff;
-    --c-doc-txt        : #2d2d2d;
+    --c-doc-txt        : #6a737b; /* 2d2d2d */
 
     /* ---------------------------- BORDER ---------------------------- */
     /* radius-border-normal */
-    --r-bor-nor        : 4px;
+    --r-bor-nor        : 3px;
 
     /* ----------------------------- FONT ----------------------------- */
     /* font-document: -normal -extend */
@@ -54,24 +54,24 @@
     --c-tab-bck-bod-nor: transparent;
     --c-tab-bck-bod-hov: #ffffff;
     /* table-background-columns: -selected -reserver -adjacent -redeemed -hovered*/
-    --c-tab-bck-col-sel: #c1d82f; /* #9DEA20 #BADA55*/ 
+    --c-tab-bck-col-sel: #c1d82f; /* #9DEA20 #BADA55 */ 
     --c-tab-bck-col-res: #00a4e4; /* #42b3f4 */
     --c-tab-bck-col-adj: #ff0000; /* #F4425F */
     --c-tab-bck-col-red: #6a737b; /* #696969 */
-    --c-tab-bck-col-hov: #ffdd00; /* #D5D5D5 */
+    --c-tab-bck-col-hov: #ffdd004c; /* #D5D5D5 */
     /* table-background-line-hovered */
-    --c-tab-bck-lin-hov: #ffdd000C; /* F6F6F4 */
+    --c-tab-bck-lin-hov: #ffdd000c; /* F6F6F4 */
 
     /* ---------------------------- BUTTONS ---------------------------- */
     /* button-text-noraml: -positive -negative -neutral -extend */
-    --c-btn-txt-nor-pos: #2d2d2d;
-    --c-btn-txt-nor-neg: #2d2d2d;
-    --c-btn-txt-nor-neu: #2d2d2d;
-    --c-btn-txt-nor-ext: #2d2d2d;
+    --c-btn-txt-nor-pos: #6a737b;
+    --c-btn-txt-nor-neg: #6a737b;
+    --c-btn-txt-nor-neu: #6a737b;
+    --c-btn-txt-nor-ext: #6a737b;
     /* button-text-hovered: -positive -negative -neutral -extend */
     --c-btn-txt-hov-pos: #ffffff;
     --c-btn-txt-hov-neg: #ffffff;
-    --c-btn-txt-hov-neu: #2d2d2d;
+    --c-btn-txt-hov-neu: #6a737b;
     --c-btn-txt-hov-ext: #ffffff;
     /* button-background-noraml: -positive -negative -neutral -extend */
     --c-btn-bck-nor-pos: transparent;
@@ -91,8 +91,8 @@
 
     /* ----------------------------- POPUP ----------------------------- */
     /* popup-text: -top -body*/
-    --c-pop-txt-top    : #2d2d2d;
-    --c-pop-txt-bod    : #2d2d2d;
+    --c-pop-txt-top    : #6a737b;
+    --c-pop-txt-bod    : #6a737b;
     /* popup-background: -top -body*/
     --c-pop-bck-top    : #eeeeee;
     --c-pop-bck-bod    : #eeeeee;
@@ -112,7 +112,7 @@
     /* modal-text-top: -negative -positive -neutral -extend */
     --c-mod-txt-top-neg: #ffffff;
     --c-mod-txt-top-pos: #ffffff;
-    --c-mod-txt-top-neu: #2d2d2d;
+    --c-mod-txt-top-neu: #6a737b;
     --c-mod-txt-top-ext: #ffffff; 
 
     /* ---------------------------- SHADOW ----------------------------- */
@@ -142,7 +142,8 @@ html {
 }
 
 body {
-    background-color: #f1f1f1;
+    color: var(--c-doc-txt);
+    background-color: var(--c-doc-bck-nor);
     /*    nature-1 color-5 dark-3 white-2*/
     /* background-image: url("../res/background/texture-3.jpg"); */
     /* background-size: calc(100% + 50px); */
@@ -214,11 +215,6 @@ body {
     background-color: var(--c-tab-bck-col-hov);
 }
 
-.selected { background-color: var(--c-tab-bck-col-sel); }
-.reserved { background-color: var(--c-tab-bck-col-res); }
-.adjacent { background-color: var(--c-tab-bck-col-adj); }
-.redeemed { background-color: var(--c-tab-bck-col-red); }
-
 #calendar tbody td:hover .hintText {
     visibility: visible;
     box-shadow: var(--s-hov);
@@ -257,6 +253,11 @@ body {
     border-style: solid;
     border-color: var(--c-tip-bck) transparent transparent transparent;
 }
+
+#calendar .selected { background-color: var(--c-tab-bck-col-sel); }
+.reserved { background-color: var(--c-tab-bck-col-res); }
+.adjacent { background-color: var(--c-tab-bck-col-adj); }
+.redeemed { background-color: var(--c-tab-bck-col-red); }
 /*-------------------------------------------------------------------
     TABLE CALENDAR END
 -------------------------------------------------------------------*/
@@ -269,41 +270,46 @@ body {
     cursor: pointer;
     margin-left: auto;
     margin-right: auto;
-    border-collapse: sollapse;
     height: 50px;
     width: 1000px;
     text-align: center;
     border-spacing: 3px 8px;
 }
 
-#book:hover > tbody > tr:hover > td {
-    animation: blink 5s infinite;
-    background: var(--c-tab-bck-bod-hov);
-    box-shadow: var(--s-hov);
+/* #book:hover > tbody > tr:hover > td { */
+    /* animation: blink 5s infinite; */
+    /* background: var(--c-tab-bck-bod-hov); */
+    /* box-shadow: var(--s-hov);
     transition: all 0.3s;
     transform: translateZ(10px);
-    z-index: 1;
-}
+    z-index: 1; */
+/* } */
 
 #book>tbody>tr>td {
     /* background-color: white; */
     border: 1px solid var(--c-tab-bor-bod-nor);
-    /* border-radius: var(--r-bor-nor);
-    box-shadow: var(--s-nor);
-    transition: all 0.3s; */
+    /* border-radius: var(--r-bor-nor); */
+    /* box-shadow: var(--s-nor); */
+    /* transition: all 0.3s; */
 }
 
 #book>tbody>tr>td:first-child {
     width: 5%;
-    border-top-left-radius: 5px;
-    border-bottom-left-radius: 5px;
+    border-top-left-radius: var(--r-bor-nor);
+    border-bottom-left-radius: var(--r-bor-nor);
 }
 
 #book>tbody>tr>td:last-child {
     width: 95%;
-    border-top-right-radius: 5px;
-    border-bottom-right-radius: 5px;
+    border-top-right-radius: var(--r-bor-nor);
+    border-bottom-right-radius: var(--r-bor-nor);
 }
+
+#book .selected { 
+    border: 1px solid transparent;
+    animation: blink 5s infinite;
+}
+
 
 .innerBook {
     border-collapse: collapse;
@@ -313,7 +319,7 @@ body {
 
 .innerBook>tbody>tr>td {
     border: none;
-    padding: 4px;
+    padding: 3px;
 }
 
 .innerBook>tbody>tr>td:first-child {
@@ -358,6 +364,7 @@ body {
     BUTTONS BEGIN
 -------------------------------------------------------------------*/
 .btn {
+    color: var(--c-btn-txt-nor-neu);
     font-size: var(--f-doc-ext);
     background-color: var(--c-btn-bck-nor-neu);
     font-family: 'Century Gothic', sans-serif;
@@ -421,6 +428,23 @@ body {
     width: 25px;
 }
 
+#addGuest,
+#editGuest,
+#delGuest {
+    box-shadow: none;
+    border: 1px solid var(--c-tab-bor-bod-nor);
+}
+
+#addGuest:hover,
+#editGuest:hover,
+#delGuest:hover {
+    border: 1px solid transparent;
+    box-shadow: var(--s-hov);
+    transition: all 0.3s;
+    transform: translateZ(10px);
+}
+
+
 /*-------------------------------------------------------------------
     BUTTONS END
 -------------------------------------------------------------------*/
@@ -428,6 +452,8 @@ body {
 
 /*-------------------------------------------------------------------
     POPUP DIALOG BEGIN
+    FIX:
+    Размеры окна и полей ввода
 -------------------------------------------------------------------*/
 .modal-dialog {
     font-family: 'Century Gothic', sans-serif;
@@ -444,28 +470,41 @@ body {
     height: 100%;
     left: 0;
     top: 0;
-    padding-top: 100px;
+    padding-top: 10%;
 }
 
 .modal-content {
     background-color: var(--c-mod-bck-nor);
     display: inline-block;
     border-radius: 3px;
+    width: 20%;
+    min-width: 330px;
 }
 
 .modal-header {
-    padding-top: 5.5px;
-    padding-left: 11px;
-    padding-right: 11px;
-    padding-bottom: 5.5px;
+    padding-top: 4px;
+    padding-left: 4px;
+    padding-right: 4px;
+    padding-bottom: 4px;
 }
 
 .modal-body {
-    font: 400 13.3333px Century Gothic;
-    padding-top: 11px;
-    padding-left: 11px;
-    padding-right: 11px;
-    padding-bottom: 5.5px;
+    /* font: 400 13.3333px Century Gothic; */
+    padding-top: 4px;
+    padding-left: 4px;
+    padding-right: 4px;
+    padding-bottom: 0px;
+}
+
+.modal-footer {
+    padding-top: 4px;
+    padding-left: 4px;
+    padding-right: 4px;
+    padding-bottom: 4px;
+}
+
+.modal-body table {
+    width: 100%;
 }
 
 .modal-header-negative {
@@ -485,16 +524,13 @@ body {
     background-color: var(--c-mod-bck-top-ext);
 }
 
-.modal-footer {
-    padding-top: 5.5px;
-    padding-left: 11px;
-    padding-right: 11px;
-    padding-bottom: 11px;
-}
-
 /* input*/
 .input {
     font-family: 'Century Gothic', sans-serif;
+    border-radius: var(--r-bor-nor);
+    border: 1px solid var(--c-tab-bor-bod-nor);
+    padding: 4px;
+    margin: 2px;
 }
 #in_id      { float: left; width: 0px; }
 #in_dayin   { float: left; width: 40px; }
@@ -502,9 +538,9 @@ body {
 #in_room    { float: left; width: 50px; }
 #in_price   { float: left; width: 50px; }
 #in_paid    { float: left; width: 50px; }
-#in_name    { float: left; width: 262px; }
-#in_tel     { float: left; width: 262px; }
-#in_info    { float: left; width: 262px; }
+#in_name    { float: left; width: 100%; }
+#in_tel     { float: left; width: 100%; }
+#in_info    { float: left; width: 100%; }
 
 #in_year {
     text-align: center;
@@ -521,19 +557,25 @@ body {
 /*-------------------------------------------------------------------
     TOOLTIP BEGIN
 -------------------------------------------------------------------*/
-.viewed {
-/*     box-shadow: 0px 10px 0px  -2px rgba(0, 0, 0, .1);
-    z-index: 2;
+.view, [class$='-view'] {
+    border: 1px solid transparent;
+    animation: blink 5s infinite;
+    /* box-shadow: 0px 10px 0px  -2px rgba(0, 0, 0, .1); */
+    /* z-index: 2;
     transition: all .5s ease-in-out;
-    transform: scale(1.05);
-    background-color: var(--c-tab-bck-col-sel) !important; */
-    animation: blink 5s infinite !important;
+    transform: scale(1.05); */
+    /* background-color: var(--c-tab-bck-col-sel); */
+}
+
+.view-fix, [class$='-view-fix'] {
+    border: 1px solid transparent;
+    animation: blink 5s infinite;
 }
 
 @keyframes blink {
-    0% { background-color: var(--c-custom-7); }
-    50% { background-color: var(--c-custom-8); }
-    100% { background-color: var(--c-custom-9); }
+    0% { background-color: #ffdd004c; }
+    50% { background-color: #ffdd0099; }
+    100% { background-color: #ffdd004c; }
 /*     0%   {        background-color: var(--c-custom-1);    }
     10%  {        background-color: var(--c-custom-2);    }
     20%  {        background-color: var(--c-custom-3);    }

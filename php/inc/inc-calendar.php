@@ -14,7 +14,7 @@
             enable-background="new 0 0 50 50" 
             xml:space="preserve">
             <path id="icon-left" fill="#ffffff" d="M21,34.397L2,20L21,5.604V15  c29,0,28,29,28,29s-1.373-19-28-19L21,34.397z" 
-                 stroke="#000000" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2"/>
+                 stroke="#6a737b" stroke-linecap="round" stroke-miterlimit="10" stroke-width="1"/>
                  <animate xlink:href="#icon-left" begin="mouseover" end="mouseleave" attributeName="fill" values="#42b3f4;#9dea20;#42b3f4" dur="5s" repeatCount="indefinite"/>
         </svg>
         </button> <!-- &#8636; -->
@@ -33,7 +33,7 @@
             enable-background="new 0 0 50 50" 
             xml:space="preserve" >
             <path id="icon-right" fill="#ffffff" d="M29,34.397L48,20L29,5.604  V15C0,15,1,44,1,44s1.373-19,28-19V34.397z" 
-                stroke="#000000" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2"/>
+                stroke="#6a737b" stroke-linecap="round" stroke-miterlimit="10" stroke-width="1"/>
                 <animate xlink:href="#icon-right" begin="mouseover" end="mouseleave" attributeName="fill" values="#42b3f4;#9dea20;#42b3f4" dur="5s" repeatCount="indefinite"/>
         </svg>  
         </button> <!-- &#8640; -->

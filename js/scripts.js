@@ -12,6 +12,8 @@ const globals = {
     class_reserved: "reserved", //зарезервирован
     class_adjacent: "adjacent", //смежный
     class_redeemed: "redeemed", //выкупленный
+    class_view: "view",         //предпросмотр
+    class_viewfix: "view-fix",  // выделен
     intent_add: 1,
     intent_edit: 2,
     intent_del: -1
@@ -183,6 +185,8 @@ const guest = {
                 var date = begda.format('yyyy-mm-dd'),
                     td = $('#calendar tbody tr#' + room + ' td#' + room + '_' + date);
                 td.removeClass('N' + wa.id);
+                td.removeClass(globals.class_viewfix);
+                td.removeClass(globals.class_view);
                 if (td.attr('class') == globals.class_adjacent) {
                     td.removeClass(globals.class_adjacent);
                     if (begda < curda) {
@@ -214,17 +218,15 @@ const guest = {
         this.add(year, month, newData)
 
         // book begin
-        var table = document.getElementById("book"),
-            tbody = table.getElementsByTagName('tbody'),
-            tr = tbody[0].getElementsByTagName("tr"),
+        var tr = $('#book tbody:first-child tr'),
             switching = true,
             i, x, y, shouldSwitch;
         while (switching) {
           switching = false;
-          for (i = 0; i < (tr.length - 1); i++) {
+          for (i = 0; i < (tr.length / 3); i += 3) {
             shouldSwitch = false;
-            x = parseInt(tr[i].getElementsByTagName("td")[0].innerHTML, 10);
-            y = parseInt(tr[i + 1].getElementsByTagName("td")[0].innerHTML, 10);
+            x = parseInt(tr[i].children["0"].innerHTML, 10); 
+            y = parseInt(tr[i + 3].children["0"].innerHTML, 10);
             if (x > y) {
               shouldSwitch = true;
               break;
@@ -541,8 +543,11 @@ $('#editGuest').on('click', function (e) {
     //  чистим список на редактирование перед добавлением новых записей
     globals.guestsProcessing = [];
 
-    $('#book tbody tr.' + globals.class_selected).each(function () {
-        debugger;
+    $('#book tbody tr.' + globals.class_viewfix).each(function () {
+        /* 
+        FIX:
+        ON EDIT name with tel 
+        */
         var fullTextName = $('.person-name', $(this)).html(),
             telPos = fullTextName.indexOf(' тел.'),
             onlyName = fullTextName.substring(0, telPos),
@@ -600,7 +605,7 @@ $("#delGuest").on("click", function (e) {
 
     var intentList = [];
 
-    $('#book tbody tr.' + globals.class_selected).each(function () {
+    $('#book tbody tr.' + globals.class_viewfix).each(function () {
         intentList.push($(this).children('td')[0].innerHTML);
     });
 
@@ -832,7 +837,6 @@ const db = {
                 },
                 dataType: 'json',
                 success: function (data) {
-                    debugger;
                     guest.del(data.data);
                 },
                 error: function (xhr, textStatus, errorThrown) {
