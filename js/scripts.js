@@ -12,8 +12,8 @@ const globals = {
     class_reserved: "reserved", //зарезервирован
     class_adjacent: "adjacent", //смежный
     class_redeemed: "redeemed", //выкупленный
-    class_view: "view",         //предпросмотр
-    class_viewfix: "view-fix",  // выделен
+    class_view: "view", //предпросмотр
+    class_viewfix: "view-fix", // выделен
     intent_add: 1,
     intent_edit: 2,
     intent_del: -1
@@ -180,7 +180,7 @@ const guest = {
                 begda = new Date(wa.dayin),
                 endda = new Date(wa.dayout),
                 curda = new Date();
-            
+
             while (begda <= endda) {
                 var date = begda.format('yyyy-mm-dd'),
                     td = $('#calendar tbody tr#' + room + ' td#' + room + '_' + date);
@@ -217,27 +217,26 @@ const guest = {
             month = globals.monthNames.indexOf(monthName);
         this.add(year, month, newData)
 
-        // book begin
-        var tr = $('#book tbody:first-child tr'),
-            switching = true,
-            i, x, y, shouldSwitch;
-        while (switching) {
-          switching = false;
-          for (i = 0; i < (tr.length / 3); i += 3) {
-            shouldSwitch = false;
-            x = parseInt(tr[i].children["0"].innerHTML, 10); 
-            y = parseInt(tr[i + 3].children["0"].innerHTML, 10);
-            if (x > y) {
-              shouldSwitch = true;
-              break;
-            }
-          }
-          if (shouldSwitch) {
-            tr[i].parentNode.insertBefore(tr[i + 1], tr[i]);
-            switching = true;
-          }
+        // book sort begin
+        var tr = $('#book > tbody > tr'), pos = [];
+        for (let i = 0; i < tr.length; i++) {
+            pos.push({ id: parseInt(tr[i].children[0].innerHTML, 10), pos: i });
         }
-        // book end
+
+        pos.sort(function (a, b) {
+            return a.id - b.id;
+        });
+
+        var prevRow = $('#book tbody tr#N' + pos[0].id);
+        for (let i = 0; i < (pos.length - 1); i ++) {
+            if (pos[i].pos > pos[i + 1].pos) {
+                var curRow = $('#book tbody tr#N' + pos[i].id),
+                    nextRow = $('#book tbody tr#N' + pos[i + 1].id);
+                curRow.insertBefore(nextRow);
+            }
+            prevRow = $('#book tbody tr#N' + pos[i].id);
+        }
+        // book sort end
     }
 }
 
@@ -246,8 +245,8 @@ const tables = {
     create: function (year, month) {
 
         var monthName = globals.monthNames[month],
-        days = new Date(year, month, 0).getDate();
-        
+            days = new Date(year, month, 0).getDate();
+
         // thead begin
         $('#calendar thead').empty();
         var thead = document.getElementById('calendar').getElementsByTagName('thead')[0];
@@ -304,7 +303,7 @@ const tables = {
         // tbody end
 
         $('#book tbody').empty();
-        
+
     },
 
     reset: function () {
@@ -525,7 +524,7 @@ $("#addGuest").on("click", function (e) {
                     globals.guestsProcessing.splice(0, 1);
                     inOutDialog.show();
                 }
-                
+
             },
             btnNo: function () {
                 inOutDialog.unbind();
@@ -544,14 +543,11 @@ $('#editGuest').on('click', function (e) {
     globals.guestsProcessing = [];
 
     $('#book tbody tr.' + globals.class_viewfix).each(function () {
-        /* 
-        FIX:
-        ON EDIT name with tel 
-        */
-        var fullTextName = $('.person-name', $(this)).html(),
-            telPos = fullTextName.indexOf(' тел.'),
-            onlyName = fullTextName.substring(0, telPos),
-            onlyTel = fullTextName.substring(telPos + 1);
+        var textField = $('.person-name', $(this)).html(),
+            textLen = textField.length,
+            telPos = textField.indexOf(' тел.'),
+            name = textField.substring(0, (telPos > 0 ? telPos : textLen)),
+            tel = telPos > 0 ? textField.substring(telPos + 6) : "";
 
         globals.guestsProcessing.push({
             intent: globals.intent_edit,
@@ -561,8 +557,8 @@ $('#editGuest').on('click', function (e) {
             // room: $('.', $(this)).html(),
             price: $('.person-room-price', $(this)).html(),
             paid: $('.person-room-paid', $(this)).html(),
-            name: onlyName,
-            tel: onlyTel,
+            name: name,
+            tel: tel,
             info: $('.person-info', $(this)).html()
         });
     });
@@ -572,7 +568,7 @@ $('#editGuest').on('click', function (e) {
     let val = globals.guestsProcessing[0] ? globals.guestsProcessing[0] : [];
     if (val.length != 0) {
         globals.guestsProcessing.splice(0, 1);
-        
+
         var inOutDialog = new InOutDialog({
             source: document,
             flag: globals.intent_edit,
@@ -581,14 +577,14 @@ $('#editGuest').on('click', function (e) {
                     val = inOutDialog.getVal();
                     db.gl001.modify(val);
                     inOutDialog.unbind();
-                    
+
                     if (globals.guestsProcessing.length != 0) {
                         inOutDialog.bind();
                         inOutDialog.setVal(globals.guestsProcessing[0]);
                         globals.guestsProcessing.splice(0, 1);
                         inOutDialog.show();
                     }
-                    
+
                 },
                 btnNo: function () {
                     inOutDialog.unbind();
@@ -646,8 +642,7 @@ const db = {
         $.ajax({
             url: './php/db/init.php',
             /* 
-            TODO:
-            SESSION ID
+            TODO: SESSION ID
             */
             data: {
                 sessionId: 'root'
@@ -691,8 +686,7 @@ const db = {
             $.ajax({
                 url: './php/db/cf001/select.php',
                 /* 
-                TODO:
-                        session id
+                TODO: session id
                 */
                 data: {
                     sessionId: 'root'
@@ -755,8 +749,7 @@ const db = {
                     tel: opts.tel,
                     info: opts.info,
                     /* 
-                    TODO:
-                            sessionID    
+                    TODO: sessionID    
                     */
                     sessionId: 'root'
                 },

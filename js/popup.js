@@ -35,7 +35,7 @@ class ConfirmDialog extends Dialog {
         }
 
         this.Dialog =
-            '<div class="modal-content">' +
+            '<div class="modal-content modal-confirm">' +
             '<div class="modal-header ' + additionalClass + '">' +
             '<a>' + this.Opts.dialog.title + '</a>' +
             '</div>' +
@@ -103,7 +103,7 @@ class InOutDialog extends Dialog {
             td_st2 = '';
 
         this.Dialog =
-            '<div class="modal-content">' +
+            '<div class="modal-content modal-inout">' +
             '<div class="modal-header ' + additionalClass + '">' +
             '<a>' + title + '</a>' +
             '</div>' +
@@ -205,7 +205,7 @@ class InputDialog extends Dialog {
         }
 
         this.Dialog =
-            '<div class="modal-content">' +
+            '<div class="modal-content modal-input">' +
             '<div class="modal-header ' + additionalClass + '">' +
             '<a>' + this.Opts.dialog.title + '</a>' +
             '</div>' +

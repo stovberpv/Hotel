@@ -1,10 +1,4 @@
 <?php
-    /* 
-    TODO: 
-        modify gl001 entry 
-
-        RETURN DATA.OLD DATA.NEW
-    */
 
     require $_SERVER['DOCUMENT_ROOT'] . '/hm/php/db/conn.php';
 
@@ -26,8 +20,7 @@
 
     //-------------------------------------------------------------------------------------------------
         // Выборка 0
-        // TODO: 
-        //          session ID
+        // TODO: session ID
     //-------------------------------------------------------------------------------------------------
     /*
     $query = "SELECT user FROM sessions WHERE session = ?";
