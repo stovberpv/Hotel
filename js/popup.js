@@ -84,7 +84,7 @@ class InOutDialog extends Dialog {
                 title = 'Удаление';
                 break;
             case 0:
-                additionalClass = "modal-header-neutral";
+                additionalClass = "modal-header-extend";
                 title = 'Исправление';
                 break;
             case 1:
@@ -92,7 +92,7 @@ class InOutDialog extends Dialog {
                 title = 'Добавление';
                 break;
             case 2:
-                additionalClass = "modal-header-extend";
+                additionalClass = "modal-header-neutrald";
                 title = 'Обработка';
                 break;
             default:

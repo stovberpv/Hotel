@@ -6,24 +6,6 @@
         db.initialize();
 
         //---------------------------------------------------------------------
-        //  TRANSITION EFFECT BEGIN
-        //---------------------------------------------------------------------
-        /* var movementStrength = 25;
-        var height = movementStrength / $(window).height();
-        var width = movementStrength / $(window).width();
-        $("body").mousemove(function (e) {
-            var pageX = e.pageX - ($(window).width() / 2);
-            var pageY = e.pageY - ($(window).height() / 2);
-            var newvalueX = width * pageX * -1 - 25;
-            var newvalueY = height * pageY * -1 - 50;
-            $('body').css("background-position", newvalueX + "px " + newvalueY + "px");
-        }); */
-        //---------------------------------------------------------------------
-        //  TRANSITION EFFECT END
-        //---------------------------------------------------------------------
-
-
-        //---------------------------------------------------------------------
         //  
         //---------------------------------------------------------------------
         $(function () {
@@ -69,6 +51,7 @@
                     }
                     // press + hover end
                     
+                    //view begin
                     let ids = getIDs($(this).attr('class'));
                     for (let i = 0; i < ids.length; i++) {
                         if (!$(calendarSelector + ids[i]).hasClass(ids[i] + '-' + globals.class_viewfix)) {
@@ -78,6 +61,11 @@
                             $(bookSelector + ids[i]).addClass(globals.class_view);
                         }
                     }
+                    //view end
+
+                    let id = ($(this).attr('id')).substring(3);
+                    $('#calendar thead tr:nth-child(2) th#' + id).addClass(globals.class_view);
+
                 },
 
                 mouseleave: function (e) {
@@ -91,6 +79,9 @@
                             $(bookSelector + ids[i]).removeClass(globals.class_view);
                         }
                     }
+
+                    let id = ($(this).attr('id')).substring(3);
+                    $('#calendar thead tr:nth-child(2) th#' + id).removeClass(globals.class_view);
                 },
 
                 mouseup: function (e) {

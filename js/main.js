@@ -15,7 +15,7 @@ const globals = {
     class_view: "view", //предпросмотр
     class_viewfix: "view-fix", // выделен
     intent_add: 1,
-    intent_edit: 2,
+    intent_edit: 0,
     intent_del: -1
 }
 //---------------------------------------------------------------------
@@ -84,42 +84,54 @@ const guest = {
             // book begin
             var rTable = document.getElementById('book'),
                 rBody = rTable.getElementsByTagName('tbody'),
-                tr, ttr, td;
-
-            //------------------------------------------------------------
-            ttr = document.createElement('tr');
-            ttr.setAttribute('id', 'N' + wa.id);
-            ttr.setAttribute('class', 'person-row');
+                tr, rTR, td, a;
             //------------------------------------------------------------
 
             //------------------------------------------------------------
             td = document.createElement('td');
-            td.appendChild(document.createTextNode(wa.id))
-            td.setAttribute('class', 'person-id')
-            ttr.appendChild(td);
+            td.setAttribute('class', 'person-id');
+            td.appendChild(document.createTextNode(wa.id));
+
+            rTR = document.createElement('tr');
+            rTR.setAttribute('class', 'person-row');
+            rTR.setAttribute('id', 'N' + wa.id);
+            rTR.appendChild(td);
             //------------------------------------------------------------
 
             //------------------------------------------------------------
-            tr = document.createElement('tr');
-
             td = document.createElement('td');
-            var telNum = "";
-            if (wa.tel != "") {
-                telNum = 'тел. ' + wa.tel;
+            td.setAttribute('class', 'person-base-info');
+            
+            a = document.createElement('a');
+            a.setAttribute('class', 'person-name');
+            a.appendChild(document.createTextNode(wa.name));
+            td.appendChild(a);
+            
+            if (wa.tel.length > 0) {
+                a = document.createElement('a');
+                a.setAttribute('class', 'person-tel');
+                a.appendChild(document.createTextNode(wa.tel));
+                td.appendChild(a);
             }
-            td.appendChild(document.createTextNode(wa.name + ' ' + telNum));
-            td.setAttribute('class', 'person-name');
+            
+            tr = document.createElement('tr');
             tr.appendChild(td);
 
             td = document.createElement('td');
-            td.appendChild(document.createTextNode('с  ' + (new Date(wa.dayin).format('dd.mm'))));
-            td.setAttribute('class', 'dates');
+            td.setAttribute('class', 'person-dates');
             td.classList.add('person-dayin');
+            td.appendChild(document.createTextNode('с  ' + (new Date(wa.dayin).format('dd.mm'))));
             tr.appendChild(td);
 
             td = document.createElement('td');
-            td.appendChild(document.createTextNode(wa.price));
+            td.setAttribute('class', 'person-room-num');
+            td.setAttribute('rowspan', '2');
+            td.appendChild(document.createTextNode(wa.room));
+            tr.appendChild(td);
+            
+            td = document.createElement('td');
             td.setAttribute('class', 'person-room-price');
+            td.appendChild(document.createTextNode(wa.price));
             tr.appendChild(td);
 
             var tbody = document.createElement('tbody')
@@ -130,19 +142,19 @@ const guest = {
             tr = document.createElement('tr');
 
             td = document.createElement('td');
-            td.appendChild(document.createTextNode(wa.info));
             td.setAttribute('class', 'person-info');
+            td.appendChild(document.createTextNode(wa.info));
             tr.appendChild(td);
 
             td = document.createElement('td');
-            td.appendChild(document.createTextNode('по ' + (new Date(wa.dayout).format('dd.mm'))));
-            td.setAttribute('class', 'dates');
+            td.setAttribute('class', 'person-dates');
             td.classList.add('person-dayout');
+            td.appendChild(document.createTextNode('по ' + (new Date(wa.dayout).format('dd.mm'))));
             tr.appendChild(td);
 
             td = document.createElement('td');
-            td.appendChild(document.createTextNode(wa.paid));
             td.setAttribute('class', 'person-room-paid');
+            td.appendChild(document.createTextNode(wa.paid));
             tr.appendChild(td);
 
             tbody.appendChild(tr);
@@ -160,11 +172,11 @@ const guest = {
             //------------------------------------------------------------
 
             //------------------------------------------------------------
-            ttr.appendChild(td);
+            rTR.appendChild(td);
             //------------------------------------------------------------
 
             //------------------------------------------------------------
-            rBody[0].appendChild(ttr);
+            rBody[0].appendChild(rTR);
             //------------------------------------------------------------
 
             // book end
@@ -185,8 +197,8 @@ const guest = {
                 var date = begda.format('yyyy-mm-dd'),
                     td = $('#calendar tbody tr#' + room + ' td#' + room + '_' + date);
                 td.removeClass('N' + wa.id);
-                td.removeClass(globals.class_viewfix);
-                td.removeClass(globals.class_view);
+                td.removeClass('N' + wa.id + '-' + globals.class_viewfix);
+                td.removeClass('N' + wa.id + '-' + globals.class_view);
                 if (td.attr('class') == globals.class_adjacent) {
                     td.removeClass(globals.class_adjacent);
                     if (begda < curda) {
@@ -394,7 +406,7 @@ const utils = {
 $('#year').click(function () {
     var inputDialog = new InputDialog({
         source: document,
-        flag: 2,
+        flag: 0,
         dialog: {
             title: 'Укажите год выборки',
         },
@@ -543,26 +555,20 @@ $('#editGuest').on('click', function (e) {
     globals.guestsProcessing = [];
 
     $('#book tbody tr.' + globals.class_viewfix).each(function () {
-        var textField = $('.person-name', $(this)).html(),
-            textLen = textField.length,
-            telPos = textField.indexOf(' тел.'),
-            name = textField.substring(0, (telPos > 0 ? telPos : textLen)),
-            tel = telPos > 0 ? textField.substring(telPos + 6) : "";
 
         globals.guestsProcessing.push({
             intent: globals.intent_edit,
             id: $('.person-id', $(this)).html(),
             dayin: ($('.person-dayin', $(this)).html()).substring(3),
             dayout: ($('.person-dayout', $(this)).html()).substring(3),
-            // room: $('.', $(this)).html(),
+            room: $('.person-room-num', $(this)).html(),
             price: $('.person-room-price', $(this)).html(),
             paid: $('.person-room-paid', $(this)).html(),
-            name: name,
-            tel: tel,
+            name: $('.person-name', $(this)).html(),
+            tel: $('.person-tel', $(this)).html(),
             info: $('.person-info', $(this)).html()
         });
     });
-
     // ициализируем поля диалога
 
     let val = globals.guestsProcessing[0] ? globals.guestsProcessing[0] : [];
@@ -584,7 +590,6 @@ $('#editGuest').on('click', function (e) {
                         globals.guestsProcessing.splice(0, 1);
                         inOutDialog.show();
                     }
-
                 },
                 btnNo: function () {
                     inOutDialog.unbind();

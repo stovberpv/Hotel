@@ -32,35 +32,41 @@
 -------------------------------------------------------------------*/
     
 :root {
-    /* ---------------------------- GLOBAL ---------------------------- */
-    /* document: -background -text */
-    --c-doc-bck-nor    : #f9f9f9; /* f1f1f1 */
-    --c-doc-bck-hov    : #ffffff;
-    --c-doc-txt        : #6a737b; /* 2d2d2d */
-
     /* ---------------------------- BORDER ---------------------------- */
     /* radius-border-normal */
-    --r-bor-nor        : 3px;
-
+    --r-bor-nor: 3px;
     /* ----------------------------- FONT ----------------------------- */
     /* font-document: -normal -extend */
-    --f-doc-nor        : 15px;    
-    --f-doc-ext        : 15px;    
-    
+    --f-doc-nor: 15px;    
+    --f-doc-ext: 15px;    
+    /* ---------------------------- SHADOW ----------------------------- */
+    /* box */
+    --s-nor    : 0  3px  6px rgba(0, 0, 0, 0.16), 0  3px  6px rgba(0, 0, 0, 0.23);
+    --s-hov    : 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+
+    /* ---------------------------- GLOBAL ---------------------------- */
+    /* document: -background -text */
+    --c-doc-bck-nor    : #f1f1f1; /* f9f9f9 f1f1f1 / ece5da f1ebe5 c4b59d  */ 
+    --c-doc-bck-hov    : #f1f1f1;
+    --c-doc-txt        : #6a737b; /* 6a737b 2d2d2d */
+    --c-doc-txt-ext    : #6a737b; /* 6a737b 2d2d2d */
+
     /* ---------------------------- TABLES ---------------------------- */
     /* table-borders-body-normal */
-    --c-tab-bor-bod-nor: #DDDDDD;
+    --c-tab-bor-bod-nor: #DDDDDD; /* DDDDDD rgba(255,255,255,0.2) */
     /* table-background-body: -normal -hovered */
     --c-tab-bck-bod-nor: transparent;
-    --c-tab-bck-bod-hov: #ffffff;
+    --c-tab-bck-bod-hov: transparent;
     /* table-background-columns: -selected -reserver -adjacent -redeemed -hovered*/
-    --c-tab-bck-col-sel: #c1d82f; /* #9DEA20 #BADA55 */ 
+    --c-tab-bck-col-sel: #c1d82f; /* #c1d82f #9DEA20 #BADA55 */ 
     --c-tab-bck-col-res: #00a4e4; /* #42b3f4 */
-    --c-tab-bck-col-adj: #ff0000; /* #F4425F */
+    --c-tab-bck-col-adj: #F4425F; /* #ff0000 #F4425F */
     --c-tab-bck-col-red: #6a737b; /* #696969 */
-    --c-tab-bck-col-hov: #ffdd004c; /* #D5D5D5 */
+    --c-tab-bck-col-hov: #ffdd00; /* #D5D5D5 */
     /* table-background-line-hovered */
     --c-tab-bck-lin-hov: #ffdd000c; /* F6F6F4 */
+    /* table-inner-text-comment */
+    --c-tab-inr-txt-cmt: #6a737bcc;
 
     /* ---------------------------- BUTTONS ---------------------------- */
     /* button-text-noraml: -positive -negative -neutral -extend */
@@ -69,56 +75,58 @@
     --c-btn-txt-nor-neu: #6a737b;
     --c-btn-txt-nor-ext: #6a737b;
     /* button-text-hovered: -positive -negative -neutral -extend */
-    --c-btn-txt-hov-pos: #ffffff;
-    --c-btn-txt-hov-neg: #ffffff;
+    --c-btn-txt-hov-pos: #f1f1f1;
+    --c-btn-txt-hov-neg: #f1f1f1;
     --c-btn-txt-hov-neu: #6a737b;
-    --c-btn-txt-hov-ext: #ffffff;
+    --c-btn-txt-hov-ext: #f1f1f1;
     /* button-background-noraml: -positive -negative -neutral -extend */
     --c-btn-bck-nor-pos: transparent;
     --c-btn-bck-nor-neg: transparent;
     --c-btn-bck-nor-neu: transparent;
     --c-btn-bck-nor-ext: transparent;
     /* button-background-hovered: -positive -negative -neutral -extend */
-    --c-btn-bck-hov-pos: #c1d82f;
-    --c-btn-bck-hov-neg: #ff0000;
-    --c-btn-bck-hov-neu: #ffffff;
-    --c-btn-bck-hov-ext: #00a4e4;
+    --c-btn-bck-hov-pos: #00a4e4; /* c1d82f */
+    --c-btn-bck-hov-neg: #F4425F;
+    --c-btn-bck-hov-neu: #f1f1f1;
+    --c-btn-bck-hov-ext: #ffdd00E5; /* 00a4e4 */
 
     /* ---------------------------- TOOLTIP ---------------------------- */
     /* tooltip: -text -background*/
     --c-tip-txt        : #00a4e4; /* 42b3f4 */
-    --c-tip-bck        : #ffffff;
+    --c-tip-bck        : #f1f1f1;
 
     /* ----------------------------- POPUP ----------------------------- */
     /* popup-text: -top -body*/
     --c-pop-txt-top    : #6a737b;
     --c-pop-txt-bod    : #6a737b;
     /* popup-background: -top -body*/
-    --c-pop-bck-top    : #eeeeee;
-    --c-pop-bck-bod    : #eeeeee;
+    --c-pop-bck-top    : #f1f1f1;
+    --c-pop-bck-bod    : #f1f1f1;
 
     /* ----------------------------- MODAL ----------------------------- */
+    /* modal-text */
+    --c-mod-txt        : #6a737b;
+    /* modal-back */
+    --c-mod-bck        : rgba(0, 0, 0, 0.3);
+    /* modal-back-content */
+    --c-mod-bck-cnt    : #f1f1f1;
     /* modal-back: -noraml -hovered */
     --c-mod-bck-nor    : #f1f1f1;
-    --c-mod-bck-hov    : #ffffff;
+    --c-mod-bck-hov    : #f1f1f12c;
     /* modal-back-top: -negative -positive -neutral -extend */
-    --c-mod-bck-top-neg: #ff0000;
-    --c-mod-bck-top-pos: #c1d82f;
-    --c-mod-bck-top-neu: #ffffff;
-    --c-mod-bck-top-ext: #00a4e4;
+    --c-mod-bck-top-neg: #F4425F;
+    --c-mod-bck-top-pos: #00a4e4;
+    --c-mod-bck-top-neu: #f1f1f1;
+    --c-mod-bck-top-ext: #ffdd00E5;
     /* modal-back: -body -bottom */
     --c-mod-bck-bod    : #f1f1f1;
     --c-mod-bck-bot    : #f1f1f1;
     /* modal-text-top: -negative -positive -neutral -extend */
-    --c-mod-txt-top-neg: #ffffff;
-    --c-mod-txt-top-pos: #ffffff;
+    --c-mod-txt-top-neg: #f1f1f1;
+    --c-mod-txt-top-pos: #f1f1f1;
     --c-mod-txt-top-neu: #6a737b;
-    --c-mod-txt-top-ext: #ffffff; 
-
-    /* ---------------------------- SHADOW ----------------------------- */
-    /* box */
-    --s-nor            : 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
-    --s-hov            : 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+    --c-mod-txt-top-ext: #f1f1f1;
+    --c-mod-txt-inp    : #f1f1f1;
 
     /* ---------------------------- CUSTOM ----------------------------- */
     --c-custom-1: #F06E58;
@@ -130,6 +138,11 @@
     --c-custom-7: #B9ECFE;
     --c-custom-8: #6969697F;
     --c-custom-9: #B9ECFE;
+
+    /* --------------------------- GRADIENT ---------------------------- */
+    --c-grad-1: #ffdd0099;
+    --c-grad-2: #ffdd004c;
+    --c-grad-3: #ffdd0099;
 }
 
 /*-------------------------------------------------------------------
@@ -142,14 +155,13 @@ html {
 }
 
 body {
+    user-select: none;
     color: var(--c-doc-txt);
     background-color: var(--c-doc-bck-nor);
-    /*    nature-1 color-5 dark-3 white-2*/
-    /* background-image: url("../res/background/texture-3.jpg"); */
-    /* background-size: calc(100% + 50px); */
-    /* background-repeat: repeat-y; */
-    /* background-position: center; */
-    /* background-size: cover; */
+    // background: linear-gradient(to bottom, #D5DEE7 0%, #E8EBF2 50%, #E2E7ED 100%), linear-gradient(to bottom, rgba(0,0,0,0.02) 50%, rgba(255,255,255,0.02) 61%, rgba(0,0,0,0.02) 73%), linear-gradient(33deg, rgba(255,255,255,0.20) 0%, rgba(0,0,0,0.20) 100%);
+    background-blend-mode: normal,color-burn;
+    background-blend-mode: screen;
+    // background-image: url("../res/background/new-3.jpg"); /* new-3*/
     top: 0;
     left: 0;
     width: 100%;
@@ -160,7 +172,6 @@ body {
 ::-webkit-scrollbar { 
     display: none; 
 }
-
 /*-------------------------------------------------------------------
     MAIN END
 -------------------------------------------------------------------*/
@@ -178,11 +189,6 @@ body {
     background: var(--c-tab-bck-bod-nor);
     table-layout: fixed;
     border-collapse: collapse;
-    border-radius: var(--r-bor-nor);
-    /* box-shadow: var(--s-nor);
-    transition: all 0.3s; */
-    margin-left: 15px;
-    margin-right: 15px;
 }
 
 #calendar:hover {
@@ -195,11 +201,11 @@ body {
 
 #calendar td,
 #calendar th {
-    border: 1px solid var(--c-tab-bor-bod-nor);
+    border: 1px solid var(--c-tab-bor-bod-nor); 
     text-align: center;
     cursor: pointer;
     width: 1.5em;
-    padding: 3px;
+    padding: 6px;
 }
 
 #calendar th {
@@ -207,8 +213,8 @@ body {
     cursor: default;
 }
 
-#calendar tbody tr:hover {
-    background-color: var(--c-tab-bck-lin-hov);
+#calendar tbody tr:hover th {
+    animation: blink 5s infinite;
 }
 
 #calendar tbody td:hover {
@@ -237,10 +243,9 @@ body {
     padding: 5px;
     position: absolute;
     z-index: 1;
-    bottom: 20px;
+    bottom: 28px;
     left: 50%;
     margin-left: -70px;
-    /* border: 1px solid #a9ed2a; */
 }
 
 .hint .hintText::after {
@@ -254,7 +259,7 @@ body {
     border-color: var(--c-tip-bck) transparent transparent transparent;
 }
 
-#calendar .selected { background-color: var(--c-tab-bck-col-sel); }
+.selected { background-color: var(--c-tab-bck-col-sel); }
 .reserved { background-color: var(--c-tab-bck-col-res); }
 .adjacent { background-color: var(--c-tab-bck-col-adj); }
 .redeemed { background-color: var(--c-tab-bck-col-red); }
@@ -277,8 +282,6 @@ body {
 }
 
 #book:hover > tbody > tr:hover > td {
-    /* animation: blink 5s infinite; */
-    /* background: var(--c-tab-bck-bod-hov); */
     border: 1px solid transparent;
     box-shadow: var(--s-nor);
     transition: all 0.3s;
@@ -286,21 +289,18 @@ body {
     z-index: 1;
 }
 
-#book>tbody>tr>td {
-    /* background-color: white; */
+#book > tbody > tr > td {
     border: 1px solid var(--c-tab-bor-bod-nor);
-    /* border-radius: var(--r-bor-nor); */
-    /* box-shadow: var(--s-nor); */
-    /* transition: all 0.3s; */
 }
 
-#book>tbody>tr>td:first-child {
+#book > tbody > tr > td:first-child {
     width: 5%;
     border-top-left-radius: var(--r-bor-nor);
     border-bottom-left-radius: var(--r-bor-nor);
 }
 
-#book>tbody>tr>td:last-child {
+#book > tbody > tr > td:last-child {
+    padding: 4px;
     width: 95%;
     border-top-right-radius: var(--r-bor-nor);
     border-bottom-right-radius: var(--r-bor-nor);
@@ -324,34 +324,64 @@ body {
 }
 
 .innerBook>tbody>tr>td:first-child {
-    width: 65%;
+    width: 80%;
 }
 
 .innerBook>tbody>tr>td:nth-child(2) {
-    width: 20%;
+    width: 8%;
+}
+
+.innerBook>tbody>tr>td:nth-child(3) {
+    width: 5%;
 }
 
 .innerBook>tbody>tr>td:last-child {
-    width: 15%;
+    width: 7%;
+}
+
+.person-base-info {
+    text-align: left;
 }
 
 .person-name {
-    text-align: left;
     font-weight: bold;
+}
+.person-name:after {
+    content: " ";
+}
+
+.person-tel:before {
+    vertical-align: middle;
+    content: url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" preserveAspectRatio="xMidYMid slice" height="15" width="15" fill="#00a4e4" xmlns="http://www.w3.org/2000/svg"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>');
+}
+
+.person-tel {
+    font-size: 14px;
+    color: var(--c-tab-inr-txt-cmt);
 }
 
 .person-info {
+    font-size: 14px;
+    color: var(--c-tab-inr-txt-cmt);
     text-align: left;
     font-style: italic;
 }
 
-.dates {
+.person-room-num {
+    color: var(--c-tab-bck-col-res);
+}
+.person-room-num:before {
+    display: block;
+    content: url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" preserveAspectRatio="xMidYMid slice" height="15" width="15" fill="#00a4e4" xmlns="http://www.w3.org/2000/svg"><path d="M7 13c1.66 0 3-1.34 3-3S8.66 7 7 7s-3 1.34-3 3 1.34 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.21-1.79-4-4-4z"/></svg>');
+}
+
+.person-dates {
     text-align: right;
 }
 
-.price,
-.paid {
-    text-align: center;
+.person-room-price,
+.person-room-paid {
+    text-align: right;
 }
 
 .alignLeft { text-align: left; }
@@ -367,15 +397,15 @@ body {
 .btn {
     color: var(--c-btn-txt-nor-neu);
     font-size: var(--f-doc-ext);
-    background-color: var(--c-btn-bck-nor-neu);
     font-family: 'Century Gothic', sans-serif;
+    text-align: center;
+    background-color: var(--c-btn-bck-nor-neu);
+    border: 1px solid var(--c-tab-bor-bod-nor);
     border-radius: var(--r-bor-nor);
-    box-shadow: var(--s-nor);
+    box-shadow: none;
     transition: all 0.3s;
     vertical-align: middle;
-    text-align: center;
     cursor: pointer;
-    border: none;
     padding: 7px;
     margin: 4px;
     width: auto;
@@ -391,6 +421,7 @@ body {
 }
 
 .btn:hover {
+    border: 1px solid transparent;
     box-shadow: var(--s-hov);
     transition: all 0.3s;
     transform: translateZ(10px);
@@ -420,20 +451,9 @@ body {
 #month-right {
     width: 45px;
     height: 40px;
-    background-color: transparent;
+    background-color: var(--c-btn-bck-nor-neu);
     box-shadow: none;
-}
-
-#icon-left, 
-#icon-right {
-    width: 25px;
-}
-
-#addGuest,
-#editGuest,
-#delGuest {
-    box-shadow: none;
-    border: 1px solid var(--c-tab-bor-bod-nor);
+    border: none;
 }
 
 #addGuest:hover,
@@ -450,14 +470,25 @@ body {
 
 
 /*-------------------------------------------------------------------
+    ICONS BEGIN
+-------------------------------------------------------------------*/
+#icon-left, 
+#icon-right {
+    width: 25px;
+}
+/*-------------------------------------------------------------------
+    ICONS END
+-------------------------------------------------------------------*/
+
+
+/*-------------------------------------------------------------------
     POPUP DIALOG BEGIN
-    FIX: Размеры окна и полей ввода
 -------------------------------------------------------------------*/
 .modal-dialog {
     font-family: 'Century Gothic', sans-serif;
     display: none;
     z-index: 1;
-    background-color: rgba(0, 0, 0, .3);
+    background-color: var(--c-mod-bck);
     background-image: repeating-linear-gradient( -45deg,
     rgba(180, 180, 180, .3),
     rgba(180, 180, 180, .3) 6.5px,
@@ -469,25 +500,40 @@ body {
     left: 0;
     top: 0;
     padding-top: 10%;
+    color: var(--c-mod-txt);
 }
 
 .modal-content {
-    background-color: var(--c-mod-bck-nor);
+    background-color: var(--c-mod-bck-cnt);
     display: inline-block;
     border-radius: 3px;
-    width: 20%;
-    min-width: 330px;
+}
+
+.modal-content .btn { 
+    color: var(--c-btn-txt-nor-neu);
+}
+
+.modal-input {
+    width: auto;
+}
+
+.modal-inout {
+    width: auto;
+}
+
+.modal-confirm {
+    width: 420px;
 }
 
 .modal-header {
-    padding-top: 4px;
+    border-radius: 3px 3px 0px 0px;
+    padding-top: 8px;
     padding-left: 4px;
     padding-right: 4px;
-    padding-bottom: 4px;
+    padding-bottom: 8px;
 }
 
 .modal-body {
-    /* font: 400 13.3333px Century Gothic; */
     padding-top: 4px;
     padding-left: 4px;
     padding-right: 4px;
@@ -524,28 +570,32 @@ body {
 
 /* input*/
 .input {
+    opacity: .8;
+    background-color: var(--c-mod-txt-inp);
+    color: var(--c-doc-txt-ext);
     font-family: 'Century Gothic', sans-serif;
     border-radius: var(--r-bor-nor);
     border: 1px solid var(--c-tab-bor-bod-nor);
     padding: 4px;
     margin: 2px;
 }
+
 #in_id      { float: left; width: 0px; }
 #in_dayin   { float: left; width: 40px; }
 #in_dayout  { float: left; width: 40px; }
 #in_room    { float: left; width: 50px; }
 #in_price   { float: left; width: 50px; }
 #in_paid    { float: left; width: 50px; }
-#in_name    { float: left; width: 100%; }
-#in_tel     { float: left; width: 100%; }
-#in_info    { float: left; width: 100%; }
+#in_name    { float: left; width: 96%; }
+#in_tel     { float: left; width: 96%; }
+#in_info    { float: left; width: 96%; }
 
 #in_year {
     text-align: center;
     border: none;
     border-radius: 3px;
     width: 60px;
-    height: 30px;
+    height: 25px;
 }
 /*-------------------------------------------------------------------
     POPUP DIALOG END
@@ -564,22 +614,9 @@ body {
 }
 
 @keyframes blink {
-    0% { background-color:   #ffdd0099; }
-    50% { background-color:  #ffdd004c; }
-    100% { background-color: #ffdd0099; }
-/*     0%   {        background-color: var(--c-custom-1);    }
-    10%  {        background-color: var(--c-custom-2);    }
-    20%  {        background-color: var(--c-custom-3);    }
-    30%  {        background-color: var(--c-custom-4);    }
-    40%  {        background-color: var(--c-custom-5);    }
-    50%  {        background-color: var(--c-custom-6);    }
-    60%  {        background-color: var(--c-custom-5);    }
-    70%  {        background-color: var(--c-custom-4);    }
-    80%  {        background-color: var(--c-custom-3);    }
-    90%  {        background-color: var(--c-custom-2);    }
-    100% {        background-color: var(--c-custom-1);    } */
-/*     from {background-color: #42b3f4;}
-    to {background-color: #9dea20;} */
+    0% { background-color:   var(--c-grad-1); }
+    50% { background-color:  var(--c-grad-2); }
+    100% { background-color: var(--c-grad-3); }
 }
 /*-------------------------------------------------------------------
     TOOLTIP END

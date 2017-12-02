@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Hotel Manager</title>
+    <link rel="stylesheet" href="css/login.css">
+</head>
+<body>
+    <div id='login-block'>    
+        <form id='login-form' action='./login.php' method='post'>
+            <div>
+                <input id='login' name='login' type='text' placeholder='login' maxlength='10'/>
+            </div>
+            <div>
+                <input id='password' name='password' type='password' placeholder='password' maxlength='10'/>
+            </div>
+<!--             <div>
+                <input id='submit' name='submit' type='submit' value='submit'/>
+            </div> -->
+        </form>
+    </div>
+    <div id="ajax-msg"></div>
+    <script type="text/javascript" src="js/utils/jquery.min.js"></script>
+    <script type="text/javascript" src="js/crypto/sha512.js"></script>
+    <script type="text/javascript" src="js/login.js"></script>
+</body>
+</html>
