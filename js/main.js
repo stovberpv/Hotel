@@ -224,7 +224,7 @@ const guest = {
     upd: function (oldData, newData) {
 
         this.del(oldData);
-        var year = $('#year')[0].innerHTML,
+        var year = $('#year')[0].children[1].innerHTML,
             monthName = $('#month')[0].innerHTML,
             month = globals.monthNames.indexOf(monthName);
         this.add(year, month, newData)
@@ -260,37 +260,41 @@ const tables = {
             days = new Date(year, month, 0).getDate();
 
         // thead begin
-        $('#calendar thead').empty();
-        var thead = document.getElementById('calendar').getElementsByTagName('thead')[0];
-
-        // название месяца
-        var th = document.createElement('th');
-        th.setAttribute('colspan', days + 1);
-        th.setAttribute('id', 'month');
-        th.appendChild(document.createTextNode(monthName));
-        var tr = document.createElement('tr')
-        tr.appendChild(th);
-        thead.appendChild(tr);
-
-        // дни месяца
-        tr = document.createElement('tr');
-        for (let i = 0; i <= days; i++) {
-            th = document.createElement('th');
-            if (0 == i) {
-                th.appendChild(document.createTextNode(""));
-            } else {
-                let day = utils.overlay(i, '0', 2),
-                    date = year + '-' + month + '-' + day;
-                th.setAttribute('id', date)
-                th.appendChild(document.createTextNode(i));
+        var thead = document.getElementById('calendar').getElementsByTagName('thead')[0],
+            tr = thead.getElementsByTagName('tr')[0],
+            th = tr.getElementsByTagName('th')[0];
+        
+        // чистим
+            // тело
+        $('#calendar tbody').empty();
+            // шапка - дни месяца
+        var trdays = thead.getElementsByTagName('tr')[1],
+        childs = trdays.children.length;
+        for (let i = 0; i < childs; i++) {
+            try {
+                trdays.deleteCell(1);
+            } catch (e) {
             }
-            tr.appendChild(th);
         }
-        thead.appendChild(tr);
+            // название месяца
+        th.innerHTML = "";
+            
+        //добавляем
+            // название месяца
+        th.setAttribute('colspan', days + 1);
+        th.appendChild(document.createTextNode(monthName));
+            // шапка - дни месяца
+        for (let i = 1; i <= days; i++) {
+            var th = document.createElement('th');
+            let day = utils.overlay(i, '0', 2),
+                date = year + '-' + month + '-' + day;
+            th.setAttribute('id', date)
+            th.appendChild(document.createTextNode(i));
+            trdays.appendChild(th);
+        }
         // thead end
 
         //  tbody begin
-        $('#calendar tbody').empty();
         var tbody = document.getElementById('calendar').getElementsByTagName('tbody')[0];
         for (let i = 0; i < globals.rooms.length; i++) {
             var room = globals.rooms[i].room,
@@ -416,7 +420,7 @@ $('#year').click(function () {
                     beg = 1900,
                     end = 9999;
                 if (val.year >= beg && val.year <= end) {
-                    $('#year')[0].innerHTML = val.year;
+                    $('#year')[0].children[1].innerHTML = val.year;
                     db.gl001.select();
                     inputDialog.unbind();
                 } else {
@@ -455,11 +459,13 @@ $('#month-right').click(function () {
     db.gl001.select();
 });
 
-$("#addGuest").on("click", function (e) {
+// $("#addGuest").on("click", function (e) {
+var addguest = function (e) {
     //  чистим список на добавление перед добавлением новых записей
     globals.guestsProcessing = [];
 
     // выбираем все выделенные ячейки в таблице Календарь
+    /*
     var selected = [];
     $('#calendar tbody tr td.' + globals.class_selected).each(function () {
         selected.push({
@@ -520,6 +526,19 @@ $("#addGuest").on("click", function (e) {
     if (val.length != 0) {
         globals.guestsProcessing.splice(0, 1);
     }
+    */
+    var val = {
+        intent: globals.intent_add,
+        id: -1,
+        dayin: this.dayin,
+        dayout: this.dayout,
+        room: this.room,
+        price: "",
+        paid: "",
+        name: "",
+        tel: "",
+        info: ""
+    };
 
     var inOutDialog = new InOutDialog({
         source: document,
@@ -530,12 +549,12 @@ $("#addGuest").on("click", function (e) {
                 db.gl001.insert(val);
                 inOutDialog.unbind();
 
-                if (globals.guestsProcessing.length != 0) {
-                    inOutDialog.bind();
-                    inOutDialog.setVal(globals.guestsProcessing[0]);
-                    globals.guestsProcessing.splice(0, 1);
-                    inOutDialog.show();
-                }
+                // if (globals.guestsProcessing.length != 0) {
+                //     inOutDialog.bind();
+                //     inOutDialog.setVal(globals.guestsProcessing[0]);
+                //     globals.guestsProcessing.splice(0, 1);
+                //     inOutDialog.show();
+                // }
 
             },
             btnNo: function () {
@@ -547,14 +566,17 @@ $("#addGuest").on("click", function (e) {
     inOutDialog.setVal(val);
     inOutDialog.show();
 
-});
-
-$('#editGuest').on('click', function (e) {
+// });
+}
+    
+// $('#editGuest').on('click', function (e) {
+var editGuest = function (e) {
 
     //  чистим список на редактирование перед добавлением новых записей
     globals.guestsProcessing = [];
 
-    $('#book tbody tr.' + globals.class_viewfix).each(function () {
+    // $('#book tbody tr.' + globals.class_viewfix).each(function () {
+    $('#book tbody tr#' + this.id[0]).each(function () {
 
         globals.guestsProcessing.push({
             intent: globals.intent_edit,
@@ -600,15 +622,17 @@ $('#editGuest').on('click', function (e) {
         inOutDialog.setVal(val);
         inOutDialog.show();
     }
-});
+// });
+}
 
-$("#delGuest").on("click", function (e) {
+// $("#delGuest").on("click", function (e) {
+var delGuest = function (e) {
 
     var intentList = [];
-
-    $('#book tbody tr.' + globals.class_viewfix).each(function () {
-        intentList.push($(this).children('td')[0].innerHTML);
-    });
+    // $('#book tbody tr.' + globals.class_viewfix).each(function () {
+    //     intentList.push($(this).children('td')[0].innerHTML);
+    // });
+    intentList.push((this.id[0]).substring(1));
 
     if (intentList.length != 0) {
         var confirmDialog = new ConfirmDialog({
@@ -632,7 +656,8 @@ $("#delGuest").on("click", function (e) {
         confirmDialog.show();
     }
 
-});
+// });
+}
 //---------------------------------------------------------------------
 //  CLICK LISTENERS END
 //---------------------------------------------------------------------
@@ -663,8 +688,8 @@ const db = {
                         return 0;
                     }
                 });
-
-                document.getElementById('year').innerHTML = data.year;
+                $('#year')[0].children[1].innerHTML = data.year;
+                // document.getElementById('year').innerHTML = data.year;
                 globals.rooms = data.rooms;
 
                 tables.create(data.year, data.month);
@@ -743,7 +768,7 @@ const db = {
             $.ajax({
                 url: './php/db/gl001/insert.php',
                 data: {
-                    year: $('#year')[0].innerHTML,
+                    year: $('#year')[0].children[1].innerHTML,
                     month: globals.monthNames.indexOf($('#month')[0].innerHTML),
                     dayin: opts.dayin,
                     dayout: opts.dayout,
@@ -774,7 +799,7 @@ const db = {
             $.ajax({
                 url: './php/db/gl001/select.php',
                 data: {
-                    year: $('#year')[0].innerHTML,
+                    year: $('#year')[0].children[1].innerHTML,
                     month: globals.monthNames.indexOf($('#month')[0].innerHTML),
                 },
                 dataType: 'json',
@@ -803,7 +828,7 @@ const db = {
             $.ajax({
                 url: './php/db/gl001/modify.php',
                 data: {
-                    year: $('#year')[0].textContent,
+                    year: $('#year')[0].children[1].innerHTML,
                     month: globals.monthNames.indexOf($('#month')[0].textContent),
                     id: opts.id,
                     dayin: opts.dayin,

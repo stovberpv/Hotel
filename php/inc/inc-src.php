@@ -3,4 +3,5 @@
 
 <script type="text/javascript" src="js/popup.js"></script>
 <script type="text/javascript" src="js/main.js"></script>
+<script type="text/javascript" src="js/rcmenu.js"></script>
 <script type="text/javascript" src="js/onReady.js"></script>
