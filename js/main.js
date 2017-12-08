@@ -46,6 +46,9 @@ const guest = {
 
                     var td = $('#calendar tbody tr#' + wa.room + ' td#' + wa.room + '_' + tmpda.format('yyyy-mm-dd'));
 
+                    //
+                    td.text('');
+
                     // добавляем класс
                     if (td.hasClass(globals.class_redeemed) || td.hasClass(globals.class_reserved)) {
                         td.removeClass(globals.class_redeemed);
@@ -639,7 +642,7 @@ var delGuest = function (e) {
             source: document,
             flag: globals.intent_del,
             dialog: {
-                title: 'Удаление записи',
+                title: 'Удаление',
                 body: 'Удалить запись под номером №' + intentList[0] + ' из гостевой книги?\r\nДействие нельзя будет отменить!'
             },
             buttons: {

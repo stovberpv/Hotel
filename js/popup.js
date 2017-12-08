@@ -85,7 +85,7 @@ class InOutDialog extends Dialog {
                 break;
             case 0:
                 additionalClass = "modal-header-extend";
-                title = 'Исправление';
+                title = 'Изменение';
                 break;
             case 1:
                 additionalClass = "modal-header-positive";

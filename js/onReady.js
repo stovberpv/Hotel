@@ -8,6 +8,7 @@
         $(function () {
             var isMouseDown = false,
                 isSelected,
+                selectedCounter = 1,
                 bookSelector = "#book tbody tr#",
                 calendarSelector = "#calendar tbody tr td.";
 
@@ -34,6 +35,8 @@
                         $(this).toggleClass(globals.class_selected);
                     }
                     isSelected = $(this).hasClass(globals.class_selected);
+
+                    isSelected ? $(this).text(selectedCounter++) : $(this).text('');
                     // press + hover end
 
                     // toggle view begin
@@ -69,9 +72,14 @@
                 mouseover: function (e) {
 
                     // press + hover begin
-                    if (isMouseDown && ($(this).hasClass("") || $(this).hasClass(globals.class_selected))) {
-                        $(this).toggleClass(globals.class_selected, isSelected); /* INFO: Вариант работы алгоритма №1 */
-                        // $(this).toggleClass(globals.class_selected); /* INFO: Вариант работы алгоритма №2 */
+                    if (isMouseDown) {
+                        if ($(this).hasClass("") || $(this).hasClass(globals.class_selected)) {
+                            $(this).toggleClass(globals.class_selected, isSelected); /* INFO: Вариант работы алгоритма №1 */
+                            // $(this).toggleClass(globals.class_selected); /* INFO: Вариант работы алгоритма №2 */
+                            isSelected ? $(this).text().length == 0 && $(this).text(selectedCounter++) : $(this).text('');
+                        } else {
+                            selectedCounter = 1;
+                        }
                     }
                     // press + hover end
 
@@ -109,7 +117,7 @@
                 },
 
                 mouseup: function (e) {
-
+                    selectedCounter = 1;
                     isMouseDown = false;
                 }
 

@@ -10,7 +10,7 @@ class RCMenu {
     bind() {
         var rcmlist = '<ul id = "rcmenu-list">';
         if (this.Opts.btn.upd) {
-            rcmlist += '<li id="editGuest" class="rcmenu-item">Исправить</li>';
+            rcmlist += '<li id="editGuest" class="rcmenu-item">Изменить</li>';
         }
         if (this.Opts.btn.del) {
             rcmlist += '<li id="delGuest" class="rcmenu-item">Удалить</li>';

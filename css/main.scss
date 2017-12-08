@@ -53,7 +53,7 @@
 
     /* ---------------------------- TABLES ---------------------------- */
     /* table-borders-body-normal */
-    --c-tab-bor-bod-nor: #DDDDDD; /* DDDDDD rgba(255,255,255,0.2) */
+    --c-tab-bor-bod-nor: #d1d2dd; /* DDDDDD rgba(255,255,255,0.2) */
     /* table-background-body: -normal -hovered */
     --c-tab-bck-bod-nor: transparent;
     --c-tab-bck-bod-hov: transparent;
@@ -78,7 +78,7 @@
     --c-btn-txt-hov-pos: #f1f1f1;
     --c-btn-txt-hov-neg: #f1f1f1;
     --c-btn-txt-hov-neu: #6a737b;
-    --c-btn-txt-hov-ext: #f1f1f1;
+    --c-btn-txt-hov-ext: #6a737b;
     /* button-background-noraml: -positive -negative -neutral -extend */
     --c-btn-bck-nor-pos: transparent;
     --c-btn-bck-nor-neg: transparent;
@@ -116,7 +116,7 @@
     /* modal-back-top: -negative -positive -neutral -extend */
     --c-mod-bck-top-neg: #F4425F;
     --c-mod-bck-top-pos: #00a4e4;
-    --c-mod-bck-top-neu: #f1f1f1;
+    --c-mod-bck-top-neu: #6a737b;
     --c-mod-bck-top-ext: #ffdd00E5;
     /* modal-back: -body -bottom */
     --c-mod-bck-bod    : #f1f1f1;
@@ -124,9 +124,9 @@
     /* modal-text-top: -negative -positive -neutral -extend */
     --c-mod-txt-top-neg: #f1f1f1;
     --c-mod-txt-top-pos: #f1f1f1;
-    --c-mod-txt-top-neu: #6a737b;
-    --c-mod-txt-top-ext: #f1f1f1;
-    --c-mod-txt-inp    : #f1f1f1;
+    --c-mod-txt-top-neu: #ffffff;
+    --c-mod-txt-top-ext: #ffffff;
+    --c-mod-txt-inp    : #ffffff;
 
     /* ---------------------------- CUSTOM ----------------------------- */
     --c-custom-1: #F06E58;
@@ -157,9 +157,9 @@ html {
 body {
     user-select: none !important;
     color: var(--c-doc-txt);
-    // background-color: var(--c-doc-bck-nor);
-    // background: linear-gradient(to bottom, #D5DEE7 0%, #E8EBF2 50%, #E2E7ED 100%), linear-gradient(to bottom, rgba(0,0,0,0.02) 50%, rgba(255,255,255,0.02) 61%, rgba(0,0,0,0.02) 73%), linear-gradient(33deg, rgba(255,255,255,0.20) 0%, rgba(0,0,0,0.20) 100%);
-    background-image: url("../res/background/new-11.jpg"); /* new-4 / 6*/
+    // background-image: url("../res/background/nature-1.jpg");
+     background-color: var(--c-doc-bck-nor);
+//    background: linear-gradient(to right, #C67B5319 0%, #C67B5319 100%);
     top: 0;
     left: 0;
     width: 100%;
@@ -186,24 +186,26 @@ body {
 #calendar {
     background: var(--c-tab-bck-bod-nor);
     table-layout: fixed;
-    border-collapse: collapse;
+    border-spacing: 3px 8px;
+    // border-collapse: collapse;
 }
 
-#calendar:hover {
-    background: var(--c-tab-bck-bod-hov);
-    box-shadow: var(--s-hov);
-    transition: all 0.3s;
-    transform: translateZ(10px);
-    z-index: 1;
-}
+// #calendar:hover {
+    // background: var(--c-tab-bck-bod-hov);
+    // box-shadow: var(--s-hov);
+    // transition: all 0.3s;
+    // transform: translateZ(10px);
+    // z-index: 1;
+// }
 
 #calendar td,
 #calendar th {
     border: 1px solid var(--c-tab-bor-bod-nor); 
     text-align: center;
     cursor: pointer;
-    width: 1.5em;
-    padding: 6px;
+    width: 21px;
+    padding: 4px;
+    border-radius: 3px;
 }
 
 #calendar th {
@@ -217,6 +219,11 @@ body {
 
 #calendar tbody td:hover {
     background-color: var(--c-tab-bck-col-hov);
+    border: 1px solid transparent;
+    box-shadow: var(--s-nor);
+    transition: all 0.3s;
+    transform: translateZ(10px);
+    z-index: 1;
 }
 
 #calendar tbody td:hover .hintText {
@@ -451,8 +458,8 @@ body {
 
 #month-left,
 #month-right {
-    width: 45px;
-    height: 40px;
+    width: 50px;
+    height: 50px;
     background-color: var(--c-btn-bck-nor-neu);
     box-shadow: none;
     border: none;
@@ -537,7 +544,7 @@ body {
 }
 
 .modal-body {
-    padding-top: 4px;
+    padding-top: 8px;
     padding-left: 4px;
     padding-right: 4px;
     padding-bottom: 0px;
