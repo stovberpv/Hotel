@@ -104,19 +104,19 @@ const guest = {
             //------------------------------------------------------------
             td = document.createElement('td');
             td.setAttribute('class', 'person-base-info');
-            
+
             a = document.createElement('a');
             a.setAttribute('class', 'person-name');
             a.appendChild(document.createTextNode(wa.name));
             td.appendChild(a);
-            
+
             if (wa.tel.length > 0) {
                 a = document.createElement('a');
                 a.setAttribute('class', 'person-tel');
                 a.appendChild(document.createTextNode(wa.tel));
                 td.appendChild(a);
             }
-            
+
             tr = document.createElement('tr');
             tr.appendChild(td);
 
@@ -131,7 +131,7 @@ const guest = {
             td.setAttribute('rowspan', '2');
             td.appendChild(document.createTextNode(wa.room));
             tr.appendChild(td);
-            
+
             td = document.createElement('td');
             td.setAttribute('class', 'person-room-price');
             td.appendChild(document.createTextNode(wa.price));
@@ -202,7 +202,7 @@ const guest = {
                 td.removeClass('N' + wa.id);
                 td.removeClass('N' + wa.id + '-' + globals.class_viewfix);
                 td.removeClass('N' + wa.id + '-' + globals.class_view);
-                if (td.attr('class') == globals.class_adjacent) {
+                if (td.hasClass(globals.class_adjacent)) {
                     td.removeClass(globals.class_adjacent);
                     if (begda < curda) {
                         td.addClass(globals.class_redeemed);
@@ -227,15 +227,19 @@ const guest = {
     upd: function (oldData, newData) {
 
         this.del(oldData);
-        var year = $('#year')[0].children[1].innerHTML,
-            monthName = $('#month')[0].innerHTML,
+        var year = $('#year').val(),
+            monthName = $('#month').val(),
             month = globals.monthNames.indexOf(monthName);
         this.add(year, month, newData)
 
         // book sort begin
-        var tr = $('#book > tbody > tr'), pos = [];
+        var tr = $('#book > tbody > tr'),
+            pos = [];
         for (let i = 0; i < tr.length; i++) {
-            pos.push({ id: parseInt(tr[i].children[0].innerHTML, 10), pos: i });
+            pos.push({
+                id: parseInt(tr[i].children[0].innerHTML, 10),
+                pos: i
+            });
         }
 
         pos.sort(function (a, b) {
@@ -243,7 +247,7 @@ const guest = {
         });
 
         var prevRow = $('#book tbody tr#N' + pos[0].id);
-        for (let i = 0; i < (pos.length - 1); i ++) {
+        for (let i = 0; i < (pos.length - 1); i++) {
             if (pos[i].pos > pos[i + 1].pos) {
                 var curRow = $('#book tbody tr#N' + pos[i].id),
                     nextRow = $('#book tbody tr#N' + pos[i + 1].id);
@@ -266,27 +270,28 @@ const tables = {
         var thead = document.getElementById('calendar').getElementsByTagName('thead')[0],
             tr = thead.getElementsByTagName('tr')[0],
             th = tr.getElementsByTagName('th')[0];
-        
+
         // чистим
-            // тело
+        // тело
         $('#calendar tbody').empty();
-            // шапка - дни месяца
+        // шапка - дни месяца
         var trdays = thead.getElementsByTagName('tr')[1],
-        childs = trdays.children.length;
+            childs = trdays.children.length;
         for (let i = 0; i < childs; i++) {
             try {
                 trdays.deleteCell(1);
-            } catch (e) {
-            }
+            } catch (e) {}
         }
-            // название месяца
-        th.innerHTML = "";
-            
+        // название месяца
+        document.getElementById('month').innerHTML = "";
+        document.getElementById('month').value = "";
+
         //добавляем
-            // название месяца
+        // название месяца
         th.setAttribute('colspan', days + 1);
-        th.appendChild(document.createTextNode(monthName));
-            // шапка - дни месяца
+        document.getElementById('month').innerHTML = monthName;
+        document.getElementById('month').value = monthName;
+        // шапка - дни месяца
         for (let i = 1; i <= days; i++) {
             var th = document.createElement('th');
             let day = utils.overlay(i, '0', 2),
@@ -410,126 +415,74 @@ const utils = {
 //---------------------------------------------------------------------
 //  CLICK LISTENERS BEGIN
 //---------------------------------------------------------------------
-$('#year').click(function () {
-    var inputDialog = new InputDialog({
-        source: document,
-        flag: 0,
-        dialog: {
-            title: 'Укажите год выборки',
-        },
+$('#pick-calendar').click(function () {
+    var pickCalendar = new PickCalendar({
         buttons: {
-            btnOk: function () {
-                let val = inputDialog.getVal(),
-                    beg = 1900,
-                    end = 9999;
-                if (val.year >= beg && val.year <= end) {
-                    $('#year')[0].children[1].innerHTML = val.year;
-                    db.gl001.select();
-                    inputDialog.unbind();
-                } else {
-                    infoMsg = 'Некорректный ввод!';
-                    inputDialog.unbind();
+            ok: function () {
+                var res = pickCalendar.getVal();
+                if (res.year < 1900) {
+                    return;
                 }
+
+                if ($('#year').val() == res.year) {
+                    if ($('#month').val() == res.monthName) {
+                        pickCalendar.unbind();
+                        return;
+                    }
+                }
+
+                pickCalendar.unbind();
+
+                $('#month').innerHTML = res.monthName;
+                $('#month').val(res.monthName);
+                $('#year').innerHTML = res.year;
+                $('#year').val(res.year);
+                db.gl001.select();
             },
-            btnNo: function () {
-                inputDialog.unbind();
+            no: function () {
+                pickCalendar.unbind();
             }
         }
     });
-    inputDialog.bind();
-    inputDialog.show();
+    pickCalendar.bind();
+    var month = globals.monthNames.indexOf($('#month').val());
+    pickCalendar.setVal({
+        year: $('#year').val(),
+        month: utils.overlay(month, '0', 2)
+    });
+    pickCalendar.show();
 });
 
 $('#month-left').click(function () {
-    var month = globals.monthNames.indexOf($('#month')[0].innerHTML);
+    var month = globals.monthNames.indexOf($('#month').val());
     if (month > 1) {
         month--;
     } else {
         month = 12;
     }
-    $('#month')[0].innerHTML = globals.monthNames[month];
+    var month = globals.monthNames[month];
+    $('#month').innerHTML = month;
+    $('#month').val(month);
     db.gl001.select();
 });
 
 $('#month-right').click(function () {
-    var month = globals.monthNames.indexOf($('#month')[0].innerHTML);
+    var month = globals.monthNames.indexOf($('#month').val());
     if (month > 11) {
         month = 1;
     } else {
         month++;
     }
-    $('#month')[0].innerHTML = globals.monthNames[month];
+    var month = globals.monthNames[month];
+    $('#month').innerHTML = month;
+    $('#month').val(month);
     db.gl001.select();
 });
 
-// $("#addGuest").on("click", function (e) {
 var addguest = function (e) {
     //  чистим список на добавление перед добавлением новых записей
     globals.guestsProcessing = [];
 
-    // выбираем все выделенные ячейки в таблице Календарь
-    /*
-    var selected = [];
-    $('#calendar tbody tr td.' + globals.class_selected).each(function () {
-        selected.push({
-            room: $(this)[0].id.substring(0, 2),
-            day: $(this)[0].cellIndex
-        });
-    });
-
-    // группировка по комнате
-    var grouped = utils.groupBy(selected, sel => sel.room);
-
-    // формируем итоговый список
-    grouped.forEach(group => {
-        var room = group[0].room,
-            begda = 999,
-            endda = 0;
-
-        group.forEach(entry => {
-            if (endda != 0 && (endda + 1) != entry.day) {
-                globals.guestsProcessing.push({
-                    intent: globals.intent_add,
-                    id: -1,
-                    dayin: begda,
-                    dayout: endda,
-                    room: room,
-                    price: "",
-                    paid: "",
-                    name: "",
-                    tel: "",
-                    info: ""
-                });
-                begda = entry.day;
-                endda = entry.day;
-            }
-
-            if (begda > entry.day) {
-                begda = entry.day;
-            }
-            if (endda < entry.day) {
-                endda = entry.day;
-            }
-        });
-        globals.guestsProcessing.push({
-            intent: globals.intent_add,
-            id: -1,
-            dayin: begda,
-            dayout: endda,
-            room: room,
-            price: "",
-            paid: "",
-            name: "",
-            tel: "",
-            info: ""
-        });
-    });
-
-    let val = globals.guestsProcessing[0] ? globals.guestsProcessing[0] : [];
-    if (val.length != 0) {
-        globals.guestsProcessing.splice(0, 1);
-    }
-    */
     var val = {
         intent: globals.intent_add,
         id: -1,
@@ -551,14 +504,6 @@ var addguest = function (e) {
                 val = inOutDialog.getVal();
                 db.gl001.insert(val);
                 inOutDialog.unbind();
-
-                // if (globals.guestsProcessing.length != 0) {
-                //     inOutDialog.bind();
-                //     inOutDialog.setVal(globals.guestsProcessing[0]);
-                //     globals.guestsProcessing.splice(0, 1);
-                //     inOutDialog.show();
-                // }
-
             },
             btnNo: function () {
                 inOutDialog.unbind();
@@ -568,73 +513,47 @@ var addguest = function (e) {
     inOutDialog.bind();
     inOutDialog.setVal(val);
     inOutDialog.show();
-
-// });
 }
-    
-// $('#editGuest').on('click', function (e) {
+
 var editGuest = function (e) {
 
     //  чистим список на редактирование перед добавлением новых записей
-    globals.guestsProcessing = [];
-
-    // $('#book tbody tr.' + globals.class_viewfix).each(function () {
-    $('#book tbody tr#' + this.id[0]).each(function () {
-
-        globals.guestsProcessing.push({
-            intent: globals.intent_edit,
-            id: $('.person-id', $(this)).html(),
-            dayin: ($('.person-dayin', $(this)).html()).substring(3),
-            dayout: ($('.person-dayout', $(this)).html()).substring(3),
-            room: $('.person-room-num', $(this)).html(),
-            price: $('.person-room-price', $(this)).html(),
-            paid: $('.person-room-paid', $(this)).html(),
-            name: $('.person-name', $(this)).html(),
-            tel: $('.person-tel', $(this)).html(),
-            info: $('.person-info', $(this)).html()
-        });
-    });
-    // ициализируем поля диалога
-
-    let val = globals.guestsProcessing[0] ? globals.guestsProcessing[0] : [];
-    if (val.length != 0) {
-        globals.guestsProcessing.splice(0, 1);
-
-        var inOutDialog = new InOutDialog({
-            source: document,
-            flag: globals.intent_edit,
-            buttons: {
-                btnOk: function () {
-                    val = inOutDialog.getVal();
-                    db.gl001.modify(val);
-                    inOutDialog.unbind();
-
-                    if (globals.guestsProcessing.length != 0) {
-                        inOutDialog.bind();
-                        inOutDialog.setVal(globals.guestsProcessing[0]);
-                        globals.guestsProcessing.splice(0, 1);
-                        inOutDialog.show();
-                    }
-                },
-                btnNo: function () {
-                    inOutDialog.unbind();
-                }
-            }
-        });
-        inOutDialog.bind();
-        inOutDialog.setVal(val);
-        inOutDialog.show();
+    var guest = $('#book tbody tr#' + this.id[0]);
+    
+    var val = {
+        intent: globals.intent_edit,
+        id: $('.person-id', guest).html(),
+        dayin: ($('.person-dayin', guest).html()).substring(3),
+        dayout: ($('.person-dayout', guest).html()).substring(3),
+        room: $('.person-room-num', guest).html(),
+        price: $('.person-room-price', guest).html(),
+        paid: $('.person-room-paid', guest).html(),
+        name: $('.person-name', guest).html(),
+        tel: $('.person-tel', guest).html(),
+        info: $('.person-info',guest).html()
     }
-// });
+    
+    var inOutDialog = new InOutDialog({
+        source: document,
+        flag: globals.intent_edit,
+        buttons: {
+            btnOk: function () {
+                db.gl001.modify(inOutDialog.getVal());
+                inOutDialog.unbind();
+            },
+            btnNo: function () {
+                inOutDialog.unbind();
+            }
+        }
+    });
+    inOutDialog.bind();
+    inOutDialog.setVal(val);
+    inOutDialog.show();
 }
 
-// $("#delGuest").on("click", function (e) {
 var delGuest = function (e) {
 
     var intentList = [];
-    // $('#book tbody tr.' + globals.class_viewfix).each(function () {
-    //     intentList.push($(this).children('td')[0].innerHTML);
-    // });
     intentList.push((this.id[0]).substring(1));
 
     if (intentList.length != 0) {
@@ -659,7 +578,6 @@ var delGuest = function (e) {
         confirmDialog.show();
     }
 
-// });
 }
 //---------------------------------------------------------------------
 //  CLICK LISTENERS END
@@ -691,8 +609,7 @@ const db = {
                         return 0;
                     }
                 });
-                $('#year')[0].children[1].innerHTML = data.year;
-                // document.getElementById('year').innerHTML = data.year;
+                $('#year').val(data.year);
                 globals.rooms = data.rooms;
 
                 tables.create(data.year, data.month);
@@ -771,8 +688,8 @@ const db = {
             $.ajax({
                 url: './php/db/gl001/insert.php',
                 data: {
-                    year: $('#year')[0].children[1].innerHTML,
-                    month: globals.monthNames.indexOf($('#month')[0].innerHTML),
+                    year: $('#year').val(),
+                    month: globals.monthNames.indexOf($('#month').val()),
                     dayin: opts.dayin,
                     dayout: opts.dayout,
                     room: opts.room,
@@ -802,8 +719,8 @@ const db = {
             $.ajax({
                 url: './php/db/gl001/select.php',
                 data: {
-                    year: $('#year')[0].children[1].innerHTML,
-                    month: globals.monthNames.indexOf($('#month')[0].innerHTML),
+                    year: $('#year').val(),
+                    month: globals.monthNames.indexOf($('#month').val()),
                 },
                 dataType: 'json',
                 success: function (data) {
@@ -831,8 +748,8 @@ const db = {
             $.ajax({
                 url: './php/db/gl001/modify.php',
                 data: {
-                    year: $('#year')[0].children[1].innerHTML,
-                    month: globals.monthNames.indexOf($('#month')[0].textContent),
+                    year: $('#year').val(),
+                    month: globals.monthNames.indexOf($('#month').val()),
                     id: opts.id,
                     dayin: opts.dayin,
                     dayout: opts.dayout,

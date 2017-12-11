@@ -18,8 +18,6 @@
 
 <div id="calendar-block">
 
-        <!-- <br/> -->
-        
         <button id="month-left" type="button" class="btn neutral calendar-block button-left">
             <svg viewBox="0 0 50 50" ><use xlink:href="#icon-left"/></svg>
         </button>
@@ -27,14 +25,18 @@
         <table id="calendar" class="calendar-block my-table">
             <thead>
                 <tr>
-                    <th id="month"></th>
+                    <th>
+                        <button id="pick-calendar" type="button">
+                            <label id="month"></label>
+                            <label id="year"></label>
+                        </button></th>
                 </tr>
                 <tr>
-                    <th>
-                        <button id="year" type="button">
+                    <th class="blank-cell">
+                        <!-- <button id="year" type="button">
                             <svg viewBox="0 0 24 24" ><use xlink:href="#icon-calendar"/></svg>
                             <span>1900</span>
-                        </button>
+                        </button> -->
                     </th>
                 </tr>
             </thead>

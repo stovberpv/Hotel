@@ -8,7 +8,7 @@
         $(function () {
             var isMouseDown = false,
                 isSelected,
-                selectedCounter = 1,
+                selectedCounter = 0,
                 bookSelector = "#book tbody tr#",
                 calendarSelector = "#calendar tbody tr td.";
 
@@ -36,7 +36,7 @@
                     }
                     isSelected = $(this).hasClass(globals.class_selected);
 
-                    isSelected ? $(this).text(selectedCounter++) : $(this).text('');
+                    isSelected ? (selectedCounter++, $(this).text(selectedCounter)) : $(this).text('');
                     // press + hover end
 
                     // toggle view begin
@@ -76,7 +76,7 @@
                         if ($(this).hasClass("") || $(this).hasClass(globals.class_selected)) {
                             $(this).toggleClass(globals.class_selected, isSelected); /* INFO: Вариант работы алгоритма №1 */
                             // $(this).toggleClass(globals.class_selected); /* INFO: Вариант работы алгоритма №2 */
-                            isSelected ? $(this).text().length == 0 && $(this).text(selectedCounter++) : $(this).text('');
+                            isSelected ? $(this).text().length == 0 && (selectedCounter++, $(this).text(selectedCounter)) : $(this).text('');
                         } else {
                             selectedCounter = 1;
                         }
@@ -101,6 +101,11 @@
 
                 mouseleave: function (e) {
 
+                    // press + hover begin
+                    var cnt;
+                    isMouseDown && isSelected && (cnt = parseInt($(this).text()), isNaN(cnt) ? selectedCounter = 0 : selectedCounter = cnt);
+                    // toggle view end
+
                     // toggle view begin
                     let ids = getIDs($(this).attr('class'));
                     for (let i = 0; i < ids.length; i++) {
@@ -117,7 +122,8 @@
                 },
 
                 mouseup: function (e) {
-                    selectedCounter = 1;
+
+                    selectedCounter = 0;
                     isMouseDown = false;
                 }
 
@@ -244,7 +250,7 @@
                         i++;
                     }                    
 
-                } else if(classList.includes(globals.class_redeemed || globals.class_reserved)) {
+                } else if(classList.includes(globals.class_redeemed) || classList.includes(globals.class_reserved)) {
                     btn = {
                         upd: true,
                         del: true,
