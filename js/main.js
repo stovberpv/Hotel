@@ -1,8 +1,5 @@
 'use strict';
 
-//---------------------------------------------------------------------
-//  GLOBALS BEGIN
-//---------------------------------------------------------------------
 const globals = {
     bookColumns: 9,
     rooms: [],
@@ -18,14 +15,7 @@ const globals = {
     intent_edit: 0,
     intent_del: -1
 }
-//---------------------------------------------------------------------
-//  GLOBALS END
-//---------------------------------------------------------------------
 
-
-//---------------------------------------------------------------------
-//  NEW
-//---------------------------------------------------------------------
 const guest = {
 
     add: function (year, month, list) {
@@ -83,6 +73,21 @@ const guest = {
                 begda.setDate(begda.getDate() + 1);
             }
             // calendar end
+
+
+            //test
+            //test2(wa);
+            /*
+            var td = $('#calendar tbody tr#' + wa.room),
+                table = $('.book', td);
+            if (table.length == 0) {
+                var cont = test(null, wa);
+                td.append(cont);
+            } else {
+                table = test(table, wa);
+            }*/
+            //test
+
 
             // book begin
             var rTable = document.getElementById('book'),
@@ -259,6 +264,123 @@ const guest = {
     }
 }
 
+function test2(wa) {
+    var hiddenRow = $('#' + wa.room + '-book');
+    if (hiddenRow.length == 0) {
+        hiddenRow = document.createElement('tr');
+        hiddenRow.setAttribute('id', wa.room + '-book');
+        hiddenRow.classList.add('book');
+        var td = document.createElement('td');
+        td.setAttribute('colspan', 31); //TODO:
+        var table = document.createElement('table');
+        table.appendChild(document.createElement('tbody'));
+        td.appendChild(table);
+        hiddenRow.appendChild(td);
+        $('#calendar tbody tr#' + wa.room).after(hiddenRow);
+        hiddenRow = $('#' + wa.room + '-book');
+    }
+    test($('table', hiddenRow), wa);
+}
+
+function test(table, wa) {
+
+    var rTable = table,
+        rBody = $('tbody', rTable),
+        tr, rTR, td, a;
+
+    //------------------------------------------------------------
+    td = document.createElement('td');
+    td.setAttribute('class', 'person-id');
+    td.appendChild(document.createTextNode(wa.id));
+
+    rTR = document.createElement('tr');
+    rTR.setAttribute('class', 'person-row');
+    rTR.setAttribute('id', 'N' + wa.id);
+    rTR.appendChild(td);
+    //------------------------------------------------------------
+
+    //------------------------------------------------------------
+    td = document.createElement('td');
+    td.setAttribute('class', 'person-base-info');
+
+    a = document.createElement('a');
+    a.setAttribute('class', 'person-name');
+    a.appendChild(document.createTextNode(wa.name));
+    td.appendChild(a);
+
+    if (wa.tel.length > 0) {
+        a = document.createElement('a');
+        a.setAttribute('class', 'person-tel');
+        a.appendChild(document.createTextNode(wa.tel));
+        td.appendChild(a);
+    }
+
+    tr = document.createElement('tr');
+    tr.appendChild(td);
+
+    td = document.createElement('td');
+    td.setAttribute('class', 'person-dates');
+    td.classList.add('person-dayin');
+    td.appendChild(document.createTextNode('с  ' + (new Date(wa.dayin).format('dd.mm'))));
+    tr.appendChild(td);
+
+    td = document.createElement('td');
+    td.setAttribute('class', 'person-room-num');
+    td.setAttribute('rowspan', '2');
+    td.appendChild(document.createTextNode(wa.room));
+    tr.appendChild(td);
+
+    td = document.createElement('td');
+    td.setAttribute('class', 'person-room-price');
+    td.appendChild(document.createTextNode(wa.price));
+    tr.appendChild(td);
+
+    var tbody = document.createElement('tbody')
+    tbody.appendChild(tr);
+    //------------------------------------------------------------
+
+    //------------------------------------------------------------
+    tr = document.createElement('tr');
+
+    td = document.createElement('td');
+    td.setAttribute('class', 'person-info');
+    td.appendChild(document.createTextNode(wa.info));
+    tr.appendChild(td);
+
+    td = document.createElement('td');
+    td.setAttribute('class', 'person-dates');
+    td.classList.add('person-dayout');
+    td.appendChild(document.createTextNode('по ' + (new Date(wa.dayout).format('dd.mm'))));
+    tr.appendChild(td);
+
+    td = document.createElement('td');
+    td.setAttribute('class', 'person-room-paid');
+    td.appendChild(document.createTextNode(wa.paid));
+    tr.appendChild(td);
+
+    tbody.appendChild(tr);
+    //------------------------------------------------------------
+
+    //------------------------------------------------------------
+    var iTable = document.createElement('table');
+    iTable.setAttribute('class', 'innerBook');
+    iTable.appendChild(tbody);
+    //------------------------------------------------------------
+
+    //------------------------------------------------------------
+    td = document.createElement('td');
+    td.appendChild(iTable);
+    //------------------------------------------------------------
+
+    //------------------------------------------------------------
+    rTR.appendChild(td);
+    //------------------------------------------------------------
+
+    //------------------------------------------------------------
+    rBody[0].appendChild(rTR);
+    //------------------------------------------------------------
+}
+
 const tables = {
 
     create: function (year, month) {
@@ -336,14 +458,7 @@ const tables = {
         $('#book tbody').empty();
     }
 }
-//---------------------------------------------------------------------
-//  NEW
-//---------------------------------------------------------------------
 
-
-//---------------------------------------------------------------------
-//  UTILS BEGIN
-//---------------------------------------------------------------------
 const utils = {
 
     overlay: function (val, char, len) {
@@ -407,14 +522,7 @@ const utils = {
     }
 
 }
-//---------------------------------------------------------------------
-//  UTILS END
-//---------------------------------------------------------------------
 
-
-//---------------------------------------------------------------------
-//  CLICK LISTENERS BEGIN
-//---------------------------------------------------------------------
 $('#pick-calendar').click(function () {
     var pickCalendar = new PickCalendar({
         buttons: {
@@ -519,7 +627,7 @@ var editGuest = function (e) {
 
     //  чистим список на редактирование перед добавлением новых записей
     var guest = $('#book tbody tr#' + this.id[0]);
-    
+
     var val = {
         intent: globals.intent_edit,
         id: $('.person-id', guest).html(),
@@ -530,9 +638,9 @@ var editGuest = function (e) {
         paid: $('.person-room-paid', guest).html(),
         name: $('.person-name', guest).html(),
         tel: $('.person-tel', guest).html(),
-        info: $('.person-info',guest).html()
+        info: $('.person-info', guest).html()
     }
-    
+
     var inOutDialog = new InOutDialog({
         source: document,
         flag: globals.intent_edit,
@@ -579,14 +687,7 @@ var delGuest = function (e) {
     }
 
 }
-//---------------------------------------------------------------------
-//  CLICK LISTENERS END
-//---------------------------------------------------------------------
 
-
-//---------------------------------------------------------------------
-//  DB BEGIN
-//---------------------------------------------------------------------
 const db = {
 
     initialize: function () {
@@ -799,6 +900,3 @@ const db = {
     }
 
 }
-//---------------------------------------------------------------------
-//  DB END
-//---------------------------------------------------------------------
