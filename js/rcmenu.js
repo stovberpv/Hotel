@@ -37,7 +37,7 @@ class RCMenu {
                 break;
 
                 case 'addGuest':
-                    el[i].addEventListener('click', addguest.bind( { room: this.Opts.room, dayin: this.Opts.begda, dayout: this.Opts.endda } ));
+                    el[i].addEventListener('click', addGuest.bind( { room: this.Opts.room, dayin: this.Opts.begda, dayout: this.Opts.endda } ));
                 break;
             
                 default:

@@ -7,8 +7,6 @@
 </head>
 <body>
     <?php include ('./php/inc/inc-calendar.php'); ?>
-    <br/>
-    <?php include ('./php/inc/inc-book.php'); ?>
     <?php include ('./php/inc/inc-src.php'); ?>
     <div id="ajax-msg"></div>
 </body>

@@ -74,26 +74,27 @@ const guest = {
             }
             // calendar end
 
-
-            //test
-            //test2(wa);
-            /*
-            var td = $('#calendar tbody tr#' + wa.room),
-                table = $('.book', td);
-            if (table.length == 0) {
-                var cont = test(null, wa);
-                td.append(cont);
-            } else {
-                table = test(table, wa);
-            }*/
-            //test
-
-
             // book begin
-            var rTable = document.getElementById('book'),
-                rBody = rTable.getElementsByTagName('tbody'),
+            var hiddenRow = $('#' + wa.room + '-book');
+            if (hiddenRow.length == 0) {
+                hiddenRow = document.createElement('tr');
+                hiddenRow.setAttribute('id', wa.room + '-book');
+                hiddenRow.classList.add('hidden');
+                var td = document.createElement('td'),
+                    days = new Date(year, month, 0).getDate();
+                td.setAttribute('colspan', days);
+                var table = document.createElement('table');
+                table.classList.add('book');
+                table.appendChild(document.createElement('tbody'));
+                td.appendChild(table);
+                hiddenRow.appendChild(td);
+                $('#calendar tbody tr#' + wa.room).after(hiddenRow);
+                hiddenRow = $('#' + wa.room + '-book');
+            }
+
+            var rTable = $('table', hiddenRow),
+                rBody = $('tbody', rTable),
                 tr, rTR, td, a;
-            //------------------------------------------------------------
 
             //------------------------------------------------------------
             td = document.createElement('td');
@@ -186,7 +187,6 @@ const guest = {
             //------------------------------------------------------------
             rBody[0].appendChild(rTR);
             //------------------------------------------------------------
-
             // book end
         }
     },
@@ -224,7 +224,7 @@ const guest = {
             // calendar end
 
             // book begin
-            $('#book tbody tr#N' + wa.id).remove();
+            $('.book tbody tr#N' + wa.id).remove();
             // book end
         }
     },
@@ -238,7 +238,7 @@ const guest = {
         this.add(year, month, newData)
 
         // book sort begin
-        var tr = $('#book > tbody > tr'),
+        var tr = $('#' + newData[0].room + '-book > td > .book > tbody > tr'),
             pos = [];
         for (let i = 0; i < tr.length; i++) {
             pos.push({
@@ -251,181 +251,71 @@ const guest = {
             return a.id - b.id;
         });
 
-        var prevRow = $('#book tbody tr#N' + pos[0].id);
+        var prevRow = $('#' + newData[0].room + '-book tr#N' + pos[0].id);
         for (let i = 0; i < (pos.length - 1); i++) {
             if (pos[i].pos > pos[i + 1].pos) {
-                var curRow = $('#book tbody tr#N' + pos[i].id),
-                    nextRow = $('#book tbody tr#N' + pos[i + 1].id);
+                var curRow = $('#' + newData[0].room + '-book tr#N' + pos[i].id),
+                    nextRow = $('#' + newData[0].room + '-book tr#N' + pos[i + 1].id);
                 curRow.insertBefore(nextRow);
             }
-            prevRow = $('#book tbody tr#N' + pos[i].id);
+            prevRow = $('#' + newData[0].room + '-book tbody tr#N' + pos[i].id);
         }
         // book sort end
     }
-}
-
-function test2(wa) {
-    var hiddenRow = $('#' + wa.room + '-book');
-    if (hiddenRow.length == 0) {
-        hiddenRow = document.createElement('tr');
-        hiddenRow.setAttribute('id', wa.room + '-book');
-        hiddenRow.classList.add('book');
-        var td = document.createElement('td');
-        td.setAttribute('colspan', 31); //TODO:
-        var table = document.createElement('table');
-        table.appendChild(document.createElement('tbody'));
-        td.appendChild(table);
-        hiddenRow.appendChild(td);
-        $('#calendar tbody tr#' + wa.room).after(hiddenRow);
-        hiddenRow = $('#' + wa.room + '-book');
-    }
-    test($('table', hiddenRow), wa);
-}
-
-function test(table, wa) {
-
-    var rTable = table,
-        rBody = $('tbody', rTable),
-        tr, rTR, td, a;
-
-    //------------------------------------------------------------
-    td = document.createElement('td');
-    td.setAttribute('class', 'person-id');
-    td.appendChild(document.createTextNode(wa.id));
-
-    rTR = document.createElement('tr');
-    rTR.setAttribute('class', 'person-row');
-    rTR.setAttribute('id', 'N' + wa.id);
-    rTR.appendChild(td);
-    //------------------------------------------------------------
-
-    //------------------------------------------------------------
-    td = document.createElement('td');
-    td.setAttribute('class', 'person-base-info');
-
-    a = document.createElement('a');
-    a.setAttribute('class', 'person-name');
-    a.appendChild(document.createTextNode(wa.name));
-    td.appendChild(a);
-
-    if (wa.tel.length > 0) {
-        a = document.createElement('a');
-        a.setAttribute('class', 'person-tel');
-        a.appendChild(document.createTextNode(wa.tel));
-        td.appendChild(a);
-    }
-
-    tr = document.createElement('tr');
-    tr.appendChild(td);
-
-    td = document.createElement('td');
-    td.setAttribute('class', 'person-dates');
-    td.classList.add('person-dayin');
-    td.appendChild(document.createTextNode('с  ' + (new Date(wa.dayin).format('dd.mm'))));
-    tr.appendChild(td);
-
-    td = document.createElement('td');
-    td.setAttribute('class', 'person-room-num');
-    td.setAttribute('rowspan', '2');
-    td.appendChild(document.createTextNode(wa.room));
-    tr.appendChild(td);
-
-    td = document.createElement('td');
-    td.setAttribute('class', 'person-room-price');
-    td.appendChild(document.createTextNode(wa.price));
-    tr.appendChild(td);
-
-    var tbody = document.createElement('tbody')
-    tbody.appendChild(tr);
-    //------------------------------------------------------------
-
-    //------------------------------------------------------------
-    tr = document.createElement('tr');
-
-    td = document.createElement('td');
-    td.setAttribute('class', 'person-info');
-    td.appendChild(document.createTextNode(wa.info));
-    tr.appendChild(td);
-
-    td = document.createElement('td');
-    td.setAttribute('class', 'person-dates');
-    td.classList.add('person-dayout');
-    td.appendChild(document.createTextNode('по ' + (new Date(wa.dayout).format('dd.mm'))));
-    tr.appendChild(td);
-
-    td = document.createElement('td');
-    td.setAttribute('class', 'person-room-paid');
-    td.appendChild(document.createTextNode(wa.paid));
-    tr.appendChild(td);
-
-    tbody.appendChild(tr);
-    //------------------------------------------------------------
-
-    //------------------------------------------------------------
-    var iTable = document.createElement('table');
-    iTable.setAttribute('class', 'innerBook');
-    iTable.appendChild(tbody);
-    //------------------------------------------------------------
-
-    //------------------------------------------------------------
-    td = document.createElement('td');
-    td.appendChild(iTable);
-    //------------------------------------------------------------
-
-    //------------------------------------------------------------
-    rTR.appendChild(td);
-    //------------------------------------------------------------
-
-    //------------------------------------------------------------
-    rBody[0].appendChild(rTR);
-    //------------------------------------------------------------
 }
 
 const tables = {
 
     create: function (year, month) {
 
-        var monthName = globals.monthNames[month],
+        var monthName = utils.getMonthName(month),
             days = new Date(year, month, 0).getDate();
 
         // thead begin
-        var thead = document.getElementById('calendar').getElementsByTagName('thead')[0],
-            tr = thead.getElementsByTagName('tr')[0],
-            th = tr.getElementsByTagName('th')[0];
-
-        // чистим
-        // тело
-        $('#calendar tbody').empty();
-        // шапка - дни месяца
-        var trdays = thead.getElementsByTagName('tr')[1],
+        //  --- чистим
+        //  --- --- тело
+        $('#calendar > tbody').empty();
+                // дни месяца
+        var trdays = document.getElementById('calendar-row-days'),
             childs = trdays.children.length;
         for (let i = 0; i < childs; i++) {
             try {
-                trdays.deleteCell(1);
+                trdays.deleteCell(0);
             } catch (e) {}
         }
-        // название месяца
+        //  --- --- название месяца
         document.getElementById('month').innerHTML = "";
         document.getElementById('month').value = "";
+        //  --- --- год
+        document.getElementById('year').innerHTML = "";
+        document.getElementById('year').value = "";
 
-        //добавляем
-        // название месяца
-        th.setAttribute('colspan', days + 1);
+        //  --- добавляем
+        //  --- --- год
+        document.getElementById('year').innerHTML = year;
+        document.getElementById('year').value = year;
+        //  --- --- название месяца
+        var td = document.getElementById('calendar-row-buttons').getElementsByTagName('td')[0];
+        td.setAttribute('colspan', days + 1);
         document.getElementById('month').innerHTML = monthName;
         document.getElementById('month').value = monthName;
-        // шапка - дни месяца
-        for (let i = 1; i <= days; i++) {
+        //  --- --- дни месяца
+        for (let i = 0; i <= days; i++) {
             var th = document.createElement('th');
-            let day = utils.overlay(i, '0', 2),
-                date = year + '-' + month + '-' + day;
-            th.setAttribute('id', date)
-            th.appendChild(document.createTextNode(i));
+            if (i == 0) {
+                th.classList.add('blank-cell');
+            } else {
+                let day = utils.overlay(i, '0', 2),
+                date = year + '-' + utils.overlay(month,'0', 2) + '-' + day;
+                th.setAttribute('id', date)
+                th.appendChild(document.createTextNode(i));
+            }
             trdays.appendChild(th);
         }
         // thead end
 
         //  tbody begin
-        var tbody = document.getElementById('calendar').getElementsByTagName('tbody')[0];
+        var tbody = $('#calendar > tbody');
         for (let i = 0; i < globals.rooms.length; i++) {
             var room = globals.rooms[i].room,
                 tr = document.createElement('tr');
@@ -437,25 +327,16 @@ const tables = {
                     node.appendChild(document.createTextNode(room));
                 } else {
                     let day = utils.overlay(j, '0', 2),
-                        date = year + '-' + month + '-' + day;
+                        date = year + '-' + utils.overlay(month,'0', 2) + '-' + day;
                     node = document.createElement('td');
                     node.setAttribute('id', room + '_' + date);
                     node.appendChild(document.createTextNode(""));
                 }
                 tr.appendChild(node);
             }
-            tbody.appendChild(tr);
+            tbody.append(tr);
         }
         // tbody end
-
-        $('#book tbody').empty();
-
-    },
-
-    reset: function () {
-        $('#calendar thead').empty();
-        $('#calendar tbody').empty();
-        $('#book tbody').empty();
     }
 }
 
@@ -467,11 +348,18 @@ const utils = {
         return overlayedVal;
     },
 
+    getMonthName: function (id) {
+        return globals.monthNames[parseInt(id)];
+    },
+
+    getMonthId: function (month) {
+        return this.overlay(globals.monthNames.indexOf(month), '0', 2);
+    },
+
     getDaysInMonth: function (m, y) {
         m--;
         var isLeap = ((y % 4) == 0 && ((y % 100) != 0 || (y % 400) == 0));
         return [31, (isLeap ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][m];
-        // return m === 2 ? y & 3 || !(y % 25) && y & 15 ? 28 : 29 : 30 + (m + (m >> 3) & 1);
     },
 
     getKeyValue: function (data, index) {
@@ -523,7 +411,7 @@ const utils = {
 
 }
 
-$('#pick-calendar').click(function () {
+$('#button-pick-calendar').click(function () {
     var pickCalendar = new PickCalendar({
         buttons: {
             ok: function () {
@@ -546,6 +434,7 @@ $('#pick-calendar').click(function () {
                 $('#year').innerHTML = res.year;
                 $('#year').val(res.year);
                 db.gl001.select();
+                db.cf001.update();
             },
             no: function () {
                 pickCalendar.unbind();
@@ -561,7 +450,7 @@ $('#pick-calendar').click(function () {
     pickCalendar.show();
 });
 
-$('#month-left').click(function () {
+$('#button-month-left').click(function () {
     var month = globals.monthNames.indexOf($('#month').val());
     if (month > 1) {
         month--;
@@ -574,7 +463,7 @@ $('#month-left').click(function () {
     db.gl001.select();
 });
 
-$('#month-right').click(function () {
+$('#button-month-right').click(function () {
     var month = globals.monthNames.indexOf($('#month').val());
     if (month > 11) {
         month = 1;
@@ -587,7 +476,7 @@ $('#month-right').click(function () {
     db.gl001.select();
 });
 
-var addguest = function (e) {
+var addGuest = function (e) {
     //  чистим список на добавление перед добавлением новых записей
     globals.guestsProcessing = [];
 
@@ -626,7 +515,7 @@ var addguest = function (e) {
 var editGuest = function (e) {
 
     //  чистим список на редактирование перед добавлением новых записей
-    var guest = $('#book tbody tr#' + this.id[0]);
+    var guest = $('.book tbody tr#' + this.id[0]);
 
     var val = {
         intent: globals.intent_edit,
@@ -744,8 +633,6 @@ const db = {
                 },
                 dataType: 'json',
                 success: function (data) {
-                    // utils.setYear(data['year']);
-                    // utils.setMonth(data['month']);
                 },
                 error: function (xhr, textStatus, errorThrown) {
                     $("#ajax-msg").append(xhr.responseText);
@@ -756,7 +643,25 @@ const db = {
         },
 
         update: function () {
-
+            $.ajax({
+                url: './php/db/cf001/modify.php',
+                /* 
+                TODO: session id
+                */
+                data: {
+                    year: $('#year').val(),
+                    month: utils.getMonthId($('#month').val()),
+                    sessionId: 'root'
+                },
+                dataType: 'json',
+                success: function (data) {
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    $("#ajax-msg").append(xhr.responseText);
+                    console.log(textStatus);
+                    console.log(errorThrown);
+                }
+            });
         },
 
         insert: function () {
@@ -790,7 +695,7 @@ const db = {
                 url: './php/db/gl001/insert.php',
                 data: {
                     year: $('#year').val(),
-                    month: globals.monthNames.indexOf($('#month').val()),
+                    month: utils.getMonthId($('#month').val()),
                     dayin: opts.dayin,
                     dayout: opts.dayout,
                     room: opts.room,
@@ -821,7 +726,7 @@ const db = {
                 url: './php/db/gl001/select.php',
                 data: {
                     year: $('#year').val(),
-                    month: globals.monthNames.indexOf($('#month').val()),
+                    month: utils.getMonthId($('#month').val()),
                 },
                 dataType: 'json',
                 success: function (data) {
@@ -850,7 +755,7 @@ const db = {
                 url: './php/db/gl001/modify.php',
                 data: {
                     year: $('#year').val(),
-                    month: globals.monthNames.indexOf($('#month').val()),
+                    month: utils.getMonthId($('#month').val()),
                     id: opts.id,
                     dayin: opts.dayin,
                     dayout: opts.dayout,

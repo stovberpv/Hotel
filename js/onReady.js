@@ -9,11 +9,11 @@
             var isMouseDown = false,
                 isSelected,
                 selectedCounter = 0,
-                bookSelector = "#book tbody tr#",
+                bookSelector = ".book tbody tr#",
                 calendarSelector = "#calendar tbody tr td.";
 
             // CALENDAR TABLE BEGIN
-            $("#calendar tbody").on({
+            $("#calendar > tbody").on({
 
                 mousedown: function (e) {
                     switch (e.which) {
@@ -28,6 +28,10 @@
                         default:
                             break;
                     }
+
+                    if ($(this).parents('.hidden').length) {
+                        return;
+                    };
 
                     // press + hover begin
                     isMouseDown = true;
@@ -71,6 +75,10 @@
 
                 mouseover: function (e) {
 
+                    if ($(this).parents('.hidden').length) {
+                        return;
+                    };
+
                     // press + hover begin
                     if (isMouseDown) {
                         if ($(this).hasClass("") || $(this).hasClass(globals.class_selected)) {
@@ -101,6 +109,10 @@
 
                 mouseleave: function (e) {
 
+                    if ($(this).parents('.hidden').length) {
+                        return;
+                    };
+
                     // press + hover begin
                     var cnt;
                     isMouseDown && isSelected && (cnt = parseInt($(this).text()), isNaN(cnt) ? selectedCounter = 0 : selectedCounter = cnt);
@@ -130,9 +142,16 @@
             }, 'td');
             //  CALENDAR TABLE END
 
+            $('#calendar tbody').on({
+
+                mousedown: function () {
+                    $('#' + this.innerHTML + '-book').toggle();
+                }
+
+            }, ' tr > th');
 
             //  BOOK TABLE BEGIN
-            $("#book tbody").on({
+            $("#calendar").on({
 
                 mousedown: function (e) {
                     switch (e.which) {
@@ -149,7 +168,7 @@
                     }
 
                     var source = $(this);
-                    if (source.parents('tr').length == 0) {
+                    if (source.parents('.innerBook').length == 0) {
                         var id = source.attr('id');
                         source.toggleClass(globals.class_viewfix);
                         source.toggleClass(globals.class_view);
@@ -167,7 +186,7 @@
 
                 mouseover: function (e) { // мышь наведена
 
-                    if ($(this).parents('tr').length == 0) {
+                    if ($(this).parents('.innerBook').length == 0) {
                         var id = $(this).attr('id');
                         if (!$(this).hasClass(globals.class_viewfix)) {
                             $(this).addClass(globals.class_view);
@@ -180,7 +199,7 @@
 
                 mouseleave: function (e) {
 
-                    if ($(this).parents('tr').length == 0) {
+                    if ($(this).parents('.innerBook').length ==0 ) {
                         var id = $(this).attr('id');
                         if (!$(this).hasClass(globals.class_viewfix)) {
                             $(this).removeClass(globals.class_view);
@@ -190,7 +209,7 @@
                         }
                     }
                 }
-            }, 'tr');
+            }, '.book tbody tr');
             //  BOOK TABLE END
 
             $(document).mouseup(function () {
@@ -219,7 +238,7 @@
                         limiter = (e.target.id).substring(3, 10),
                         startDay = (e.target.id).substring(11),
                         minDay = 1,
-                        maxDay = ($('#calendar thead tr:eq( 1 ) th').length) - 1,
+                        maxDay = ($('#calendar > thead > tr:eq( 1 ) > th').length) - 1,
                         begda = 0,
                         endda = 0,
                         i;
@@ -228,7 +247,7 @@
                     i = startDay;
                     while (i >= minDay) {
                         let id = room + '_' + limiter + '-' + utils.overlay(i, 0, 2),
-                            cell = $('#calendar tbody tr#' + room + ' td#' + id);
+                            cell = $('#calendar > tbody > tr#' + room + ' > td#' + id);
                         if (cell.hasClass(globals.class_selected)) {
                             begda = i;
                         } else {
@@ -241,7 +260,7 @@
                     i = startDay;
                     while (i <= maxDay) {
                         let id = room + '_' + limiter + '-' + utils.overlay(i, 0, 2),
-                            cell = $('#calendar tbody tr#' + room + ' td#' + id);
+                            cell = $('#calendar > tbody > tr#' + room + ' > td#' + id);
                         if (cell.hasClass(globals.class_selected)) {
                             endda = i;
                         } else {
