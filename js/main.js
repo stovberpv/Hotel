@@ -82,7 +82,7 @@ const guest = {
                 hiddenRow.classList.add('hidden');
                 var td = document.createElement('td'),
                     days = new Date(year, month, 0).getDate();
-                td.setAttribute('colspan', days);
+                td.setAttribute('colspan', days + 1);
                 var table = document.createElement('table');
                 table.classList.add('book');
                 table.appendChild(document.createElement('tbody'));
@@ -224,7 +224,10 @@ const guest = {
             // calendar end
 
             // book begin
-            $('.book tbody tr#N' + wa.id).remove();
+            $('.book > tbody > tr#N' + wa.id).remove();
+            if (tables.isEmptyBook(wa.room)) {
+                $('#calendar > tbody > tr#' + wa.room + '-book').remove();
+            }
             // book end
         }
     },
@@ -337,6 +340,10 @@ const tables = {
             tbody.append(tr);
         }
         // tbody end
+    },
+
+    isEmptyBook: function (room) {
+        return $('#calendar > tbody > tr#' + room + '-book > td > .book > tbody').length;
     }
 }
 

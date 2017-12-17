@@ -2,7 +2,6 @@ class RCMenu {
 
     constructor(opts) {
         this.Opts = opts;
-        this.Doc = opts.source;
         this.X = opts.x;
         this.Y = opts.y;
     }
@@ -20,10 +19,10 @@ class RCMenu {
         }
         rcmlist += '</ul>';
 
-        var rcmenu = this.Doc.createElement('div');
+        var rcmenu = document.createElement('div');
         rcmenu.id = 'rcmenu';
         rcmenu.innerHTML = rcmlist;
-        this.Doc.body.appendChild(rcmenu);
+        document.body.appendChild(rcmenu);
 
         var el = rcmenu.children[0].children;
         for(let i = 0; i < el.length; i++) {
@@ -47,7 +46,7 @@ class RCMenu {
     }
 
     show() {
-        var rcmenu = this.Doc.getElementById('rcmenu');
+        var rcmenu = document.getElementById('rcmenu');
         if (rcmenu != undefined) {
             rcmenu.style.left = this.X + 'px';
             rcmenu.style.top = this.Y + 'px';
@@ -56,7 +55,7 @@ class RCMenu {
     }
 
     unbind() {
-        var rcmenu = this.Doc.getElementById('rcmenu');
+        var rcmenu = document.getElementById('rcmenu');
         if (rcmenu != undefined) {
             rcmenu.style.display = 'none';
             rcmenu.parentNode.removeChild(rcmenu);

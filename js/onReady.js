@@ -7,21 +7,58 @@
 
         $(function () {
             var isMouseDown = false,
-                isSelected,
-                selectedCounter = 0,
-                bookSelector = ".book tbody tr#",
-                calendarSelector = "#calendar tbody tr td.";
+                isSelected;
+            
+            const selGroup = {
 
-            // CALENDAR TABLE BEGIN
+                classId: undefined,
+
+                free: function () {
+                    this.classId = undefined;
+                },
+
+                gen: function () {
+                    this.classId = 'sel-group-' + Math.ceil((Math.random() * 100000));
+                },
+
+                add: function (target) {
+                    !this.classId && this.gen();
+                    target.addClass(this.classId);
+                    this.enum(this.classId);
+                },
+
+                get: function (target) {
+                    var classId = target.prop("className").match(/\bsel-group-\d+/);
+                    return classId ? classId[0] : '';
+                },
+
+                del: function (target) {
+                    var classId = this.get(target);
+                    if (classId) {
+                        target.removeClass(classId);
+                        target.empty();
+                        this.enum(classId);
+                    }
+                },
+
+                enum: function (classId) {
+                    $('#calendar > tbody > tr > td.' + classId).each(function (i) {
+                        $(this).text(i + 1);
+                    })
+                }
+            }
+
             $("#calendar > tbody").on({
 
                 mousedown: function (e) {
+                    
                     switch (e.which) {
                         case 2:
                             return;
                             break;
 
                         case 3:
+                            rcmenu_open(e, Array.from(e.target.classList));
                             return;
                             break;
 
@@ -29,137 +66,123 @@
                             break;
                     }
 
-                    if ($(this).parents('.hidden').length) {
-                        return;
-                    };
-
-                    // press + hover begin
+                    /*-----------------------------------------------------------------------
+                        PRESS AND HOVER BEGIN
+                    -----------------------------------------------------------------------*/
                     isMouseDown = true;
                     if ($(this).hasClass("") || $(this).hasClass(globals.class_selected)) {
                         $(this).toggleClass(globals.class_selected);
                     }
                     isSelected = $(this).hasClass(globals.class_selected);
+                    selGroup.del($(this));
+                    isSelected ? selGroup.add($(this)) : selGroup.free();
+                    /*-----------------------------------------------------------------------
+                        PRESS AND HOVER END
+                    -----------------------------------------------------------------------*/
 
-                    isSelected ? (selectedCounter++, $(this).text(selectedCounter)) : $(this).text('');
-                    // press + hover end
-
-                    // toggle view begin
+                    /*-----------------------------------------------------------------------
+                        VIEW TOGGLE BEGIN
+                    -----------------------------------------------------------------------*/                    
                     let ids = getIDs($(this).attr('class'));
                     for (let i = 0; i < ids.length; i++) {
-                        $(calendarSelector + ids[i]).each(function () {
+                        $("#calendar > tbody > tr > td." + ids[i]).each(function () {
                             $(this).toggleClass(ids[i] + '-' + globals.class_viewfix);
                             $(this).toggleClass(ids[i] + '-' + globals.class_view);
                         });
-                        $(bookSelector + ids[i]).toggleClass(globals.class_viewfix);
-                        $(bookSelector + ids[i]).toggleClass(globals.class_view);
+                        $(".book > tbody > tr#" + ids[i]).toggleClass(globals.class_viewfix);
+                        $(".book > tbody > tr#" + ids[i]).toggleClass(globals.class_view);
                     }
-                    // toggle view end
-
-                    // hide rows begin TODO:
-                    /*                     var classList = [];
-                                        $('#calendar tbody tr td[class*=' + globals.class_viewfix + ']').each(function () {
-                                            classList.push($(this).attr('class'));
-                                        });
-                                        var uniqueItems = classList.filter((x, i, a) => a.indexOf(x) == i);
-                                        for (let i = 0; i < uniqueItems.length; i++) {
-                                            var id = getIDs(uniqueItems[i]);
-                                        } */
-                    // $('#book > tbody > tr').not('.' + globals.class_viewfix).each(function () {
-                    //     $(this).toggleClass();
-                    // });
-
-                    // hide rows end
-
-                    return false;
+                    /*-----------------------------------------------------------------------
+                        VIEW TOGGLE END
+                    -----------------------------------------------------------------------*/   
                 },
 
                 mouseover: function (e) {
 
-                    if ($(this).parents('.hidden').length) {
-                        return;
-                    };
-
-                    // press + hover begin
+                    /*-----------------------------------------------------------------------
+                        PRESS AND HOVER BEGIN
+                    -----------------------------------------------------------------------*/
                     if (isMouseDown) {
-                        if ($(this).hasClass("") || $(this).hasClass(globals.class_selected)) {
-                            $(this).toggleClass(globals.class_selected, isSelected); /* INFO: Вариант работы алгоритма №1 */
-                            // $(this).toggleClass(globals.class_selected); /* INFO: Вариант работы алгоритма №2 */
-                            isSelected ? $(this).text().length == 0 && (selectedCounter++, $(this).text(selectedCounter)) : $(this).text('');
+                        if ($(this).hasClass('') || $(this).hasClass(globals.class_selected)) {
+                            $(this).toggleClass(globals.class_selected, isSelected);
+                            selGroup.del($(this));
+                            isSelected && selGroup.add($(this));
                         } else {
-                            selectedCounter = 1;
+                            selGroup.free();
                         }
                     }
-                    // press + hover end
+                    /*-----------------------------------------------------------------------
+                        PRESS AND HOVER END
+                    -----------------------------------------------------------------------*/
 
-                    // toggle view begin
+                    /*-----------------------------------------------------------------------
+                        VIEW TOGGLE BEGIN
+                    -----------------------------------------------------------------------*/    
                     let ids = getIDs($(this).attr('class'));
                     for (let i = 0; i < ids.length; i++) {
-                        if (!$(calendarSelector + ids[i]).hasClass(ids[i] + '-' + globals.class_viewfix)) {
-                            $(calendarSelector + ids[i]).each(function () {
+                        if (!$("#calendar > tbody > tr > td." + ids[i]).hasClass(ids[i] + '-' + globals.class_viewfix)) {
+                            $("#calendar > tbody > tr > td." + ids[i]).each(function () {
                                 $(this).addClass(ids[i] + '-' + globals.class_view);
                             });
-                            $(bookSelector + ids[i]).addClass(globals.class_view);
+                            $(".book > tbody > tr#" + ids[i]).addClass(globals.class_view);
                         }
                     }
                     let id = ($(this).attr('id')).substring(3);
                     $('#calendar thead tr:nth-child(2) th#' + id).addClass(globals.class_view);
-                    // toggle view end
-
+                    /*-----------------------------------------------------------------------
+                        VIEW TOGGLE END
+                    -----------------------------------------------------------------------*/   
                 },
 
                 mouseleave: function (e) {
 
-                    if ($(this).parents('.hidden').length) {
-                        return;
-                    };
-
-                    // press + hover begin
-                    var cnt;
-                    isMouseDown && isSelected && (cnt = parseInt($(this).text()), isNaN(cnt) ? selectedCounter = 0 : selectedCounter = cnt);
-                    // toggle view end
-
-                    // toggle view begin
+                    /*-----------------------------------------------------------------------
+                        VIEW TOGGLE BEGIN
+                    -----------------------------------------------------------------------*/   
                     let ids = getIDs($(this).attr('class'));
                     for (let i = 0; i < ids.length; i++) {
-                        if (!$(calendarSelector + ids[i]).hasClass(ids[i] + '-' + globals.class_viewfix)) {
-                            $(calendarSelector + ids[i]).each(function () {
+                        if (!$("#calendar > tbody > tr > td." + ids[i]).hasClass(ids[i] + '-' + globals.class_viewfix)) {
+                            $("#calendar > tbody > tr > td." + ids[i]).each(function () {
                                 $(this).removeClass(ids[i] + '-' + globals.class_view);
                             });
-                            $(bookSelector + ids[i]).removeClass(globals.class_view);
+                            $(".book > tbody > tr#" + ids[i]).removeClass(globals.class_view);
                         }
                     }
                     let id = ($(this).attr('id')).substring(3);
-                    $('#calendar thead tr:nth-child(2) th#' + id).removeClass(globals.class_view);
-                    // toggle view end
+                    $('#calendar > thead > tr:nth-child(2) > th#' + id).removeClass(globals.class_view);
+                    /*-----------------------------------------------------------------------
+                        VIEW TOGGLE END
+                    -----------------------------------------------------------------------*/   
                 },
 
                 mouseup: function (e) {
 
-                    selectedCounter = 0;
+                    selGroup.free();
                     isMouseDown = false;
                 }
 
-            }, 'td');
-            //  CALENDAR TABLE END
+            }, 'td:not( #calendar > tbody > .hidden td )');
 
-            $('#calendar tbody').on({
+            $('#calendar > tbody').on({
 
                 mousedown: function () {
+                    $(this).toggleClass(globals.class_viewfix);
                     $('#' + this.innerHTML + '-book').toggle();
                 }
 
-            }, ' tr > th');
+            }, 'tr > th');
 
-            //  BOOK TABLE BEGIN
-            $("#calendar").on({
+            $("#calendar > tbody").on({
 
                 mousedown: function (e) {
+                    
                     switch (e.which) {
                         case 2:
                             return;
                             break;
 
                         case 3:
+                            rcmenu_open(e, null);
                             return;
                             break;
 
@@ -172,7 +195,7 @@
                         var id = source.attr('id');
                         source.toggleClass(globals.class_viewfix);
                         source.toggleClass(globals.class_view);
-                        $(calendarSelector + id).each(function () {
+                        $("#calendar > tbody > tr > td." + id).each(function () {
                             if (source.hasClass(globals.class_viewfix)) {
                                 $(this).addClass(id + '-' + globals.class_viewfix);
                                 $(this).removeClass(id + '-' + globals.class_view);
@@ -184,13 +207,13 @@
                     }
                 },
 
-                mouseover: function (e) { // мышь наведена
+                mouseover: function (e) {
 
                     if ($(this).parents('.innerBook').length == 0) {
                         var id = $(this).attr('id');
                         if (!$(this).hasClass(globals.class_viewfix)) {
                             $(this).addClass(globals.class_view);
-                            $(calendarSelector + id).each(function () {
+                            $("#calendar > tbody > tr > td." + id).each(function () {
                                 $(this).addClass(id + '-' + globals.class_view);
                             });
                         }
@@ -199,18 +222,17 @@
 
                 mouseleave: function (e) {
 
-                    if ($(this).parents('.innerBook').length ==0 ) {
+                    if ($(this).parents('.innerBook').length == 0) {
                         var id = $(this).attr('id');
                         if (!$(this).hasClass(globals.class_viewfix)) {
                             $(this).removeClass(globals.class_view);
-                            $(calendarSelector + id).each(function () {
+                            $("#calendar > tbody > tr > td." + id).each(function () {
                                 $(this).removeClass(id + '-' + globals.class_view);
                             });
                         }
                     }
                 }
-            }, '.book tbody tr');
-            //  BOOK TABLE END
+            }, '.book > tbody > tr');
 
             $(document).mouseup(function () {
                 isMouseDown = false;
@@ -218,81 +240,54 @@
         });
 
         var rcmenu;
+        var rcmenu_open = function (e, classList) {
+            var id, room, dayin, dayout,
+                btn = {};
 
-        var ctm = function (e) {
-            e.preventDefault();
-            if (rcmenu != undefined) {
-                rcmenu.unbind();
-            }
-            var classList = Array.from(e.target.classList);
-            if (classList.length != 0) {
-                var btn = {};
+            rcmenu && rcmenu.unbind();
+
+            if (classList) {
                 if (classList.includes(globals.class_selected)) {
-                    btn = {
-                        upd: false,
-                        del: false,
-                        add: true
-                    }
+                    var row = (e.currentTarget.id).substring(0, 2),
+                        groupId = e.currentTarget.className.match(/\bsel-group-\d+/g),
+                        groupEl = $("#calendar > tbody > tr#" + row + " > td." + groupId),
+                        begda = groupEl[0].id.split('-'),
+                        endda = groupEl[groupEl.length - 1].id.split('-');
 
-                    var room = (e.target.id).substring(0, 2),
-                        limiter = (e.target.id).substring(3, 10),
-                        startDay = (e.target.id).substring(11),
-                        minDay = 1,
-                        maxDay = ($('#calendar > thead > tr:eq( 1 ) > th').length) - 1,
-                        begda = 0,
-                        endda = 0,
-                        i;
-                    
-                    // find begda
-                    i = startDay;
-                    while (i >= minDay) {
-                        let id = room + '_' + limiter + '-' + utils.overlay(i, 0, 2),
-                            cell = $('#calendar > tbody > tr#' + room + ' > td#' + id);
-                        if (cell.hasClass(globals.class_selected)) {
-                            begda = i;
-                        } else {
-                            break;
-                        }
-                        i--;
-                    }
-                    
-                    // find endda
-                    i = startDay;
-                    while (i <= maxDay) {
-                        let id = room + '_' + limiter + '-' + utils.overlay(i, 0, 2),
-                            cell = $('#calendar > tbody > tr#' + room + ' > td#' + id);
-                        if (cell.hasClass(globals.class_selected)) {
-                            endda = i;
-                        } else {
-                            break;
-                        }
-                        i++;
-                    }                    
-
-                } else if(classList.includes(globals.class_redeemed) || classList.includes(globals.class_reserved)) {
-                    btn = {
-                        upd: true,
-                        del: true,
-                        add: false
-                    }
+                    room = row;
+                    dayin = begda[2] + '.' + begda[1];
+                    dayout = endda[2] + '.' + endda[1];
+                    btn = { upd: false, del: false, add: true }
+                } else if (classList.includes(globals.class_redeemed) || classList.includes(globals.class_reserved)) {
+                    id = getIDs(e.currentTarget.className)[0];
+                    btn = { upd: true, del: true, add: false }
                 } else {
                     return;
                 }
-                rcmenu = new RCMenu({
-                    id: getIDs(e.target.className)[0],
-                    begda: begda,
-                    endda: endda,
-                    room: room,
-                    btn: btn,
-                    source: document,
-                    x: e.pageX,
-                    y: e.pageY
-                });
-                rcmenu.bind();
-                rcmenu.show();
+
+            } else {
+                id = [e.currentTarget.id];
+                btn = { upd: true, del: true, add: false }
             }
+
+            rcmenu = new RCMenu({
+                id: id,
+                begda: dayin,
+                endda: dayout,
+                room: room,
+                btn: btn,
+                x: e.pageX,
+                y: e.pageY
+            });
+
+            rcmenu.bind();
+            rcmenu.show();
         }
 
+        var ctm = function (e) {
+            e.preventDefault();
+            return;
+        }
         var click = function () {
             if (rcmenu != undefined) {
                 rcmenu.unbind();
@@ -314,5 +309,4 @@ function getIDs(string) {
         if (classList[i].match(/^N\d+$/g)) result.push(classList[i].match(/^N\d+$/g));
     }
     return result;
-    // return string != undefined ? string.match(/^N\d+$/g) ? string.match(/^N\d+$/g) : [] : [];
 }

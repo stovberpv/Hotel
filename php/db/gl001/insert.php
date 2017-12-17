@@ -1,6 +1,6 @@
 <?php 
 
-    require $_SERVER['DOCUMENT_ROOT'] . '/hm/php/db/conn.php';
+    require $_SERVER['DOCUMENT_ROOT'] . '/php/db/conn.php';
 
     //-------------------------------------------------------------------------------------------------
         // get values from ajax

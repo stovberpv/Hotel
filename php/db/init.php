@@ -1,5 +1,8 @@
 <?php
-    require $_SERVER['DOCUMENT_ROOT'] . '/hm/php/db/conn.php';
+
+    ini_set('display_errors', 1);
+    
+    require $_SERVER['DOCUMENT_ROOT'] . '/php/db/conn.php';
     
     //-------------------------------------------------------------------------------------------------
         // 

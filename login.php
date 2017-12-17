@@ -1,9 +1,9 @@
 
 <?php session_start(); ?>
 <?php
-    // error_reporting(E_ALL | E_WARNING | E_NOTICE);
-    // ini_set('display_errors', TRUE);
-    require $_SERVER['DOCUMENT_ROOT'] . '/hm/php/db/conn.php';
+    error_reporting(E_ALL | E_WARNING | E_NOTICE);
+    ini_set('display_errors', TRUE);
+    require $_SERVER['DOCUMENT_ROOT'] . '/php/db/conn.php';
     if (isset($_GET["login"])) { $login = $_GET["login"]; } else { die(); }
     if (isset($_GET["hash"]))  { $hash = $_GET["hash"];   } else { die(); }
     if (isset($_GET["salt"]))  { $salt = $_GET["salt"];   } else { die(); }
