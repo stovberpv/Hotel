@@ -23,28 +23,57 @@
 
                 add: function (target) {
                     !this.classId && this.gen();
-                    target.addClass(this.classId);
+                    if (target instanceof jQuery) {
+                        target.addClass(this.classId);
+                    } else {
+                        target.classList.add(this.classId);
+                    }
                     this.enum(this.classId);
                 },
 
                 get: function (target) {
-                    var classId = target.prop("className").match(/\bsel-group-\d+/);
-                    return classId ? classId[0] : '';
+                    if (target instanceof jQuery) {
+                        var classId = target.prop("className").match(/\bsel-group-\d+/);
+                        return classId ? classId[0] : '';
+                    } else {
+                        return target.className.match(/\bsel-group-\d+/);
+                    }                    
                 },
 
                 del: function (target) {
-                    var classId = this.get(target);
+                    var classId = this.get(target); 
                     if (classId) {
-                        target.removeClass(classId);
-                        target.empty();
+                        if (target instanceof jQuery) {
+                            //TODO: del for jQuery
+                            target.removeClass(classId);
+                            target.empty();
+                        } else {
+                            //FIX: someday do more beautifully
+                            var group = document.getElementsByClassName(classId);
+                            for (let i = group.length; i > 0; i--) {
+                                if (group[0].id == target.id) {
+                                    group[0].innerHTML = '';
+                                    group[0].classList.remove(globals.class_selected);
+                                    group[0].classList.remove(classId);
+                                    break;
+                                } else {
+                                    group[0].innerHTML = '';   
+                                    group[0].classList.remove(globals.class_selected);
+                                    group[0].classList.remove(classId); 
+                                }
+                            }
+                            target.classList.remove(classId);
+                            target.innerHTML = '';
+                        }
                         this.enum(classId);
                     }
                 },
 
                 enum: function (classId) {
-                    $('#calendar > tbody > tr > td.' + classId).each(function (i) {
-                        $(this).text(i + 1);
-                    })
+                    var group = document.getElementsByClassName(classId);
+                    for (let i = 0; i < group.length; i++) {
+                        group[i].innerHTML = (i + 1);
+                    }
                 }
             }
 
@@ -74,8 +103,8 @@
                         $(this).toggleClass(globals.class_selected);
                     }
                     isSelected = $(this).hasClass(globals.class_selected);
-                    selGroup.del($(this));
-                    isSelected ? selGroup.add($(this)) : selGroup.free();
+                    selGroup.del(this);
+                    isSelected ? selGroup.add(this) : selGroup.free();
                     /*-----------------------------------------------------------------------
                         PRESS AND HOVER END
                     -----------------------------------------------------------------------*/
@@ -105,8 +134,8 @@
                     if (isMouseDown) {
                         if ($(this).hasClass('') || $(this).hasClass(globals.class_selected)) {
                             $(this).toggleClass(globals.class_selected, isSelected);
-                            selGroup.del($(this));
-                            isSelected && selGroup.add($(this));
+                            selGroup.del(this);
+                            isSelected && selGroup.add(this);
                         } else {
                             selGroup.free();
                         }
