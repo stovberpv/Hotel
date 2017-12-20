@@ -46,5 +46,14 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
-#IDE files and folders
+# IDE files and folders
 .vscode
+
+# Project files and folders
+db/conn.php
+
+# Other files and folders
+part1.gif
+part2.gif
+presentation-1.JPG
+presentation-2.JPG
