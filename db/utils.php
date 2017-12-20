@@ -21,20 +21,21 @@
             }
             # get cookie session id
             $sessid = $_SESSION['user_sesid'];
+            #
+            session_write_close();
             # create db connection
             require $_SERVER['DOCUMENT_ROOT'] . '/db/conn.php';
             # check is user was aurorized
             $query = "SELECT COUNT(*) AS isAuth FROM us001 WHERE sesid = ? AND active = 1";
-            if (!($stmt = $mysqli->prepare($query))) echo "prepare error ("    . $mysqli->connect_errno . ") " . $mysqli->connect_error, die();
-            if (!($stmt->bind_param('s', $sessid)))  echo 'bind_param error (' . $mysqli->connect_errno . ") " . $mysqli->connect_error, die();
-            if (!($stmt->execute()))                 echo 'execute error ('    . $mysqli->connect_errno . ") " . $mysqli->connect_error, die();
-            if (!($result = $stmt->get_result()))    echo 'get_result error (' . $mysqli->connect_errno . ") " . $mysqli->connect_error, die();
+            $stmt = $mysqli->prepare($query);
+            $stmt->bind_param('s', $sessid) ;
+            $stmt->execute()                ;
+            $result = $stmt->get_result()   ;
             $row = $result->fetch_assoc();
             $stmt->free_result();
             $stmt->close();
             $mysqli->close();   
             #
-            session_write_close();
             if ($row['isAuth']) {
                 return true;
             } else {
@@ -50,18 +51,19 @@
     #
     function getAuthUserName() {
         #
-        // session_start();
+        session_start();
         # get cookie session id
-        return 'root';
         $sessid = $_SESSION['user_sesid'];
+        #
+        session_write_close();
         # create db connection
         require $_SERVER['DOCUMENT_ROOT'] . '/db/conn.php';
         # check is user was aurorized
         $query = "SELECT login FROM us001 WHERE sesid = ? AND active = 1";
-        if (!($stmt = $mysqli->prepare($query))) echo "prepare error ("    . $mysqli->connect_errno . ") " . $mysqli->connect_error, die();
-        if (!($stmt->bind_param('s', $sessid)))  echo 'bind_param error (' . $mysqli->connect_errno . ") " . $mysqli->connect_error, die();
-        if (!($stmt->execute()))                 echo 'execute error ('    . $mysqli->connect_errno . ") " . $mysqli->connect_error, die();
-        if (!($result = $stmt->get_result()))    echo 'get_result error (' . $mysqli->connect_errno . ") " . $mysqli->connect_error, die();
+        $stmt = $mysqli->prepare($query);
+        $stmt->bind_param('s', $sessid) ;
+        $stmt->execute()                ;
+        $result = $stmt->get_result()   ;
         $row = $result->fetch_assoc();
         $stmt->free_result();
         $stmt->close();
@@ -81,11 +83,11 @@
             case 14: echo2json($text . "Ошибка выборки:  : (" . $conn->errno . ") " . $conn->error); break;
             case 15: echo2json($text . "Ошибка результата: (" . $conn->errno . ") " . $conn->error); break;
             case 20: echo2json($text . "Начальная дата не может быть больше конечной"); break;
-            case 21: echo2json($text . "Не удалось вычислить день и месяц выезда"    ); break;
-            case 22: echo2json($text . "Не удалось вычислить день и месяц въезда"    ); break;
-            case 23: echo2json($text . "Неавторизованный пользовтаель. В доступе отказано." ); break;
-            case 24: echo2json($text . "Не удалось определить год"                   ); break;
-            case 25: echo2json($text . "Не удалось определить месяц"                 ); break;
+            case 21: echo2json($text . "Не удалось вычислить день и месяц выезда"); break;
+            case 22: echo2json($text . "Не удалось вычислить день и месяц въезда"); break;
+            case 23: echo2json($text . "Неавторизованный пользовтаель. В доступе отказано."); break;
+            case 24: echo2json($text . "Не удалось определить год"); break;
+            case 25: echo2json($text . "Не удалось определить месяц"); break;
             case 26: echo2json($text . "Начальная дата не может быть больше конечной"); break;
             case 27: echo2json($text . 'Не удалось получить ID'); break;
             default: break;

@@ -254,7 +254,7 @@ class RedirectDialog extends Dialog {
         this.Dialog =
             '<div class="modal-content-href">' +
             '<div class="modal-body-href">' +
-            '<a id="login-page-href" href="#">Ваша сессия устарела, войдите, пожалуйста, снова.</a>' +
+            '<input id="login-page-href" href="#" type="button" value="Ваша сессия устарела, войдите, пожалуйста, снова.">' +
             '</div>' +
             '</div>';
         var div = document.createElement('div');
