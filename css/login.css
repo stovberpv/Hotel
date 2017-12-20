@@ -11,7 +11,6 @@ body {
     width: 100%;
     height: 100%;
     background: url("../res/background/nature-1.jpg") -25px -50px;
-    
     position: fixed;
     top: 0;
     width: 100%;
@@ -21,60 +20,65 @@ body {
     background-repeat: no-repeat;
 }
 
-::-webkit-scrollbar { 
-    display: none; 
-}
-
-#login-block {
-    top: 0;
-    left: 0;
-    width: auto;
-    height: auto;
-    margin-left: auto;
-    margin-right: auto;
-    display: table;
-    margin-top: 45vh;
-    padding: 20px;
-    border-radius: 3px;
-}
-
-input {
-    text-align: center;
-    font-family: 'Century Gothic', sans-serif;
-    border-radius: 3px;
-    border: none;
-    padding: 20px;
-    font-size: 25px;
-    background-color: rgba(0,0,0, .1);
-    width: 150px;
-}
-
-input:focus::-webkit-input-placeholder { opacity: 0; transition: opacity .5s ease; }
-input::-webkit-input-placeholder { color:#6a737b; }
-
-#login {
-    margin-bottom: 10px;
-}
-
-#password {
-    margin-top: 10px;
-}
-
-#submit {
+::-webkit-scrollbar {
     display: none;
-    margin-top: 20px;
-    transition: all 0.5s;
-    cursor: pointer;
 }
 
 *:focus {
     outline: none;
 }
 
-input:-webkit-autofill,
-textarea:-webkit-autofill,
-select:-webkit-autofill {
-    background-color: transparent !important;
-    background-image: none;
-    color: rgb(0, 0, 0);
+#login-form {
+    margin-top: 40vh;
+}
+
+#login-form div {
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+input {
+    background-color: rgba(0, 0, 0, .1);
+    font-family: 'Century Gothic', sans-serif;
+    letter-spacing: 3px;
+    text-align: center;
+    font-size: 25px;
+    border-radius: 3px;
+    border: none;
+    padding: 20px;
+    width: 150px;
+}
+
+input:focus::-webkit-input-placeholder {
+    opacity: 0;
+    transition: opacity .5s ease;
+}
+
+input:hover::-webkit-input-placeholder {
+    transition: all .5s;
+    color: #f1f1f1;
+}
+
+input::-webkit-input-placeholder {
+    color: #6a737b;
+}
+
+#submit {
+    background-color: rgba(255, 255, 255, .7);
+    font-family: 'Century Gothic', sans-serif;
+    color: #6a737b;
+    letter-spacing: 3px;
+    font-size: 25px;
+    border-radius: 3px;
+    border: none;
+    width: 190px;
+    height: 50px;
+    cursor: pointer;
+}
+
+#submit:hover {
+    transition: all .5s;
+    background-color: cornflowerblue;
+    opacity: .9;
+    color: #f1f1f1;
 }

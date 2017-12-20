@@ -343,7 +343,7 @@ const tables = {
     },
 
     isEmptyBook: function (room) {
-        return $('#calendar > tbody > tr#' + room + '-book > td > .book > tbody').length;
+        return !$('#' + room + '-book tbody').children().length;
     }
 }
 
@@ -588,32 +588,32 @@ const db = {
 
     initialize: function () {
         $.ajax({
-            url: './php/db/init.php',
-            /* 
-            TODO: SESSION ID
-            */
-            data: {
-                sessionId: 'root'
-            },
+            url: '../db/init.php',
             dataType: 'json',
             success: function (data) {
-                data.data.sort(function (a, b) {
-                    if (a.id > b.id) {
-                        return 1;
-                    } else if (a.id < b.id) {
-                        return -1;
-                    } else {
-                        return 0;
-                    }
-                });
-                $('#year').val(data.year);
-                globals.rooms = data.rooms;
-
-                tables.create(data.year, data.month);
-                guest.add(data.year, data.month, data.data);
+                if (!data.status) {
+                    console.log(data.msg);
+                    var redirectDialog = new RedirectDialog();
+                    redirectDialog.bind();
+                    redirectDialog.show();
+                } else {
+                    data.data.sort(function (a, b) {
+                        if (a.id > b.id) {
+                            return 1;
+                        } else if (a.id < b.id) {
+                            return -1;
+                        } else {
+                            return 0;
+                        }
+                    });
+                    $('#year').val(data.year);
+                    globals.rooms = data.rooms;
+                    
+                    tables.create(data.year, data.month);
+                    guest.add(data.year, data.month, data.data);
+                }
             },
             error: function (xhr, textStatus, errorThrown) {
-                $("#ajax-msg").append(xhr.responseText);
                 console.log(textStatus);
                 console.log(errorThrown);
             }
@@ -631,18 +631,17 @@ const db = {
 
         select: function () {
             $.ajax({
-                url: './php/db/cf001/select.php',
-                /* 
-                TODO: session id
-                */
-                data: {
-                    sessionId: 'root'
-                },
+                url: '../db/cf001/select.php',
                 dataType: 'json',
                 success: function (data) {
+                    if (data.status == 'error') {
+                        console.log(data.msg);
+                        var redirectDialog = new RedirectDialog();
+                        redirectDialog.bind();
+                        redirectDialog.show();
+                    }
                 },
                 error: function (xhr, textStatus, errorThrown) {
-                    $("#ajax-msg").append(xhr.responseText);
                     console.log(textStatus);
                     console.log(errorThrown);
                 }
@@ -651,20 +650,21 @@ const db = {
 
         update: function () {
             $.ajax({
-                url: './php/db/cf001/modify.php',
-                /* 
-                TODO: session id
-                */
+                url: '../db/cf001/modify.php',
                 data: {
                     year: $('#year').val(),
                     month: utils.getMonthId($('#month').val()),
-                    sessionId: 'root'
                 },
                 dataType: 'json',
                 success: function (data) {
+                    if (!data.status) {
+                        console.log(data.msg);
+                        var redirectDialog = new RedirectDialog();
+                        redirectDialog.bind();
+                        redirectDialog.show();
+                    }
                 },
                 error: function (xhr, textStatus, errorThrown) {
-                    $("#ajax-msg").append(xhr.responseText);
                     console.log(textStatus);
                     console.log(errorThrown);
                 }
@@ -680,14 +680,20 @@ const db = {
 
         select: function () {
             $.ajax({
-                url: './php/db/rm001/select.php',
+                url: '../db/rm001/select.php',
                 data: {},
                 dataType: 'json',
                 success: function (data) {
-                    globals.rooms = data;
+                    if (!data.status) {
+                        console.log(data.msg);
+                        var redirectDialog = new RedirectDialog();
+                        redirectDialog.bind();
+                        redirectDialog.show();
+                    } else {
+                        globals.rooms = data;
+                    }
                 },
                 error: function (xhr, textStatus, errorThrown) {
-                    $("#ajax-msg").append(xhr.responseText);
                     console.log(textStatus);
                     console.log(errorThrown);
                 }
@@ -699,7 +705,7 @@ const db = {
 
         insert: function (opts) {
             $.ajax({
-                url: './php/db/gl001/insert.php',
+                url: '../db/gl001/insert.php',
                 data: {
                     year: $('#year').val(),
                     month: utils.getMonthId($('#month').val()),
@@ -711,17 +717,19 @@ const db = {
                     name: opts.name,
                     tel: opts.tel,
                     info: opts.info,
-                    /* 
-                    TODO: sessionID    
-                    */
-                    sessionId: 'root'
                 },
                 dataType: 'json',
                 success: function (data) {
-                    guest.add(data.year, data.month, data.data);
+                    if (!data.status) {
+                        console.log(data.msg);
+                        var redirectDialog = new RedirectDialog();
+                        redirectDialog.bind();
+                        redirectDialog.show();
+                    } else {
+                        guest.add(data.year, data.month, data.data);
+                    }
                 },
                 error: function (xhr, textStatus, errorThrown) {
-                    $("#ajax-msg").append(xhr.responseText);
                     console.log(textStatus);
                     console.log(errorThrown);
                 }
@@ -730,27 +738,33 @@ const db = {
 
         select: function () {
             $.ajax({
-                url: './php/db/gl001/select.php',
+                url: '../db/gl001/select.php',
                 data: {
                     year: $('#year').val(),
                     month: utils.getMonthId($('#month').val()),
                 },
                 dataType: 'json',
                 success: function (data) {
-                    data.data.sort(function (a, b) {
-                        if (a.id > b.id) {
-                            return 1;
-                        } else if (a.id < b.id) {
-                            return -1;
-                        } else {
-                            return 0;
-                        }
-                    });
-                    tables.create(data.year, data.month);
-                    guest.add(data.year, data.month, data.data);
+                    if (!data.status) {
+                        console.log(data.msg);
+                        var redirectDialog = new RedirectDialog();
+                        redirectDialog.bind();
+                        redirectDialog.show();
+                    } else {
+                        data.data.sort(function (a, b) {
+                            if (a.id > b.id) {
+                                return 1;
+                            } else if (a.id < b.id) {
+                                return -1;
+                            } else {
+                                return 0;
+                            }
+                        });
+                        tables.create(data.year, data.month);
+                        guest.add(data.year, data.month, data.data);
+                    }
                 },
                 error: function (xhr, textStatus, errorThrown) {
-                    $("#ajax-msg").append(xhr.responseText);
                     console.log(textStatus);
                     console.log(errorThrown);
                 }
@@ -759,7 +773,7 @@ const db = {
 
         modify: function (opts) {
             $.ajax({
-                url: './php/db/gl001/modify.php',
+                url: '../db/gl001/modify.php',
                 data: {
                     year: $('#year').val(),
                     month: utils.getMonthId($('#month').val()),
@@ -775,10 +789,16 @@ const db = {
                 },
                 dataType: 'json',
                 success: function (data) {
-                    guest.upd(data.old, data.new);
+                    if (!data.status) {
+                        console.log(data.msg);
+                        var redirectDialog = new RedirectDialog();
+                        redirectDialog.bind();
+                        redirectDialog.show();
+                    } else {
+                        guest.upd(data.old, data.new);
+                    }
                 },
                 error: function (xhr, textStatus, errorThrown) {
-                    $("#ajax-msg").append(xhr.responseText);
                     console.log(textStatus);
                     console.log(errorThrown);
                 }
@@ -787,16 +807,22 @@ const db = {
 
         delete: function (opts) {
             $.ajax({
-                url: './php/db/gl001/delete.php',
+                url: '../db/gl001/delete.php',
                 data: {
                     id: opts
                 },
                 dataType: 'json',
                 success: function (data) {
-                    guest.del(data.data);
+                    if (!data.status) {
+                        console.log(data.msg);
+                        var redirectDialog = new RedirectDialog();
+                        redirectDialog.bind();
+                        redirectDialog.show();
+                    } else {
+                        guest.del(data.data);
+                    }
                 },
                 error: function (xhr, textStatus, errorThrown) {
-                    $("#ajax-msg").append(xhr.responseText);
                     console.log(textStatus);
                     console.log(errorThrown);
                 }
@@ -810,5 +836,4 @@ const db = {
 
         }
     }
-
 }

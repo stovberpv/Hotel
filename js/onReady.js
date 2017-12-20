@@ -133,9 +133,9 @@
                     -----------------------------------------------------------------------*/
                     if (isMouseDown) {
                         if ($(this).hasClass('') || $(this).hasClass(globals.class_selected)) {
-                            $(this).toggleClass(globals.class_selected, isSelected);
                             selGroup.del(this);
                             isSelected && selGroup.add(this);
+                            $(this).toggleClass(globals.class_selected, isSelected);
                         } else {
                             selGroup.free();
                         }

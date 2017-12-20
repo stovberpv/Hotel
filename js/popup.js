@@ -3,7 +3,6 @@ class Dialog {
     constructor(opts) {
         this.Opts = opts;
         this.Id = Math.floor(Math.random() * 100000);
-        this.Doc = opts.source;
     }
 
     bind() {}
@@ -48,13 +47,13 @@ class ConfirmDialog extends Dialog {
             '</div>' +
             '</div>';
 
-        var div = this.Doc.createElement('div');
+        var div = document.createElement('div');
         div.className = 'modal-dialog';
         div.id = 'modal-dialog-' + this.Id;
         div.innerHTML = this.Dialog;
-        this.Doc.body.appendChild(div);
+        document.body.appendChild(div);
 
-        var dialog = this.Doc.getElementById('modal-dialog-' + this.Id),
+        var dialog = document.getElementById('modal-dialog-' + this.Id),
             btnOk = dialog.children[0].children[2].children[1],
             btnNo = dialog.children[0].children[2].children[0];
 
@@ -63,12 +62,12 @@ class ConfirmDialog extends Dialog {
     }
 
     show() {
-        var dialog = this.Doc.getElementById('modal-dialog-' + this.Id);
+        var dialog = document.getElementById('modal-dialog-' + this.Id);
         dialog.style.display = 'block';
     }
 
     unbind() {
-        var dialog = this.Doc.getElementById('modal-dialog-' + this.Id);
+        var dialog = document.getElementById('modal-dialog-' + this.Id);
         dialog.style.display = 'none';
         dialog.parentNode.removeChild(dialog);
     }
@@ -129,13 +128,13 @@ class InOutDialog extends Dialog {
             '<button type="button" id="btn-ok" class="btn positive">Подтвердить</button>' +
             '</div>' +
             '</div>';
-        var div = this.Doc.createElement('div');
+        var div = document.createElement('div');
         div.className = 'modal-dialog';
         div.id = 'modal-dialog-' + this.Id;
         div.innerHTML = this.Dialog;
-        this.Doc.body.appendChild(div);
+        document.body.appendChild(div);
 
-        var dialog = this.Doc.getElementById('modal-dialog-' + this.Id),
+        var dialog = document.getElementById('modal-dialog-' + this.Id),
             btnOk = dialog.children[0].children[2].children[1],
             btnNo = dialog.children[0].children[2].children[0];
 
@@ -144,12 +143,12 @@ class InOutDialog extends Dialog {
     }
 
     show() {
-        var dialog = this.Doc.getElementById('modal-dialog-' + this.Id);
+        var dialog = document.getElementById('modal-dialog-' + this.Id);
         dialog.style.display = 'block';
     }
 
     unbind() {
-        var dialog = this.Doc.getElementById('modal-dialog-' + this.Id);
+        var dialog = document.getElementById('modal-dialog-' + this.Id);
         dialog.style.display = 'none';
         dialog.parentNode.removeChild(dialog);
     }
@@ -210,20 +209,20 @@ class InputDialog extends Dialog {
             '<a>' + this.Opts.dialog.title + '</a>' +
             '</div>' +
             '<div class="modal-body">' +
-            '<input id="in_year" class="input" name="year" type="text" size="4" maxlength="4" placeholder="Год">' +
+            '<input id="in-year" class="input" name="year" type="text" size="4" maxlength="4" placeholder="Год">' +
             '</div>' +
             '<div class="modal-footer">' +
             '<button type="button" id="btn-no" class="btn negative">Отменить</button>' +
             '<button type="button" id="btn-ok" class="btn positive">Подтвердить</button>' +
             '</div>' +
             '</div>';
-        var div = this.Doc.createElement('div');
+        var div = document.createElement('div');
         div.className = 'modal-dialog';
         div.id = 'modal-dialog-' + this.Id;
         div.innerHTML = this.Dialog;
-        this.Doc.body.appendChild(div);
+        document.body.appendChild(div);
 
-        var dialog = this.Doc.getElementById('modal-dialog-' + this.Id),
+        var dialog = document.getElementById('modal-dialog-' + this.Id),
             btnOk = dialog.children[0].children[2].children[1],
             btnNo = dialog.children[0].children[2].children[0];
 
@@ -232,19 +231,46 @@ class InputDialog extends Dialog {
     }
 
     show() {
-        var dialog = this.Doc.getElementById('modal-dialog-' + this.Id);
+        var dialog = document.getElementById('modal-dialog-' + this.Id);
         dialog.style.display = 'block';
     }
 
     unbind() {
-        var dialog = this.Doc.getElementById('modal-dialog-' + this.Id);
+        var dialog = document.getElementById('modal-dialog-' + this.Id);
         dialog.style.display = 'none';
         dialog.parentNode.removeChild(dialog);
     }
 
     getVal() {
         return {
-            year: $('#in_year').val()
+            year: $('#in-year').val()
         }
+    }
+}
+
+class RedirectDialog extends Dialog {
+    
+    bind() {
+        this.Dialog =
+            '<div class="modal-content-href">' +
+            '<div class="modal-body-href">' +
+            '<a id="login-page-href" href="#">Ваша сессия устарела, войдите, пожалуйста, снова.</a>' +
+            '</div>' +
+            '</div>';
+        var div = document.createElement('div');
+        div.className = 'modal-dialog-href';
+        div.id = 'modal-dialog-' + this.Id;
+        div.innerHTML = this.Dialog;
+        document.body.appendChild(div);
+
+        var loginPage = document.getElementById('login-page-href');
+        loginPage.addEventListener('click', function () {
+            document.location.replace("../index.php")
+        });
+    }
+
+    show() {
+        var dialog = document.getElementById('modal-dialog-' + this.Id);
+        dialog.style.display = 'block';
     }
 }

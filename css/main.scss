@@ -102,6 +102,11 @@
     --c-mod-txt-top-pos: #f1f1f1;
     --c-mod-txt-top-neu: #ffffff;
     --c-mod-txt-top-ext: #ffffff;
+    /* modal-text-href-normal */
+    --c-mod-txt-hrf-nor: #ffffff;
+    --c-mod-bor-hrf-nor: #06D85F;
+    --c-mod-bck-hrf-nor: #2d2d2d;
+    --c-mod-bck-hrf-hov: #06D85F;
     /* ---------------------------- CUSTOM ----------------------------- */
     --c-custom-1: #F06E58;
     --c-custom-2: #FEA45D;
@@ -652,6 +657,48 @@ body {
 .modal-header-extend {
     color: var(--c-mod-txt-top-ext);
     background-color: var(--c-mod-bck-top-ext);
+}
+
+.modal-dialog-href {
+    font-family: 'Century Gothic', sans-serif;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    padding-top: 10%;
+    background-color: var(--c-mod-bck-hrf-nor);
+}
+
+.modal-content-href {
+    width: auto;
+    height: auto;
+    margin-left: auto;
+    margin-right: auto;
+    border: 2px solid var(--c-mod-bor-hrf-nor);
+    padding: 20px;
+    display: table;
+    border-radius: 20px/50px;
+    cursor: pointer;
+    transition: all .5s;
+    box-shadow: 0 0 10px 5px rgba(255, 255, 255, .1);
+}
+
+.modal-content-href:hover {
+    box-shadow: 0 0 15px 5px rgba(255, 255, 255, .2);
+    background-color: var(--c-mod-bck-hrf-hov);
+    transition: all .5s;
+    transform: translateZ(10px);
+}
+
+#login-page-href {
+    color: var(--c-mod-txt-hrf-nor);
+    transition: all .1s;
+    text-decoration: none;
+}
+
+.login-page-href:focus {
+    outline: none;
 }
 
 .input {
