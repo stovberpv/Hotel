@@ -323,11 +323,20 @@ body {
     color: var(--c-tab-inr-txt-cmt);
 }
 
-.person-info {
+.person-additional-info {
+    text-align: left;
+}
+
+.person-city,
+.person-fn {
     font-size: 14px;
     color: var(--c-tab-inr-txt-cmt);
     text-align: left;
     font-style: italic;
+}
+
+.person-city:after {
+    content: " ";
 }
 
 .person-room-num {
@@ -772,19 +781,10 @@ body {
     text-align: right;
 }
 
-#in_tel {
-    float: left;
-    width: 96%;
-    text-align: left;
-}
-
-#in_name {
-    float: left;
-    width: 96%;
-    text-align: left;
-}
-
-#in_info {
+#in_tel,
+#in_name,
+#in_city,
+#in_fn {
     float: left;
     width: 96%;
     text-align: left;

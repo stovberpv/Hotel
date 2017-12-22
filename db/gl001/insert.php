@@ -34,6 +34,7 @@
     isset($_GET["name"])   ? $name   = $_GET["name"]   : $name   = "";
     isset($_GET["tel"])    ? $tel    = $_GET["tel"]    : $tel    = "";
     isset($_GET["info"])   ? $info   = $_GET["info"]   : $info   = "";
+    isset($_GET["city"])   ? $city   = $_GET["city"]   : $city   = "";
     #
     $user = getAuthUserName();
     #---------------------------------------------------------------------------------
@@ -76,11 +77,11 @@
     # 
     #---------------------------------------------------------------------------------
     $query = "INSERT
-                INTO gl001(dayin, dayout, room, price, paid, name, tel, info, user, timestamp)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                INTO gl001(dayin, dayout, room, price, paid, name, tel, info, city, user, timestamp)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     #
     !($stmt = $mysqli->prepare($query)) && die(err2echo(10, 'Добавление гостя', $mysqli));
-    !($stmt->bind_param('ssiddsssss', $begda, $endda, $room, $price, $paid, $name, $tel, $info, $user, $timestamp)) && die(err2echo(11, 'Добавление гостя', $mysqli));
+    !($stmt->bind_param('ssiddssssss', $begda, $endda, $room, $price, $paid, $name, $tel, $info, $user, $city, $timestamp)) && die(err2echo(11, 'Добавление гостя', $mysqli));
     !($stmt->execute()) && die(err2echo(12, 'Добавление гостя', $mysqli));
     #
     $data['data'][0]['id'] = mysqli_insert_id($mysqli);
@@ -92,6 +93,7 @@
     $data['data'][0]['name'] = $name;
     $data['data'][0]['tel'] = $tel;
     $data['data'][0]['info'] = $info;
+    $data['data'][0]['city'] = $city;
     #
     $data['year'] = $year;
     $data['month'] = $month;

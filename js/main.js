@@ -151,8 +151,18 @@ const guest = {
             tr = document.createElement('tr');
 
             td = document.createElement('td');
-            td.setAttribute('class', 'person-info');
-            td.appendChild(document.createTextNode(wa.info));
+            td.setAttribute('class', 'person-additional-info');
+
+            a = document.createElement('a');
+            a.setAttribute('class', 'person-city');
+            a.appendChild(document.createTextNode(wa.city));
+            td.appendChild(a);
+
+            a = document.createElement('a');
+            a.setAttribute('class', 'person-fn');
+            a.appendChild(document.createTextNode(wa.fn));
+            td.appendChild(a);
+
             tr.appendChild(td);
 
             td = document.createElement('td');
@@ -278,7 +288,7 @@ const tables = {
         //  --- чистим
         //  --- --- тело
         $('#calendar > tbody').empty();
-                // дни месяца
+        // дни месяца
         var trdays = document.getElementById('calendar-row-days'),
             childs = trdays.children.length;
         for (let i = 0; i < childs; i++) {
@@ -309,7 +319,7 @@ const tables = {
                 th.classList.add('blank-cell');
             } else {
                 let day = utils.overlay(i, '0', 2),
-                date = year + '-' + utils.overlay(month,'0', 2) + '-' + day;
+                    date = year + '-' + utils.overlay(month, '0', 2) + '-' + day;
                 th.setAttribute('id', date)
                 th.appendChild(document.createTextNode(i));
             }
@@ -330,7 +340,7 @@ const tables = {
                     node.appendChild(document.createTextNode(room));
                 } else {
                     let day = utils.overlay(j, '0', 2),
-                        date = year + '-' + utils.overlay(month,'0', 2) + '-' + day;
+                        date = year + '-' + utils.overlay(month, '0', 2) + '-' + day;
                     node = document.createElement('td');
                     node.setAttribute('id', room + '_' + date);
                     node.appendChild(document.createTextNode(""));
@@ -497,7 +507,8 @@ var addGuest = function (e) {
         paid: "",
         name: "",
         tel: "",
-        info: ""
+        fn: "",
+        city: ""
     };
 
     var inOutDialog = new InOutDialog({
@@ -534,7 +545,8 @@ var editGuest = function (e) {
         paid: $('.person-room-paid', guest).html(),
         name: $('.person-name', guest).html(),
         tel: $('.person-tel', guest).html(),
-        info: $('.person-info', guest).html()
+        fn: $('.person-fn', guest).html(),
+        city: $('.person-city', guest).html()
     }
 
     var inOutDialog = new InOutDialog({
@@ -608,7 +620,7 @@ const db = {
                     });
                     $('#year').val(data.year);
                     globals.rooms = data.rooms;
-                    
+
                     tables.create(data.year, data.month);
                     guest.add(data.year, data.month, data.data);
                 }
@@ -716,7 +728,8 @@ const db = {
                     paid: opts.paid,
                     name: opts.name,
                     tel: opts.tel,
-                    info: opts.info,
+                    fn: opts.fn,
+                    city: opts.city
                 },
                 dataType: 'json',
                 success: function (data) {
@@ -785,7 +798,8 @@ const db = {
                     paid: opts.paid,
                     name: opts.name,
                     tel: opts.tel,
-                    info: opts.info
+                    fn: opts.fn,
+                    city: opts.city
                 },
                 dataType: 'json',
                 success: function (data) {

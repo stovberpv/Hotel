@@ -30,10 +30,10 @@
     #---------------------------------------------------------------------------------
     $query = "SELECT * FROM gl001 WHERE id = ?";
     #
-    !($stmt = $mysqli->prepare($query)) && die(err2echo(10, "Выборка. ", $mysqli));
-    !($stmt->bind_param('i', $id)) && die(err2echo(11, "Выборка. ", $mysqli));
-    !($stmt->execute()) && die(err2echo(12, "Выборка. ", $mysqli));
-    !($result = $stmt->get_result()) && die(err2echo(15, 'Выборка', $mysqli));
+    !($stmt = $mysqli->prepare($query)) && die(err2echo(10, "Удаление гостя. ", $mysqli));
+    !($stmt->bind_param('i', $id)) && die(err2echo(11, "Удаление гостя. ", $mysqli));
+    !($stmt->execute()) && die(err2echo(12, "Удаление гостя. ", $mysqli));
+    !($result = $stmt->get_result()) && die(err2echo(15, 'Удаление гостя', $mysqli));
     $rows = []; 
     while($row = $result->fetch_assoc()) {
         $rows[] = $row;
@@ -45,9 +45,9 @@
     #---------------------------------------------------------------------------------
     $query = "DELETE FROM gl001 WHERE id = ?";
     #
-    !($stmt = $mysqli->prepare($query)) && die(err2echo(10, "Удаление. ", $mysqli));  
-    !($stmt->bind_param('i', $id)) && die(err2echo(11, "Удаление. ", $mysqli));  
-    !($stmt->execute()) && die(err2echo(12, "Удаление. ", $mysqli));  
+    !($stmt = $mysqli->prepare($query)) && die(err2echo(10, "Удаление гостя. ", $mysqli));  
+    !($stmt->bind_param('i', $id)) && die(err2echo(11, "Удаление гостя. ", $mysqli));  
+    !($stmt->execute()) && die(err2echo(12, "Удаление гостя. ", $mysqli));  
     #
     $data['id'] = $id;
     $data['rows'] = mysqli_affected_rows($mysqli);

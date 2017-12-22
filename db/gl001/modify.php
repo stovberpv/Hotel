@@ -34,7 +34,8 @@
     isset($_GET["paid"])   ? $paid   = $_GET["paid"]   : $paid   = "";
     isset($_GET["name"])   ? $name   = $_GET["name"]   : $name   = "";
     isset($_GET["tel"])    ? $tel    = $_GET["tel"]    : $tel    = "";
-    isset($_GET["info"])   ? $info   = $_GET["info"]   : $info   = "";
+    isset($_GET["fn"])     ? $fn     = $_GET["fn"]     : $fn     = "";
+    isset($_GET["city"])   ? $city   = $_GET["city"]   : $city   = "";
     #
     $user = getAuthUserName();
     #---------------------------------------------------------------------------------
@@ -95,11 +96,11 @@
     # 
     #---------------------------------------------------------------------------------
     $query = "UPDATE gl001
-                SET dayin = ?, dayout = ?, room = ?, price = ?, paid = ?, name = ?, tel = ?, info = ?, user = ?, timestamp = ?
+                SET dayin = ?, dayout = ?, room = ?, price = ?, paid = ?, name = ?, tel = ?, fn = ?, city = ?, user = ?, timestamp = ?
                 WHERE id = ?";
     #
     !($stmt = $mysqli->prepare($query)) && die(err2echo(10, 'Обновление гостя', $mysqli));
-    !($stmt->bind_param('ssiddsssssi', $begda, $endda, $room, $price, $paid, $name, $tel, $info, $user, $timestamp, $id)) && die(err2echo(11, 'Обновление гостя', $mysqli));
+    !($stmt->bind_param('ssiddssssssi', $begda, $endda, $room, $price, $paid, $name, $tel, $fn, $city, $user, $timestamp, $id)) && die(err2echo(11, 'Обновление гостя', $mysqli));
     !($stmt->execute()) && die(err2echo(12, 'Обновление гостя', $mysqli));
     #---------------------------------------------------------------------------------
     # 

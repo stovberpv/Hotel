@@ -118,8 +118,9 @@ class InOutDialog extends Dialog {
             '<td style="' + td_st2 + '"><input id="in_paid"   class="input" name="paid"   type="text" size="6" maxlength="6" placeholder="Оплата"></td>' +
             '</tr>' +
             '<tr><td colspan="5"><input id="in_name" class="input" name="name" type="text" size="36" placeholder="ФИО"       ></td></tr>' +
+            '<tr><td colspan="5"><input id="in_city" class="input" name="city" type="text" size="36" placeholder="Город"     ></td></tr>' +
             '<tr><td colspan="5"><input id="in_tel"  class="input" name="tel"  type="text" size="36" placeholder="Телефон"   ></td></tr>' +
-            '<tr><td colspan="5"><input id="in_info" class="input" name="info" type="text" size="36" placeholder="Примечание"></td></tr>' +
+            '<tr><td colspan="5"><input id="in_fn"   class="input" name="fn"   type="text" size="36" placeholder="Примечание"></td></tr>' +
             '</tbody>' +
             '</table>' +
             '</div>' +
@@ -163,7 +164,8 @@ class InOutDialog extends Dialog {
             $('#in_paid').val(val.paid);
             $('#in_name').val(val.name);
             $('#in_tel').val(val.tel);
-            $('#in_info').val(val.info);
+            $('#in_fn').val(val.fn);
+            $('#in_city').val(val.city);
         }
     }
 
@@ -177,7 +179,8 @@ class InOutDialog extends Dialog {
             paid: $('#in_paid').val(),
             name: $('#in_name').val(),
             tel: $('#in_tel').val(),
-            info: $('#in_info').val()
+            fn: $('#in_fn').val(),
+            city: $('#in_city').val()
         }
     }
 }
