@@ -1,0 +1,2 @@
+class InfoPage extends DataWrapper {
+}

@@ -1,0 +1,2 @@
+class Diagrams extends DataWrapper {
+}

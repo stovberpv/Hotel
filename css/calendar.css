@@ -34,7 +34,6 @@
     100%        255.00          FF
 -------------------------------------------------------------------*/
 
-
 :root {
     /* ---------------------------- BORDER ---------------------------- */
     /* radius-border-normal */
@@ -49,20 +48,19 @@
     --s-hov: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
     /* ---------------------------- GLOBAL ---------------------------- */
     /* document: -background -text */
-    --c-doc-bck-nor    : #f1f1f1;    /* f9f9f9 f1f1f1 / ece5da f1ebe5 c4b59d  */
-    --c-doc-txt        : #6a737b;    /* 6a737b 2d2d2d */
-    --c-doc-txt-ext    : #6a737b;    /* 6a737b 2d2d2d */
+    --c-doc-txt     : #6a737b;
+    --c-doc-txt-ext : #6a737b;
     /* ---------------------------- TABLES ---------------------------- */
     /* table-borders-body-normal */
-    --c-tab-bor-bod-nor: #d1d2dd;    /* DDDDDD rgba(255,255,255,0.2) */
+    --c-tab-bor-bod-nor: #6a737b7f;
     /* table-background-body: -normal -hovered */
     --c-tab-bck-bod-nor: transparent;
     /* table-background-columns: -selected -reserver -adjacent -redeemed -hovered*/
-    --c-tab-bck-col-sel: #c1d82f7c;  /* #c1d82f #9DEA20 #BADA55 */
-    --c-tab-bck-col-res: #00a4e47c;  /* #42b3f4 */
-    --c-tab-bck-col-adj: #F4425F7c;  /* #ff0000 #F4425F */
-    --c-tab-bck-col-red: #dddddd;    /* #696969 #6a737b*/
-    --c-tab-bck-col-hov: #ffdd00;    /* #D5D5D5 */
+    --c-tab-bck-col-sel: #c1d82f7c;    /* #c1d82f #9DEA20 #BADA55 */
+    --c-tab-bck-col-res: #00a4e47c;    /* #42b3f4 */
+    --c-tab-bck-col-adj: #F4425F;      /* #ff0000 */
+    --c-tab-bck-col-red: #6a737b;      /* #696969 #6a737b*/
+    --c-tab-bck-col-hov: #ffdd00;      /* #D5D5D5 */
     /* table-inner-text-comment */
     --c-tab-inr-txt-cmt: #6a737bcc;
     /* ---------------------------- BUTTONS ---------------------------- */
@@ -76,22 +74,21 @@
     /* button-background-noraml: -positive -negative -neutral -extend */
     --c-btn-bck-nor-neu: transparent;
     /* button-background-hovered: -positive -negative -neutral -extend */
-    --c-btn-bck-hov-pos: #00a4e4;   /* c1d82f */
+    --c-btn-bck-hov-pos: #00a4e4;    /* c1d82f */
     --c-btn-bck-hov-neg: #F4425F;
     --c-btn-bck-hov-neu: #f1f1f1;
-    --c-btn-bck-hov-ext: #ffdd00E5;
-    /* 00a4e4 */
+    --c-btn-bck-hov-ext: #ffdd00E5;    /* 00a4e4 */
     /* ---------------------------- TOOLTIP ---------------------------- */
     /* tooltip: -text -background*/
-    --c-tip-txt        : #00a4e4;  /* 42b3f4 */
-    --c-tip-bck        : #f1f1f1;
+    --c-tip-txt: #00a4e4;    /* 42b3f4 */
+    --c-tip-bck: #f1f1f1;
     /* ----------------------------- MODAL ----------------------------- */
     /* modal-text */
-    --c-mod-txt        : #6a737b;
+    --c-mod-txt: #6a737b;
     /* modal-back */
-    --c-mod-bck        : rgba(0, 0, 0, 0.3);
+    --c-mod-bck: rgba(0, 0, 0, 0.3);
     /* modal-back-content */
-    --c-mod-bck-cnt    : #f1f1f1;
+    --c-mod-bck-cnt: #f1f1f1;
     /* modal-back-top: -negative -positive -neutral -extend */
     --c-mod-bck-top-neg: #F4425F;
     --c-mod-bck-top-pos: #00a4e4;
@@ -123,36 +120,7 @@
     --c-grad-3: #ffdd0099;
 }
 
-
 /*-----------------------------------------------------------------*/
-
-
-html {
-    font-family: 'Century Gothic', sans-serif;
-    font-size: var(--f-doc-nor);
-    text-align: center;
-}
-
-body {
-    user-select: none !important;
-    color: var(--c-doc-txt);
-    // background-image: url("../res/background/texture-2.jpg");
-    // background: linear-gradient(to right, #C67B53 0%, #2192dd 100%);
-    background-color: var(--c-doc-bck-nor); 
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 0;
-}
-
-::-webkit-scrollbar {
-    display: none;
-}
-
-
-/*-----------------------------------------------------------------*/
-
 
 #calendar {
     margin-left: auto;
@@ -225,22 +193,18 @@ body {
     width: 100%;
     padding: 18px;
     padding-left: 0;
-    padding-right: 0; 
+    padding-right: 0;
     border-radius: var(--r-bor-nor);
     border-style: solid;
-    border-width: 0px;
-    // border: 1px dashed var(--c-tab-bor-bod-nor);
+    border-width: 0px; // border: 1px dashed var(--c-tab-bor-bod-nor);
     // animation: aniborder 5s infinite;
 }
 
 // @keyframes aniborder {
 //     0% { border-color: #f1f1f1; }
-
 //     50% { border-color: #d1d2dd; }
-
 //     100% { border-color: #f1f1f1; }
 // }
-
 .book>tbody>tr {
     cursor: pointer;
 }
@@ -401,7 +365,6 @@ body {
 
 /*-----------------------------------------------------------------*/
 
-
 .btn {
     color: var(--c-btn-txt-nor-neu);
     font-size: var(--f-doc-ext);
@@ -524,9 +487,15 @@ body {
 }
 
 @keyframes blink2 {
-    0% { background-color: #42b3f4; }
-    50% { background-color: #9dea20; }
-    100% { background-color: #42b3f4; }
+    0% {
+        background-color: #42b3f4;
+    }
+    50% {
+        background-color: #9dea20;
+    }
+    100% {
+        background-color: #42b3f4;
+    }
 }
 
 #button-pick-calendar {
@@ -542,13 +511,12 @@ body {
 
 #button-pick-calendar:hover {
     color: var(--c-btn-txt-hov-pos);
-    animation: blink2 5s infinite; 
+    animation: blink2 5s infinite;
     border: 1px solid transparent;
 }
 
 
 /*-----------------------------------------------------------------*/
-
 
 .hint {
     position: relative;
@@ -728,7 +696,10 @@ body {
 .login-page-href:focus {
     outline: none;
 }
+
+
 /* FIX: global color */
+
 .input {
     color: var(--c-doc-txt-ext);
     font-family: 'Century Gothic', sans-serif;
@@ -924,7 +895,8 @@ body {
 }
 
 #pc-content tbody td:hover {
-    border: 1px solid #00a4e4 !important;  /*FIX: use global color*/
+    border: 1px solid #00a4e4 !important;
+    /*FIX: use global color*/
 }
 
 #pc-footer {
@@ -946,7 +918,8 @@ body {
 }
 
 .pc-month-sel {
-    border: 1px solid #ffdd00 !important; /*FIX: use global color*/
+    border: 1px solid #ffdd00 !important;
+    /*FIX: use global color*/
 }
 
 .pc-btn-left,

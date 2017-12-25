@@ -28,15 +28,15 @@ class RCMenu {
         for(let i = 0; i < el.length; i++) {
             switch (el[i].id) {
                 case 'editGuest':
-                    el[i].addEventListener('click', editGuest.bind( { id: this.Opts.id } ));
+                    el[i].addEventListener('click', listeners.updGuestClick.bind( { id: this.Opts.id } ));
                 break;
 
                 case 'delGuest': 
-                    el[i].addEventListener('click', delGuest.bind( { id: this.Opts.id } ));
+                    el[i].addEventListener('click', listeners.delGuestClick.bind( { id: this.Opts.id } ));
                 break;
 
                 case 'addGuest':
-                    el[i].addEventListener('click', addGuest.bind( { room: this.Opts.room, dayin: this.Opts.begda, dayout: this.Opts.endda } ));
+                    el[i].addEventListener('click', listeners.addGuestClick.bind( { room: this.Opts.room, dayin: this.Opts.begda, dayout: this.Opts.endda } ));
                 break;
             
                 default:

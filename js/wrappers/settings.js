@@ -1,0 +1,2 @@
+class Settings extends DataWrapper {
+}
