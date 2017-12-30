@@ -1,142 +1,76 @@
 'use strict';
-
-const gl = {
-
-    /*----------------------------------------------------------------------------------------
-    НАЧАЛО --- Навигационное меню
-    ----------------------------------------------------------------------------------------*/
-    /** 
-    * Клаасы-переключатели CSS стилей
-    */
-    class_navElSel: 'nav-el-sel',
-    class_VCDWShow: 'vc-data-wrapper-show',
-
-    /** 
-    * Список ID всех элементов навигации
-    */
-    navEl: [
-        'nav-el-calendar',
-        'nav-el-contacts',
-        'nav-el-diagrams',
-        'nav-el-settings',
-        'nav-el-infopage',
-        'nav-el-signout'
-    ],
-
-    /** 
-    * Соответствие обертки данных своему элементу навигации
-    */
-    chains: [
-        { dataWrapper: 'vc-dw-1', navEl: 'nav-el-calendar' },
-        { dataWrapper: 'vc-dw-2', navEl: 'nav-el-contacts' },
-        { dataWrapper: 'vc-dw-3', navEl: 'nav-el-diagrams' },
-        { dataWrapper: 'vc-dw-4', navEl: 'nav-el-settings' },
-        { dataWrapper: 'vc-dw-5', navEl: 'nav-el-infopage' },
-        { dataWrapper: 'vc-dw-6', navEl: 'nav-el-signout' }
-    ],
-    /*----------------------------------------------------------------------------------------
-        КОНЕЦ --- Навигационное меню
-    ----------------------------------------------------------------------------------------*/
-
-
-    /*----------------------------------------------------------------------------------------
-        НАЧАЛО --- Меню по правой кнопке мыши 
-    ----------------------------------------------------------------------------------------*/
-    rcmenu: undefined,
-    /*----------------------------------------------------------------------------------------
-        КОНЕЦ --- Меню по правой кнопке мыши
-    ----------------------------------------------------------------------------------------*/
-
-
-    /*----------------------------------------------------------------------------------------
-        НАЧАЛО --- Календарь 
-    ----------------------------------------------------------------------------------------*/
-    rooms: [],
-    monthNames: ["", "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"],
-    class_selected: "selected", //выделен
-    class_reserved: "reserved", //зарезервирован
-    class_adjacent: "adjacent", //смежный
-    class_redeemed: "redeemed", //выкупленный
-    class_view: "view", //предпросмотр
-    class_viewfix: "view-fix", // выделен
-    intent_add: 1,
-    intent_edit: 0,
-    intent_del: -1,
-    /*----------------------------------------------------------------------------------------
-        КОНЕЦ --- Календарь
-    ----------------------------------------------------------------------------------------*/
-
-    /*----------------------------------------------------------------------------------------
-        НАЧАЛО --- Календарь выделение
-    ----------------------------------------------------------------------------------------*/
-    isMouseDown: false,
-    isSelected: false,
-    /*----------------------------------------------------------------------------------------
-        НАЧАЛО --- Календарь выделение
-    ----------------------------------------------------------------------------------------*/
-}
-
+/**
+ * Группа работы с CSS классом позволяющим идентифицровать выделенные ячейки.
+ * Формирование, Добавление, Удаление класса. Пересчет кол-ва ячеек в классе.
+ * FIX: при переходе на новую строку начинать отсчет заново
+ */
 const selGroup = {
 
+    /** 
+     * ID обрабатываемого класса 
+     */
     classId: undefined,
 
+    /**
+     * Очистка ID текущего обрабатываемого класса
+     */
     free: function () {
+
         this.classId = undefined;
     },
 
+    /**
+     * Формирование ID нового класса
+     */
     gen: function () {
+
         this.classId = 'sel-group-' + Math.ceil((Math.random() * 100000));
     },
 
+    /**
+     * Добавление класса к объекту.
+     * Если ID класса не сформирован то перед добавление будет вызван метод формирующий ID класса
+     */
     add: function (target) {
+
         !this.classId && this.gen();
-        if (target instanceof jQuery) {
-            target.addClass(this.classId);
-        } else {
-            target.classList.add(this.classId);
-        }
+        target.classList.add(this.classId);
         this.enum(this.classId);
     },
 
-    get: function (target) {
-        if (target instanceof jQuery) {
-            var classId = target.prop("className").match(/\bsel-group-\d+/);
-            return classId ? classId[0] : '';
-        } else {
-            return target.className.match(/\bsel-group-\d+/);
-        }
-    },
-
+    /**
+     * Поиск ID класса присвоенного объекту с последующим удалением и пересчетом оставшихся элементов 
+     * которым присвоей этот ID
+     */
     del: function (target) {
-        var classId = this.get(target);
-        if (classId) {
-            if (target instanceof jQuery) {
-                //TODO: del for jQuery
-                target.removeClass(classId);
-                target.empty();
-            } else {
-                //FIX: someday do more beautifully
-                var group = document.getElementsByClassName(classId);
-                for (let i = group.length; i > 0; i--) {
-                    if (group[0].id == target.id) {
-                        group[0].innerHTML = '';
-                        group[0].classList.remove(gl.class_selected);
-                        group[0].classList.remove(classId);
-                        break;
-                    } else {
-                        group[0].innerHTML = '';
-                        group[0].classList.remove(gl.class_selected);
-                        group[0].classList.remove(classId);
-                    }
+
+        if (target.className === '') return;
+        var classId = target.className.split(' ').filter(function(el) { return el.match(/\bsel-group-\d+/); }).toString();
+        if (classId !== '') {
+            var group = document.getElementsByClassName(classId);
+            for (let i = group.length; i > 0; i--) {
+                if (group[0].id == target.id) {
+                    group[0].innerHTML = '';
+                    group[0].classList.remove(gl.class_selected);
+                    group[0].classList.remove(classId);
+                    break;
+                } else {
+                    group[0].innerHTML = '';
+                    group[0].classList.remove(gl.class_selected);
+                    group[0].classList.remove(classId);
                 }
-                target.classList.remove(classId);
-                target.innerHTML = '';
             }
+            target.classList.remove(classId);
+            target.innerHTML = '';
             this.enum(classId);
         }
     },
 
+    /**
+     * Пересчет кол-ва объектов класса по ID класса 
+     */
     enum: function (classId) {
+
         var group = document.getElementsByClassName(classId);
         for (let i = 0; i < group.length; i++) {
             group[i].innerHTML = (i + 1);
@@ -144,6 +78,13 @@ const selGroup = {
     }
 }
 
+/**
+ * Группа обработки оберток данных, которые отображаются в
+ * контейнере данных.
+ * Формирование экземпляра класса для обертки.
+ * Вызов методов формирования и заполнения данных для 
+ * сформированных экземпляров, если они не были вызваны ранее.
+ */
 const wrapper = {
 
     /**
@@ -216,10 +157,12 @@ const wrapper = {
     }
 }
 
+/**
+ * Группа обработки контейнера.
+ */
 const container = {
 
     /**
-     * Процедура обработки контейнера.
      * Скрывает контейнер.
      * Вызывает процедуру заполнения контейнера.
      * Выводит на экран обертку данных контейнера.
@@ -254,12 +197,16 @@ const container = {
 
 }
 
+/**
+ * Группа слушателей
+ */
 const listeners = {
 
     /*----------------------------------------------------------------------------------------
-        delegate events 
+        Отложенное событие 
     ----------------------------------------------------------------------------------------*/
     delegate: function (elSelector, eventName, selector, callback) {
+
         var element = document.querySelector(elSelector);
 
         element.addEventListener(eventName, function (event) {
@@ -283,7 +230,7 @@ const listeners = {
 
     
     /** 
-     * Отложенное событие на child с возможностью ислючения предков по связке TAG+ID с применением
+     * Отложенное событие на потомке с возможностью ислючения предков по связке TAG+ID с применением
      * регулярного выражения.
      */
     delegateWithExclude: function (elSelector, eventName, selector, notTag, notSelector, callback) {
@@ -321,14 +268,11 @@ const listeners = {
         });
     },
 
-    /*----------------------------------------------------------------------------------------
-        document events 
-    ----------------------------------------------------------------------------------------*/
     /**
      * Основной слушать. Вызывается при загрузке страницы.
      * 
-     * Определяется и формируется список элементов для которых
-     * необходимо добавить обработчики событий.
+     * Определяет и формирует список элементов для которых необходимо добавить
+     * обработчики событий.
      * Добавляется обработчик на нажатие в области навигационного меню.
      * Добавляется общий обработчик на навигацонные элементы внутри меню.
      * 
@@ -353,21 +297,27 @@ const listeners = {
     },
 
     /**
-     * 
+     * Обработка "Мышь отпущена" на странице
      */
     mouseUp: function (e) {
+
         gl.isMouseDown = false;
     },
 
-    /*----------------------------------------------------------------------------------------
-        Window events 
-    ----------------------------------------------------------------------------------------*/
+    /**
+     * Обработка ПКМ
+     */
     ctmClick: function (e) {
+
         e.preventDefault();
         return;
     },
 
+    /**
+     * Обработка ЛКМ
+     */
     windowClick: function (e) {
+
         if (gl.rcmenu != undefined) {
             gl.rcmenu.unbind();
             gl.rcmenu = undefined;
@@ -406,7 +356,9 @@ const listeners = {
     /*----------------------------------------------------------------------------------------
         Календарь
     ----------------------------------------------------------------------------------------*/
-
+    /**
+     * Нажатие кнопки вызова календаря
+     */
     pickCalendarClick: function (e) {
 
         var pickCalendar = new PickCalendar({
@@ -451,6 +403,9 @@ const listeners = {
         pickCalendar.show();
     },
 
+    /**
+     * Нажатие кнопки переключения месяца
+     */
     monthLeftClick: function (e) {
 
         var month = document.getElementById('month'),
@@ -465,6 +420,9 @@ const listeners = {
         db.gl001.select();
     },
 
+    /**
+     * Нажатие кнопки переключения месяца
+     */
     monthRightClick: function (e) {
 
         var month = document.getElementById('month'),
@@ -479,6 +437,9 @@ const listeners = {
         db.gl001.select();
     },
 
+    /**
+     * Нажатие кнопки добавления гостя
+     */
     addGuestClick: function (e) {
 
         //  чистим список на добавление перед добавлением новых записей
@@ -515,6 +476,9 @@ const listeners = {
         inOutDialog.show();
     },
 
+    /**
+     * Нажатие кнопки удаления гостя
+     */
     delGuestClick: function (e) { 
 
         var intentList = [];
@@ -543,22 +507,25 @@ const listeners = {
         }
     },
 
+    /**
+     * Нажатие кнопки редактирования гостя
+     */
     updGuestClick: function (e) { 
 
-        var getInnerHTML = function (src, selector) {
+        function getInnerHTML(src, selector) {
             var target = src.querySelector(selector);
-            if (target.length == 0) {
+            if (target) {
+                return target.innerHTML;
+            } else {
                 console.log('Error. No elements by selector: ' + selector + ' in ' + src);
                 return '';
-            } else {
-                return target.innerHTML;
             }
         }
 
         //  чистим список на редактирование перед добавлением новых записей
-        var guest = document.querySelector('.book tbody tr#' + this.id[0]);
+        var guest = document.querySelector('.book tbody tr#' + this.id);
         if (!guest) {
-            console.log('Error. No Id:' + this.id[0]);
+            console.log('Error. No Id:' + this.id);
             return;
         }
 
@@ -594,6 +561,9 @@ const listeners = {
         inOutDialog.show();
     },
 
+    /**
+     * Группа обработчиков нажатия в корневой области календаря 
+     */
     calendarTDs: {
 
         mousedown: function (e) {
@@ -604,7 +574,7 @@ const listeners = {
                 default: break;
             }
 
-            // PRESS AND HOVER
+            // Выделение при зажатой мыши
             gl.isMouseDown = true;
             if (e.target.classList.length == 0 || e.target.classList.contains(gl.class_selected)) {
                 e.target.classList.toggle(gl.class_selected);
@@ -613,7 +583,7 @@ const listeners = {
             selGroup.del(this);
             gl.isSelected ? selGroup.add(this) : selGroup.free();
 
-            //VIEW TOGGLE
+            // Переключения CSS класса опредляющего подсвеченный элемент
             let ids = e.target.className.split(' ').filter(function(el) { return el.match(/^N\d+$/g); });
             for (let i = 0; i < ids.length; i++) {
                 document.querySelectorAll('#calendar > tbody > tr > td.' + ids[i]).forEach(function (el) {
@@ -627,7 +597,7 @@ const listeners = {
 
         mouseover: function (e) {
 
-            // PRESS AND HOVER
+            // Выделение при зажатой мыши
             if (gl.isMouseDown) {
                 if (e.target.classList.length == 0 || e.target.classList.contains(gl.class_selected)) {
                     selGroup.del(this);
@@ -638,7 +608,7 @@ const listeners = {
                 }
             }
 
-            // VIEW TOGGLE
+            // Переключения CSS класса опредляющего подсвеченный элемент
             let ids = e.target.className.split(' ').filter(function(el) { return el.match(/^N\d+$/g); });
             for (let i = 0; i < ids.length; i++) {
                 var els = document.querySelectorAll('#calendar > tbody > tr > td.' + ids[i]),
@@ -657,8 +627,7 @@ const listeners = {
 
         mouseout: function (e) {
 
-            // VIEW TOGGLE
-            //TODO: ????
+           // Выделение при зажатой мыши
             let ids = e.target.className.split(' ').filter(function(el) { return el.match(/^N\d+$/g); });
             for (let i = 0; i < ids.length; i++) {
                 var els = document.querySelectorAll('#calendar > tbody > tr > td.' + ids[i]),
@@ -682,6 +651,9 @@ const listeners = {
         }
     },
 
+    /**
+     * Группа обработчиков нажатия в корневой области заголовков календаря 
+     */
     calendarTHs: {
 
         mousedown: function (e) {
@@ -702,6 +674,9 @@ const listeners = {
         }
     },
 
+    /**
+     * Группа обработчиков нажатия области потомков календаря. На списке гостей.
+     */
     bookTRs: {
 
         mousedown: function (e) {
@@ -756,9 +731,9 @@ const listeners = {
         }
     },
 
-    /*----------------------------------------------------------------------------------------
-        Меню правой кнокпи мыши
-    ----------------------------------------------------------------------------------------*/
+    /** 
+     * Меню правой кнокпи мыши
+     */
     RCMenuOpenClick: function (e, classList) {
 
         var id, room, dayin, dayout,
@@ -770,7 +745,7 @@ const listeners = {
             if (classList.includes(gl.class_selected)) {
                 var row = (e.target.id).substring(2, 4),
                     groupId = e.target.className.split(' ').filter(function(el) { return el.match(/\bsel-group-\d+/g); }),
-                    groupEl = $("#calendar > tbody > tr#R" + row + " > td." + groupId),
+                    groupEl = document.querySelectorAll('#calendar > tbody > tr#R' + row + ' > td.' + groupId),
                     begda = groupEl[0].id.split('-'),
                     endda = groupEl[groupEl.length - 1].id.split('-');
 
@@ -779,14 +754,14 @@ const listeners = {
                 dayout = endda[2] + '.' + endda[1];
                 btn = { upd: false, del: false, add: true }
             } else if (classList.includes(gl.class_redeemed) || classList.includes(gl.class_reserved)) {
-                id = getIDs(e.currentTarget.className)[0];
+                id = e.target.className.split(' ').filter(function(el) { return el.match(/^N\d+$/); }).toString();
                 btn = { upd: true, del: true, add: false }
             } else {
                 return;
             }
 
         } else {
-            id = [e.target.id];
+            id = e.target.closest('.book').querySelector('.book tbody .person-row').id;
             btn = { upd: true, del: true, add: false }
         }
 

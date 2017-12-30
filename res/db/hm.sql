@@ -1,25 +1,23 @@
 -- phpMyAdmin SQL Dump
--- version 4.7.4
--- https://www.phpmyadmin.net/
+-- version 3.5.8.2
+-- http://www.phpmyadmin.net
 --
--- Хост: 127.0.0.1:3306
--- Время создания: Дек 16 2017 г., 16:37
--- Версия сервера: 5.7.19
--- Версия PHP: 5.6.31
+-- Хост: sql213.ezyro.com
+-- Время создания: Дек 30 2017 г., 06:15
+-- Версия сервера: 5.6.35-81.0
+-- Версия PHP: 5.3.3
 
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET AUTOCOMMIT = 0;
-START TRANSACTION;
+SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
 
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
+/*!40101 SET NAMES utf8 */;
 
 --
--- База данных: `hm`
+-- База данных: `ezyro_21252859_hm`
 --
 
 -- --------------------------------------------------------
@@ -28,7 +26,6 @@ SET time_zone = "+00:00";
 -- Структура таблицы `cf001`
 --
 
-DROP TABLE IF EXISTS `cf001`;
 CREATE TABLE IF NOT EXISTS `cf001` (
   `user` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
   `year` varchar(4) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -42,7 +39,8 @@ CREATE TABLE IF NOT EXISTS `cf001` (
 --
 
 INSERT INTO `cf001` (`user`, `year`, `month`) VALUES
-('root', '2017', '11');
+('root', '2017', '12'),
+('naxa', '2017', '12');
 
 -- --------------------------------------------------------
 
@@ -50,41 +48,21 @@ INSERT INTO `cf001` (`user`, `year`, `month`) VALUES
 -- Структура таблицы `gl001`
 --
 
-DROP TABLE IF EXISTS `gl001`;
 CREATE TABLE IF NOT EXISTS `gl001` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `dayin` date NOT NULL,
   `dayout` date NOT NULL,
   `room` int(3) NOT NULL,
-  `price` decimal(10,2) NOT NULL,
-  `paid` decimal(10,2) NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `tel` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `info` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `price` decimal(10,2) DEFAULT '0.00',
+  `paid` decimal(10,2) DEFAULT '0.00',
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT '',
+  `tel` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT '',
+  `fn` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT '',
+  `city` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT '',
   `user` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `timestamp` timestamp NOT NULL,
+  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=83 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Дамп данных таблицы `gl001`
---
-
-INSERT INTO `gl001` (`id`, `dayin`, `dayout`, `room`, `price`, `paid`, `name`, `tel`, `info`, `user`, `timestamp`) VALUES
-(1, '2017-11-10', '2017-11-13', 21, '100.00', '150.00', 'Ð˜Ð²Ð°Ð½Ð¾Ð² ÐÐ³Ð²Ð°Ð½ Ð¡Ñ‚Ð¸Ñ…Ð°Ð½Ð¾Ð²Ð¸Ñ‡', '+7(978)111-22-33', 'Ð¥Ð¾Ñ€Ð¾ÑˆÐ¸Ð¹ Ñ‡ÐµÐ»Ð¾Ð²ÐµÐº', '', '2017-11-20 17:54:53'),
-(34, '2017-11-16', '2017-11-19', 21, '0.00', '0.00', 'Ð’Ð°ÑÐ¸Ð»Ð¸Ð¹ Ð˜Ð²Ð°Ð½Ð¾Ð²Ð¸Ñ‡', '', '', '', '2017-12-14 05:47:56'),
-(35, '2017-11-22', '2017-11-25', 21, '0.00', '0.00', 'Ð§ÐµÐ±ÑƒÑ€Ð°ÑˆÐºÐ°', '', '', '', '2017-11-27 13:34:14'),
-(36, '2017-11-28', '2017-11-30', 22, '0.00', '0.00', 'Ð“ÐµÐ½Ð°', '', '', '', '2017-12-13 18:39:08'),
-(37, '2017-11-04', '2017-11-07', 23, '0.00', '0.00', 'Ð¥Ð¾Ñ‚Ñ‚Ð°Ð±Ñ‹Ñ‡', '', '', '', '2017-11-22 12:38:48'),
-(32, '2017-11-18', '2017-11-21', 13, '0.00', '0.00', 'ÐœÐµÐ½ÑÐµÑ‚', '', '', '', '2017-11-22 12:42:20'),
-(6, '2017-11-28', '2017-12-05', 12, '1.00', '1.00', 'ÐŸÐµÑ‚Ñ€Ð¾Ð² ÐÐ¸ÐºÐ¾Ð»Ð°Ð¹ Ð—Ð°Ñ‚Ñ‹Ñ‡ÐºÐ¸Ð½', '', 'ÐŸÐ¾Ð´Ð¾Ð·Ñ€Ð¸Ñ‚ÐµÐ»ÑŒÐ½Ñ‹Ð¹ Ñ‚Ð¸Ð¿', '', '2017-12-11 07:06:59'),
-(31, '2017-11-16', '2017-11-19', 33, '0.00', '0.00', 'ÐŸÐµÑ‚ÑŒÐºÐ° ', '265485', '', '', '2017-11-26 10:39:09'),
-(29, '2017-11-10', '2017-11-12', 11, '100.00', '200.00', 'Ð“ÑƒÑ€Ð³ÐµÐ½ ÐŸÑƒÑ€Ð³ÐµÐ½Ð¾Ð²', '', '', '', '2017-12-13 18:45:47'),
-(30, '2017-11-01', '2017-11-10', 11, '0.00', '0.00', 'Ð˜Ð³Ð¾Ñ€', '', 'Ð¨ÐºÐµÑ‚', '', '2017-11-19 22:50:44'),
-(63, '2017-12-09', '2017-12-23', 22, '50.00', '100.00', 'Ð§ÐµÐ»Ð¾Ð²ÐµÐº', '+7(777)111-22-33', 'none', 'root', '2017-12-11 07:38:56'),
-(82, '2017-09-12', '2017-09-15', 21, '0.00', '0.00', '', '', '', 'root', '2017-12-15 09:52:19'),
-(58, '2017-11-11', '2017-11-15', 32, '55.00', '60.00', 'Ð¢Ð¾Ð»Ð¸Ðº', '+79785432458', 'ÐŸÑ€Ð¾ÑÑ‚Ð¾ Ð¢Ð¾Ð»Ð¸Ðº', 'root', '2017-12-08 19:00:34'),
-(57, '2017-11-21', '2017-11-26', 31, '0.00', '0.00', 'Zyf', '', 'ÐšÐ°Ð·ÑÐ²ÐºÐ°', '', '2017-12-03 20:10:53');
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -92,14 +70,28 @@ INSERT INTO `gl001` (`id`, `dayin`, `dayout`, `room`, `price`, `paid`, `name`, `
 -- Структура таблицы `lg001`
 --
 
-DROP TABLE IF EXISTS `lg001`;
 CREATE TABLE IF NOT EXISTS `lg001` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
   `date` date NOT NULL,
   `time` time NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `pb001`
+--
+
+CREATE TABLE IF NOT EXISTS `pb001` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT '',
+  `tel` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT '',
+  `city` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT '',
+  `info` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT '',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -107,7 +99,6 @@ CREATE TABLE IF NOT EXISTS `lg001` (
 -- Структура таблицы `rm001`
 --
 
-DROP TABLE IF EXISTS `rm001`;
 CREATE TABLE IF NOT EXISTS `rm001` (
   `room` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
   `info` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -137,24 +128,26 @@ INSERT INTO `rm001` (`room`, `info`) VALUES
 -- Структура таблицы `us001`
 --
 
-DROP TABLE IF EXISTS `us001`;
 CREATE TABLE IF NOT EXISTS `us001` (
-  `user` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `pass` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `login` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `pass` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
   `begda` date NOT NULL,
   `endda` date NOT NULL,
   `active` tinyint(1) NOT NULL,
-  PRIMARY KEY (`user`),
-  UNIQUE KEY `user` (`user`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `sesid` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id` (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci AUTO_INCREMENT=4 ;
 
 --
 -- Дамп данных таблицы `us001`
 --
 
-INSERT INTO `us001` (`user`, `pass`, `begda`, `endda`, `active`) VALUES
-('root', 'DB692CB80294827A26F5695CC270E5B06C7124CF5631A126D994DB8FD85291B34C63E33C48D07C4DD8493288354DB0EBB20C0447084E2BEE80FE35AD3F77990E', '2017-11-13', '9999-12-31', 1);
-COMMIT;
+INSERT INTO `us001` (`id`, `login`, `pass`, `begda`, `endda`, `active`, `sesid`) VALUES
+(1, 'root', 'root', '2017-09-01', '9999-12-31', 1, ''),
+(2, 'user', 'user', '2017-09-01', '9999-12-31', 1, ''),
+(3, 'naxa', 'Kolbaska', '2017-09-01', '9999-12-31', 1, '');
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

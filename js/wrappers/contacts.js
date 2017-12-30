@@ -46,8 +46,42 @@ class Contacts extends DataWrapper {
 
     init() {
 
+        var success = function (data) {
+            if (!data.status) {
+                console.log(data.msg);
+                var redirectDialog = new RedirectDialog();
+                redirectDialog.bind();
+                redirectDialog.show();
+            } else {
+                data.data.sort(function (a, b) {
+                    if (a.id > b.id) {
+                        return 1;
+                    } else if (a.id < b.id) {
+                        return -1;
+                    } else {
+                        return 0;
+                    }
+                });
+                this.that.setData(data.data);
+            }
+        }
+
+        var error = function (xhr, textStatus, errorThrown) {
+            console.log(textStatus);
+            console.log(errorThrown);
+        }
+
+        $.ajax({
+            url: '../db/pb001/select.php',
+            dataType: 'json',
+            success: success.bind({ that: this }),
+            error: error
+        });
+    }
+
+    setData(data) {
+
         var tbody = document.getElementById('dw-contacts-tbody');
-        const data = g_data.contacts;
 
         for (let i = 0; i < data.length; i++) {
             const wa = data[i];
@@ -80,6 +114,14 @@ class Contacts extends DataWrapper {
             tr.appendChild(td);
 
             tbody.appendChild(tr);
+        }
+    }
+
+    reset() {
+        var tbody = document.getElementById('dw-contacts-tbody');
+        if (!tbody.firstChild) return;
+        while (tbody.firstChild) {
+            tbody.removeChild(tbody.firstChild);
         }
     }
 }

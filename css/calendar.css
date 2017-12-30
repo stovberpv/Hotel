@@ -565,6 +565,7 @@
     top: 0;
     padding-top: 10%;
     color: var(--c-mod-txt);
+    text-align: center;
 }
 
 .modal-content {
@@ -869,6 +870,7 @@
     padding-top: 10%;
     background-color: rgba(0, 0, 0, 0.3);
     background-image: repeating-linear-gradient( -45deg, rgba(180, 180, 180, .3), rgba(180, 180, 180, .3) 6.5px, rgba(150, 150, 150, .3) 6.5px, rgba(150, 150, 150, .3) 13px);
+    text-align: center;
 }
 
 #pc-content {
