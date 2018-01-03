@@ -1,0 +1,304 @@
+@import 'vars.css';
+
+.modal-dialog {
+    font-family: 'Century Gothic', sans-serif;
+    display: none;
+    z-index: 1;
+    background-color: var(--c-mod-bck);
+    background-image: repeating-linear-gradient( -45deg, rgba(180, 180, 180, .3), rgba(180, 180, 180, .3) 6.5px, rgba(150, 150, 150, .3) 6.5px, rgba(150, 150, 150, .3) 13px);
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    padding-top: 10%;
+    color: var(--c-mod-txt);
+    text-align: center;
+}
+
+.modal-content {
+    background-color: var(--c-mod-bck-cnt);
+    display: inline-block;
+    border-radius: var(--r-bor-nor);
+    animation: MDShow 0.4s;
+}
+
+.modal-content .btn {
+    color: var(--c-btn-txt-nor-neu);
+}
+
+.modal-input {
+    width: auto;
+}
+
+.modal-inout {
+    width: auto;
+}
+
+.modal-confirm {
+    width: 420px;
+}
+
+.modal-header {
+    border-radius: 3px 3px 0px 0px;
+    padding-top: 8px;
+    padding-left: 4px;
+    padding-right: 4px;
+    padding-bottom: 8px;
+}
+
+.modal-body {
+    padding-top: 8px;
+    padding-left: 4px;
+    padding-right: 4px;
+    padding-bottom: 0px;
+}
+
+.modal-footer {
+    padding-top: 4px;
+    padding-left: 4px;
+    padding-right: 4px;
+    padding-bottom: 4px;
+}
+
+.modal-body table {
+    width: 100%;
+}
+
+.modal-header-negative {
+    color: var(--c-mod-txt-top-neg);
+    background-color: var(--c-mod-bck-top-neg);
+}
+
+.modal-header-positive {
+    color: var(--c-mod-txt-top-pos);
+    background-color: var(--c-mod-bck-top-pos);
+}
+
+.modal-header-neutral {
+    color: var(--c-mod-txt-top-neu);
+    background-color: var(--c-mod-bck-top-neu);
+}
+
+.modal-header-extend {
+    color: var(--c-mod-txt-top-ext);
+    background-color: var(--c-mod-bck-top-ext);
+}
+
+.modal-dialog-href {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    padding-top: 10%;
+    background-color: var(--c-mod-bck-hrf-nor);
+}
+
+.modal-content-href {
+    margin-left: auto;
+    margin-right: auto;
+    border: 2px solid var(--c-mod-bor-hrf-nor);
+    border-radius: 20px/50px;
+    transition: all .5s;
+    box-shadow: 0 0 10px 5px rgba(255, 255, 255, .1);
+    width: 500px;
+    height: 70px;
+}
+
+.modal-content-href:hover {
+    box-shadow: 0 0 15px 5px rgba(255, 255, 255, .2);
+    background-color: var(--c-mod-bck-hrf-hov);
+    transition: all .5s;
+    transform: translateZ(10px);
+}
+
+.modal-body-href {
+    width: 100%;
+    height: 100%;
+}
+
+@keyframes MDShow {
+    from {
+        opacity: 0
+    }
+    to {
+        opacity: 1
+    }
+}
+
+
+/* new */
+
+.popup-input-output {
+    display: none;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    font-size: 10px;
+}
+
+#pio-data-wrapper {
+    position: relative;
+    width: 400px;
+    height: 350px;
+    margin: 50px auto;
+    padding: 20px;
+    box-shadow: 0 0 10px 5px rgba(0, 0, 0, .1);
+    border-radius: 3px;
+    background-color: rgba(255, 255, 255, .99);
+}
+
+#pio-dw-head {
+    position: relative;
+    width: 100%;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 1.5em;
+}
+
+#pio-dw-body {
+    position: relative;
+    width: 100%;
+    height: 85%;
+    font-size: 1.2em;
+}
+
+#pio-dw-footer {
+    position: relative;
+    width: 100%;
+    font-size: 1.2em;
+    text-align: center;
+}
+
+.pio-el {
+    position: absolute;
+    border-bottom: 1px solid #929292;
+}
+
+.pio-el input {
+    color: #2d2d2d;
+    outline: none;
+    margin: 30px 0px 0px 0px;
+    padding: 5px 0px 5px 5px;
+    border: none;
+    width: 90%;
+    background-color: transparent;
+}
+
+.pio-el label {
+    position: absolute;
+    color: #929292;
+    top: 35px;
+    left: 5px;
+    pointer-events: none;
+    transition: 0.3s ease all;
+}
+
+input:focus~label,
+input:valid~label {
+    top: 15px;
+    left: 0;
+    font-size: 1em;
+}
+
+input:focus~label {
+    color: cornflowerblue;
+}
+
+#dayin {
+    width: 20%;
+    top: 0px;
+    left: 0px;
+}
+
+#dayout {
+    width: 20%;
+    top: 0px;
+    left: 25%;
+}
+
+#days {
+    width: 20%;
+    top: 0px;
+    left: 50%;
+}
+
+#room {
+    width: 20%;
+    top: 0px;
+    left: 75%;
+}
+
+#baseline {
+    width: 20%;
+    top: 60px;
+    left: 0px;
+}
+
+#adjustment {
+    width: 20%;
+    top: 60px;
+    left: 25%;
+}
+
+#cost {
+    width: 20%;
+    top: 60px;
+    left: 50%;
+}
+
+#paid {
+    width: 20%;
+    top: 60px;
+    left: 75%;
+}
+
+#name {
+    width: 100%;
+    top: 120px;
+    left: 0px;
+}
+
+#city {
+    width: 60%;
+    top: 180px;
+    left: 0px;
+}
+
+#tel {
+    width: 35%;
+    top: 180px;
+    left: 65%;
+}
+
+#fn {
+    width: 100%;
+    top: 240px;
+    left: 0px;
+}
+
+#RDDL {
+    display: none;
+    position: absolute;
+    top: 60px;
+    background-color: white;
+    width: 90%;
+    z-index: 1;
+    border-radius: 3px;
+    box-shadow: 0px 0px 10px 5px rgba(0, 0, 0, .1);
+    overflow-y: auto;
+}
+
+#RDDL a {
+    padding: 2px;
+    z-index: 2;
+    display: block;
+    position: initial;
+    text-decoration: none;
+}
+
+#RDDL a:hover {
+    background-color: cornflowerblue;
+    color: white;
+}

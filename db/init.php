@@ -40,7 +40,7 @@
     #---------------------------------------------------------------------------------
     # query 2 -- get room list
     #---------------------------------------------------------------------------------
-    $query = "SELECT room FROM rm001";
+    $query = "SELECT * FROM rm001";
     !($result = $mysqli->query($query)) && die(err2echo(12, "Выборка 2. ", $mysqli));
     $rooms = [];
     while($row = $result->fetch_assoc()) {

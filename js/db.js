@@ -9,9 +9,6 @@ const db = {
                 success: function (data) {
                     if (!data.status) {
                         console.log(data.msg);
-                        var redirectDialog = new RedirectDialog();
-                        redirectDialog.bind();
-                        redirectDialog.show();
                     }
                 },
                 error: function (xhr, textStatus, errorThrown) {
@@ -32,9 +29,6 @@ const db = {
                 success: function (data) {
                     if (!data.status) {
                         console.log(data.msg);
-                        var redirectDialog = new RedirectDialog();
-                        redirectDialog.bind();
-                        redirectDialog.show();
                     }
                 },
                 error: function (xhr, textStatus, errorThrown) {
@@ -55,9 +49,6 @@ const db = {
                 success: function (data) {
                     if (!data.status) {
                         console.log(data.msg);
-                        var redirectDialog = new RedirectDialog();
-                        redirectDialog.bind();
-                        redirectDialog.show();
                     } else {
                         gl.rooms = data;
                     }
@@ -80,8 +71,11 @@ const db = {
                     month: utils.getMonthId(document.getElementById('month').innerHTML),
                     dayin: opts.dayin,
                     dayout: opts.dayout,
+                    days: opts.days,
                     room: opts.room,
-                    price: opts.price,
+                    baseline: opts.baseline,
+                    adjustment: opts.adjustment,
+                    cost: opts.cost,
                     paid: opts.paid,
                     name: opts.name,
                     tel: opts.tel,
@@ -92,9 +86,6 @@ const db = {
                 success: function (data) {
                     if (!data.status) {
                         console.log(data.msg);
-                        var redirectDialog = new RedirectDialog();
-                        redirectDialog.bind();
-                        redirectDialog.show();
                     } else {
                         new Calendar().addGuest(data.year, data.month, data.data);
                         new Contacts().reset();
@@ -119,9 +110,6 @@ const db = {
                 success: function (data) {
                     if (!data.status) {
                         console.log(data.msg);
-                        var redirectDialog = new RedirectDialog();
-                        redirectDialog.bind();
-                        redirectDialog.show();
                     } else {
                         data.data.sort(function (a, b) {
                             if (a.id > b.id) {
@@ -164,9 +152,6 @@ const db = {
                 success: function (data) {
                     if (!data.status) {
                         console.log(data.msg);
-                        var redirectDialog = new RedirectDialog();
-                        redirectDialog.bind();
-                        redirectDialog.show();
                     } else {
                         new Calendar().updGuest(data.old, data.new);
                     }
@@ -188,9 +173,6 @@ const db = {
                 success: function (data) {
                     if (!data.status) {
                         console.log(data.msg);
-                        var redirectDialog = new RedirectDialog();
-                        redirectDialog.bind();
-                        redirectDialog.show();
                     } else {
                         new Calendar().delGuest(data.data);
                     }

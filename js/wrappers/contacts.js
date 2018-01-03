@@ -49,9 +49,6 @@ class Contacts extends DataWrapper {
         var success = function (data) {
             if (!data.status) {
                 console.log(data.msg);
-                var redirectDialog = new RedirectDialog();
-                redirectDialog.bind();
-                redirectDialog.show();
             } else {
                 data.data.sort(function (a, b) {
                     if (a.id > b.id) {
@@ -82,6 +79,7 @@ class Contacts extends DataWrapper {
     setData(data) {
 
         var tbody = document.getElementById('dw-contacts-tbody');
+        if (!tbody) return;
 
         for (let i = 0; i < data.length; i++) {
             const wa = data[i];
@@ -119,7 +117,7 @@ class Contacts extends DataWrapper {
 
     reset() {
         var tbody = document.getElementById('dw-contacts-tbody');
-        if (!tbody.firstChild) return;
+        if (!tbody || !tbody.firstChild) return;
         while (tbody.firstChild) {
             tbody.removeChild(tbody.firstChild);
         }

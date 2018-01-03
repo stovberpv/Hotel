@@ -24,18 +24,21 @@
     #---------------------------------------------------------------------------------
     # 
     #---------------------------------------------------------------------------------
-    isset($_GET["id"])     ? $id     = $_GET["id"]     : $id     = "";
-    isset($_GET["year"])   ? $year   = $_GET["year"]   : $year   = "";
-    isset($_GET["month"])  ? $month  = $_GET["month"]  : $month  = "";
-    isset($_GET["dayin"])  ? $dayin  = $_GET["dayin"]  : $dayin  = "";
-    isset($_GET["dayout"]) ? $dayout = $_GET["dayout"] : $dayout = "";
-    isset($_GET["room"])   ? $room   = $_GET["room"]   : $room   = "";
-    isset($_GET["price"])  ? $price  = $_GET["price"]  : $price  = "";
-    isset($_GET["paid"])   ? $paid   = $_GET["paid"]   : $paid   = "";
-    isset($_GET["name"])   ? $name   = $_GET["name"]   : $name   = "";
-    isset($_GET["tel"])    ? $tel    = $_GET["tel"]    : $tel    = "";
-    isset($_GET["fn"])     ? $fn     = $_GET["fn"]     : $fn     = "";
-    isset($_GET["city"])   ? $city   = $_GET["city"]   : $city   = "";
+    isset($_GET["id"])         ? $id         = $_GET["id"]         : $id         = "";
+    isset($_GET["year"])       ? $year       = $_GET["year"]       : $year       = "";
+    isset($_GET["month"])      ? $month      = $_GET["month"]      : $month      = "";
+    isset($_GET["dayin"])      ? $dayin      = $_GET["dayin"]      : $dayin      = "";
+    isset($_GET["dayout"])     ? $dayout     = $_GET["dayout"]     : $dayout     = "";
+    isset($_GET["days"])       ? $days       = $_GET["days"]       : $days       = "";
+    isset($_GET["room"])       ? $room       = $_GET["room"]       : $room       = "";
+    isset($_GET["baseline"])   ? $baseline   = $_GET["baseline"]   : $baseline   = "";
+    isset($_GET["adjustment"]) ? $adjustment = $_GET["adjustment"] : $adjustment = "";
+    isset($_GET["cost"])       ? $cost       = $_GET["cost"]       : $cost       = "";
+    isset($_GET["paid"])       ? $paid       = $_GET["paid"]       : $paid       = "";
+    isset($_GET["name"])       ? $name       = $_GET["name"]       : $name       = "";
+    isset($_GET["tel"])        ? $tel        = $_GET["tel"]        : $tel        = "";
+    isset($_GET["fn"])         ? $fn         = $_GET["fn"]         : $fn         = "";
+    isset($_GET["city"])       ? $city       = $_GET["city"]       : $city       = "";
     #---------------------------------------------------------------------------------
     # 
     #---------------------------------------------------------------------------------
@@ -71,7 +74,7 @@
         die(err2echo(26, 'Обновление гостя', $mysqli));
     }
     #
-    $timestamp = date('Y-m-d H:i:s');
+    // $timestamp = date('Y-m-d H:i:s');
     #---------------------------------------------------------------------------------
     # 
     #---------------------------------------------------------------------------------
@@ -94,11 +97,23 @@
     # 
     #---------------------------------------------------------------------------------
     $query = "UPDATE gl001
-                SET dayin = ?, dayout = ?, room = ?, price = ?, paid = ?, name = ?, tel = ?, fn = ?, city = ?, user = ?, timestamp = ?
+                 SET dayin = ?,
+                     dayout = ?,
+                     days = ?,
+                     room = ?,
+                     baseline = ?,
+                     adjustment = ?,
+                     cost = ?,
+                     paid = ?,
+                     name = ?,
+                     tel = ?,
+                     fn = ?,
+                     city = ?,
+                     user = ?
                 WHERE id = ?";
     #
     !($stmt = $mysqli->prepare($query)) && die(err2echo(10, 'Обновление гостя', $mysqli));
-    !($stmt->bind_param('ssiddssssssi', $begda, $endda, $room, $price, $paid, $name, $tel, $fn, $city, $user, $timestamp, $id)) && die(err2echo(11, 'Обновление гостя', $mysqli));
+    !($stmt->bind_param('ssiiddddsssssi', $begda, $endda, $days, $room, $baseline, $adjustment, $cost, $paid, $name, $tel, $fn, $city, $user, $id)) && die(err2echo(11, 'Обновление гостя', $mysqli));
     !($stmt->execute()) && die(err2echo(12, 'Обновление гостя', $mysqli));
     #---------------------------------------------------------------------------------
     # 

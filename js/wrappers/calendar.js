@@ -104,9 +104,6 @@ class Calendar extends DataWrapper {
         var success = function (data) {
             if (!data.status) {
                 console.log(data.msg);
-                var redirectDialog = new RedirectDialog();
-                redirectDialog.bind();
-                redirectDialog.show();
             } else {
                 data.data.sort(function (a, b) {
                     if (a.id > b.id) {
@@ -226,7 +223,7 @@ class Calendar extends DataWrapper {
             while (tmpda <= endda) {
                 if (tmpda.format('yyyy-mm') == (year + '-' + month)) {
 
-                    //
+                    //FIX: replace innerHTML (memory leak)
                     var td = document.querySelector('#calendar tbody tr#R' + wa.room + ' td#RD' + wa.room + '_' + tmpda.format('yyyy-mm-dd'));
                     td.innerHTML = '';
 
@@ -331,8 +328,8 @@ class Calendar extends DataWrapper {
             tr.appendChild(td);
 
             td = document.createElement('td');
-            td.setAttribute('class', 'person-room-price');
-            td.appendChild(document.createTextNode(wa.price));
+            td.setAttribute('class', 'person-room-cost');
+            td.appendChild(document.createTextNode(wa.cost));
             tr.appendChild(td);
 
             var tbody = document.createElement('tbody')
@@ -366,6 +363,32 @@ class Calendar extends DataWrapper {
             td = document.createElement('td');
             td.setAttribute('class', 'person-room-paid');
             td.appendChild(document.createTextNode(wa.paid));
+            tr.appendChild(td);
+
+            tbody.appendChild(tr);
+            //------------------------------------------------------------
+
+            //------------------------------------------------------------
+            tr = document.createElement('tr');
+            tr.setAttribute('style', "display:none;");
+            
+            td = document.createElement('td');
+            td.setAttribute('class', 'person-days');
+            td.appendChild(document.createTextNode(wa.days));
+            tr.appendChild(td);
+
+            td = document.createElement('td');
+            td.setAttribute('class', 'person-baseline');
+            td.appendChild(document.createTextNode(wa.baseline));
+            tr.appendChild(td);
+
+            td = document.createElement('td');
+            td.setAttribute('class', 'person-adjustment');
+            td.appendChild(document.createTextNode(wa.adjustment));
+            tr.appendChild(td);
+
+            td = document.createElement('td');
+            td.appendChild(document.createTextNode(''));
             tr.appendChild(td);
 
             tbody.appendChild(tr);
@@ -425,7 +448,7 @@ class Calendar extends DataWrapper {
                     td.classList.remove(gl.class_redeemed);
                     td.classList.remove(gl.class_reserved);
                 }
-                td.innerHTML = '';
+                td.innerHTML = ''; //FIX: memory leak
                 begda.setDate(begda.getDate() + 1);
             }
             // calendar end
@@ -443,11 +466,11 @@ class Calendar extends DataWrapper {
 
     updGuest(oldData, newData) {
 
-        this.del(oldData);
+        this.delGuest(oldData);
         var year = document.getElementById('year').innerHTML,
             monthName = document.getElementById('month').innerHTML,
             month = gl.monthNames.indexOf(monthName);
-        this.add(year, month, newData)
+        this.addGuest(year, month, newData)
 
         // book sort begin
         var tr = document.querySelectorAll('#R' + newData[0].room + '-book > td > .book > tbody > tr'),

@@ -45,7 +45,9 @@ const selGroup = {
     del: function (target) {
 
         if (target.className === '') return;
-        var classId = target.className.split(' ').filter(function(el) { return el.match(/\bsel-group-\d+/); }).toString();
+        var classId = target.className.split(' ').filter(function (el) {
+            return el.match(/\bsel-group-\d+/);
+        }).toString();
         if (classId !== '') {
             var group = document.getElementsByClassName(classId);
             for (let i = group.length; i > 0; i--) {
@@ -93,13 +95,20 @@ const wrapper = {
     getInstance: function (dw) {
 
         switch (dw) {
-            case gl.chains[0].dataWrapper: return new Calendar();
-            case gl.chains[1].dataWrapper: return new Contacts();
-            case gl.chains[2].dataWrapper: return new Diagrams();
-            case gl.chains[3].dataWrapper: return new Settings();
-            case gl.chains[4].dataWrapper: return new InfoPage();
-            case gl.chains[5].dataWrapper: return new SignOut();
-            default: break;
+            case gl.chains[0].dataWrapper:
+                return new Calendar();
+            case gl.chains[1].dataWrapper:
+                return new Contacts();
+            case gl.chains[2].dataWrapper:
+                return new Diagrams();
+            case gl.chains[3].dataWrapper:
+                return new Settings();
+            case gl.chains[4].dataWrapper:
+                return new InfoPage();
+            case gl.chains[5].dataWrapper:
+                return new SignOut();
+            default:
+                break;
         }
     },
 
@@ -228,7 +237,7 @@ const listeners = {
         });
     },
 
-    
+
     /** 
      * Отложенное событие на потомке с возможностью ислючения предков по связке TAG+ID с применением
      * регулярного выражения.
@@ -237,7 +246,7 @@ const listeners = {
         //1. На elSelector вешается обработчик события eventName
         var element = document.querySelector(elSelector);
         element.addEventListener(eventName, function (event) {
-                // 2. В котором по selector вытягивабтся все подходящие субэлементы в allTargets
+            // 2. В котором по selector вытягивабтся все подходящие субэлементы в allTargets
             var allTargets = element.querySelectorAll(selector),
                 // 3. Откуда они потом фильтруются функцией excludeClosest в onlyTargets
                 onlyTargets = Array.from(allTargets).filter(function (target) {
@@ -282,13 +291,30 @@ const listeners = {
         // Навигационное меню
         document.getElementById('nav-menu').addEventListener('click', listeners.navMenuClick);
 
-        const navEl = [
-            { el: gl.navEl[0], src: document.getElementById(gl.navEl[0]) },
-            { el: gl.navEl[1], src: document.getElementById(gl.navEl[1]) },
-            { el: gl.navEl[2], src: document.getElementById(gl.navEl[2]) },
-            { el: gl.navEl[3], src: document.getElementById(gl.navEl[3]) },
-            { el: gl.navEl[4], src: document.getElementById(gl.navEl[4]) },
-            { el: gl.navEl[5], src: document.getElementById(gl.navEl[5]) }
+        const navEl = [{
+                el: gl.navEl[0],
+                src: document.getElementById(gl.navEl[0])
+            },
+            {
+                el: gl.navEl[1],
+                src: document.getElementById(gl.navEl[1])
+            },
+            {
+                el: gl.navEl[2],
+                src: document.getElementById(gl.navEl[2])
+            },
+            {
+                el: gl.navEl[3],
+                src: document.getElementById(gl.navEl[3])
+            },
+            {
+                el: gl.navEl[4],
+                src: document.getElementById(gl.navEl[4])
+            },
+            {
+                el: gl.navEl[5],
+                src: document.getElementById(gl.navEl[5])
+            }
         ]
 
         for (let i = 0; i < navEl.length; i++) {
@@ -448,18 +474,28 @@ const listeners = {
             id: -1,
             dayin: this.dayin,
             dayout: this.dayout,
+            days: 0,
             room: this.room,
-            price: "",
-            paid: "",
+            baseline: 0,
+            adjustment: 0,
+            cost: 0,
+            paid: 0,
             name: "",
+            city: "",
             tel: "",
-            fn: "",
-            city: ""
+            fn: ""
         };
 
+        var month = gl.monthNames.indexOf(document.getElementById('month').value),
+            year = document.getElementById('year').innerHTML;
+
         var inOutDialog = new InOutDialog({
-            source: document,
             flag: gl.intent_add,
+            period: {
+                month: month,
+                year: year
+            },
+            rooms: gl.rooms,
             buttons: {
                 btnOk: function () {
                     val = inOutDialog.getVal();
@@ -479,38 +515,34 @@ const listeners = {
     /**
      * Нажатие кнопки удаления гостя
      */
-    delGuestClick: function (e) { 
+    delGuestClick: function (e) {
 
-        var intentList = [];
-        intentList.push((this.id[0]).substring(1));
+        var id = this.id.substring(1);
 
-        if (intentList.length != 0) {
-            var confirmDialog = new ConfirmDialog({
-                source: document,
-                flag: gl.intent_del,
-                dialog: {
-                    title: 'Удаление',
-                    body: 'Удалить запись под номером №' + intentList[0] + ' из гостевой книги?\r\nДействие нельзя будет отменить!'
+        var confirmDialog = new ConfirmDialog({
+            flag: gl.intent_del,
+            dialog: {
+                title: 'Удаление',
+                body: 'Удалить запись под номером №' + id + ' из гостевой книги?\r\nДействие нельзя будет отменить!'
+            },
+            buttons: {
+                btnOk: function () {
+                    db.gl001.delete(id);
+                    confirmDialog.unbind();
                 },
-                buttons: {
-                    btnOk: function () {
-                        db.gl001.delete(intentList[0]);
-                        confirmDialog.unbind();
-                    },
-                    btnNo: function () {
-                        confirmDialog.unbind();
-                    }
+                btnNo: function () {
+                    confirmDialog.unbind();
                 }
-            });
-            confirmDialog.bind();
-            confirmDialog.show();
-        }
+            }
+        });
+        confirmDialog.bind();
+        confirmDialog.show();
     },
 
     /**
      * Нажатие кнопки редактирования гостя
      */
-    updGuestClick: function (e) { 
+    updGuestClick: function (e) {
 
         function getInnerHTML(src, selector) {
             var target = src.querySelector(selector);
@@ -531,21 +563,31 @@ const listeners = {
 
         var val = {
             intent: gl.intent_edit,
-            id:     getInnerHTML(guest, '.person-id'),
-            dayin:  getInnerHTML(guest, '.person-dayin').substring(3),
+            id: getInnerHTML(guest, '.person-id'),
+            dayin: getInnerHTML(guest, '.person-dayin').substring(3),
             dayout: getInnerHTML(guest, '.person-dayout').substring(3),
-            room:   getInnerHTML(guest, '.person-room-num'),  
-            price:  getInnerHTML(guest, '.person-room-price'),
-            paid:   getInnerHTML(guest, '.person-room-paid'), 
-            name:   getInnerHTML(guest, '.person-name'),      
-            tel:    getInnerHTML(guest, '.person-tel'),       
-            fn:     getInnerHTML(guest, '.person-fn'),        
-            city:   getInnerHTML(guest, '.person-city')      
+            days: getInnerHTML(guest, '.person-days'),
+            room: getInnerHTML(guest, '.person-room-num'),
+            baseline: getInnerHTML(guest, '.person-baseline'),
+            adjustment: getInnerHTML(guest, '.person-adjustment'),
+            cost: getInnerHTML(guest, '.person-room-cost'),
+            paid: getInnerHTML(guest, '.person-room-paid'),
+            name: getInnerHTML(guest, '.person-name'),
+            city: getInnerHTML(guest, '.person-city'),
+            tel: getInnerHTML(guest, '.person-tel'),
+            fn: getInnerHTML(guest, '.person-fn')
         }
 
+        var month = gl.monthNames.indexOf(document.getElementById('month').value),
+            year = document.getElementById('year').innerHTML;
+
         var inOutDialog = new InOutDialog({
-            source: document,
             flag: gl.intent_edit,
+            period: {
+                month: month,
+                year: year
+            },
+            rooms: gl.rooms,
             buttons: {
                 btnOk: function () {
                     db.gl001.modify(inOutDialog.getVal());
@@ -569,9 +611,13 @@ const listeners = {
         mousedown: function (e) {
 
             switch (e.which) {
-                case 2: return;
-                case 3: listeners.RCMenuOpenClick(e, Array.from(e.target.classList)); return;
-                default: break;
+                case 2:
+                    return;
+                case 3:
+                    listeners.RCMenuOpenClick(e, Array.from(e.target.classList));
+                    return;
+                default:
+                    break;
             }
 
             // Выделение при зажатой мыши
@@ -584,7 +630,9 @@ const listeners = {
             gl.isSelected ? selGroup.add(this) : selGroup.free();
 
             // Переключения CSS класса опредляющего подсвеченный элемент
-            let ids = e.target.className.split(' ').filter(function(el) { return el.match(/^N\d+$/g); });
+            let ids = e.target.className.split(' ').filter(function (el) {
+                return el.match(/^N\d+$/g);
+            });
             for (let i = 0; i < ids.length; i++) {
                 document.querySelectorAll('#calendar > tbody > tr > td.' + ids[i]).forEach(function (el) {
                     el.classList.toggle(ids[i] + '-' + gl.class_viewfix);
@@ -609,7 +657,9 @@ const listeners = {
             }
 
             // Переключения CSS класса опредляющего подсвеченный элемент
-            let ids = e.target.className.split(' ').filter(function(el) { return el.match(/^N\d+$/g); });
+            let ids = e.target.className.split(' ').filter(function (el) {
+                return el.match(/^N\d+$/g);
+            });
             for (let i = 0; i < ids.length; i++) {
                 var els = document.querySelectorAll('#calendar > tbody > tr > td.' + ids[i]),
                     viewfix = ids[i] + '-' + gl.class_viewfix,
@@ -619,7 +669,7 @@ const listeners = {
                         els[i].classList.add(view);
                     }
                 }
-                document.querySelector('.book > tbody > tr#' + ids[i]).classList.add(ids[i] + '-' + gl.class_view);   
+                document.querySelector('.book > tbody > tr#' + ids[i]).classList.add(ids[i] + '-' + gl.class_view);
             }
             let id = this.id.substring(5);
             document.querySelector('#calendar thead tr:nth-child(2) th#D' + id).classList.add(gl.class_view);
@@ -627,8 +677,10 @@ const listeners = {
 
         mouseout: function (e) {
 
-           // Выделение при зажатой мыши
-            let ids = e.target.className.split(' ').filter(function(el) { return el.match(/^N\d+$/g); });
+            // Выделение при зажатой мыши
+            let ids = e.target.className.split(' ').filter(function (el) {
+                return el.match(/^N\d+$/g);
+            });
             for (let i = 0; i < ids.length; i++) {
                 var els = document.querySelectorAll('#calendar > tbody > tr > td.' + ids[i]),
                     viewfix = ids[i] + '-' + gl.class_viewfix,
@@ -682,9 +734,13 @@ const listeners = {
         mousedown: function (e) {
 
             switch (e.which) {
-                case 2: return;
-                case 3: listeners.RCMenuOpenClick(e, null); return;
-                default: break;
+                case 2:
+                    return;
+                case 3:
+                    listeners.RCMenuOpenClick(e, null);
+                    return;
+                default:
+                    break;
             }
 
             var that = this;
@@ -744,7 +800,9 @@ const listeners = {
         if (classList) {
             if (classList.includes(gl.class_selected)) {
                 var row = (e.target.id).substring(2, 4),
-                    groupId = e.target.className.split(' ').filter(function(el) { return el.match(/\bsel-group-\d+/g); }),
+                    groupId = e.target.className.split(' ').filter(function (el) {
+                        return el.match(/\bsel-group-\d+/g);
+                    }),
                     groupEl = document.querySelectorAll('#calendar > tbody > tr#R' + row + ' > td.' + groupId),
                     begda = groupEl[0].id.split('-'),
                     endda = groupEl[groupEl.length - 1].id.split('-');
@@ -752,17 +810,31 @@ const listeners = {
                 room = row;
                 dayin = begda[2] + '.' + begda[1];
                 dayout = endda[2] + '.' + endda[1];
-                btn = { upd: false, del: false, add: true }
+                btn = {
+                    upd: false,
+                    del: false,
+                    add: true
+                }
             } else if (classList.includes(gl.class_redeemed) || classList.includes(gl.class_reserved)) {
-                id = e.target.className.split(' ').filter(function(el) { return el.match(/^N\d+$/); }).toString();
-                btn = { upd: true, del: true, add: false }
+                id = e.target.className.split(' ').filter(function (el) {
+                    return el.match(/^N\d+$/);
+                }).toString();
+                btn = {
+                    upd: true,
+                    del: true,
+                    add: false
+                }
             } else {
                 return;
             }
 
         } else {
             id = e.target.closest('.book').querySelector('.book tbody .person-row').id;
-            btn = { upd: true, del: true, add: false }
+            btn = {
+                upd: true,
+                del: true,
+                add: false
+            }
         }
 
         gl.rcmenu = new RCMenu({

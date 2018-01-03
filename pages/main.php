@@ -1,3 +1,27 @@
+<?php
+    #
+    # debug settings
+    #
+    if (true) {
+        ini_set('display_errors', 1);
+        ini_set('display_startup_errors', 1);
+        error_reporting(E_ALL);
+    }
+    #
+    #
+    #
+    $host      = $_SERVER['HTTP_HOST'];
+    $uri       = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
+    $loginPage = 'Location: http://' . $host . $uri . '/pages/login.html';
+    #
+    # 
+    #
+    include $_SERVER['DOCUMENT_ROOT'] . '/db/utils.php';
+    if (!isAuthorized()) {
+        header($loginPage);
+        die();
+    }
+?>
 <!DOCTYPE html>
 <html>
 
@@ -5,6 +29,10 @@
     <meta charset="utf-8">
     <title>Hotel Manager</title>
     <link rel='icon' href='/res/icons/favicon.png' />
+    <link rel='stylesheet' href='/css/vars.css' />
+    <link rel='stylesheet' href='/css/modal.css' />
+    <link rel='stylesheet' href='/css/rcmenu.css' />
+    <link rel='stylesheet' href='/css/buttons.css' />
     <link rel='stylesheet' href='/css/calendar.css' />
     <link rel='stylesheet' href='/css/contacts.css' />
     <link rel='stylesheet' href='/css/diagrams.css' />
@@ -120,8 +148,6 @@
         <div id='vc-dw-6' class='vc-data-wrapper'></div>
     </div>
 
-    <script type='text/javascript' src='/js/testData.js'></script>
-
     <script type='text/javascript' src='/js/gl.js'></script>
     <script type='text/javascript' src='/js/utils/utils.js'></script>
 
@@ -129,7 +155,7 @@
     <script type="text/javascript" src="/js/utils/date.format.js"></script>
     
     <script type="text/javascript" src="/js/pickCalendar.js"></script>
-    <script type="text/javascript" src="/js/popup.js"></script>
+    <script type="text/javascript" src="/js/modal.js"></script>
     <script type="text/javascript" src="/js/rcmenu.js"></script>
 
     <script type='text/javascript' src='/js/wrappers/definition.js'></script>

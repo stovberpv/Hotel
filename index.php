@@ -12,8 +12,8 @@
     #
     $host      = $_SERVER['HTTP_HOST'];
     $uri       = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
-    $loginPage = 'Location: http://' . $host . $uri . '/pages/login.html';
-    $mainPage  = 'Location: http://' . $host . $uri . '/pages/main.html';
+    $loginPage = 'Location: http://' . $host . $uri . '/pages/login.php';
+    $mainPage  = 'Location: http://' . $host . $uri . '/pages/main.php';
     #
     # first of all we must check a POST request
     #
@@ -75,7 +75,6 @@
             break;
         }
     } while (0);
-    
     #
     # the next one we check an active session
     #
