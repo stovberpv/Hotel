@@ -1,141 +1,694 @@
+/**
+ * Группа работы с CSS классом позволяющим идентифицровать выделенные ячейки.
+ * Формирование, Добавление, Удаление класса. Пересчет кол-ва ячеек в классе.
+ * FIX: при переходе на новую строку начинать отсчет заново
+ */
+const selGroup = {
+
+    /** 
+     * ID обрабатываемого класса 
+     */
+    classId: undefined,
+
+    /**
+     * Очистка ID текущего обрабатываемого класса
+     */
+    free: function () {
+
+        this.classId = undefined;
+    },
+
+    /**
+     * Формирование ID нового класса
+     */
+    gen: function () {
+
+        this.classId = 'sel-group-' + Math.ceil((Math.random() * 100000));
+    },
+
+    /**
+     * Добавление класса к объекту.
+     * Если ID класса не сформирован то перед добавление будет вызван метод формирующий ID класса
+     */
+    add: function (target) {
+
+        !this.classId && this.gen();
+        target.classList.add(this.classId);
+        this.enum(this.classId);
+    },
+
+    /**
+     * Поиск ID класса присвоенного объекту с последующим удалением и пересчетом оставшихся элементов 
+     * которым присвоей этот ID
+     */
+    del: function (target) {
+
+        if (target.className === '') return;
+        var classId = target.className.split(' ').filter(function (el) {
+            return el.match(/\bsel-group-\d+/);
+        }).toString();
+        if (classId !== '') {
+            var group = document.getElementsByClassName(classId);
+            //FIX: inner html memory leak
+            for (let i = group.length; i > 0; i--) {
+                if (group[0].id == target.id) {
+                    group[0].innerHTML = '';
+                    group[0].classList.remove(gl.class_selected);
+                    group[0].classList.remove(classId);
+                    break;
+                } else {
+                    group[0].innerHTML = '';
+                    group[0].classList.remove(gl.class_selected);
+                    group[0].classList.remove(classId);
+                }
+            }
+            target.classList.remove(classId);
+            target.innerHTML = '';
+            this.enum(classId);
+        }
+    },
+
+    /**
+     * Пересчет кол-ва объектов класса по ID класса 
+     */
+    enum: function (classId) {
+
+        var group = document.getElementsByClassName(classId);
+        for (let i = 0; i < group.length; i++) {
+            //FIX: inner html memory leak
+            group[i].innerHTML = (i + 1);
+        }
+    }
+}
+
 class Calendar extends DataWrapper {
+
+    constructor() {
+        super();
+
+        this._listeners = {
+
+            // external called events
+
+            RCMenu: function RCMenu (e) {
+
+                if (!e.detail.EventBus) {
+                    console.log('Invalid function call.');
+                    return;
+                };
+
+                var rcmenu = new RCMenu({
+                    data: e.detail.data,
+                    btn: {
+                        upd: e.detail.btn.upd,
+                        del: e.detail.btn.del,
+                        add: e.detail.btn.add
+                    },
+                    x: e.pageX,
+                    y: e.pageY
+                });
+
+                rcmenu.bind();
+                rcmenu.show();
+            },
+
+            addGuest: function addGuest(e) {
+
+                var data = e.detail.data;
+
+                var val = {
+                    intent: gl.intent_add,
+                    id: -1,
+                    dayin: data.dayin,
+                    dayout: data.dayout,
+                    days: 0,
+                    room: data.room,
+                    baseline: 0,
+                    adjustment: 0,
+                    cost: 0,
+                    paid: 0,
+                    name: '',
+                    city: '',
+                    tel: '',
+                    fn: ''
+                };
+
+                var month = gl.monthNames.indexOf(document.getElementById('month').value),
+                    year = document.getElementById('year').innerHTML;
+
+                var inOutDialog = new InOutDialog({
+                    flag: gl.intent_add,
+                    period: {
+                        month: month,
+                        year: year
+                    },
+                    rooms: gl.rooms,
+                    buttons: {
+                        btnOk: function () {
+                            db.gl001.insert(inOutDialog.getVal());
+                            inOutDialog.unbind();
+                        },
+                        btnNo: function () {
+                            inOutDialog.unbind();
+                        }
+                    }
+                });
+                inOutDialog.bind();
+                inOutDialog.setVal(val);
+                inOutDialog.show();
+            },
+
+            delGuest: function delGuest(e) {
+
+                var data = e.detail.data;
+                
+                var id = this.id.substring(1);
+
+                var confirmDialog = new ConfirmDialog({
+                    flag: gl.intent_del,
+                    dialog: {
+                        title: 'Удаление',
+                        body: 'Удалить запись под номером №' + id + ' из гостевой книги?\r\nДействие нельзя будет отменить!'
+                    },
+                    buttons: {
+                        btnOk: function () {
+                            db.gl001.delete(id);
+                            confirmDialog.unbind();
+                        },
+                        btnNo: function () {
+                            confirmDialog.unbind();
+                        }
+                    }
+                });
+                confirmDialog.bind();
+                confirmDialog.show();
+            },
+
+            updGuest: function updGuest(e) {
+
+                var data = e.detail.data;
+                
+                function getInnerHTML(src, selector) {
+                    var target = src.querySelector(selector);
+                    if (target) {
+                        return target.innerHTML;
+                    } else {
+                        console.log('Error. No elements by selector: ' + selector + ' in ' + src);
+                        return '';
+                    }
+                }
+
+                //  чистим список на редактирование перед добавлением новых записей
+                var guest = document.querySelector('.book tbody tr#' + this.id);
+                if (!guest) {
+                    console.log('Error. No Id:' + this.id);
+                    return;
+                }
+
+                var val = {
+                    intent: gl.intent_edit,
+                    id: getInnerHTML(guest, '.person-id'),
+                    dayin: getInnerHTML(guest, '.person-dayin').substring(3),
+                    dayout: getInnerHTML(guest, '.person-dayout').substring(3),
+                    days: getInnerHTML(guest, '.person-days'),
+                    room: getInnerHTML(guest, '.person-room-num'),
+                    baseline: getInnerHTML(guest, '.person-baseline'),
+                    adjustment: getInnerHTML(guest, '.person-adjustment'),
+                    cost: getInnerHTML(guest, '.person-room-cost'),
+                    paid: getInnerHTML(guest, '.person-room-paid'),
+                    name: getInnerHTML(guest, '.person-name'),
+                    city: getInnerHTML(guest, '.person-city'),
+                    tel: getInnerHTML(guest, '.person-tel'),
+                    fn: getInnerHTML(guest, '.person-fn')
+                }
+
+                var month = gl.monthNames.indexOf(document.getElementById('month').value),
+                    year = document.getElementById('year').innerHTML;
+
+                var inOutDialog = new InOutDialog({
+                    flag: gl.intent_edit,
+                    period: {
+                        month: month,
+                        year: year
+                    },
+                    rooms: gl.rooms,
+                    buttons: {
+                        btnOk: function () {
+                            db.gl001.modify(inOutDialog.getVal());
+                            inOutDialog.unbind();
+                        },
+                        btnNo: function () {
+                            inOutDialog.unbind();
+                        }
+                    }
+                });
+                inOutDialog.bind();
+                inOutDialog.setVal(val);
+                inOutDialog.show();
+            },
+
+            datePick: function datePick(e) {
+                var year = document.getElementById('year'),
+                    month = document.getElementById('month');
+
+                var newYear = e.detail.year,
+                    newMonth = e.detail.month;
+                
+                if (newYear < 1900) return;
+
+                //FIX: innerhtml memory leak
+                month.innerHTML = newMonth;
+                year.innerHTML = newYear;
+                db.gl001.select();
+                db.cf001.update();
+            },
+
+            // predefined event listeners
+
+            prevMonth: function prevMonth(e) {
+
+                var month = document.getElementById('month'),
+                    monthNum = gl.monthNames.indexOf(month.innerHTML);
+                if (monthNum > 1) {
+                    monthNum--;
+                } else {
+                    monthNum = 12;
+                }
+                var monthName = gl.monthNames[monthNum];
+                //FIX: innerhtml memory leak
+                month.innerHTML = monthName;
+                db.gl001.select();
+            },
+
+            pickCalendar: function pickCalendar(e) {
+
+                var year = document.getElementById('year').innerHTML,
+                    month = gl.monthNames.indexOf(document.getElementById('month').innerHTML),
+                    month = utils.overlay(month, '0', 2),
+                    pickCalendar = new PickCalendar();
+
+                pickCalendar.bind();
+                pickCalendar.setVal({
+                    year: year,
+                    month: month
+                });
+                pickCalendar.show();
+            },
+
+            nextMonth: function nextMonth(e) {
+
+                var month = document.getElementById('month'),
+                    monthNum = gl.monthNames.indexOf(month.innerHTML);
+                if (monthNum > 11) {
+                    monthNum = 1;
+                } else {
+                    monthNum++;
+                }
+                var monthName = gl.monthNames[monthNum];
+                //FIX: innerhtml memory leak
+                month.innerHTML = monthName;
+                db.gl001.select();
+            },
+
+            // delegate event listeners
+
+            calendarTDmouseDown: function mousedown(e) {
+
+                if (e.which == 2) return;
+
+                if (e.which == 3) {
+                    var clList = e.target.classList,
+                        id, room, dayin, dayout,
+                        isAvailableBtn;
+
+                    if (clList.contains(gl.class_selected)) {
+
+                        let filterGroupId = function (el) {
+                            return el.match(/\bsel-group-\d+/g);
+                        }
+                        var groupId = e.target.className.split(' ').filter(filterGroupId).toString(),
+                            groupEl = document.querySelectorAll('#calendar > tbody > tr#R' + row + ' > td.' + groupId),
+                            begda = groupEl[0].id.split('-'),
+                            endda = groupEl[groupEl.length - 1].id.split('-');
+
+                        dayin = begda[2] + '.' + begda[1];
+                        dayout = endda[2] + '.' + endda[1];
+                        room = (e.target.id).substring(2, 4);
+                        isAvailableBtn = true;
+
+                    } else if (clList.contains(gl.class_redeemed) || clList.contains(gl.class_reserved)) {
+
+                        let filterId = function (el) {
+                            return el.match(/^N\d+$/);
+                        }
+                        id = e.target.className.split(' ').filter(filterId).toString();
+                        isAvailableBtn = false;
+
+                    } else if (!clList) {
+
+                        if (e.target.closest('.book')) {
+                            id = e.target.closest('.book').querySelector('.book tbody .person-row').id;
+                            isAvailableBtn = false;
+                        } else {
+                            return;
+                        }
+
+                    } else {
+                        return;
+                    }
+
+                    EventBus.dispatch(gl.events.rcmenu, {
+                        data: {
+                            id: id,
+                            room: room,
+                            dayin: dayin,
+                            dayout: dayout
+                        },
+                        btn: {
+                            upd: !isAvailableBtn,
+                            del: !isAvailableBtn,
+                            add: isAvailableBtn
+                        },
+                        x: e.pageX,
+                        y: e.pageY
+                    });
+
+                    return;
+                }
+
+                // Выделение при зажатой мыши
+                gl.isMouseDown = true;
+                if (e.target.classList.length == 0 || e.target.classList.contains(gl.class_selected)) {
+                    e.target.classList.toggle(gl.class_selected);
+                }
+                gl.isSelected = e.target.classList.contains(gl.class_selected);
+                selGroup.del(this);
+                gl.isSelected ? selGroup.add(this) : selGroup.free();
+
+                // Переключения CSS класса опредляющего подсвеченный элемент
+                let ids = e.target.className.split(' ').filter(function (el) {
+                    return el.match(/^N\d+$/g);
+                });
+                for (let i = 0; i < ids.length; i++) {
+                    document.querySelectorAll('#calendar > tbody > tr > td.' + ids[i]).forEach(function (el) {
+                        el.classList.toggle(ids[i] + '-' + gl.class_viewfix);
+                        el.classList.toggle(ids[i] + '-' + gl.class_view);
+                    });
+                    document.querySelector('.book > tbody > tr#' + ids[i]).classList.toggle(gl.class_viewfix);
+                    document.querySelector('.book > tbody > tr#' + ids[i]).classList.toggle(gl.class_view);
+                }
+            },
+
+            calendarTDmouseOver: function mouseover(e) {
+
+                // Выделение при зажатой мыши
+                if (gl.isMouseDown) {
+                    if (e.target.classList.length == 0 || e.target.classList.contains(gl.class_selected)) {
+                        selGroup.del(this);
+                        gl.isSelected && selGroup.add(this);
+                        e.target.classList.toggle(gl.class_selected, gl.isSelected);
+                    } else {
+                        selGroup.free();
+                    }
+                }
+
+                // Переключения CSS класса опредляющего подсвеченный элемент
+                let ids = e.target.className.split(' ').filter(function (el) {
+                    return el.match(/^N\d+$/g);
+                });
+                for (let i = 0; i < ids.length; i++) {
+                    var els = document.querySelectorAll('#calendar > tbody > tr > td.' + ids[i]),
+                        viewfix = ids[i] + '-' + gl.class_viewfix,
+                        view = ids[i] + '-' + gl.class_view;
+                    for (let i = 0; i < els.length; i++) {
+                        if (!els[i].classList.contains(view)) {
+                            els[i].classList.add(view);
+                        }
+                    }
+                    document.querySelector('.book > tbody > tr#' + ids[i]).classList.add(ids[i] + '-' + gl.class_view);
+                }
+                let id = this.id.substring(5);
+                document.querySelector('#calendar thead tr:nth-child(2) th#D' + id).classList.add(gl.class_view);
+            },
+
+            calendarTDmouseOut: function mouseout(e) {
+
+                // Выделение при зажатой мыши
+                let ids = e.target.className.split(' ').filter(function (el) {
+                    return el.match(/^N\d+$/g);
+                });
+                for (let i = 0; i < ids.length; i++) {
+                    var els = document.querySelectorAll('#calendar > tbody > tr > td.' + ids[i]),
+                        viewfix = ids[i] + '-' + gl.class_viewfix,
+                        view = ids[i] + '-' + gl.class_view;
+                    for (let i = 0; i < els.length; i++) {
+                        if (els[i].classList.contains(view)) {
+                            els[i].classList.remove(view);
+                        }
+                    }
+                    document.querySelector('.book > tbody > tr#' + ids[i]).classList.remove(ids[i] + '-' + gl.class_view);
+                }
+                let id = this.id.substring(5);
+                document.querySelector('#calendar thead tr:nth-child(2) th#D' + id).classList.remove(gl.class_view);
+            },
+
+            calendarTDmouseUp: function mouseup(e) {
+
+                selGroup.free();
+                gl.isMouseDown = false;
+            },
+
+            calendarTHmouseDown: function mousedown(e) {
+
+                this.classList.toggle(gl.class_viewfix);
+                var book = document.querySelector('#' + this.parentNode.id + '-book');
+                if (!book) {
+                    console.log('Error. No book with id: ' + this.parentNode.id + '-book');
+                    return;
+                }
+
+                var stDisplay = window.getComputedStyle(book).getPropertyValue('display');
+                if (book.style.display == 'none' || stDisplay == 'none') {
+                    book.style.display = 'table-row';
+                } else {
+                    book.style.display = 'none';
+                }
+            },
+
+            bookTRmouseDown: function mousedown(e) {
+
+                if (e.which == 2) return;
+
+                if (e.which == 3) {
+                    EventBus.dispatch(gl.events.rcmenu, []);
+                    return;
+                };
+
+                var that = this;
+                if (!that.closest('.inner-book')) {
+                    var id = that.id;
+                    that.classList.toggle(gl.class_viewfix);
+                    that.classList.toggle(gl.class_view);
+                    document.querySelectorAll('#calendar > tbody > tr > td.' + id).forEach(function (el) {
+                        if (that.classList.contains(gl.class_viewfix)) {
+                            el.classList.add(id + '-' + gl.class_viewfix);
+                            el.classList.remove(id + '-' + gl.class_view);
+                        } else {
+                            el.classList.add(id + '-' + gl.class_view);
+                            el.classList.remove(id + '-' + gl.class_viewfix);
+                        }
+                    });
+                }
+            },
+
+            bookTRmouseOver: function mouseover(e) {
+
+                if (!this.closest('.inner-book')) {
+                    var id = this.id;
+                    if (!this.classList.contains(gl.class_viewfix)) {
+                        this.classList.add(gl.class_view);
+                        document.querySelectorAll('#calendar > tbody > tr > td.' + id).forEach(function (el) {
+                            el.classList.add(id + '-' + gl.class_view);
+                        });
+                    }
+                }
+            },
+
+            bookTRmouseOut: function mouseout(e) {
+
+                if (!this.closest('.inner-book')) {
+                    var id = this.id;
+                    if (!this.classList.contains(gl.class_viewfix)) {
+                        this.classList.remove(gl.class_view);
+                        document.querySelectorAll('#calendar > tbody > tr > td.' + id).forEach(function (el) {
+                            el.classList.remove(id + '-' + gl.class_view);
+                        });
+                    }
+                }
+            },
+
+            //
+
+            ajaxInitialDataSuccess: function (data) {
+                if (!data.status) {
+                    console.log(data.msg);
+                } else {
+                    data.data.sort(function (a, b) {
+                        if (a.id > b.id) {
+                            return 1;
+                        } else if (a.id < b.id) {
+                            return -1;
+                        } else {
+                            return 0;
+                        }
+                    });
+                    //FIX: innerHTML memory leak
+                    document.getElementById('year').innerHTML = data.year;
+                    gl.rooms = data.rooms;
+
+                    setHeader(data.year, data.month);
+                    addEntry(data.year, data.month, data.data);
+                }
+            },
+
+            ajaxInitialDataError: function (xhr, textStatus, errorThrown) {
+                console.log(textStatus);
+                console.log(errorThrown);
+            }
+        }
+    }
 
     bind(target) {
 
-        var label, span, td, tr, tbody, thead, table; 
+        var label, span, td, tr, tbody, thead, table;
+        if (true) {
+            table = document.createElement('table');
+            table.setAttribute('id', 'calendar');
+            table.classList.add('my-table');
+            if (true) {
+                thead = document.createElement('thead');
+                if (true) {
+                    tr = document.createElement('tr');
+                    tr.setAttribute('id', 'calendar-row-buttons');
+                    if (true) {
+                        td = document.createElement('td');
+                        if (true) {
+                            table = document.createElement('table');
+                            if (true) {
+                                tbody = document.createElement('tbody');
+                                if (true) {
+                                    tr = document.createElement('tr');
+                                    if (true) {
+                                        td = document.createElement('td');
+                                        if (true) {
+                                            span = document.createElement('span');
+                                            span.setAttribute('id', 'button-prev-month');
+                                            span.classList.add('month-button');
+                                            span.addEventListener('click', this._listeners.prevMonth);
+                                            td.appendChild(span);
+                                        }
+                                        tr.appendChild(td);
+                                    }
+                                    if (true) {
+                                        td = document.createElement('td');
+                                        if (true) {
+                                            span = document.createElement('span');
+                                            span.setAttribute('id', 'button-pick-calendar');
+                                            span.addEventListener('click', this._listeners.pickCalendar);
+                                            setListener('click', span);
 
-        //
-        tr = document.createElement('tr');
+                                            label = document.createElement('label');
+                                            label.setAttribute('id', 'month');
+                                            span.appendChild(label);
 
-        //
-        span = document.createElement('span');
-        span.setAttribute('id', 'button-month-left');
-        span.classList.add('month-button');
-        span.addEventListener('click', listeners.monthLeftClick);
+                                            label = document.createElement('label');
+                                            label.setAttribute('id', 'year');
+                                            span.appendChild(label);
 
-        td = document.createElement('td');
-        td.appendChild(span);
+                                            td.appendChild(span);
+                                        }
+                                        tr.appendChild(td);
+                                    }
+                                    if (true) {
+                                        td = document.createElement('td');
+                                        if (true) {
+                                            span = document.createElement('span');
+                                            span.setAttribute('id', 'button-next-month');
+                                            span.classList.add('month-button');
+                                            span.addEventListener('click', this._listeners.nextMonth);
+                                            td.appendChild(span);
+                                        }
+                                        tr.appendChild(td);
+                                    }
+                                    tbody.appendChild(tr);
+                                }
+                                table.appendChild(tbody);
+                            }
+                            td.appendChild(table);
+                        }
+                        tr.appendChild(td);
+                    }
+                    thead.appendChild(tr);
+                }
+                if (true) {
+                    tr = document.createElement('tr');
+                    tr.setAttribute('id', 'calendar-row-days');
+                    thead.appendChild(tr);
+                }
+                table.appendChild(thead);
+            }
+            if (true) {
+                tbody = document.createElement('tbody');
+                table.appendChild(tbody);
+            }
+            target.appendChild(table);
+        }
 
-        tr.appendChild(td);
+        /** 
+         * Регистрация отложенных событий, которые должны быть вызваны на элементах, 
+         * которые еще не существуют
+         */
+        var qsParent, qsChild, qsParentExcl;
 
-        //
-        span = document.createElement('span'),
-        span.setAttribute('id', 'button-pick-calendar');
-        span.addEventListener('click', listeners.pickCalendarClick);
+        qsParent = '#calendar > tbody';
+        qsChild = 'td', qsParentExcl = '.book-row';
+        _setDelegate('', 'mousedown', qsParent, qsChild, qsParentExcl, this._listeners.calendarTDmouseDown);
+        _setDelegate('', 'mouseover', qsParent, qsChild, qsParentExcl, this._listeners.calendarTDmouseOver);
+        _setDelegate('', 'mouseout', qsParent, qsChild, qsParentExcl, this._listeners.calendarTDmouseOut);
+        _setDelegate('', 'mouseup', qsParent, qsChild, qsParentExcl, this._listeners.calendarTDmouseUp);
 
-        label = document.createElement('label');
-        label.setAttribute('id', 'month');
-        span.appendChild(label);
+        qsParent = '#calendar > tbody';
+        qsChild = 'tr > th', qsParentExcl = '';
+        _setDelegate('', 'mousedown', qsParent, qsChild, qsParentExcl, this._listeners.calendarTHmouseDown);
 
-        label = document.createElement('label');
-        label.setAttribute('id', 'year');
-        span.appendChild(label);
+        qsParent = '#calendar > tbody';
+        qsChild = '.book > tbody > tr', qsParentExcl = '';
+        _setDelegate('', 'mousedown', qsParent, qsChild, qsParentExcl, this._listeners.bookTRmouseDown);
+        _setDelegate('', 'mouseover', qsParent, qsChild, qsParentExcl, this._listeners.bookTRmouseOver);
+        _setDelegate('', 'mouseout', qsParent, qsChild, qsParentExcl, this._listeners.bookTRmouseOut);
 
-        td = document.createElement('td');
-        td.appendChild(span);
-
-        tr.appendChild(td);
-
-        //
-        span = document.createElement('span');
-        span.setAttribute('id', 'button-month-right');
-        span.classList.add('month-button');
-        span.addEventListener('click', listeners.monthRightClick);
-
-        td = document.createElement('td');
-        td.appendChild(span);
-
-        tr.appendChild(td);
-
-        //
-        tbody = document.createElement('tbody');
-        tbody.appendChild(tr);
-
-        //
-        table = document.createElement('table');
-        table.appendChild(tbody);
-
-        //
-        td = document.createElement('td');
-        td.appendChild(table);
-
-        //
-        tr = document.createElement('tr');
-        tr.setAttribute('id', 'calendar-row-buttons');
-        tr.appendChild(td);
-
-        //
-        thead = document.createElement('thead');
-        thead.appendChild(tr);
-
-        //
-        tr = document.createElement('tr');
-        tr.setAttribute('id', 'calendar-row-days');
-
-        thead.appendChild(tr);
-        
-        //
-        table = document.createElement('table');
-        table.setAttribute('id', 'calendar');
-        table.classList.add('my-table');
-        table.appendChild(thead);
-
-        //
-        tbody = document.createElement('tbody');
-
-        table.appendChild(tbody);
-
-        target.appendChild(table);
-
-        listeners.delegateWithExclude('#calendar > tbody', 'mousedown', 'td', 'tr', (/^R\d+-book$/g), listeners.calendarTDs.mousedown);
-        listeners.delegateWithExclude('#calendar > tbody', 'mouseover', 'td', 'tr', (/^R\d+-book$/g), listeners.calendarTDs.mouseover);
-        listeners.delegateWithExclude('#calendar > tbody', 'mouseout',  'td', 'tr', (/^R\d+-book$/g), listeners.calendarTDs.mouseout);
-        listeners.delegateWithExclude('#calendar > tbody', 'mouseup',   'td', 'tr', (/^R\d+-book$/g), listeners.calendarTDs.mouseup);
-        
-        listeners.delegate('#calendar > tbody', 'mouseup', 'tr > th', listeners.calendarTHs.mousedown);
-        
-        listeners.delegate('#calendar > tbody', 'mousedown', '.book > tbody > tr', listeners.bookTRs.mousedown);
-        listeners.delegate('#calendar > tbody', 'mouseover', '.book > tbody > tr', listeners.bookTRs.mouseover);
-        listeners.delegate('#calendar > tbody', 'mouseout', '.book > tbody > tr', listeners.bookTRs.mouseout);
+        /** 
+         * Регистрация событий которые будут вызываться асинхронно
+         */
+        EventBus.register(gl.events.rcmenu, this._listeners.RCMenu);
+        EventBus.register(gl.events.datePick, this._listeners.datePick);
+        EventBus.register(gl.events.addGuest, this._listeners.addGuest);
+        EventBus.register(gl.events.delGuest, this._listeners.delGuest);
+        EventBus.register(gl.events.updGuest, this._listeners.updGuest);
     }
 
+
     init() {
-
-        var success = function (data) {
-            if (!data.status) {
-                console.log(data.msg);
-            } else {
-                data.data.sort(function (a, b) {
-                    if (a.id > b.id) {
-                        return 1;
-                    } else if (a.id < b.id) {
-                        return -1;
-                    } else {
-                        return 0;
-                    }
-                });
-                document.getElementById('year').innerHTML = data.year;
-                gl.rooms = data.rooms;
-
-                this.that.setHeader(data.year, data.month);
-                this.that.addGuest(data.year, data.month, data.data);
-            }
-        }
-
-        var error = function (xhr, textStatus, errorThrown) {
-            console.log(textStatus);
-            console.log(errorThrown);
-        }
-
+        //FIX: sort after select
         $.ajax({
             url: '../db/init.php',
             dataType: 'json',
-            success: success.bind({ that: this }),
-            error: error
+            success: this._listeners.ajaxInitialDataSuccess(data),
+            error: this._listeners.ajaxInitialDataError(xhr, textStatus, errorThrown)
         });
     }
 
-    setHeader(year, month) {
+    _setHeader(year, month) {
 
         var monthName = utils.getMonthName(month),
             days = new Date(year, month, 0).getDate();
@@ -150,7 +703,7 @@ class Calendar extends DataWrapper {
         for (let i = 0; i < childs; i++) {
             try {
                 trdays.deleteCell(0);
-            } catch (e) { }
+            } catch (e) {}
         }
         //  --- --- название месяца
         document.getElementById('month').innerHTML = "";
@@ -203,11 +756,36 @@ class Calendar extends DataWrapper {
         }
     }
 
-    isEmptyBook(room) {
+    _isEmptyBook(room) {
         return !document.querySelector('#R' + room + '-book tbody').childElementCount;
     }
 
-    addGuest(year, month, list) {
+    _setDelegate(eventName, qsParent, qsChild, qsClosestExcl, callback) {
+
+        const delegateListener = function delegateListener(e) {
+
+            var childs = this.parent.querySelectorAll(this.qsChild);
+            for (let i = 0, l = childs.length; i < l; i++) {
+                if (!qsClosestExcl) {
+                    if (childs[i].closest(this.qsClosestExcl)) continue;
+                }
+                var el = e.target;
+                while (el && el !== this.parent) {
+                    if (el === childs[i]) return callback.call(childs[i], e);
+                    el = el.parentNode;
+                }
+            }
+        }
+
+        var parent = document.querySelector(qsParent);
+        parent.addEventListener(eventName, delegateListener.bind({
+            parent: parent,
+            qsChild: qsChild,
+            qsClosestExcl: qsClosestExcl
+        }));
+    }
+
+    addEntry(year, month, list) {
 
         var list = (list === undefined) ? [] : list;
 
@@ -247,7 +825,7 @@ class Calendar extends DataWrapper {
                         hintText = '№' + wa.id + ' ' + wa.name + ' с ' + begda.format('dd.mm') + ' по ' + endda.format('dd.mm');
                     if (div.length == 0) {
                         var span = document.createElement('span');
-                        span.setAttribute('class', 'hintText');
+                        span.setAttribute('class', 'hint-text');
                         span.appendChild(document.createTextNode(hintText));
                         div = document.createElement('div');
                         div.setAttribute('class', 'hint');
@@ -268,6 +846,7 @@ class Calendar extends DataWrapper {
                 hiddenRow = document.createElement('tr');
                 hiddenRow.setAttribute('id', 'R' + wa.room + '-book');
                 hiddenRow.classList.add('hidden');
+                hiddenRow.classList.add('book-row');
                 var td = document.createElement('td'),
                     days = new Date(year, month, 0).getDate();
                 td.setAttribute('colspan', days + 1);
@@ -276,7 +855,7 @@ class Calendar extends DataWrapper {
                 table.appendChild(document.createElement('tbody'));
                 td.appendChild(table);
                 hiddenRow.appendChild(td);
-                var tr = document.querySelector('#calendar tbody tr#R' + wa.room );
+                var tr = document.querySelector('#calendar tbody tr#R' + wa.room);
                 tr.parentNode.insertBefore(hiddenRow, tr.nextSibling);
                 hiddenRow = document.getElementById('R' + wa.room + '-book');
             }
@@ -371,7 +950,7 @@ class Calendar extends DataWrapper {
             //------------------------------------------------------------
             tr = document.createElement('tr');
             tr.setAttribute('style', "display:none;");
-            
+
             td = document.createElement('td');
             td.setAttribute('class', 'person-days');
             td.appendChild(document.createTextNode(wa.days));
@@ -396,7 +975,7 @@ class Calendar extends DataWrapper {
 
             //------------------------------------------------------------
             var iTable = document.createElement('table');
-            iTable.setAttribute('class', 'innerBook');
+            iTable.setAttribute('class', 'inner-book');
             iTable.appendChild(tbody);
             //------------------------------------------------------------
 
@@ -416,7 +995,7 @@ class Calendar extends DataWrapper {
         }
     }
 
-    delGuest(list) {
+    delEntry(list) {
 
         for (let i = 0; i < list.length; i++) {
             var wa = list[i];
@@ -464,7 +1043,7 @@ class Calendar extends DataWrapper {
         }
     }
 
-    updGuest(oldData, newData) {
+    updEntry(oldData, newData) {
 
         this.delGuest(oldData);
         var year = document.getElementById('year').innerHTML,

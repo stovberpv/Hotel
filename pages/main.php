@@ -147,17 +147,13 @@
         <div id='vc-dw-5' class='vc-data-wrapper'></div>
         <div id='vc-dw-6' class='vc-data-wrapper'></div>
     </div>
-
-    <script type='text/javascript' src='/js/gl.js'></script>
-    <script type='text/javascript' src='/js/utils/utils.js'></script>
-
-    <script type="text/javascript" src="/js/utils/jquery.min.js"></script>
-    <script type="text/javascript" src="/js/utils/date.format.js"></script>
     
-    <script type="text/javascript" src="/js/pickCalendar.js"></script>
-    <script type="text/javascript" src="/js/modal.js"></script>
-    <script type="text/javascript" src="/js/rcmenu.js"></script>
-
+    <script type="text/javascript" src="/js/utils/date.format.js"></script>
+    <script type="text/javascript" src="/js/utils/jquery.min.js"></script>
+    <script type='text/javascript' src='/js/utils/eventbus.js'></script>
+    <script type='text/javascript' src='/js/utils/utils.js'></script>
+    <script type="text/javascript" src="/js/utils/modal.js"></script>
+    
     <script type='text/javascript' src='/js/wrappers/definition.js'></script>
     <script type='text/javascript' src='/js/wrappers/calendar.js'></script>
     <script type='text/javascript' src='/js/wrappers/contacts.js'></script>
@@ -165,14 +161,10 @@
     <script type='text/javascript' src='/js/wrappers/settings.js'></script>
     <script type='text/javascript' src='/js/wrappers/infopage.js'></script>
     <script type='text/javascript' src='/js/wrappers/signout.js'></script>
+    
+    <script type='text/javascript' src='/js/gl.js'></script>
     <script type='text/javascript' src='/js/db.js'></script>
     <script type='text/javascript' src='/js/main.js'></script>
-    <!-- <div>Icons made by
-            <a href="https://www.flaticon.com/authors/smashicons" title="Smashicons">Smashicons</a> from
-            <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by
-            <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0"
-                target="_blank">CC 3.0 BY</a>
-        </div> -->
 </body>
 
 </html>
