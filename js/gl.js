@@ -49,7 +49,7 @@ const gl = {
     class_view: "view", //предпросмотр
     class_viewfix: "view-fix", // выделен
     intent_add: 1,
-    intent_edit: 0,
+    intent_upd: 0,
     intent_del: -1,
 
     /*----------------------------------------------------------------------------------------
@@ -59,10 +59,11 @@ const gl = {
     isSelected: false,
 
     events: {
-        rcmenu: 'calendar-rcmenu',
         datePick: 'calendar-pick-new-date',
-        addGuest: 'add-guest',
-        delGuest: 'delete-guest',
-        updGuest: 'update-guest'
+        RCMenu: 'rcmenu-in-calendar',
+        RCMItemAddGuest: 'rcitem-add-guest',
+        RCMItemDelGuest: 'rcitem-del-guest',
+        RCMItemUpdGuest: 'rcitem-upd-guest',
+        inOutDialogSave: 'inout-dialog-ok-button'
     }
 }

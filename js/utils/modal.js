@@ -14,51 +14,75 @@ class Dialog {
 
 class ConfirmDialog extends Dialog {
 
-    bind() {
-        var additionalClass = "";
-        switch (this.Opts.flag) {
-            case -1:
-                additionalClass = "modal-header-negative";
-                break;
-            case 0:
-                additionalClass = "modal-header-neutral";
-                break;
-            case 1:
-                additionalClass = "modal-header-positive";
-                break;
-            case 2:
-                additionalClass = "modal-header-extend";
-                break;
-            default:
-                break;
+    constructor() {
+        super();
+    
+        this.Listeners = {
+
+            ok: function (e) {
+                EventBus.dispatch(gl.events.inOutDialogSave, { data: this.id });
+            },
+
+            no: function (e) {
+                this.unbind();
+            }
         }
+    }
 
-        this.Dialog =
-            '<div class="modal-content modal-confirm">' +
-            '<div class="modal-header ' + additionalClass + '">' +
-            '<a>' + this.Opts.dialog.title + '</a>' +
-            '</div>' +
-            '<div class="modal-body">' +
-            '<a>' + this.Opts.dialog.body + '</a>' +
-            '</div>' +
-            '<div class="modal-footer">' +
-            '<button type="button" id="btn-no" class="btn negative">Отменить</button>' +
-            '<button type="button" id="btn-ok" class="btn positive">Подтвердить</button>' +
-            '</div>' +
-            '</div>';
+    bind() {
 
-        var div = document.createElement('div');
-        div.className = 'modal-dialog';
-        div.id = 'modal-dialog-' + this.Id;
-        div.innerHTML = this.Dialog;
-        document.body.appendChild(div);
+        var divDialog, divContent, divHeader, divBody, divFooter,
+            a, button;
 
-        var dialog = document.getElementById('modal-dialog-' + this.Id),
-            btnOk = dialog.children[0].children[2].children[1],
-            btnNo = dialog.children[0].children[2].children[0];
+        divHeader = document.createElement('div');
+        divHeader.classList.add('modal-header');
+        divHeader.classList.add('modal-header-negative');
 
-        btnOk.addEventListener('click', this.Opts.buttons.btnOk);
-        btnNo.addEventListener('click', this.Opts.buttons.btnNo);
+        a = document.createElement('a');
+        a.appendChild(document.createTextNode('Удаление'));
+        divHeader.appendChild(a);
+
+        divBody = document.createElement('div');
+        divBody.classList.add('modal-body');
+        divBody.classList.add(additionalClass);
+
+        a = document.createElement('a');
+        a.appendChild(document.createTextNode('Удалить запись под номером №' + this.Opts.data.id + ' из гостевой книги?\r\nДействие нельзя будет отменить!'));
+        divBody.appendChild(a);
+
+        divFooter = document.createElement('div');
+        divFooter.classList.add('modal-footer');
+        button = document.createElement('button');
+        button.setAttribute('id', 'btn-no');
+        button.setAttribute('type', 'button');
+        button.classList.add('btn');
+        button.classList.add('negative');
+        button.appendChild(document.createTextNode('Отменить'));
+        button.addEventListener('click', this.Listeners.no);
+        divFooter.appendChild(button);
+
+        button = document.createElement('button');
+        button.setAttribute('id', 'btn-ok');
+        button.setAttribute('type', 'button');
+        button.classList.add('btn');
+        button.classList.add('positive');
+        button.addEventListener('click', this.Listeners.ok).bind( { id: this.Opts.data.id } );
+        button.appendChild(document.createTextNode('Подтвердить'));
+        divFooter.appendChild(button);
+
+        divContent = document.createElement('div')
+        divContent.classList.add('modal-content');
+        divContent.classList.add('modal-confirm');
+        divContent.appendChild(divHeader);
+        divContent.appendChild(divBody);
+        divContent.appendChild(divFooter);
+
+        divDialog = document.createElement('div')
+        divDialog.setAttribute('id', 'modal-dialog-' + this.Id);
+        divDialog.classList.add('modal-dialog');
+        divDialog.appendChild(divContent);
+
+        document.appendChild(divDialog);
     }
 
     show() {
@@ -74,6 +98,22 @@ class ConfirmDialog extends Dialog {
 }
 
 class InOutDialog extends Dialog {
+
+    constructor() {
+        super();
+
+        this.Listeners = {
+
+            ok: function (e) {
+                EventBus.dispatch(gl.events.inOutDialogSave, this.getVal());
+                this.unbind();
+            },
+
+            no: function (e) {
+                this.unbind();
+            },
+        }
+    }
 
     bind() {
 
@@ -110,7 +150,7 @@ class InOutDialog extends Dialog {
             default:
                 break;
         }
-        label.innerText = title;
+        label.appendChild(document.createTextNode(title));
         // label.classList.add(additionalClass);
 
         divHead.appendChild(label);
@@ -120,6 +160,11 @@ class InOutDialog extends Dialog {
         divBody = document.createElement('div');
         divBody.setAttribute('id', 'pio-dw-body');
         divBody.classList.add('pio-unit');
+
+        div = this.createInputNode('intent', ['pio-el', 'output'], 'Цель');
+        div.getElementsByTagName('input')[0].setAttribute('readonly', '');
+        div.setAttribute('style', 'display:none;');
+        divBody.appendChild(div);
 
         div = this.createInputNode('id', ['pio-el', 'output'], 'Идентификатор');
         div.getElementsByTagName('input')[0].setAttribute('readonly', '');
@@ -162,41 +207,62 @@ class InOutDialog extends Dialog {
 
         divBody.appendChild(div);
 
-        div = this.createInputNode('baseline', ['pio-el', 'output'], 'База');
+        function createInputNode(id, classes, text) {
+
+            var div = document.createElement('div');
+            div.setAttribute('id', id);
+            classes.forEach(el => {
+                div.classList.add(el);
+            });
+    
+            var input = document.createElement('input');
+            input.setAttribute('type', 'text');
+            input.setAttribute('required', '');
+    
+            var label = document.createElement('label');
+            label.innerText = text;
+    
+            div.appendChild(input);
+            div.appendChild(label);
+    
+            return div;
+        }
+
+        div = createInputNode('baseline', ['pio-el', 'output'], 'База');
         this.setHandler(div.getElementsByTagName('input')[0], 'keypress');
         this.setHandler(div.getElementsByTagName('input')[0], 'paste');
         this.setHandler(div.getElementsByTagName('input')[0], 'change');
         divBody.appendChild(div);
 
-        div = this.createInputNode('adjustment', ['pio-el', 'input'], 'Корр.');
+        div = createInputNode('adjustment', ['pio-el', 'input'], 'Корр.');
         this.setHandler(div.getElementsByTagName('input')[0], 'keypress');
         this.setHandler(div.getElementsByTagName('input')[0], 'paste');
         this.setHandler(div.getElementsByTagName('input')[0], 'change');
         divBody.appendChild(div);
 
-        div = this.createInputNode('cost', ['pio-el', 'output'], 'Стоимость');
+        div = createInputNode('cost', ['pio-el', 'output'], 'Стоимость');
         this.setHandler(div.getElementsByTagName('input')[0], 'keypress');
         this.setHandler(div.getElementsByTagName('input')[0], 'paste');
         this.setHandler(div.getElementsByTagName('input')[0], 'change');
         divBody.appendChild(div);
 
-        div = this.createInputNode('paid', ['pio-el', 'input'], 'Оплачено');
+        div = createInputNode('paid', ['pio-el', 'input'], 'Оплачено');
         this.setHandler(div.getElementsByTagName('input')[0], 'keypress');
         this.setHandler(div.getElementsByTagName('input')[0], 'paste');
         divBody.appendChild(div);
 
-        div = this.createInputNode('name', ['pio-el', 'input'], 'ФИО');
+        div = createInputNode('name', ['pio-el', 'input'], 'ФИО');
         divBody.appendChild(div);
 
-        div = this.createInputNode('city', ['pio-el', 'input'], 'Город');
+        div = createInputNode('city', ['pio-el', 'input'], 'Город');
         divBody.appendChild(div);
 
-        div = this.createInputNode('tel', ['pio-el', 'input'], 'Телефон');
+        div = createInputNode('tel', ['pio-el', 'input'], 'Телефон');
         this.setHandler(div.getElementsByTagName('input')[0], 'keypress');
         this.setHandler(div.getElementsByTagName('input')[0], 'paste');
         divBody.appendChild(div);
 
-        div = this.createInputNode('fn', ['pio-el', 'input'], 'Примечание');
+        div = createInputNode('fn', ['pio-el', 'input'], 'Примечание');
         divBody.appendChild(div);
 
         divWrapper.appendChild(divBody);
@@ -205,12 +271,26 @@ class InOutDialog extends Dialog {
         divFooter.setAttribute('id', 'pio-dw-footer');
         divFooter.classList.add('pio-unit');
 
-        button = this.createButton('btn-no', ['negative'], 'Отменить');
-        button.addEventListener('click', this.Opts.buttons.btnNo);
+        function createButton (id, classes, text) {
+
+            var button = document.createElement('button');
+            button.setAttribute('type', 'button');
+            button.setAttribute('id', id);
+            button.classList.add('btn');
+            classes.forEach(el => {
+                button.classList.add(el);
+            });
+            button.innerText = text;
+    
+            return button;
+        }
+
+        button = createButton('btn-no', ['negative'], 'Отменить');
+        button.addEventListener('click', this.Listeners.no);
         divFooter.appendChild(button);
 
-        button = this.createButton('btn-ok', ['positive'], 'Подтвердить');
-        button.addEventListener('click', this.Opts.buttons.btnOk);
+        button = createButton('btn-ok', ['positive'], 'Подтвердить');
+        button.addEventListener('click', this.Listeners.ok);
         divFooter.appendChild(button);
 
         divWrapper.appendChild(divFooter);
@@ -221,41 +301,6 @@ class InOutDialog extends Dialog {
         dialog.setAttribute('id', 'popup-input-output-' + this.Id);
         dialog.appendChild(divWrapper);
         document.body.appendChild(dialog);
-    }
-
-    createInputNode(id, classes, text) {
-
-        var div = document.createElement('div');
-        div.setAttribute('id', id);
-        classes.forEach(el => {
-            div.classList.add(el);
-        });
-
-        var input = document.createElement('input');
-        input.setAttribute('type', 'text');
-        input.setAttribute('required', '');
-
-        var label = document.createElement('label');
-        label.innerText = text;
-
-        div.appendChild(input);
-        div.appendChild(label);
-
-        return div;
-    }
-
-    createButton(id, classes, text) {
-
-        var button = document.createElement('button');
-        button.setAttribute('type', 'button');
-        button.setAttribute('id', id);
-        button.classList.add('btn');
-        classes.forEach(el => {
-            button.classList.add(el);
-        });
-        button.innerText = text;
-
-        return button;
     }
 
     setHandler(target, event) {
@@ -298,9 +343,7 @@ class InOutDialog extends Dialog {
 
         var calcFields = function () {
 
-            var month = this.period.month,
-                year = this.period.year,
-                dialog = document.getElementById('popup-input-output-' + this.id),
+            var dialog = document.getElementById('popup-input-output-' + this.id),
                 dayin = dialog.querySelector('#dayin input'),
                 dayout = dialog.querySelector('#dayout input'),
                 days = dialog.querySelector('#days input'),
@@ -310,9 +353,9 @@ class InOutDialog extends Dialog {
                 cost = dialog.querySelector('#cost input');
 
             var begda = dayin.value.split('.'),
-                begda = new Date(''.concat(year, '.', (begda[1] ? begda[1] : month), '.', begda[0])),
+                begda = new Date(''.concat(this.year, '.', (begda[1] ? begda[1] : this.month), '.', begda[0])),
                 endda = dayout.value.split('.'),
-                endda = new Date(''.concat(year, '.', (endda[1] ? endda[1] : month), '.', endda[0])),
+                endda = new Date(''.concat(this.year, '.', (endda[1] ? endda[1] : this.month), '.', endda[0])),
                 totalDays = (endda - begda) / 86400000;
 
             var rooms = this.rooms.filter(function (el) { return el.room == room.value; });
@@ -325,7 +368,7 @@ class InOutDialog extends Dialog {
             cost.value = mustBePaid;
             cost.dispatchEvent(new Event('change'));
 
-        }.bind( { rooms: this.Opts.rooms, period: this.Opts.period, id: this.Id } );
+        }.bind( { rooms: this.Opts.data.rooms, month: this.Opts.data.month, year: this.Opts.data.year, id: this.Id } );
 
         var handlers = {
 
@@ -516,7 +559,7 @@ class InOutDialog extends Dialog {
                         baseline = document.querySelector('#baseline input');
                     baseline.value = room.length != 0 ? room[0].price : 0;
                     baseline.dispatchEvent(new Event('change'));
-                }.bind({ rooms: this.Opts.rooms }),
+                }.bind({ rooms: this.Opts.data.rooms }),
 
                 baseline: function (e) {
 
@@ -534,6 +577,7 @@ class InOutDialog extends Dialog {
                 }
             }
         }
+
         var id = target.id ? target.id : target.parentNode.id;
         target.addEventListener(event, handlers[event][id]);
     }
@@ -555,6 +599,7 @@ class InOutDialog extends Dialog {
         if (val != undefined) {
             var dialog = document.getElementById('popup-input-output-' + this.Id);
             dialog.querySelector('#id input').value = val.id;
+            dialog.querySelector('#intent input').value = val.intent;
             dialog.querySelector('#dayin input').value = val.dayin;
             dialog.querySelector('#dayout input').value = val.dayout;
             dialog.querySelector('#room input').value = val.room;
@@ -573,6 +618,7 @@ class InOutDialog extends Dialog {
     getVal() {
         var dialog = document.getElementById('popup-input-output-' + this.Id);
         return {
+            intent: dialog.querySelector('#intent input').value,
             id: dialog.querySelector('#id input').value,
             dayin: dialog.querySelector('#dayin input').value,
             dayout: dialog.querySelector('#dayout input').value,
@@ -800,7 +846,6 @@ class PickCalendar extends Dialog {
         pick.parentNode.removeChild(pick);
     }
 }
-
 class RCMenu extends Dialog {
 
     constructor (opts) {

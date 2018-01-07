@@ -90,7 +90,23 @@ class Calendar extends DataWrapper {
 
             // external called events
 
-            RCMenu: function RCMenu (e) {
+            datePick: function datePick(e) {
+                var year = document.getElementById('year'),
+                    month = document.getElementById('month');
+
+                var newYear = e.detail.year,
+                    newMonth = e.detail.month;
+
+                if (newYear < 1900) return;
+
+                //FIX: innerhtml memory leak
+                month.innerHTML = newMonth;
+                year.innerHTML = newYear;
+                db.gl001.select();
+                db.cf001.update();
+            },
+
+            RCMenu: function RCMenu(e) {
 
                 if (!e.detail.EventBus) {
                     console.log('Invalid function call.');
@@ -112,155 +128,70 @@ class Calendar extends DataWrapper {
                 rcmenu.show();
             },
 
-            addGuest: function addGuest(e) {
+            RCMItemAddGuest: function RCMItemAddGuest(e) {
+
+                var initVal = {
+                    intent = gl.intent_add,
+                    month = gl.monthNames.indexOf(document.getElementById('month').value),
+                    year = document.getElementById('year').value,
+                    rooms = gl.rooms
+                }
+
+                var inOutDialog = new InOutDialog({ data: initVal });
+                inOutDialog.bind();
 
                 var data = e.detail.data;
+                data.intent = initVal.intent;
+                inOutDialog.setVal(data);
 
-                var val = {
-                    intent: gl.intent_add,
-                    id: -1,
-                    dayin: data.dayin,
-                    dayout: data.dayout,
-                    days: 0,
-                    room: data.room,
-                    baseline: 0,
-                    adjustment: 0,
-                    cost: 0,
-                    paid: 0,
-                    name: '',
-                    city: '',
-                    tel: '',
-                    fn: ''
-                };
-
-                var month = gl.monthNames.indexOf(document.getElementById('month').value),
-                    year = document.getElementById('year').innerHTML;
-
-                var inOutDialog = new InOutDialog({
-                    flag: gl.intent_add,
-                    period: {
-                        month: month,
-                        year: year
-                    },
-                    rooms: gl.rooms,
-                    buttons: {
-                        btnOk: function () {
-                            db.gl001.insert(inOutDialog.getVal());
-                            inOutDialog.unbind();
-                        },
-                        btnNo: function () {
-                            inOutDialog.unbind();
-                        }
-                    }
-                });
-                inOutDialog.bind();
-                inOutDialog.setVal(val);
                 inOutDialog.show();
             },
 
-            delGuest: function delGuest(e) {
+            RCMItemDelGuest: function RCMItemDelGuest(e) {
 
-                var data = e.detail.data;
-                
                 var id = this.id.substring(1);
 
-                var confirmDialog = new ConfirmDialog({
-                    flag: gl.intent_del,
-                    dialog: {
-                        title: 'Удаление',
-                        body: 'Удалить запись под номером №' + id + ' из гостевой книги?\r\nДействие нельзя будет отменить!'
-                    },
-                    buttons: {
-                        btnOk: function () {
-                            db.gl001.delete(id);
-                            confirmDialog.unbind();
-                        },
-                        btnNo: function () {
-                            confirmDialog.unbind();
-                        }
-                    }
-                });
+                var confirmDialog = new ConfirmDialog({ data: { id: id } });
                 confirmDialog.bind();
                 confirmDialog.show();
             },
 
-            updGuest: function updGuest(e) {
+            RCMItemUpdGuest: function RCMItemUpdGuest(e) {
+
+                var initVal = {
+                    intent = gl.intent_upd,
+                    month = gl.monthNames.indexOf(document.getElementById('month').value),
+                    year = document.getElementById('year').value,
+                    rooms = gl.rooms
+                }
+                
+                var inOutDialog = new InOutDialog({ data: initVal });
+                inOutDialog.bind();
 
                 var data = e.detail.data;
-                
-                function getInnerHTML(src, selector) {
-                    var target = src.querySelector(selector);
-                    if (target) {
-                        return target.innerHTML;
-                    } else {
-                        console.log('Error. No elements by selector: ' + selector + ' in ' + src);
-                        return '';
-                    }
-                }
-
-                //  чистим список на редактирование перед добавлением новых записей
-                var guest = document.querySelector('.book tbody tr#' + this.id);
-                if (!guest) {
-                    console.log('Error. No Id:' + this.id);
-                    return;
-                }
-
-                var val = {
-                    intent: gl.intent_edit,
-                    id: getInnerHTML(guest, '.person-id'),
-                    dayin: getInnerHTML(guest, '.person-dayin').substring(3),
-                    dayout: getInnerHTML(guest, '.person-dayout').substring(3),
-                    days: getInnerHTML(guest, '.person-days'),
-                    room: getInnerHTML(guest, '.person-room-num'),
-                    baseline: getInnerHTML(guest, '.person-baseline'),
-                    adjustment: getInnerHTML(guest, '.person-adjustment'),
-                    cost: getInnerHTML(guest, '.person-room-cost'),
-                    paid: getInnerHTML(guest, '.person-room-paid'),
-                    name: getInnerHTML(guest, '.person-name'),
-                    city: getInnerHTML(guest, '.person-city'),
-                    tel: getInnerHTML(guest, '.person-tel'),
-                    fn: getInnerHTML(guest, '.person-fn')
-                }
-
-                var month = gl.monthNames.indexOf(document.getElementById('month').value),
-                    year = document.getElementById('year').innerHTML;
-
-                var inOutDialog = new InOutDialog({
-                    flag: gl.intent_edit,
-                    period: {
-                        month: month,
-                        year: year
-                    },
-                    rooms: gl.rooms,
-                    buttons: {
-                        btnOk: function () {
-                            db.gl001.modify(inOutDialog.getVal());
-                            inOutDialog.unbind();
-                        },
-                        btnNo: function () {
-                            inOutDialog.unbind();
-                        }
-                    }
-                });
-                inOutDialog.bind();
+                data.intent = initVal.intent;
                 inOutDialog.setVal(val);
+
                 inOutDialog.show();
             },
 
-            datePick: function datePick(e) {
-                var year = document.getElementById('year'),
-                    month = document.getElementById('month');
+            inOutDialogSave: function inOutDialogSave(e) {
 
-                var newYear = e.detail.year,
-                    newMonth = e.detail.month;
-                
-                if (newYear < 1900) return;
+                switch (e.detail.intent) {
+                    case gl.intent_add:
+                        db.gl001.insert(e.detail);
+                        break;
 
-                //FIX: innerhtml memory leak
-                month.innerHTML = newMonth;
-                year.innerHTML = newYear;
-                db.gl001.select();
-                db.cf001.update();
+                    case gl.intent_upd:
+                        db.gl001.modify(e.detail);
+                        break;
+
+                    case gl.intent_del:
+                        db.gl001.delete(e.detail.id);
+                        break;
+
+                    default: break;
+                }
             },
 
             // predefined event listeners
@@ -316,10 +247,25 @@ class Calendar extends DataWrapper {
 
                 if (e.which == 2) return;
 
+                var data = {
+                        id: '',
+                        dayin: '',
+                        dayout: '',
+                        days: '',
+                        room: '',
+                        baseline: '',
+                        adjustment: '',
+                        cost: '',
+                        paid: '',
+                        name: '',
+                        city: '',
+                        tel: '',
+                        fn: ''
+                    },
+                    clList = e.target.classList,
+                    isAvailableBtn;
+
                 if (e.which == 3) {
-                    var clList = e.target.classList,
-                        id, room, dayin, dayout,
-                        isAvailableBtn;
 
                     if (clList.contains(gl.class_selected)) {
 
@@ -331,9 +277,10 @@ class Calendar extends DataWrapper {
                             begda = groupEl[0].id.split('-'),
                             endda = groupEl[groupEl.length - 1].id.split('-');
 
-                        dayin = begda[2] + '.' + begda[1];
-                        dayout = endda[2] + '.' + endda[1];
-                        room = (e.target.id).substring(2, 4);
+                        data.id = '-1';
+                        data.room = (e.target.id).substring(2, 4);
+                        data.dayin = begda[2] + '.' + begda[1];
+                        data.dayout = endda[2] + '.' + endda[1];
                         isAvailableBtn = true;
 
                     } else if (clList.contains(gl.class_redeemed) || clList.contains(gl.class_reserved)) {
@@ -341,36 +288,43 @@ class Calendar extends DataWrapper {
                         let filterId = function (el) {
                             return el.match(/^N\d+$/);
                         }
-                        id = e.target.className.split(' ').filter(filterId).toString();
+                        data.id = e.target.className.split(' ').filter(filterId).toString();
                         isAvailableBtn = false;
 
                     } else if (!clList) {
 
-                        if (e.target.closest('.book')) {
-                            id = e.target.closest('.book').querySelector('.book tbody .person-row').id;
-                            isAvailableBtn = false;
-                        } else {
-                            return;
-                        }
+                        var guest = e.target.closest('.book').querySelector('.book tbody');
+                        if (!guest) return;
+
+                        data.id = guest.querySelector('.person-id').value;
+                        data.dayin = guest.querySelector('.person-dayin').value.substring(3);
+                        data.dayout = guest.querySelector('.person-dayout').valuesubstring(3);
+                        data.days = guest.querySelector('.person-days').value;
+                        data.room = guest.querySelector('.person-room-num').value;
+                        data.baseline = guest.querySelector('.person-baseline').value;
+                        data.adjustment = guest.querySelector('.person-adjustment').value;
+                        data.cost = guest.querySelector('.person-room-cost').value;
+                        data.paid = guest.querySelector('.person-room-paid').value;
+                        data.name = guest.querySelector('.person-name').value;
+                        data.city = guest.querySelector('.person-city').value;
+                        data.tel = guest.querySelector('.person-tel').value;
+                        data.fn = guest.querySelector('.person-fn').value;
+
+                        isAvailableBtn = false;
 
                     } else {
                         return;
                     }
 
                     EventBus.dispatch(gl.events.rcmenu, {
-                        data: {
-                            id: id,
-                            room: room,
-                            dayin: dayin,
-                            dayout: dayout
-                        },
                         btn: {
                             upd: !isAvailableBtn,
                             del: !isAvailableBtn,
                             add: isAvailableBtn
                         },
                         x: e.pageX,
-                        y: e.pageY
+                        y: e.pageY,
+                        data: data
                     });
 
                     return;
@@ -672,9 +626,10 @@ class Calendar extends DataWrapper {
          */
         EventBus.register(gl.events.rcmenu, this._listeners.RCMenu);
         EventBus.register(gl.events.datePick, this._listeners.datePick);
-        EventBus.register(gl.events.addGuest, this._listeners.addGuest);
-        EventBus.register(gl.events.delGuest, this._listeners.delGuest);
-        EventBus.register(gl.events.updGuest, this._listeners.updGuest);
+        EventBus.register(gl.events.RCMItemAddGuest, this._listeners.RCMItemAddGuest);
+        EventBus.register(gl.events.RCMItemDelGuest, this._listeners.RCMItemDelGuest);
+        EventBus.register(gl.events.RCMItemUpdGuest, this._listeners.RCMItemUpdGuest);
+        EventBus.register(gl.events.inOutDialogSave, this._listeners.inOutDialogSave);
     }
 
 
