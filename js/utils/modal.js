@@ -20,7 +20,7 @@ class ConfirmDialog extends Dialog {
         this.Listeners = {
 
             ok: function (e) {
-                EventBus.dispatch(gl.events.inOutDialogSave, { data: this.id });
+                EventBus.dispatch(gl.events.inOutDialogSave, { data: this.Opts.data.id });
             },
 
             no: function (e) {
@@ -680,7 +680,7 @@ class PickCalendar extends Dialog {
             ok: function ok (e) {
                 var val = this.getVal();
                 this.unbind();
-                EventBus.dispatch(gl.events.datePick, { year: val.year, month: val.month });
+                EventBus.dispatch(gl.events.inOutDialogSave, { intent: this.Opts.data.intent, year: val.year, month: val.month });
 
             },
 
@@ -868,6 +868,10 @@ class RCMenu extends Dialog {
             add: function add (e) {
                 this.unbind();
                 EventBus.dispatch(gl.events.addGuest, { data: this.Opts.data });
+            },
+
+            lmc: function lmc(e) {
+                this.unbind();
             }
         }
     }
@@ -907,6 +911,8 @@ class RCMenu extends Dialog {
         div.setAttribute('id', 'rcmenu');
         div.appendChild(ul);
         document.body.appendChild(div);
+
+        EventBus.register(gl.events.lefClick, this.Listeners.lmc);
     }
 
     setVal () {}

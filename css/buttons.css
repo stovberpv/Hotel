@@ -1,5 +1,4 @@
-@import 'vars.css';
-
+/* @import 'vars.css'; */
 .btn {
     color: var(--c-btn-txt-nor-neu);
     font-size: var(--f-doc-ext);

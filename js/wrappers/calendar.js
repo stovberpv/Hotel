@@ -1,111 +1,19 @@
-/**
- * Группа работы с CSS классом позволяющим идентифицровать выделенные ячейки.
- * Формирование, Добавление, Удаление класса. Пересчет кол-ва ячеек в классе.
- * FIX: при переходе на новую строку начинать отсчет заново
- */
-const selGroup = {
-
-    /** 
-     * ID обрабатываемого класса 
-     */
-    classId: undefined,
-
-    /**
-     * Очистка ID текущего обрабатываемого класса
-     */
-    free: function () {
-
-        this.classId = undefined;
-    },
-
-    /**
-     * Формирование ID нового класса
-     */
-    gen: function () {
-
-        this.classId = 'sel-group-' + Math.ceil((Math.random() * 100000));
-    },
-
-    /**
-     * Добавление класса к объекту.
-     * Если ID класса не сформирован то перед добавление будет вызван метод формирующий ID класса
-     */
-    add: function (target) {
-
-        !this.classId && this.gen();
-        target.classList.add(this.classId);
-        this.enum(this.classId);
-    },
-
-    /**
-     * Поиск ID класса присвоенного объекту с последующим удалением и пересчетом оставшихся элементов 
-     * которым присвоей этот ID
-     */
-    del: function (target) {
-
-        if (target.className === '') return;
-        var classId = target.className.split(' ').filter(function (el) {
-            return el.match(/\bsel-group-\d+/);
-        }).toString();
-        if (classId !== '') {
-            var group = document.getElementsByClassName(classId);
-            //FIX: inner html memory leak
-            for (let i = group.length; i > 0; i--) {
-                if (group[0].id == target.id) {
-                    group[0].innerHTML = '';
-                    group[0].classList.remove(gl.class_selected);
-                    group[0].classList.remove(classId);
-                    break;
-                } else {
-                    group[0].innerHTML = '';
-                    group[0].classList.remove(gl.class_selected);
-                    group[0].classList.remove(classId);
-                }
-            }
-            target.classList.remove(classId);
-            target.innerHTML = '';
-            this.enum(classId);
-        }
-    },
-
-    /**
-     * Пересчет кол-ва объектов класса по ID класса 
-     */
-    enum: function (classId) {
-
-        var group = document.getElementsByClassName(classId);
-        for (let i = 0; i < group.length; i++) {
-            //FIX: inner html memory leak
-            group[i].innerHTML = (i + 1);
-        }
-    }
-}
-
 class Calendar extends DataWrapper {
 
     constructor() {
         super();
 
-        this._listeners = {
+        /** 
+         * ID обрабатываемого класса 
+         * FIX: при переходе на новую строку начинать отсчет заново
+         */
+        this.classId;
+
+        this.Listeners = {
 
             // external called events
 
-            datePick: function datePick(e) {
-                var year = document.getElementById('year'),
-                    month = document.getElementById('month');
-
-                var newYear = e.detail.year,
-                    newMonth = e.detail.month;
-
-                if (newYear < 1900) return;
-
-                //FIX: innerhtml memory leak
-                month.innerHTML = newMonth;
-                year.innerHTML = newYear;
-                db.gl001.select();
-                db.cf001.update();
-            },
-
+            //FIX: rename
             RCMenu: function RCMenu(e) {
 
                 if (!e.detail.EventBus) {
@@ -131,13 +39,15 @@ class Calendar extends DataWrapper {
             RCMItemAddGuest: function RCMItemAddGuest(e) {
 
                 var initVal = {
-                    intent = gl.intent_add,
-                    month = gl.monthNames.indexOf(document.getElementById('month').value),
-                    year = document.getElementById('year').value,
-                    rooms = gl.rooms
+                    intent: gl.intent_add,
+                    month: gl.monthNames.indexOf(document.getElementById('month').value),
+                    year: document.getElementById('year').value,
+                    rooms: gl.rooms
                 }
 
-                var inOutDialog = new InOutDialog({ data: initVal });
+                var inOutDialog = new InOutDialog({
+                    data: initVal
+                });
                 inOutDialog.bind();
 
                 var data = e.detail.data;
@@ -149,9 +59,15 @@ class Calendar extends DataWrapper {
 
             RCMItemDelGuest: function RCMItemDelGuest(e) {
 
-                var id = this.id.substring(1);
+                var initVal = {
+                    id: e.detail.data.id.substring(1),
+                }
 
-                var confirmDialog = new ConfirmDialog({ data: { id: id } });
+                var confirmDialog = new ConfirmDialog({
+                    data: {
+                        data: initVal
+                    }
+                });
                 confirmDialog.bind();
                 confirmDialog.show();
             },
@@ -159,13 +75,15 @@ class Calendar extends DataWrapper {
             RCMItemUpdGuest: function RCMItemUpdGuest(e) {
 
                 var initVal = {
-                    intent = gl.intent_upd,
-                    month = gl.monthNames.indexOf(document.getElementById('month').value),
-                    year = document.getElementById('year').value,
-                    rooms = gl.rooms
+                    intent: gl.intent_upd,
+                    month: gl.monthNames.indexOf(document.getElementById('month').value),
+                    year: document.getElementById('year').value,
+                    rooms: gl.rooms
                 }
-                
-                var inOutDialog = new InOutDialog({ data: initVal });
+
+                var inOutDialog = new InOutDialog({
+                    data: initVal
+                });
                 inOutDialog.bind();
 
                 var data = e.detail.data;
@@ -190,7 +108,17 @@ class Calendar extends DataWrapper {
                         db.gl001.delete(e.detail.id);
                         break;
 
-                    default: break;
+                    case gl.intent.selCalendar:
+                        if (e.detail.year < 1900) return;
+                        //FIX: innerhtml memory leak
+                        document.getElementById('month').innerHTML = e.detail.month;
+                        document.getElementById('year').innerHTML = e.detail.year;
+                        db.gl001.select();
+                        db.cf001.update();
+                        break;
+
+                    default:
+                        break;
                 }
             },
 
@@ -215,9 +143,15 @@ class Calendar extends DataWrapper {
 
                 var year = document.getElementById('year').innerHTML,
                     month = gl.monthNames.indexOf(document.getElementById('month').innerHTML),
-                    month = utils.overlay(month, '0', 2),
-                    pickCalendar = new PickCalendar();
+                    month = utils.overlay(month, '0', 2);
 
+                var initVal = {
+                    intent: gl.intent_add,
+                }
+
+                var pickCalendar = new PickCalendar({
+                    data: initVal
+                });
                 pickCalendar.bind();
                 pickCalendar.setVal({
                     year: year,
@@ -336,8 +270,8 @@ class Calendar extends DataWrapper {
                     e.target.classList.toggle(gl.class_selected);
                 }
                 gl.isSelected = e.target.classList.contains(gl.class_selected);
-                selGroup.del(this);
-                gl.isSelected ? selGroup.add(this) : selGroup.free();
+                SelectionGroup.del(e);
+                gl.isSelected ? SelectionGroup.add(e) : SelectionGroup.free();
 
                 // Переключения CSS класса опредляющего подсвеченный элемент
                 let ids = e.target.className.split(' ').filter(function (el) {
@@ -358,11 +292,11 @@ class Calendar extends DataWrapper {
                 // Выделение при зажатой мыши
                 if (gl.isMouseDown) {
                     if (e.target.classList.length == 0 || e.target.classList.contains(gl.class_selected)) {
-                        selGroup.del(this);
-                        gl.isSelected && selGroup.add(this);
+                        SelectionGroup.del(e);
+                        gl.isSelected && SelectionGroup.add(e);
                         e.target.classList.toggle(gl.class_selected, gl.isSelected);
                     } else {
-                        selGroup.free();
+                        SelectionGroup.free();
                     }
                 }
 
@@ -381,7 +315,7 @@ class Calendar extends DataWrapper {
                     }
                     document.querySelector('.book > tbody > tr#' + ids[i]).classList.add(ids[i] + '-' + gl.class_view);
                 }
-                let id = this.id.substring(5);
+                let id = e.target.id.substring(5);
                 document.querySelector('#calendar thead tr:nth-child(2) th#D' + id).classList.add(gl.class_view);
             },
 
@@ -402,22 +336,22 @@ class Calendar extends DataWrapper {
                     }
                     document.querySelector('.book > tbody > tr#' + ids[i]).classList.remove(ids[i] + '-' + gl.class_view);
                 }
-                let id = this.id.substring(5);
+                let id = e.target.id.substring(5);
                 document.querySelector('#calendar thead tr:nth-child(2) th#D' + id).classList.remove(gl.class_view);
             },
 
             calendarTDmouseUp: function mouseup(e) {
 
-                selGroup.free();
+                SelectionGroup.free();
                 gl.isMouseDown = false;
             },
 
             calendarTHmouseDown: function mousedown(e) {
 
-                this.classList.toggle(gl.class_viewfix);
-                var book = document.querySelector('#' + this.parentNode.id + '-book');
+                e.target.classList.toggle(gl.class_viewfix);
+                var book = document.querySelector('#' + e.target.parentNode.id + '-book');
                 if (!book) {
-                    console.log('Error. No book with id: ' + this.parentNode.id + '-book');
+                    console.log('Error. No book with id: ' + e.target.parentNode.id + '-book');
                     return;
                 }
 
@@ -438,165 +372,101 @@ class Calendar extends DataWrapper {
                     return;
                 };
 
-                var that = this;
-                if (!that.closest('.inner-book')) {
-                    var id = that.id;
-                    that.classList.toggle(gl.class_viewfix);
-                    that.classList.toggle(gl.class_view);
-                    document.querySelectorAll('#calendar > tbody > tr > td.' + id).forEach(function (el) {
-                        if (that.classList.contains(gl.class_viewfix)) {
-                            el.classList.add(id + '-' + gl.class_viewfix);
-                            el.classList.remove(id + '-' + gl.class_view);
+                if (!e.target.closest('.inner-book')) {
+                    var personRow = e.target.querySelector('.person-row'); //FIX: ???
+                    personRow.classList.toggle(gl.class_viewfix);
+                    personRow.classList.toggle(gl.class_view);
+                    document.querySelectorAll('#calendar > tbody > tr > td.' + personRow.id).forEach(function (el) {
+                        if (that.classList.contains(gl.class_viewfix)) {//FIX: ???
+                            el.classList.add(id + '-' + gl.class_viewfix);//FIX: ???
+                            el.classList.remove(id + '-' + gl.class_view);//FIX: ???
                         } else {
-                            el.classList.add(id + '-' + gl.class_view);
-                            el.classList.remove(id + '-' + gl.class_viewfix);
+                            el.classList.add(id + '-' + gl.class_view);//FIX: ???
+                            el.classList.remove(id + '-' + gl.class_viewfix);//FIX: ???
                         }
                     });
                 }
             },
 
             bookTRmouseOver: function mouseover(e) {
-
-                if (!this.closest('.inner-book')) {
-                    var id = this.id;
-                    if (!this.classList.contains(gl.class_viewfix)) {
-                        this.classList.add(gl.class_view);
-                        document.querySelectorAll('#calendar > tbody > tr > td.' + id).forEach(function (el) {
-                            el.classList.add(id + '-' + gl.class_view);
+                //FIX: разобраться почему выстреливает на book, а в e передается calendar tbody tr td 
+                if (!e.target.closest('.inner-book')) {
+                    var personRow = e.target.querySelector('.person-row');
+                    if (!personRow.classList.contains(gl.class_viewfix)) {
+                        personRow.classList.add(gl.class_view);
+                        document.querySelectorAll('#calendar > tbody > tr > td.' + personRow.id).forEach(function (el) {
+                            el.classList.add(personRow.id + '-' + gl.class_view);
                         });
                     }
                 }
             },
 
             bookTRmouseOut: function mouseout(e) {
-
-                if (!this.closest('.inner-book')) {
-                    var id = this.id;
-                    if (!this.classList.contains(gl.class_viewfix)) {
-                        this.classList.remove(gl.class_view);
+                //FIX: разобраться почему выстреливает на book, а в e передается calendar tbody tr td 
+                if (!e.target.closest('.inner-book')) {
+                    var id = e.target.querySelector('.person-row').id;
+                    if (!e.target.classList.contains(gl.class_viewfix)) {
+                        e.target.classList.remove(gl.class_view);
                         document.querySelectorAll('#calendar > tbody > tr > td.' + id).forEach(function (el) {
-                            el.classList.remove(id + '-' + gl.class_view);
+                            el.classList.remove(personRow.id + '-' + gl.class_view);
                         });
                     }
                 }
             },
 
-            //
-
-            ajaxInitialDataSuccess: function (data) {
-                if (!data.status) {
-                    console.log(data.msg);
-                } else {
-                    data.data.sort(function (a, b) {
-                        if (a.id > b.id) {
-                            return 1;
-                        } else if (a.id < b.id) {
-                            return -1;
-                        } else {
-                            return 0;
-                        }
-                    });
-                    //FIX: innerHTML memory leak
-                    document.getElementById('year').innerHTML = data.year;
-                    gl.rooms = data.rooms;
-
-                    setHeader(data.year, data.month);
-                    addEntry(data.year, data.month, data.data);
+            ajax: {
+                success: function success(e) {
+                    EventBus.unregister(gl.events.ajax.calendar.init.Success, success);
+                    var data = e.detail.data;
+                    if (data.status) {
+                        this._setData(data);
+                        this.init();
+                    } else {
+                        console.log(data.msg)
+                    };
                 }
-            },
-
-            ajaxInitialDataError: function (xhr, textStatus, errorThrown) {
-                console.log(textStatus);
-                console.log(errorThrown);
             }
         }
     }
 
     bind(target) {
 
-        var label, span, td, tr, tbody, thead, table;
-        if (true) {
-            table = document.createElement('table');
-            table.setAttribute('id', 'calendar');
-            table.classList.add('my-table');
-            if (true) {
-                thead = document.createElement('thead');
-                if (true) {
-                    tr = document.createElement('tr');
-                    tr.setAttribute('id', 'calendar-row-buttons');
-                    if (true) {
-                        td = document.createElement('td');
-                        if (true) {
-                            table = document.createElement('table');
-                            if (true) {
-                                tbody = document.createElement('tbody');
-                                if (true) {
-                                    tr = document.createElement('tr');
-                                    if (true) {
-                                        td = document.createElement('td');
-                                        if (true) {
-                                            span = document.createElement('span');
-                                            span.setAttribute('id', 'button-prev-month');
-                                            span.classList.add('month-button');
-                                            span.addEventListener('click', this._listeners.prevMonth);
-                                            td.appendChild(span);
-                                        }
-                                        tr.appendChild(td);
-                                    }
-                                    if (true) {
-                                        td = document.createElement('td');
-                                        if (true) {
-                                            span = document.createElement('span');
-                                            span.setAttribute('id', 'button-pick-calendar');
-                                            span.addEventListener('click', this._listeners.pickCalendar);
-                                            setListener('click', span);
+        var tree =
+            [{ tag: 'table', id: 'calendar', class: 'my-table' },
+                [{ tag: 'thead' },
+                    [{ tag: 'tr', id: 'calendar-row-buttons' },
+                        [{tag: 'td'},
+                            [{ tag: 'table' },
+                                [{ tag: 'tbody' },
+                                    [{ tag: 'tr' },
+                                        [{ tag: 'td' },
+                                            { tag: 'span', id: 'button-prev-month', class: 'month-button', event: { name: 'click', fn: this.Listeners.prevMonth } },
+                                        ],
+                                        [{ tag: 'td' },
+                                            [{ tag: 'span', id: 'button-pick-calendar', event: { name: 'click', fn: this.Listeners.pickCalendar } },
+                                                { tag: 'label', id: 'month' },
+                                                { tag: 'label', id: 'year' },
+                                            ],
+                                        ],
+                                        [{ tag: 'td' },
+                                            { tag: 'span', id: 'button-next-month', class: 'month-button', event: { name: 'click', fn: this.Listeners.nextMonth } },
+                                        ],
+                                    ],
+                                ],
+                            ],    
+                        ],
+                    ],
+                    [{ tag: 'tr', id: 'calendar-row-days' },
+                        { tag: 'td' },
+                    ],
+                ],
+                [{ tag: 'tbody' },
+                ],
+            ];
 
-                                            label = document.createElement('label');
-                                            label.setAttribute('id', 'month');
-                                            span.appendChild(label);
-
-                                            label = document.createElement('label');
-                                            label.setAttribute('id', 'year');
-                                            span.appendChild(label);
-
-                                            td.appendChild(span);
-                                        }
-                                        tr.appendChild(td);
-                                    }
-                                    if (true) {
-                                        td = document.createElement('td');
-                                        if (true) {
-                                            span = document.createElement('span');
-                                            span.setAttribute('id', 'button-next-month');
-                                            span.classList.add('month-button');
-                                            span.addEventListener('click', this._listeners.nextMonth);
-                                            td.appendChild(span);
-                                        }
-                                        tr.appendChild(td);
-                                    }
-                                    tbody.appendChild(tr);
-                                }
-                                table.appendChild(tbody);
-                            }
-                            td.appendChild(table);
-                        }
-                        tr.appendChild(td);
-                    }
-                    thead.appendChild(tr);
-                }
-                if (true) {
-                    tr = document.createElement('tr');
-                    tr.setAttribute('id', 'calendar-row-days');
-                    thead.appendChild(tr);
-                }
-                table.appendChild(thead);
-            }
-            if (true) {
-                tbody = document.createElement('tbody');
-                table.appendChild(tbody);
-            }
-            target.appendChild(table);
-        }
+        tree = new DOMTree(tree).cultivate();
+        if (tree) target.appendChild(tree);
+        else console.log('tree is ' + tree);
 
         /** 
          * Регистрация отложенных событий, которые должны быть вызваны на элементах, 
@@ -604,140 +474,57 @@ class Calendar extends DataWrapper {
          */
         var qsParent, qsChild, qsParentExcl;
 
-        qsParent = '#calendar > tbody';
-        qsChild = 'td', qsParentExcl = '.book-row';
-        _setDelegate('', 'mousedown', qsParent, qsChild, qsParentExcl, this._listeners.calendarTDmouseDown);
-        _setDelegate('', 'mouseover', qsParent, qsChild, qsParentExcl, this._listeners.calendarTDmouseOver);
-        _setDelegate('', 'mouseout', qsParent, qsChild, qsParentExcl, this._listeners.calendarTDmouseOut);
-        _setDelegate('', 'mouseup', qsParent, qsChild, qsParentExcl, this._listeners.calendarTDmouseUp);
+        qsParent = '#calendar > tbody'; qsChild = 'td', qsParentExcl = '.book-row';
+        this._setDelegate('mousedown', qsParent, qsChild, qsParentExcl, this.Listeners.calendarTDmouseDown);
+        this._setDelegate('mouseover', qsParent, qsChild, qsParentExcl, this.Listeners.calendarTDmouseOver);
+        this._setDelegate('mouseout', qsParent, qsChild, qsParentExcl, this.Listeners.calendarTDmouseOut);
+        this._setDelegate('mouseup', qsParent, qsChild, qsParentExcl, this.Listeners.calendarTDmouseUp);
 
-        qsParent = '#calendar > tbody';
-        qsChild = 'tr > th', qsParentExcl = '';
-        _setDelegate('', 'mousedown', qsParent, qsChild, qsParentExcl, this._listeners.calendarTHmouseDown);
+        qsParent = '#calendar > tbody'; qsChild = 'tr > th', qsParentExcl = '';
+        this._setDelegate('mousedown', qsParent, qsChild, qsParentExcl, this.Listeners.calendarTHmouseDown);
 
-        qsParent = '#calendar > tbody';
-        qsChild = '.book > tbody > tr', qsParentExcl = '';
-        _setDelegate('', 'mousedown', qsParent, qsChild, qsParentExcl, this._listeners.bookTRmouseDown);
-        _setDelegate('', 'mouseover', qsParent, qsChild, qsParentExcl, this._listeners.bookTRmouseOver);
-        _setDelegate('', 'mouseout', qsParent, qsChild, qsParentExcl, this._listeners.bookTRmouseOut);
+        qsParent = '#calendar > tbody'; qsChild = '.book', qsParentExcl = '';
+        this._setDelegate('mousedown', qsParent, qsChild, qsParentExcl, this.Listeners.bookTRmouseDown);
+        this._setDelegate('mouseover', qsParent, qsChild, qsParentExcl, this.Listeners.bookTRmouseOver);
+        this._setDelegate('mouseout', qsParent, qsChild, qsParentExcl, this.Listeners.bookTRmouseOut);
 
         /** 
          * Регистрация событий которые будут вызываться асинхронно
          */
-        EventBus.register(gl.events.rcmenu, this._listeners.RCMenu);
-        EventBus.register(gl.events.datePick, this._listeners.datePick);
-        EventBus.register(gl.events.RCMItemAddGuest, this._listeners.RCMItemAddGuest);
-        EventBus.register(gl.events.RCMItemDelGuest, this._listeners.RCMItemDelGuest);
-        EventBus.register(gl.events.RCMItemUpdGuest, this._listeners.RCMItemUpdGuest);
-        EventBus.register(gl.events.inOutDialogSave, this._listeners.inOutDialogSave);
+        //FIX: add unregister
+        EventBus.register(gl.events.calendar.DatePick, this.Listeners.datePick);
+        EventBus.register(gl.events.calendar.DialogSave, this.Listeners.inOutDialogSave);
+        EventBus.register(gl.events.rcMenu.RCMenu, this.Listeners.RCMenu);
+        EventBus.register(gl.events.rcMenu.RCMItemAddGuest, this.Listeners.RCMItemAddGuest);
+        EventBus.register(gl.events.rcMenu.RCMItemDelGuest, this.Listeners.RCMItemDelGuest);
+        EventBus.register(gl.events.rcMenu.RCMItemUpdGuest, this.Listeners.RCMItemUpdGuest);
     }
-
 
     init() {
-        //FIX: sort after select
-        $.ajax({
-            url: '../db/init.php',
-            dataType: 'json',
-            success: this._listeners.ajaxInitialDataSuccess(data),
-            error: this._listeners.ajaxInitialDataError(xhr, textStatus, errorThrown)
-        });
-    }
 
-    _setHeader(year, month) {
+        var data = this._getData();
 
-        var monthName = utils.getMonthName(month),
-            days = new Date(year, month, 0).getDate();
+        if (!data) {
+            EventBus.register(gl.events.ajax.calendar.init.Success, this.Listeners.ajax.success.bind(this));
 
-        // thead begin
-        //  --- чистим
-        //  --- --- тело
-        document.querySelector('#calendar > tbody').innerHTML = "";
-        // дни месяца
-        var trdays = document.getElementById('calendar-row-days'),
-            childs = trdays.children.length;
-        for (let i = 0; i < childs; i++) {
-            try {
-                trdays.deleteCell(0);
-            } catch (e) {}
-        }
-        //  --- --- название месяца
-        document.getElementById('month').innerHTML = "";
-        //  --- --- год
-        document.getElementById('year').innerHTML = "";
-
-        //  --- добавляем
-        //  --- --- год
-        document.getElementById('year').innerHTML = year;
-        //  --- --- название месяца
-        var td = document.getElementById('calendar-row-buttons').getElementsByTagName('td')[0];
-        td.setAttribute('colspan', days + 1);
-        document.getElementById('month').innerHTML = monthName;
-        document.getElementById('month').value = monthName;
-        //  --- --- дни месяца
-        for (let i = 0; i <= days; i++) {
-            var th = document.createElement('th');
-            if (i == 0) {
-                th.classList.add('blank-cell');
-            } else {
-                let day = utils.overlay(i, '0', 2),
-                    date = year + '-' + utils.overlay(month, '0', 2) + '-' + day;
-                th.setAttribute('id', 'D' + date)
-                th.appendChild(document.createTextNode(i));
-            }
-            trdays.appendChild(th);
-        }
-
-        //  tbody begin
-        var tbody = document.querySelector('#calendar > tbody');
-        for (let i = 0; i < gl.rooms.length; i++) {
-            var room = gl.rooms[i].room,
-                tr = document.createElement('tr');
-            tr.setAttribute('id', 'R' + room);
-            for (let j = 0; j < days + 1; j++) {
-                var node;
-                if (0 == j) {
-                    node = document.createElement('th');
-                    node.appendChild(document.createTextNode(room));
-                } else {
-                    let day = utils.overlay(j, '0', 2),
-                        date = year + '-' + utils.overlay(month, '0', 2) + '-' + day;
-                    node = document.createElement('td');
-                    node.setAttribute('id', 'RD' + room + '_' + date);
-                    node.appendChild(document.createTextNode(""));
+            $.ajax({
+                url: '../db/init.php',
+                dataType: 'json',
+                success: function (data) {
+                    EventBus.dispatch(gl.events.ajax.calendar.init.Success, data);
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.log(textStatus);
+                    console.log(errorThrown);
                 }
-                tr.appendChild(node);
-            }
-            tbody.append(tr);
+            });
+
+            return;
         }
-    }
-
-    _isEmptyBook(room) {
-        return !document.querySelector('#R' + room + '-book tbody').childElementCount;
-    }
-
-    _setDelegate(eventName, qsParent, qsChild, qsClosestExcl, callback) {
-
-        const delegateListener = function delegateListener(e) {
-
-            var childs = this.parent.querySelectorAll(this.qsChild);
-            for (let i = 0, l = childs.length; i < l; i++) {
-                if (!qsClosestExcl) {
-                    if (childs[i].closest(this.qsClosestExcl)) continue;
-                }
-                var el = e.target;
-                while (el && el !== this.parent) {
-                    if (el === childs[i]) return callback.call(childs[i], e);
-                    el = el.parentNode;
-                }
-            }
-        }
-
-        var parent = document.querySelector(qsParent);
-        parent.addEventListener(eventName, delegateListener.bind({
-            parent: parent,
-            qsChild: qsChild,
-            qsClosestExcl: qsClosestExcl
-        }));
+        
+        gl.rooms = data.rooms;
+        this._setHeader(data.year, data.month);
+        this.addEntry(data.year, data.month, data.data);
     }
 
     addEntry(year, month, list) {
@@ -1030,5 +817,184 @@ class Calendar extends DataWrapper {
             prevRow = document.querySelector('#R' + newData[0].room + '-book tbody tr#N' + pos[i].id);
         }
         // book sort end
+    }
+
+    _setData(data) {
+        this.data = data;
+    }
+
+    _getData() {
+        return this.data;
+    }
+
+    _setHeader(year, month) {
+
+        var monthName = utils.getMonthName(month),
+            days = new Date(year, month, 0).getDate();
+
+        // thead begin
+        //  --- чистим
+        //  --- --- тело
+        document.querySelector('#calendar > tbody').innerHTML = "";
+        // дни месяца
+        var trdays = document.getElementById('calendar-row-days'),
+            childs = trdays.children.length;
+        for (let i = 0; i < childs; i++) {
+            try {
+                trdays.deleteCell(0);
+            } catch (e) {}
+        }
+        //  --- --- название месяца
+        document.getElementById('month').innerHTML = "";
+        //  --- --- год
+        document.getElementById('year').innerHTML = "";
+
+        //  --- добавляем
+        //  --- --- год
+        document.getElementById('year').innerHTML = year;
+        //  --- --- название месяца
+        var td = document.getElementById('calendar-row-buttons').getElementsByTagName('td')[0];
+        td.setAttribute('colspan', days + 1);
+        document.getElementById('month').innerHTML = monthName;
+        document.getElementById('month').value = monthName;
+        //  --- --- дни месяца
+        for (let i = 0; i <= days; i++) {
+            var th = document.createElement('th');
+            if (i == 0) {
+                th.classList.add('blank-cell');
+            } else {
+                let day = utils.overlay(i, '0', 2),
+                    date = year + '-' + utils.overlay(month, '0', 2) + '-' + day;
+                th.setAttribute('id', 'D' + date)
+                th.appendChild(document.createTextNode(i));
+            }
+            trdays.appendChild(th);
+        }
+
+        //  tbody begin
+        var tbody = document.querySelector('#calendar > tbody');
+        for (let i = 0; i < gl.rooms.length; i++) {
+            var room = gl.rooms[i].room,
+                tr = document.createElement('tr');
+            tr.setAttribute('id', 'R' + room);
+            for (let j = 0; j < days + 1; j++) {
+                var node;
+                if (0 == j) {
+                    node = document.createElement('th');
+                    node.appendChild(document.createTextNode(room));
+                } else {
+                    let day = utils.overlay(j, '0', 2),
+                        date = year + '-' + utils.overlay(month, '0', 2) + '-' + day;
+                    node = document.createElement('td');
+                    node.setAttribute('id', 'RD' + room + '_' + date);
+                    node.appendChild(document.createTextNode(""));
+                }
+                tr.appendChild(node);
+            }
+            tbody.append(tr);
+        }
+    }
+
+    _isEmptyBook(room) {
+        return !document.querySelector('#R' + room + '-book tbody').childElementCount;
+    }
+
+    _setDelegate(eventName, qsParent, qsChild, qsClosestExcl, callback) {
+
+        var parent = document.querySelector(qsParent),
+            that = {
+                parent: parent,
+                qsParent: qsParent,
+                qsChild: qsChild,
+                qsClosestExcl: qsClosestExcl,
+                callback: callback
+            };
+
+        parent.addEventListener(eventName, function delegateListener(e) {
+            var target = e.target;
+            if (this.qsClosestExcl) if (target.closest(this.qsClosestExcl)) return;
+            var childs = this.parent.querySelectorAll(this.qsChild);
+            if (Array.from(childs).indexOf(target) != -1) return this.callback.call(e, e);
+            for (var child of childs) {
+                if (child.contains(target)) return this.callback.call(e, e);
+            }
+        }.bind(that));
+    }
+}
+
+class SelectionGroup {
+
+    constructor() {
+        this.classId = undefined;
+    }
+    
+    /**
+     * Очистка ID текущего обрабатываемого класса
+     */
+    static free() {
+
+        this.classId = undefined;
+    }
+
+    /**
+     * Формирование ID нового класса
+     */
+    static gen() {
+
+        this.classId = 'sel-group-' + Math.ceil((Math.random() * 100000));
+    }
+
+    /**
+     * Добавление класса к объекту.
+     * Если ID класса не сформирован то перед добавление будет вызван метод формирующий ID класса
+     */
+    static add(target) {
+
+        !this.classId && this.gen();
+        target.classList.add(this.classId);
+        this.enum(this.classId);
+    }
+
+    /**
+     * Поиск ID класса присвоенного объекту с последующим удалением и пересчетом оставшихся элементов 
+     * которым присвоей этот ID
+     */
+    static del(target) {
+
+        if (target.className === '') return;
+        var classId = target.className.split(' ').filter(function (el) {
+            return el.match(/\bsel-group-\d+/);
+        }).toString();
+        if (classId !== '') {
+            var group = document.getElementsByClassName(classId);
+            //FIX: inner html memory leak
+            for (let i = group.length; i > 0; i--) {
+                if (group[0].id == target.id) {
+                    group[0].innerHTML = '';
+                    group[0].classList.remove(gl.class_selected);
+                    group[0].classList.remove(classId);
+                    break;
+                } else {
+                    group[0].innerHTML = '';
+                    group[0].classList.remove(gl.class_selected);
+                    group[0].classList.remove(classId);
+                }
+            }
+            target.classList.remove(classId);
+            target.innerHTML = '';
+            this.enum(classId);
+        }
+    }
+
+    /**
+     * Пересчет кол-ва объектов класса по ID класса 
+     */
+    static enum(classId) {
+
+        var group = document.getElementsByClassName(classId);
+        for (let i = 0; i < group.length; i++) {
+            //FIX: inner html memory leak
+            group[i].innerHTML = (i + 1);
+        }
     }
 }

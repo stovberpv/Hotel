@@ -58,12 +58,25 @@ const gl = {
     isMouseDown: false,
     isSelected: false,
 
+    //FIX: rename it
     events: {
-        datePick: 'calendar-pick-new-date',
-        RCMenu: 'rcmenu-in-calendar',
-        RCMItemAddGuest: 'rcitem-add-guest',
-        RCMItemDelGuest: 'rcitem-del-guest',
-        RCMItemUpdGuest: 'rcitem-upd-guest',
-        inOutDialogSave: 'inout-dialog-ok-button'
+        calendar: {
+            DatePick: 'C-DP',
+            DialogSave: 'inout-dialog-ok-button',
+        },
+        rcMenu: {
+            RCMenu: 'rcmenu-in-calendar',
+            RCMItemAddGuest: 'rcitem-add-guest',
+            RCMItemDelGuest: 'rcitem-del-guest',
+            RCMItemUpdGuest: 'rcitem-upd-guest',
+        },
+        lefClick: 'left-mouse-clicked',
+        ajax: {
+            calendar: {
+                init: {
+                    Success:'ACI-success'
+                }
+            }
+        }
     }
 }

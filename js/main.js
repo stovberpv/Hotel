@@ -196,10 +196,9 @@ const listeners = {
      */
     windowClick: function (e) {
 
-        if (gl.rcmenu != undefined) {
-            gl.rcmenu.unbind();
-            gl.rcmenu = undefined;
-        }
+        EventBus.dispatch(gl.events.lefClick);
+        // var rcmenu = document.getElementById('rcmenu');
+        // if (rcmenu) rcmenu.unbind();
     },
 
     /**

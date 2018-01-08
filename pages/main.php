@@ -12,7 +12,7 @@
     #
     $host      = $_SERVER['HTTP_HOST'];
     $uri       = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
-    $loginPage = 'Location: http://' . $host . $uri . '/pages/login.html';
+    $loginPage = 'Location: http://' . $host . $uri . '/pages/login.php';
     #
     # 
     #
@@ -148,6 +148,7 @@
         <div id='vc-dw-6' class='vc-data-wrapper'></div>
     </div>
     
+    <script type="text/javascript" src="/js/utils/createDomTree.js"></script>
     <script type="text/javascript" src="/js/utils/date.format.js"></script>
     <script type="text/javascript" src="/js/utils/jquery.min.js"></script>
     <script type='text/javascript' src='/js/utils/eventbus.js'></script>
