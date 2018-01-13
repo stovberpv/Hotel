@@ -22,6 +22,8 @@ class DOMTree {
                         case 'style':
                         case 'required':
                         case 'readonly':
+                        case 'rowspan':
+                        case 'colspan':    
                             el.setAttribute(key, val);
                             break;
 
@@ -34,11 +36,18 @@ class DOMTree {
                         case 'event':
                             let ev = twig[key];
                             if (ev.bind) ev.fn.bind(ev.bind);
-                            el.addEventListener(ev.name, ev.callback);
+                            el.addEventListener(ev.name, ev.fn);
                             break;
 
                         case 'textNode':
                             el.appendChild(document.createTextNode(val));
+                            break;
+                            
+                        case 'attr':
+                            for (let attr in val) {
+                                const attrVal = val[attr];
+                                el.setAttribute(attr, attrVal);
+                            }
                             break;
 
                         default:

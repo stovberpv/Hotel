@@ -95,84 +95,7 @@ class Calendar extends DataWrapper {
 
             inOutDialogSave: function inOutDialogSave(e) {
 
-                switch (e.detail.intent) {
-                    case gl.intent_add:
-                        db.gl001.insert(e.detail);
-                        break;
-
-                    case gl.intent_upd:
-                        db.gl001.modify(e.detail);
-                        break;
-
-                    case gl.intent_del:
-                        db.gl001.delete(e.detail.id);
-                        break;
-
-                    case gl.intent.selCalendar:
-                        if (e.detail.year < 1900) return;
-                        //FIX: innerhtml memory leak
-                        document.getElementById('month').innerHTML = e.detail.month;
-                        document.getElementById('year').innerHTML = e.detail.year;
-                        db.gl001.select();
-                        db.cf001.update();
-                        break;
-
-                    default:
-                        break;
-                }
-            },
-
-            // predefined event listeners
-
-            prevMonth: function prevMonth(e) {
-
-                var month = document.getElementById('month'),
-                    monthNum = gl.monthNames.indexOf(month.innerHTML);
-                if (monthNum > 1) {
-                    monthNum--;
-                } else {
-                    monthNum = 12;
-                }
-                var monthName = gl.monthNames[monthNum];
-                //FIX: innerhtml memory leak
-                month.innerHTML = monthName;
-                db.gl001.select();
-            },
-
-            pickCalendar: function pickCalendar(e) {
-
-                var year = document.getElementById('year').innerHTML,
-                    month = gl.monthNames.indexOf(document.getElementById('month').innerHTML),
-                    month = utils.overlay(month, '0', 2);
-
-                var initVal = {
-                    intent: gl.intent_add,
-                }
-
-                var pickCalendar = new PickCalendar({
-                    data: initVal
-                });
-                pickCalendar.bind();
-                pickCalendar.setVal({
-                    year: year,
-                    month: month
-                });
-                pickCalendar.show();
-            },
-
-            nextMonth: function nextMonth(e) {
-
-                var month = document.getElementById('month'),
-                    monthNum = gl.monthNames.indexOf(month.innerHTML);
-                if (monthNum > 11) {
-                    monthNum = 1;
-                } else {
-                    monthNum++;
-                }
-                var monthName = gl.monthNames[monthNum];
-                //FIX: innerhtml memory leak
-                month.innerHTML = monthName;
-                db.gl001.select();
+                
             },
 
             // delegate event listeners
@@ -389,9 +312,9 @@ class Calendar extends DataWrapper {
             },
 
             bookTRmouseOver: function mouseover(e) {
-                //FIX: разобраться почему выстреливает на book, а в e передается calendar tbody tr td 
-                if (!e.target.closest('.inner-book')) {
-                    var personRow = e.target.querySelector('.person-row');
+                var innerBook = e.target.closest('.book');
+                if (innerBook) {
+                    var personRow = innerBook.querySelector('.person-row');
                     if (!personRow.classList.contains(gl.class_viewfix)) {
                         personRow.classList.add(gl.class_view);
                         document.querySelectorAll('#calendar > tbody > tr > td.' + personRow.id).forEach(function (el) {
@@ -402,28 +325,151 @@ class Calendar extends DataWrapper {
             },
 
             bookTRmouseOut: function mouseout(e) {
-                //FIX: разобраться почему выстреливает на book, а в e передается calendar tbody tr td 
-                if (!e.target.closest('.inner-book')) {
-                    var id = e.target.querySelector('.person-row').id;
-                    if (!e.target.classList.contains(gl.class_viewfix)) {
-                        e.target.classList.remove(gl.class_view);
-                        document.querySelectorAll('#calendar > tbody > tr > td.' + id).forEach(function (el) {
+                var innerBook = e.target.closest('.book');
+                if (innerBook) {
+                    var personRow = innerBook.querySelector('.person-row');
+                    if (!personRow.classList.contains(gl.class_viewfix)) {
+                        personRow.classList.remove(gl.class_view);
+                        document.querySelectorAll('#calendar > tbody > tr > td.' + personRow.id).forEach(function (el) {
                             el.classList.remove(personRow.id + '-' + gl.class_view);
                         });
                     }
                 }
             },
 
-            ajax: {
-                success: function success(e) {
-                    EventBus.unregister(gl.events.ajax.calendar.init.Success, success);
-                    var data = e.detail.data;
-                    if (data.status) {
-                        this._setData(data);
-                        this.init();
-                    } else {
-                        console.log(data.msg)
-                    };
+            async: {
+
+                initialization: {
+
+                    success: function success(e) {
+
+                        EventBus.unregister(gl.events.calendar.async.initialization.Success, success);
+                        var data = e.detail.data;
+                        if (data.status) {
+                            this._setData(data);
+                            this.init();
+                        } else {
+                            console.log(data.msg)
+                        };
+                    },
+                    
+                    error: function error(e) {
+
+                    }
+                },
+
+                month: {
+
+                    prev: function prevMonth(e) {
+
+                        function onSuccess(data) {
+                            if (data.status) {
+                                this._setYear(data.year);
+                                this._setMonth(data.month);
+                                this._prepare(data.year, data.month);
+                                this.addEntry(data.year, data.month, data.data);
+                            } else {
+                                console.log(data.msg)
+                            };
+                        }
+
+                        function onError(xhr, textStatus, errorThrown) {
+                            console.log(textStatus);
+                            console.log(errorThrown);
+                        }
+
+                        var monthNum = this._getMonth().num;
+                        monthNum > 1 ? monthNum-- : monthNum = 12;
+                        
+                        var newMonth = gl.monthNames[monthNum];
+                        db.gl001.select(this._getYear(), newMonth, onSuccess.bind(this), onError);
+                    },
+
+                    next: function nextMonth(e) {
+
+                        function onSuccess(data) {
+                            if (data.status) {
+                                this._setYear(data.year);
+                                this._setMonth(data.month);
+                                this._prepare(data.year, data.month);
+                                this.addEntry(data.year, data.month, data.data);
+                            } else {
+                                console.log(data.msg)
+                            };
+                        }
+
+                        function onError(xhr, textStatus, errorThrown) {
+                            console.log(textStatus);
+                            console.log(errorThrown);
+                        }
+
+                        var monthNum = this._getMonth().num;
+                        monthNum > 11 ? monthNum = 1 : monthNum++;
+                        
+                        var newMonth = gl.monthNames[monthNum];
+                        db.gl001.select(this._getYear(), newMonth, onSuccess.bind(this), onError);
+                    }
+                },
+
+                pickCalendar: function pickCalendar(e) {
+
+                    var pickCalendar = new PickCalendar({
+                        data: {
+                            intent: gl.intent_add,
+                            buttons: {
+                                ok: btnOk.bind(this)
+                            }
+                        },
+                    });
+                    pickCalendar.bind();
+                    pickCalendar.setVal({
+                        year: this._getYear(),
+                        month: this._getMonth().num
+                    });
+                    pickCalendar.show();    
+
+                    function btnOk(data) {
+
+                        switch (data.intent) {
+                            case gl.intent_add:
+                                db.gl001.insert(data, glInsertSuccess, glInsertError);
+                                break;
+        
+                            case gl.intent_upd:
+                                db.gl001.update(data, glUpdateSuccess, glUpdateError);
+                                break;
+        
+                            case gl.intent_del:
+                                db.gl001.delete(data.id, glDeleteSuccess, glDeleteError);
+                                break;
+        
+                            case gl.intent.selCalendar:
+                                if (data.year < 1900) return;
+                                this._setYear(data.year);
+                                this._setMonth(data.month);
+                                db.gl001.select(glSelectSuccess, glSelectError);
+                                db.cf001.update(cfUpdateSuccess, cfUpdateError);
+                                break;
+        
+                            default:
+                                break;
+                        }
+
+                        function glInsertSuccess(data) { }
+                        function glInsertError(xhr, textStatus, errorThrown) { }
+
+                        function glUpdateSuccess(data) { }
+                        function glUpdateError(xhr, textStatus, errorThrown) { }
+
+                        function glDeleteSuccess(data) { }
+                        function glDeleteError(xhr, textStatus, errorThrown) { }
+
+                        function glSelectSuccess(data) { }
+                        function glSelectError(xhr, textStatus, errorThrown) { }
+
+                        function cfUpdateSuccess(data) { }
+                        function cfUpdateError(xhr, textStatus, errorThrown) { }
+                    }
                 }
             }
         }
@@ -440,16 +486,16 @@ class Calendar extends DataWrapper {
                                 [{ tag: 'tbody' },
                                     [{ tag: 'tr' },
                                         [{ tag: 'td' },
-                                            { tag: 'span', id: 'button-prev-month', class: 'month-button', event: { name: 'click', fn: this.Listeners.prevMonth } },
+                                            { tag: 'span', id: 'button-prev-month', class: 'month-button', event: { name: 'click', fn: this.Listeners.async.month.prev.bind(this) } },
                                         ],
                                         [{ tag: 'td' },
-                                            [{ tag: 'span', id: 'button-pick-calendar', event: { name: 'click', fn: this.Listeners.pickCalendar } },
+                                            [{ tag: 'span', id: 'button-pick-calendar', event: { name: 'click', fn: this.Listeners.async.pickCalendar.bind(this) } },
                                                 { tag: 'label', id: 'month' },
                                                 { tag: 'label', id: 'year' },
                                             ],
                                         ],
                                         [{ tag: 'td' },
-                                            { tag: 'span', id: 'button-next-month', class: 'month-button', event: { name: 'click', fn: this.Listeners.nextMonth } },
+                                            { tag: 'span', id: 'button-next-month', class: 'month-button', event: { name: 'click', fn: this.Listeners.async.month.next.bind(this) } },
                                         ],
                                     ],
                                 ],
@@ -523,7 +569,7 @@ class Calendar extends DataWrapper {
         }
         
         gl.rooms = data.rooms;
-        this._setHeader(data.year, data.month);
+        this._prepare(data.year, data.month);
         this.addEntry(data.year, data.month, data.data);
     }
 
@@ -583,156 +629,56 @@ class Calendar extends DataWrapper {
             // calendar end
 
             // book begin
-            var hiddenRow = document.getElementById('R' + wa.room + '-book');
-            if (!hiddenRow) {
-                hiddenRow = document.createElement('tr');
-                hiddenRow.setAttribute('id', 'R' + wa.room + '-book');
-                hiddenRow.classList.add('hidden');
-                hiddenRow.classList.add('book-row');
-                var td = document.createElement('td'),
-                    days = new Date(year, month, 0).getDate();
-                td.setAttribute('colspan', days + 1);
-                var table = document.createElement('table');
-                table.classList.add('book');
-                table.appendChild(document.createElement('tbody'));
-                td.appendChild(table);
-                hiddenRow.appendChild(td);
+            var tree,
+                days = new Date(year, month, 0).getDate();
+            if (!document.getElementById('R' + wa.room + '-book')) {
+                tree =
+                    [{ tag: 'tr', id: 'R' + wa.room + '-book', class: 'hidden book-row' },
+                        [{ tag: 'td', colspan: (days + 1) },
+                            [{ tag: 'table', class: 'book' },
+                                { tag: 'tbody' }
+                            ]
+                        ]
+                    ];
+                tree = new DOMTree(tree).cultivate();
                 var tr = document.querySelector('#calendar tbody tr#R' + wa.room);
-                tr.parentNode.insertBefore(hiddenRow, tr.nextSibling);
-                hiddenRow = document.getElementById('R' + wa.room + '-book');
+                tr.parentNode.insertBefore(tree, tr.nextSibling);
             }
 
-            var rTable = hiddenRow.querySelector('table'),
-                rBody = rTable.querySelector('tbody'),
-                tr, rTR, td, a;
-
-            //------------------------------------------------------------
-            td = document.createElement('td');
-            td.setAttribute('class', 'person-id');
-            td.appendChild(document.createTextNode(wa.id));
-
-            rTR = document.createElement('tr');
-            rTR.setAttribute('class', 'person-row');
-            rTR.setAttribute('id', 'N' + wa.id);
-            rTR.appendChild(td);
-            //------------------------------------------------------------
-
-            //------------------------------------------------------------
-            td = document.createElement('td');
-            td.setAttribute('class', 'person-base-info');
-
-            a = document.createElement('a');
-            a.setAttribute('class', 'person-name');
-            a.appendChild(document.createTextNode(wa.name));
-            td.appendChild(a);
-
-            if (wa.tel.length > 0) {
-                a = document.createElement('a');
-                a.setAttribute('class', 'person-tel');
-                a.appendChild(document.createTextNode(wa.tel));
-                td.appendChild(a);
-            }
-
-            tr = document.createElement('tr');
-            tr.appendChild(td);
-
-            td = document.createElement('td');
-            td.setAttribute('class', 'person-dates');
-            td.classList.add('person-dayin');
-            td.appendChild(document.createTextNode('с  ' + (new Date(wa.dayin).format('dd.mm'))));
-            tr.appendChild(td);
-
-            td = document.createElement('td');
-            td.setAttribute('class', 'person-room-num');
-            td.setAttribute('rowspan', '2');
-            td.appendChild(document.createTextNode(wa.room));
-            tr.appendChild(td);
-
-            td = document.createElement('td');
-            td.setAttribute('class', 'person-room-cost');
-            td.appendChild(document.createTextNode(wa.cost));
-            tr.appendChild(td);
-
-            var tbody = document.createElement('tbody')
-            tbody.appendChild(tr);
-            //------------------------------------------------------------
-
-            //------------------------------------------------------------
-            tr = document.createElement('tr');
-
-            td = document.createElement('td');
-            td.setAttribute('class', 'person-additional-info');
-
-            a = document.createElement('a');
-            a.setAttribute('class', 'person-city');
-            a.appendChild(document.createTextNode(wa.city));
-            td.appendChild(a);
-
-            a = document.createElement('a');
-            a.setAttribute('class', 'person-fn');
-            a.appendChild(document.createTextNode(wa.fn));
-            td.appendChild(a);
-
-            tr.appendChild(td);
-
-            td = document.createElement('td');
-            td.setAttribute('class', 'person-dates');
-            td.classList.add('person-dayout');
-            td.appendChild(document.createTextNode('по ' + (new Date(wa.dayout).format('dd.mm'))));
-            tr.appendChild(td);
-
-            td = document.createElement('td');
-            td.setAttribute('class', 'person-room-paid');
-            td.appendChild(document.createTextNode(wa.paid));
-            tr.appendChild(td);
-
-            tbody.appendChild(tr);
-            //------------------------------------------------------------
-
-            //------------------------------------------------------------
-            tr = document.createElement('tr');
-            tr.setAttribute('style', "display:none;");
-
-            td = document.createElement('td');
-            td.setAttribute('class', 'person-days');
-            td.appendChild(document.createTextNode(wa.days));
-            tr.appendChild(td);
-
-            td = document.createElement('td');
-            td.setAttribute('class', 'person-baseline');
-            td.appendChild(document.createTextNode(wa.baseline));
-            tr.appendChild(td);
-
-            td = document.createElement('td');
-            td.setAttribute('class', 'person-adjustment');
-            td.appendChild(document.createTextNode(wa.adjustment));
-            tr.appendChild(td);
-
-            td = document.createElement('td');
-            td.appendChild(document.createTextNode(''));
-            tr.appendChild(td);
-
-            tbody.appendChild(tr);
-            //------------------------------------------------------------
-
-            //------------------------------------------------------------
-            var iTable = document.createElement('table');
-            iTable.setAttribute('class', 'inner-book');
-            iTable.appendChild(tbody);
-            //------------------------------------------------------------
-
-            //------------------------------------------------------------
-            td = document.createElement('td');
-            td.appendChild(iTable);
-            //------------------------------------------------------------
-
-            //------------------------------------------------------------
-            rTR.appendChild(td);
-            //------------------------------------------------------------
-
-            //------------------------------------------------------------
-            rBody.appendChild(rTR);
-            //------------------------------------------------------------
+            tree =
+                [{ tag: 'tr', id: 'N' + wa.id, class: 'person-row' },
+                    { tag: 'td', class: 'person-fields person-id', textNode: wa.id },
+                    [{ tag: 'td' },
+                        [{ tag: 'table', class: 'inner-book' },
+                            [{ tag: 'tbody' },
+                                [{ tag: 'tr' },
+                                    [{ tag: 'td', class: 'person-fields person-base-info' },
+                                        { tag: 'a', class: 'person-fields person-name', textNode: wa.name },
+                                        { tag: 'a', class: 'person-fields person-tel', textNode: wa.tel },
+                                    ],
+                                    { tag: 'td', class: 'person-fields person-dates person-dayin', textNode: 'с  ' + (new Date(wa.dayin).format('dd.mm')) },
+                                    { tag: 'td', class: 'person-fields person-room-num', rowspan: 2, textNode: wa.room },
+                                    { tag: 'td', class: 'person-fields person-room-cost', textNode: wa.cost },
+                                ],
+                                [{ tag: 'tr' },
+                                    [{ tag: 'td', class: 'person-fields person-additional-info' },
+                                        { tag: 'a', class: 'person-fields person-city', textNode: wa.city },
+                                        { tag: 'a', class: 'person-fields person-fn', textNode: wa.fn },
+                                    ],
+                                    { tag: 'td', class: 'person-fields person-dates person-dayout', textNode: 'по ' + (new Date(wa.dayout).format('dd.mm')) },
+                                    { tag: 'td', class: 'person-fields person-room-paid', textNode: wa.paid },
+                                ],
+                                [{ tag: 'tr', style: 'display:none;' },
+                                    { tag: 'td', class: 'person-fields person-days', textNode: wa.days },
+                                    { tag: 'td', class: 'person-fields person-baseline', textNode: wa.baseline },
+                                    { tag: 'td', class: 'person-fields person-adjustment', textNode: wa.adjustment }
+                                ]
+                            ]
+                        ]
+                    ]
+                ];    
+            tree = new DOMTree(tree).cultivate();
+            document.querySelector('#R' + wa.room + '-book .book tbody').appendChild(tree);
             // book end
         }
     }
@@ -827,16 +773,38 @@ class Calendar extends DataWrapper {
         return this.data;
     }
 
-    _setHeader(year, month) {
+    _setMonth(month) {
+        document.getElementById('month').innerHTML = month;
+    }
+
+    _getMonth() {
+        var month = gl.monthNames.indexOf(document.getElementById('month').innerHTML);
+        month = utils.overlay(month, '0', 2)
+        return {
+            name: document.getElementById('month').innerHTML,
+            num: month,
+        }
+    }
+
+    _setYear(year) {
+        document.getElementById('year').innerHTML = year;
+    }
+
+    _get_year() {
+        return document.getElementById('year').innerHTML;
+    }
+
+    _prepare(year, month) {
 
         var monthName = utils.getMonthName(month),
             days = new Date(year, month, 0).getDate();
 
+        //FIX: innerHTMl memory leak
         // thead begin
         //  --- чистим
         //  --- --- тело
         document.querySelector('#calendar > tbody').innerHTML = "";
-        // дни месяца
+        // ---- --- дни месяца
         var trdays = document.getElementById('calendar-row-days'),
             childs = trdays.children.length;
         for (let i = 0; i < childs; i++) {

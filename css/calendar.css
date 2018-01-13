@@ -1,4 +1,3 @@
-/* @import 'vars.css'; */
 #calendar {
     margin-left: auto;
     margin-right: auto;
@@ -37,17 +36,15 @@
 .hidden {
     cursor: default;
     display: none;
-    transition: height 0.5s;
 }
 
-#calendar>tbody>.hidden>td {
+#calendar>tbody>.book-row>td {
     border: none;
     cursor: default;
-    padding: 0;
-    padding-left: 35px;
+    padding: 18px 0px 18px 35px;
 }
 
-#calendar>tbody>tr:not(.hidden)>td:hover {
+#calendar>tbody>tr:not(.book-row)>td:hover {
     background-color: var(--c-tab-bck-col-hov);
     border: 1px solid transparent;
     box-shadow: var(--s-nor);
@@ -56,7 +53,7 @@
     z-index: 1;
 }
 
-#calendar>tbody>tr:not(.hidden)>td:hover .hint-text {
+#calendar>tbody>tr:not(.book-row)>td:hover .hint-text {
     visibility: visible;
     box-shadow: var(--s-hov);
     transition: all 0.3s;
@@ -64,20 +61,14 @@
 }
 
 .book {
-    cursor: default;
+    cursor: pointer;
     text-align: center;
     border-spacing: 3px 8px;
     width: 100%;
-    padding: 18px;
-    padding-left: 0;
-    padding-right: 0;
+    padding: 0;
     border-radius: var(--r-bor-nor);
     border-style: solid;
     border-width: 0px;
-}
-
-.book>tbody>tr {
-    cursor: pointer;
 }
 
 .book:hover>tbody>tr:hover>td {
@@ -134,6 +125,10 @@
 
 .inner-book>tbody>tr>td:last-child {
     width: 7%;
+}
+
+.person-fields {
+    padding: 0;
 }
 
 .person-base-info {

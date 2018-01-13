@@ -61,22 +61,25 @@ const gl = {
     //FIX: rename it
     events: {
         calendar: {
-            DatePick: 'C-DP',
-            DialogSave: 'inout-dialog-ok-button',
-        },
-        rcMenu: {
-            RCMenu: 'rcmenu-in-calendar',
-            RCMItemAddGuest: 'rcitem-add-guest',
-            RCMItemDelGuest: 'rcitem-del-guest',
-            RCMItemUpdGuest: 'rcitem-upd-guest',
-        },
-        lefClick: 'left-mouse-clicked',
-        ajax: {
-            calendar: {
-                init: {
-                    Success:'ACI-success'
+            async: {
+                newMonth: {
+                    Success: 'onMonthChangeOk'
+                },
+                initialiation: {
+                    Success: 'onInitializationOk'
+                },
+                pickCalendar: {
+                    Success: 'onPickCalendarOk'
                 }
-            }
-        }
+            },
+            DialogSave: 'onSaveClick',
+            rcMenu: {
+                RCMenuOpen: 'rcmenuOpen',
+                RCMItemAddGuest: 'onRCMitemAddClick',
+                RCMItemDelGuest: 'onRCMitemDelClick',
+                RCMItemUpdGuest: 'onRCMitemUpdClick',
+            },
+        },
+        LefClick: 'onLeftClick',
     }
 }

@@ -99,39 +99,20 @@ const db = {
             });
         },
 
-        select: function () {
+        select: function (year, month, callbackSuccess, callbackError) {
             $.ajax({
                 url: '../db/gl001/select.php',
                 data: {
-                    year: document.getElementById('year').innerHTML,
-                    month: utils.getMonthId(document.getElementById('month').innerHTML),
+                    year: year,
+                    month: month,
                 },
                 dataType: 'json',
-                success: function (data) {
-                    if (!data.status) {
-                        console.log(data.msg);
-                    } else {
-                        data.data.sort(function (a, b) {
-                            if (a.id > b.id) {
-                                return 1;
-                            } else if (a.id < b.id) {
-                                return -1;
-                            } else {
-                                return 0;
-                            }
-                        });
-                        new Calendar().setHeader(data.year, data.month);
-                        new Calendar().addGuest(data.year, data.month, data.data);
-                    }
-                },
-                error: function (xhr, textStatus, errorThrown) {
-                    console.log(textStatus);
-                    console.log(errorThrown);
-                }
+                success: callbackSuccess,
+                error: callbackError
             });
         },
 
-        modify: function (opts) {
+        update: function (opts) {
             $.ajax({
                 url: '../db/gl001/modify.php',
                 data: {
