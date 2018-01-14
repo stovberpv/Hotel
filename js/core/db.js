@@ -1,8 +1,8 @@
-const db = {
+const DB = {
 
-    cf001: {
+    CF001: {
 
-        select: function () {
+        SELECT: function () {
             $.ajax({
                 url: '../db/cf001/select.php',
                 dataType: 'json',
@@ -18,7 +18,7 @@ const db = {
             });
         },
 
-        update: function () {
+        UPDATE: function () {
             $.ajax({
                 url: '../db/cf001/modify.php',
                 data: {
@@ -39,9 +39,9 @@ const db = {
         }
     },
 
-    rm001: {
+    RM001: {
 
-        select: function () {
+        SELECT: function () {
             $.ajax({
                 url: '../db/rm001/select.php',
                 data: {},
@@ -61,45 +61,24 @@ const db = {
         }
     },
 
-    gl001: {
+    GL001: {
 
-        insert: function (opts) {
+        INSERT: function (opts) {
+            //FIX: php opts.dayin ... 
             $.ajax({
                 url: '../db/gl001/insert.php',
-                data: {
-                    year: document.getElementById('year').innerHTML,
-                    month: utils.getMonthId(document.getElementById('month').innerHTML),
-                    dayin: opts.dayin,
-                    dayout: opts.dayout,
-                    days: opts.days,
-                    room: opts.room,
-                    baseline: opts.baseline,
-                    adjustment: opts.adjustment,
-                    cost: opts.cost,
-                    paid: opts.paid,
-                    name: opts.name,
-                    tel: opts.tel,
-                    fn: opts.fn,
-                    city: opts.city
-                },
+                data: opts,
                 dataType: 'json',
                 success: function (data) {
-                    if (!data.status) {
-                        console.log(data.msg);
-                    } else {
-                        new Calendar().addGuest(data.year, data.month, data.data);
-                        new Contacts().reset();
-                        new Contacts().init();
-                    }
+                    EVENT_BUS.dispatch(L.CONST.EVENTS.CALENDAR.DB.GL001.INSERT.SUCCESS, data);
                 },
                 error: function (xhr, textStatus, errorThrown) {
-                    console.log(textStatus);
-                    console.log(errorThrown);
+                    EVENT_BUS.dispatch(L.CONST.EVENTS.CALENDAR.DB.GL001.INSERT.ERROR, { xhr, textStatus, errorThrown });
                 }
             });
         },
 
-        select: function (year, month, callbackSuccess, callbackError) {
+        SELECT: function (year, month, callbackSuccess, callbackError) {
             $.ajax({
                 url: '../db/gl001/select.php',
                 data: {
@@ -112,23 +91,11 @@ const db = {
             });
         },
 
-        update: function (opts) {
+        UPDATE: function (opts) {
+            //FIX: php opts.dayin ... 
             $.ajax({
                 url: '../db/gl001/modify.php',
-                data: {
-                    year: document.getElementById('year').innerHTML,
-                    month: utils.getMonthId(document.getElementById('month').innerHTML),
-                    id: opts.id,
-                    dayin: opts.dayin,
-                    dayout: opts.dayout,
-                    room: opts.room,
-                    price: opts.price,
-                    paid: opts.paid,
-                    name: opts.name,
-                    tel: opts.tel,
-                    fn: opts.fn,
-                    city: opts.city
-                },
+                data: opts,
                 dataType: 'json',
                 success: function (data) {
                     if (!data.status) {
@@ -144,12 +111,11 @@ const db = {
             });
         },
 
-        delete: function (opts) {
+        DELETE: function (opts) {
+            //FIX: php opts.id 
             $.ajax({
                 url: '../db/gl001/delete.php',
-                data: {
-                    id: opts
-                },
+                data: opts,
                 dataType: 'json',
                 success: function (data) {
                     if (!data.status) {
@@ -166,3 +132,5 @@ const db = {
         }
     }
 }
+
+UTILS.DEEPF_REEZE(DB);

@@ -1,45 +1,67 @@
-const EventBus = {
+const EVENT_BUS = {
+
+    _id: 'event-bus',
+    _tag: 'event-bus',
+    _style: 'display:none;',
+    _eventBus: '',
 
     init: function () {
-        var eventBus;
-        eventBus = document.getElementsByTagName('event-bus')[0];
-        if (eventBus != undefined && eventBus.id === 'event-bus') return;
-        eventBus = document.createElement('event-bus');
-        eventBus.setAttribute('id', 'event-bus');
-        eventBus.setAttribute('style', 'display:none;');
-        document.body.appendChild(eventBus);
+        if (this._isInitialized()) return;
+        this._create();
+        this._set(this._find());
     },
 
     destroy: function () {
-        var eventBus = document.getElementsByTagName('event-bus')[0];
-        if (eventBus == undefined || eventBus.id != 'event-bus') return;
-        document.body.removeChild(eventBus);
+        if (!this._isInitialized()) return;
+        document.body.removeChild(this._get());
     },
 
     register: function (eventName, callbackFunction) {
-        var eventBus = document.getElementsByTagName('event-bus')[0];
-        if (eventBus == undefined || eventBus.id != 'event-bus') return;
+        if (!this._isInitialized()) return;
         this.unregister(eventName, callbackFunction);
-        eventBus.addEventListener(eventName, callbackFunction);
+        this._get().addEventListener(eventName, callbackFunction);
     },
 
     unregister: function (eventName, callbackFunction) {
-        var eventBus = document.getElementsByTagName('event-bus')[0];
-        if (eventBus == undefined || eventBus.id != 'event-bus') return;
-        eventBus.removeEventListener(eventName, callbackFunction);
+        if (!this._isInitialized()) return;
+        this._get().removeEventListener(eventName, callbackFunction);
     },
 
     dispatch: function (eventName, data) {
-        var eventBus = document.getElementsByTagName('event-bus')[0];
-        if (eventBus == undefined || eventBus.id != 'event-bus') return;
-        eventBus.dispatchEvent(new CustomEvent(eventName, {
+        if (!this._isInitialized()) return;
+        this._get().dispatchEvent(new CustomEvent(eventName, {
             'detail': {
                 'EventBus': true,
                 'data': data
             }
         }));
+    },
+
+    _set: function (eventBus) {
+        this._eventBus = eventBus;
+    },
+
+    _get: function () {
+        return this._eventBus;
+    },
+
+    _isInitialized: function () {
+        var eb = this._get();
+        return !!(eb && eb.nodeType === 1) && eb.id === this._id;
+    },
+
+    _find: function () {
+        return document.getElementsByTagName(this._tag)[0];
+    },
+
+    _create: function () {
+        var tree = new DOMTree([{ tag: this._tag, id: this._id, style: this._style }]);
+        tree.cultivate();
+        document.body.appendChild(tree);
     }
 }
+
+UTILS.DEEPF_REEZE(EVENT_BUS);
 
 // /**
 //  * Автобус уведомлений

@@ -17,10 +17,11 @@ class ConfirmDialog extends Dialog {
     constructor() {
         super();
     
-        this.Listeners = {
+        this.listeners = {
 
             ok: function (e) {
-                EventBus.dispatch(gl.events.inOutDialogSave, { data: this.Opts.data.id });
+                EventBus.dispatch(GL.CONST.EVENTS.CALENDAR.DIALOG_SAVE, { intent: this.Opts.data.intent, data: this.Opts.data });
+                this.unbind();
             },
 
             no: function (e) {
@@ -58,7 +59,7 @@ class ConfirmDialog extends Dialog {
         button.classList.add('btn');
         button.classList.add('negative');
         button.appendChild(document.createTextNode('Отменить'));
-        button.addEventListener('click', this.Listeners.no);
+        button.addEventListener('click', this.listeners.no);
         divFooter.appendChild(button);
 
         button = document.createElement('button');
@@ -66,7 +67,7 @@ class ConfirmDialog extends Dialog {
         button.setAttribute('type', 'button');
         button.classList.add('btn');
         button.classList.add('positive');
-        button.addEventListener('click', this.Listeners.ok).bind( { id: this.Opts.data.id } );
+        button.addEventListener('click', this.listeners.ok).bind( { id: this.Opts.data.id } );
         button.appendChild(document.createTextNode('Подтвердить'));
         divFooter.appendChild(button);
 
@@ -102,10 +103,10 @@ class InOutDialog extends Dialog {
     constructor() {
         super();
 
-        this.Listeners = {
+        this.listeners = {
 
             ok: function (e) {
-                EventBus.dispatch(gl.events.inOutDialogSave, this.getVal());
+                EventBus.dispatch(GL.CONST.EVENTS.CALENDAR.DIALOG_SAVE, { intent: this.Opts.data.intent, data: this.getVal() });
                 this.unbind();
             },
 
@@ -286,11 +287,11 @@ class InOutDialog extends Dialog {
         }
 
         button = createButton('btn-no', ['negative'], 'Отменить');
-        button.addEventListener('click', this.Listeners.no);
+        button.addEventListener('click', this.listeners.no);
         divFooter.appendChild(button);
 
         button = createButton('btn-ok', ['positive'], 'Подтвердить');
-        button.addEventListener('click', this.Listeners.ok);
+        button.addEventListener('click', this.listeners.ok);
         divFooter.appendChild(button);
 
         divWrapper.appendChild(divFooter);
@@ -641,7 +642,7 @@ class PickCalendar extends Dialog {
     constructor(opts) {
         super();
 
-        this.Listeners = {
+        this.listeners = {
 
             yearKeyDown: function (e) {
                 if (isNaN(e.key)) {
@@ -713,7 +714,7 @@ class PickCalendar extends Dialog {
         button.setAttribute('id', 'pc-' + this.Id + '-prev');
         button.setAttribute('type', 'button');
         button.classList.add('pc-btn-prev');
-        prev.addEventListener('click', this.Listeners.prevYear.bind({ id: this.Id }));
+        prev.addEventListener('click', this.listeners.prevYear.bind({ id: this.Id }));
         td.appendChild(button);
         tr.appendChild(td);
 
@@ -727,8 +728,8 @@ class PickCalendar extends Dialog {
         input.setAttribute('min', '1900');
         input.setAttribute('max', '9999');
         input.classList.add('pc-year');
-        input.keydown(this.Listeners.yearKeyDown);
-        input.keyup(this.Listeners.yearKeyUp);
+        input.keydown(this.listeners.yearKeyDown);
+        input.keyup(this.listeners.yearKeyUp);
         td.appendChild(input);
         tr.appendChild(td);
 
@@ -737,7 +738,7 @@ class PickCalendar extends Dialog {
         button.setAttribute('id', 'pc-' + this.Id + '-next');
         button.setAttribute('type', 'button');
         button.classList.add('pc-btn-next');
-        next.addEventListener('click', this.Listeners.nextYear.bind({ id: this.Id }));
+        next.addEventListener('click', this.listeners.nextYear.bind({ id: this.Id }));
         td.appendChild(button);
         tr.appendChild(td);
         
@@ -781,7 +782,7 @@ class PickCalendar extends Dialog {
         tr.appendChild(createMonth('12', 'Декабрь'));
         tbody.appendChild(tr);
 
-        tbody.addEventListener('click', this.Listeners.monthSel)
+        tbody.addEventListener('click', this.listeners.monthSel)
         
         table.appendChild(tbody);
         
@@ -800,7 +801,7 @@ class PickCalendar extends Dialog {
         button.classList.add('btn');
         button.classList.add('negative');
         button.appendChild(document.createTextNode('Отменить'));
-        no.addEventListener('click', this.Listeners.no);
+        no.addEventListener('click', this.listeners.no);
         divFooter.appendChild(button);
 
         button = document.createElement('button');
@@ -809,7 +810,7 @@ class PickCalendar extends Dialog {
         button.classList.add('btn');
         button.classList.add('positive');
         button.appendChild(document.createTextNode('Подтвердить'));
-        ok.addEventListener('click', this.Listeners.ok);
+        ok.addEventListener('click', this.listeners.ok);
         divFooter.appendChild(button);
 
         divContent.appendChild(divFooter);
@@ -847,6 +848,7 @@ class PickCalendar extends Dialog {
         pick.parentNode.removeChild(pick);
     }
 }
+
 class RCMenu extends Dialog {
 
     constructor (opts) {
@@ -854,21 +856,21 @@ class RCMenu extends Dialog {
         this.X = opts.x;
         this.Y = opts.y;
 
-        this.Listeners = {
+        this.listeners = {
 
             upd: function upd (e) {
                 this.unbind();
-                EventBus.dispatch(gl.events.updGuest, { data: this.Opts.data });
+                EventBus.dispatch(GL.CONST.EVENTS.CALENDAR.RC_MENU.RCM_ITEM_UPD_GUEST, { data: this.Opts.data });
             },
 
             del: function del (e) {
                 this.unbind();
-                EventBus.dispatch(gl.events.delGuest, { data: this.Opts.data });
+                EventBus.dispatch(GL.CONST.EVENTS.CALENDAR.RC_MENU.RCM_ITEM_DEL_GUEST, { data: this.Opts.data });
             },
 
             add: function add (e) {
                 this.unbind();
-                EventBus.dispatch(gl.events.addGuest, { data: this.Opts.data });
+                EventBus.dispatch(GL.CONST.EVENTS.CALENDAR.RC_MENU.RCM_ITEM_ADD_GUEST, { data: this.Opts.data });
             },
 
             lmc: function lmc(e) {
@@ -888,7 +890,7 @@ class RCMenu extends Dialog {
             li.setAttribute('id', 'editGuest');
             li.classList.add('rcmenu-item');
             li.appendChild(document.createTextNode('Изменить'));
-            li.addEventListener('click', this.Listeners.upd);
+            li.addEventListener('click', this.listeners.upd);
             ul.appendChild(li);
         }
         if (this.Opts.btn.del) {
@@ -896,7 +898,7 @@ class RCMenu extends Dialog {
             li.setAttribute('id', 'delGuest');
             li.classList.add('rcmenu-item');
             li.appendChild(document.createTextNode('Удалить'));
-            li.addEventListener('click', this.Listeners.del);
+            li.addEventListener('click', this.listeners.del);
             ul.appendChild(li);
         }
         if (this.Opts.btn.add) {
@@ -904,7 +906,7 @@ class RCMenu extends Dialog {
             li.setAttribute('id', 'addGuest');
             li.classList.add('rcmenu-item');
             li.appendChild(document.createTextNode('Добавить'));
-            li.addEventListener('click', this.Listeners.add);
+            li.addEventListener('click', this.listeners.add);
             ul.appendChild(li);
         }
 
@@ -913,7 +915,7 @@ class RCMenu extends Dialog {
         div.appendChild(ul);
         document.body.appendChild(div);
 
-        EventBus.register(gl.events.lefClick, this.Listeners.lmc);
+        EventBus.register(GL.CONST.EVENTS.CORE.LEFT_CLICK, this.listeners.lmc);
     }
 
     setVal () {}

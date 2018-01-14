@@ -43,6 +43,6 @@
             </div>
         </form>
         <script type="text/javascript" src="/js/utils/jquery.min.js"></script>
-        <script type="text/javascript" src="/js/login.js"></script>
+        <script type="text/javascript" src="/js/core/login.js"></script>
     </body>
 </html>

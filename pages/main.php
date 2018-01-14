@@ -148,24 +148,24 @@
         <div id='vc-dw-6' class='vc-data-wrapper'></div>
     </div>
     
-    <script type="text/javascript" src="/js/utils/createDomTree.js"></script>
     <script type="text/javascript" src="/js/utils/date.format.js"></script>
     <script type="text/javascript" src="/js/utils/jquery.min.js"></script>
-    <script type='text/javascript' src='/js/utils/eventbus.js'></script>
-    <script type='text/javascript' src='/js/utils/utils.js'></script>
+    <script type='text/javascript' src='/js/utils/sandbox.js'></script>
+    <script type="text/javascript" src="/js/utils/dom.tree.js"></script>
+    <script type='text/javascript' src='/js/utils/event.bus.js'></script>
     <script type="text/javascript" src="/js/utils/modal.js"></script>
     
-    <script type='text/javascript' src='/js/wrappers/definition.js'></script>
-    <script type='text/javascript' src='/js/wrappers/calendar.js'></script>
-    <script type='text/javascript' src='/js/wrappers/contacts.js'></script>
-    <script type='text/javascript' src='/js/wrappers/diagrams.js'></script>
-    <script type='text/javascript' src='/js/wrappers/settings.js'></script>
-    <script type='text/javascript' src='/js/wrappers/infopage.js'></script>
-    <script type='text/javascript' src='/js/wrappers/signout.js'></script>
+    <script type='text/javascript' src='/js/modules/definition.js'></script>
+    <script type='text/javascript' src='/js/modules/calendar.js'></script>
+    <script type='text/javascript' src='/js/modules/contacts.js'></script>
+    <script type='text/javascript' src='/js/modules/diagrams.js'></script>
+    <script type='text/javascript' src='/js/modules/settings.js'></script>
+    <script type='text/javascript' src='/js/modules/infopage.js'></script>
+    <script type='text/javascript' src='/js/modules/signout.js'></script>
     
-    <script type='text/javascript' src='/js/gl.js'></script>
-    <script type='text/javascript' src='/js/db.js'></script>
-    <script type='text/javascript' src='/js/main.js'></script>
+    <script type='text/javascript' src='/js/core/gl.js'></script>
+    <script type='text/javascript' src='/js/core/db.js'></script>
+    <script type='text/javascript' src='/js/core/main.js'></script>
 </body>
 
 </html>
