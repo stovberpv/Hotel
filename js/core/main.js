@@ -7,28 +7,22 @@
  * Вызов методов формирования и заполнения данных для 
  * сформированных экземпляров, если они не были вызваны ранее.
  */
-const wrapper = {
+const WRAPPER = {
 
     /**
      * Создание инстанции класса для обертки
      */
     getInstance: function (dw) {
 
+        const C = GL.CONST.VALUES.CORE.CHAINS;
         switch (dw) {
-            case gl.chains[0].dataWrapper:
-                return new Calendar();
-            case gl.chains[1].dataWrapper:
-                return new Contacts();
-            case gl.chains[2].dataWrapper:
-                return new Diagrams();
-            case gl.chains[3].dataWrapper:
-                return new Settings();
-            case gl.chains[4].dataWrapper:
-                return new InfoPage();
-            case gl.chains[5].dataWrapper:
-                return new SignOut();
-            default:
-                break;
+            case C[0].DATA_WRAPPER: return new Calendar();
+            case C[1].DATA_WRAPPER: return new Contacts();
+            case C[2].DATA_WRAPPER: return new Diagrams();
+            case C[3].DATA_WRAPPER: return new Settings();
+            case C[4].DATA_WRAPPER: return new InfoPage();
+            case C[5].DATA_WRAPPER: return new SignOut(); 
+            default: break;
         }
     },
 
@@ -37,9 +31,11 @@ const wrapper = {
      * элемента навигации.
      */
     getWrapperId: function (navEl) {
-        for (let i in gl.chains) {
-            const chain = gl.chains[i];
-            if (chain.navEl == navEl) return chain.dataWrapper;
+
+        const C = GL.CONST.VALUES.CORE.CHAINS;
+        for (let i in C) {
+            const CHAIN = C[i];
+            if (CHAIN.NAV_EL == navEl) return CHAIN.DATA_WRAPPER;
         }
     },
 
@@ -56,6 +52,7 @@ const wrapper = {
      * Заполняем обертку данными, если она пустая
      */
     fill: function (navEl) {
+
         var dw = this.getWrapperId(navEl);
         if (this.isEmpty(dw)) {
             var inst = this.getInstance(dw);
@@ -69,8 +66,9 @@ const wrapper = {
      */
     show: function (navEl) {
 
+        const CL = GL.CONST.CSS.CORE.CLASS.VC_DW_SHOW;
         var dw = this.getWrapperId(navEl);
-        document.getElementById(dw).classList.add(gl.class_VCDWShow);
+        document.getElementById(dw).classList.add(CL);
     },
 
     /**
@@ -78,10 +76,11 @@ const wrapper = {
      */
     hide: function () {
 
-        var class_VCDWShow = document.getElementById('view-container').getElementsByClassName(gl.class_VCDWShow);
-        for (let i = 0; i < class_VCDWShow.length; i++) {
-            const el = class_VCDWShow[i];
-            el.classList.remove(gl.class_VCDWShow);
+        const CL = GL.CONST.CSS.CORE.CLASS.VC_DW_SHOW;
+        var el = document.getElementById('view-container').getElementsByClassName(CL);
+        for (let i = 0; i < el.length; i++) {
+            const el = el[i];
+            el.classList.remove(CL);
         }
     }
 }
@@ -89,7 +88,7 @@ const wrapper = {
 /**
  * Группа обработки контейнера.
  */
-const container = {
+const CONTAINER = {
 
     /**
      * Скрывает контейнер.
@@ -100,10 +99,10 @@ const container = {
     toggle: function (el, isSelf) {
 
         this.hide();
-        wrapper.hide();
+        WRAPPER.hide();
         if (!isSelf) {
-            wrapper.fill(el.parentNode.id);
-            wrapper.show(el.parentNode.id);
+            WRAPPER.fill(el.parentNode.id);
+            WRAPPER.show(el.parentNode.id);
             this.show();
         }
     },
@@ -129,7 +128,7 @@ const container = {
 /**
  * Группа слушателей
  */
-const listeners = {
+const LISTENERS = {
 
     /**
      * Определяет и формирует список элементов для которых необходимо добавить
@@ -141,36 +140,21 @@ const listeners = {
     onLoad: function (e) {
 
         // Навигационное меню
-        document.getElementById('nav-menu').addEventListener('click', listeners.navMenuClick);
+        document.getElementById('nav-menu').addEventListener('click', LISTENERS.navMenuClick);
 
-        const navEl = [{
-                el: gl.navEl[0],
-                src: document.getElementById(gl.navEl[0])
-            },
-            {
-                el: gl.navEl[1],
-                src: document.getElementById(gl.navEl[1])
-            },
-            {
-                el: gl.navEl[2],
-                src: document.getElementById(gl.navEl[2])
-            },
-            {
-                el: gl.navEl[3],
-                src: document.getElementById(gl.navEl[3])
-            },
-            {
-                el: gl.navEl[4],
-                src: document.getElementById(gl.navEl[4])
-            },
-            {
-                el: gl.navEl[5],
-                src: document.getElementById(gl.navEl[5])
-            }
-        ]
+        const EL = GL.CONST.VALUES.CORE.NAV_El;
+        const NAV_EL =
+            [
+                { el: EL[0], src: document.getElementById(EL[0]) },
+                { el: EL[1], src: document.getElementById(EL[1]) },
+                { el: EL[2], src: document.getElementById(EL[2]) },
+                { el: EL[3], src: document.getElementById(EL[3]) },
+                { el: EL[4], src: document.getElementById(EL[4]) },
+                { el: EL[5], src: document.getElementById(EL[5]) }
+            ];
 
-        for (let i = 0; i < navEl.length; i++) {
-            navEl[i].src.addEventListener('click', listeners.navElClick);
+        for (const EL of NAV_EL) {
+            EL.src.addEventListener('click', LISTENERS.navElClick);
         }
     },
 
@@ -179,7 +163,7 @@ const listeners = {
      */
     mouseUp: function (e) {
 
-        gl.isMouseDown = false;
+        GL.DATA.CORE.isMouseDown = false;
     },
 
     /**
@@ -196,9 +180,7 @@ const listeners = {
      */
     windowClick: function (e) {
 
-        EventBus.dispatch(gl.events.lefClick);
-        // var rcmenu = document.getElementById('rcmenu');
-        // if (rcmenu) rcmenu.unbind();
+        EVENT_BUS.dispatch(GL.CONST.EVENTS.CORE.LEFT_CLICK);
     },
 
     /**
@@ -207,10 +189,11 @@ const listeners = {
      */
     navMenuClick: function (e) {
 
-        var class_navElSel = this.getElementsByClassName(gl.class_navElSel);
-        for (let i = 0; i < class_navElSel.length; i++) {
-            if (!e.target.closest('#' + class_navElSel[i].parentNode.id)) {
-                class_navElSel[i].classList.remove(gl.class_navElSel);
+        const CL = GL.CONST.CSS.CORE.CLASS.NAV_EL_SEL;
+        var el = document.getElementById('view-container').getElementsByClassName(CL);
+        for (let i = 0; i < el.length; i++) {
+            if (!e.target.closest('#' + el[i].parentNode.id)) {
+                el[i].classList.remove(CL);
             }
         }
     },
@@ -224,22 +207,23 @@ const listeners = {
      */
     navElClick: function (e) {
 
-        var svg = this.getElementsByTagName('svg'),
+        const CL = GL.CONST.CSS.CORE.CLASS.NAV_EL_SEL;
+        var svg = document.getElementById('nav-container').getElementsByTagName('svg'),
             el = svg[0],
-            isSelf = !el.classList.toggle(gl.class_navElSel);
+            isSelf = !el.classList.toggle(CL);
 
-        container.toggle(el, isSelf);
+        CONTAINER.toggle(el, isSelf);
     }
 };
 
 (function (window, document, undefined) {
 
-    document.addEventListener('DOMContentLoaded', listeners.onLoad);
-    document.addEventListener('mouseup', listeners.mouseUp);
+    document.addEventListener('DOMContentLoaded', LISTENERS.onLoad);
+    document.addEventListener('mouseup', LISTENERS.mouseUp);
 
-    window.addEventListener('contextmenu', listeners.ctmClick, false);
-    window.addEventListener('click', listeners.windowClick, false);
+    window.addEventListener('contextmenu', LISTENERS.ctmClick, false);
+    window.addEventListener('click', LISTENERS.windowClick, false);
 
-    EventBus.init();
+    EVENT_BUS.init();
 
 })(window, document);

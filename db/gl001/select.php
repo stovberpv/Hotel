@@ -22,8 +22,8 @@
     #---------------------------------------------------------------------------------
     # get values
     #---------------------------------------------------------------------------------
-    isset($_GET["year"])  ? $year  = $_GET["year"]  : die(err2echo(24, '', ''));
-    isset($_GET["month"]) ? $month = $_GET["month"] : die(err2echo(25, '', ''));
+    isset($_GET['data']["year"])  ? $year  = $_GET['data']["year"]  : die(err2echo(24, '', ''));
+    isset($_GET['data']["month"]) ? $month = $_GET['data']["month"] : die(err2echo(25, '', ''));
     #
     $dayin  = $year . "-" . $month . "-" . 01;
     $dayout = $year . "-" . $month . "-" . cal_days_in_month(CAL_GREGORIAN, $month, $year);

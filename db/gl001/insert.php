@@ -24,20 +24,20 @@
     #---------------------------------------------------------------------------------
     # 
     #---------------------------------------------------------------------------------
-    isset($_GET["year"])       ? $year       = $_GET["year"]       : $year       = "";
-    isset($_GET["month"])      ? $month      = $_GET["month"]      : $month      = "";
-    isset($_GET["dayin"])      ? $dayin      = $_GET["dayin"]      : $dayin      = "";
-    isset($_GET["dayout"])     ? $dayout     = $_GET["dayout"]     : $dayout     = "";
-    isset($_GET["days"])       ? $days       = $_GET["days"]       : $days       = "";
-    isset($_GET["room"])       ? $room       = $_GET["room"]       : $room       = "";
-    isset($_GET["baseline"])   ? $baseline   = $_GET["baseline"]   : $baseline   = "";
-    isset($_GET["adjustment"]) ? $adjustment = $_GET["adjustment"] : $adjustment = "";
-    isset($_GET["cost"])       ? $cost       = $_GET["cost"]       : $cost       = "";
-    isset($_GET["paid"])       ? $paid       = $_GET["paid"]       : $paid       = "";
-    isset($_GET["name"])       ? $name       = $_GET["name"]       : $name       = "";
-    isset($_GET["tel"])        ? $tel        = $_GET["tel"]        : $tel        = "";
-    isset($_GET["fn"])         ? $fn         = $_GET["fn"]         : $fn         = "";
-    isset($_GET["city"])       ? $city       = $_GET["city"]       : $city       = "";
+    isset($_GET['data']["year"])       ? $year       = $_GET['data']["year"]       : $year       = "";
+    isset($_GET['data']["month"])      ? $month      = $_GET['data']["month"]      : $month      = "";
+    isset($_GET['data']["dayin"])      ? $dayin      = $_GET['data']["dayin"]      : $dayin      = "";
+    isset($_GET['data']["dayout"])     ? $dayout     = $_GET['data']["dayout"]     : $dayout     = "";
+    isset($_GET['data']["days"])       ? $days       = $_GET['data']["days"]       : $days       = "";
+    isset($_GET['data']["room"])       ? $room       = $_GET['data']["room"]       : $room       = "";
+    isset($_GET['data']["baseline"])   ? $baseline   = $_GET['data']["baseline"]   : $baseline   = "";
+    isset($_GET['data']["adjustment"]) ? $adjustment = $_GET['data']["adjustment"] : $adjustment = "";
+    isset($_GET['data']["cost"])       ? $cost       = $_GET['data']["cost"]       : $cost       = "";
+    isset($_GET['data']["paid"])       ? $paid       = $_GET['data']["paid"]       : $paid       = "";
+    isset($_GET['data']["name"])       ? $name       = $_GET['data']["name"]       : $name       = "";
+    isset($_GET['data']["tel"])        ? $tel        = $_GET['data']["tel"]        : $tel        = "";
+    isset($_GET['data']["fn"])         ? $fn         = $_GET['data']["fn"]         : $fn         = "";
+    isset($_GET['data']["city"])       ? $city       = $_GET['data']["city"]       : $city       = "";
     #---------------------------------------------------------------------------------
     # 
     #---------------------------------------------------------------------------------

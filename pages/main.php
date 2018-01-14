@@ -1,21 +1,7 @@
 <?php
-    #
-    # debug settings
-    #
-    if (true) {
-        ini_set('display_errors', 1);
-        ini_set('display_startup_errors', 1);
-        error_reporting(E_ALL);
-    }
-    #
-    #
-    #
     $host      = $_SERVER['HTTP_HOST'];
     $uri       = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
     $loginPage = 'Location: http://' . $host . $uri . '/pages/login.php';
-    #
-    # 
-    #
     include $_SERVER['DOCUMENT_ROOT'] . '/db/utils.php';
     if (!isAuthorized()) {
         header($loginPage);

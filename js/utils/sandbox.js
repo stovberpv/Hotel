@@ -79,6 +79,14 @@ const UTILS = {
         return map;
     },
 
+    CLONE (source) {
+        var obj = {};
+        for (let key in source) {
+          obj[key.toLowerCase()] = '';
+        }
+        return obj;
+    },
+
     DEEPF_REEZE: function deepFreeze(obj) {
 
         var propNames = Object.getOwnPropertyNames(obj);

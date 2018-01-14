@@ -28,11 +28,13 @@ const EVENT_BUS = {
     },
 
     dispatch: function (eventName, data) {
+        const STACK = new Error().stack; //TODO: test stack trace
         if (!this._isInitialized()) return;
         this._get().dispatchEvent(new CustomEvent(eventName, {
             'detail': {
                 'EventBus': true,
-                'data': data
+                'data': data,
+                'stack': STACK,
             }
         }));
     },
@@ -56,12 +58,10 @@ const EVENT_BUS = {
 
     _create: function () {
         var tree = new DOMTree([{ tag: this._tag, id: this._id, style: this._style }]);
-        tree.cultivate();
+        tree = tree.cultivate();
         document.body.appendChild(tree);
     }
 }
-
-UTILS.DEEPF_REEZE(EVENT_BUS);
 
 // /**
 //  * Автобус уведомлений

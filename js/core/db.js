@@ -1,39 +1,37 @@
 const DB = {
 
+    urls: { 
+        //TODO:
+    },
+
     CF001: {
 
-        SELECT: function () {
+        SELECT: function (data, eventId = '') {
+            const E = GL.CONST.EVENTS.CALENDAR.DB.CF001.SELECT;
             $.ajax({
                 url: '../db/cf001/select.php',
+                data: data,
                 dataType: 'json',
                 success: function (data) {
-                    if (!data.status) {
-                        console.log(data.msg);
-                    }
+                    EVENT_BUS.dispatch(E.SUCCESS + eventId, data);
                 },
                 error: function (xhr, textStatus, errorThrown) {
-                    console.log(textStatus);
-                    console.log(errorThrown);
+                    EVENT_BUS.dispatch(E.ERROR + eventId, { xhr, textStatus, errorThrown });
                 }
             });
         },
 
-        UPDATE: function () {
+        UPDATE: function (data, eventId = '') {
+            const E = GL.CONST.EVENTS.CALENDAR.DB.CF001.UPDATE;
             $.ajax({
                 url: '../db/cf001/modify.php',
-                data: {
-                    year: document.getElementById('year').innerHTML,
-                    month: utils.getMonthId(document.getElementById('month').innerHTML),
-                },
+                data: data,
                 dataType: 'json',
                 success: function (data) {
-                    if (!data.status) {
-                        console.log(data.msg);
-                    }
+                    EVENT_BUS.dispatch(E.SUCCESS + eventId, data);
                 },
                 error: function (xhr, textStatus, errorThrown) {
-                    console.log(textStatus);
-                    console.log(errorThrown);
+                    EVENT_BUS.dispatch(E.ERROR + eventId, { xhr, textStatus, errorThrown });
                 }
             });
         }
@@ -41,21 +39,17 @@ const DB = {
 
     RM001: {
 
-        SELECT: function () {
+        SELECT: function (data, eventId = '') {
+            const E = GL.CONST.EVENTS.CALENDAR.DB.RM001.SELECT;
             $.ajax({
                 url: '../db/rm001/select.php',
-                data: {},
+                data: data,
                 dataType: 'json',
                 success: function (data) {
-                    if (!data.status) {
-                        console.log(data.msg);
-                    } else {
-                        gl.rooms = data;
-                    }
+                    EVENT_BUS.dispatch(E.SUCCESS + eventId, data);
                 },
                 error: function (xhr, textStatus, errorThrown) {
-                    console.log(textStatus);
-                    console.log(errorThrown);
+                    EVENT_BUS.dispatch(E.ERROR + eventId, { xhr, textStatus, errorThrown });
                 }
             });
         }
@@ -63,70 +57,62 @@ const DB = {
 
     GL001: {
 
-        INSERT: function (opts) {
-            //FIX: php opts.dayin ... 
+        INSERT: function (data, eventId = '') {
+            const E = GL.CONST.EVENTS.CALENDAR.DB.GL001.INSERT;
             $.ajax({
                 url: '../db/gl001/insert.php',
-                data: opts,
+                data: data,
                 dataType: 'json',
                 success: function (data) {
-                    EVENT_BUS.dispatch(L.CONST.EVENTS.CALENDAR.DB.GL001.INSERT.SUCCESS, data);
+                    EVENT_BUS.dispatch(E.SUCCESS + eventId, data);
                 },
                 error: function (xhr, textStatus, errorThrown) {
-                    EVENT_BUS.dispatch(L.CONST.EVENTS.CALENDAR.DB.GL001.INSERT.ERROR, { xhr, textStatus, errorThrown });
+                    EVENT_BUS.dispatch(E.ERROR + eventId, { xhr, textStatus, errorThrown });
                 }
             });
         },
 
-        SELECT: function (year, month, callbackSuccess, callbackError) {
+        SELECT: function (data, eventId = '') {
+            const E = GL.CONST.EVENTS.CALENDAR.DB.GL001.SELECT;
             $.ajax({
                 url: '../db/gl001/select.php',
-                data: {
-                    year: year,
-                    month: month,
-                },
-                dataType: 'json',
-                success: callbackSuccess,
-                error: callbackError
-            });
-        },
-
-        UPDATE: function (opts) {
-            //FIX: php opts.dayin ... 
-            $.ajax({
-                url: '../db/gl001/modify.php',
-                data: opts,
+                data: data,
                 dataType: 'json',
                 success: function (data) {
-                    if (!data.status) {
-                        console.log(data.msg);
-                    } else {
-                        new Calendar().updGuest(data.old, data.new);
-                    }
+                    EVENT_BUS.dispatch(E.SUCCESS + eventId, data);
                 },
                 error: function (xhr, textStatus, errorThrown) {
-                    console.log(textStatus);
-                    console.log(errorThrown);
+                    EVENT_BUS.dispatch(E.ERROR + eventId, { xhr, textStatus, errorThrown });
                 }
             });
         },
 
-        DELETE: function (opts) {
-            //FIX: php opts.id 
+        UPDATE: function (data, eventId = '') {
+            const E = GL.CONST.EVENTS.CALENDAR.DB.GL001.UPDATE;
             $.ajax({
-                url: '../db/gl001/delete.php',
-                data: opts,
+                url: '../db/gl001/modify.php',
+                data: data,
                 dataType: 'json',
                 success: function (data) {
-                    if (!data.status) {
-                        console.log(data.msg);
-                    } else {
-                        new Calendar().delGuest(data.data);
-                    }
+                    EVENT_BUS.dispatch(E.SUCCESS + eventId, data);
                 },
                 error: function (xhr, textStatus, errorThrown) {
-                    console.log(textStatus);
-                    console.log(errorThrown);
+                    EVENT_BUS.dispatch(E.ERROR + eventId, { xhr, textStatus, errorThrown });
+                }
+            });
+        },
+
+        DELETE: function (data, eventId = '') {
+            const E = GL.CONST.EVENTS.CALENDAR.DB.GL001.DELETE;
+            $.ajax({
+                url: '../db/gl001/delete.php',
+                data: data,
+                dataType: 'json',
+                success: function (data) {
+                    EVENT_BUS.dispatch(E.SUCCESS + eventId, data);
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    EVENT_BUS.dispatch(E.ERROR + eventId, { xhr, textStatus, errorThrown });
                 }
             });
         }

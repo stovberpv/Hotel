@@ -681,8 +681,7 @@ class PickCalendar extends Dialog {
             ok: function ok (e) {
                 var val = this.getVal();
                 this.unbind();
-                this.Opts.buttons.ok(val);
-                // EventBus.dispatch(gl.events.inOutDialogSave, { intent: this.Opts.data.intent, year: val.year, month: val.month });
+                EventBus.dispatch(GL.CONST.EVENTS.CALENDAR.DIALOG_SAVE, { intent: this.Opts.data.intent, year: val.year, month: val.month });
 
             },
 

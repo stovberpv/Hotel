@@ -3,8 +3,10 @@ class Calendar extends DataWrapper {
     constructor () {
         super();
 
+        this.eventId = 'calendar';
         this.year;
         this.month;
+        this.entries;
         /** 
          * ID обрабатываемого класса 
          * FIX: при переходе на новую строку начинать отсчет заново
@@ -96,76 +98,67 @@ class Calendar extends DataWrapper {
 
                         if (e.which == 2) return;
         
-                        var data = {
-                                id: '',
-                                dayin: '',
-                                dayout: '',
-                                days: '',
-                                room: '',
-                                baseline: '',
-                                adjustment: '',
-                                cost: '',
-                                paid: '',
-                                name: '',
-                                city: '',
-                                tel: '',
-                                fn: ''
-                            },
-                            clList = e.target.classList,
-                            isAvailableBtn;
-        
+                        const CLASS_LIST = GL.CONST.CSS.CALENDAR.CLASS;
+
                         if (e.which == 3) {
-        
-                            if (clList.contains(gl.class_selected)) {
-        
-                                let filterGroupId = function (el) {
-                                    return el.match(/\bsel-group-\d+/g);
-                                }
-                                var groupId = e.target.className.split(' ').filter(filterGroupId).toString(),
-                                    groupEl = document.querySelectorAll('#calendar > tbody > tr#R' + row + ' > td.' + groupId),
-                                    begda = groupEl[0].id.split('-'),
-                                    endda = groupEl[groupEl.length - 1].id.split('-');
-        
-                                data.id = '-1';
-                                data.room = (e.target.id).substring(2, 4);
-                                data.dayin = begda[2] + '.' + begda[1];
-                                data.dayout = endda[2] + '.' + endda[1];
-                                isAvailableBtn = true;
-        
-                            } else if (clList.contains(gl.class_redeemed) || clList.contains(gl.class_reserved)) {
-        
-                                let filterId = function (el) {
-                                    return el.match(/^N\d+$/);
-                                }
-                                data.id = e.target.className.split(' ').filter(filterId).toString();
-                                isAvailableBtn = false;
-        
-                            } else if (!clList) {
-        
-                                var guest = e.target.closest('.book').querySelector('.book tbody');
-                                if (!guest) return;
-        
-                                data.id = guest.querySelector('.person-id').value;
-                                data.dayin = guest.querySelector('.person-dayin').value.substring(3);
-                                data.dayout = guest.querySelector('.person-dayout').valuesubstring(3);
-                                data.days = guest.querySelector('.person-days').value;
-                                data.room = guest.querySelector('.person-room-num').value;
-                                data.baseline = guest.querySelector('.person-baseline').value;
-                                data.adjustment = guest.querySelector('.person-adjustment').value;
-                                data.cost = guest.querySelector('.person-room-cost').value;
-                                data.paid = guest.querySelector('.person-room-paid').value;
-                                data.name = guest.querySelector('.person-name').value;
-                                data.city = guest.querySelector('.person-city').value;
-                                data.tel = guest.querySelector('.person-tel').value;
-                                data.fn = guest.querySelector('.person-fn').value;
+
+                            var guest = UTILS.CLONE(GL.CONST.SCHEMA.GUEST),
+                                isAvailableBtn;
+                            
+                            guest.year = this._getYear();
+                            guest.mont = this._getMonth().num;
+
+                            var bookEntry = e.target.closest('.book');
+                            if (bookEntry) {
+
+                                const SCHEMA = GL.CONST.SCHEMA.GUEST;                                      
+                                guest.unid = bookEntry.querySelector('.' + SCHEMA.UNID).value;
+                                guest.dbeg = bookEntry.querySelector('.' + SCHEMA.DBEG).value.substring(3);
+                                guest.dend = bookEntry.querySelector('.' + SCHEMA.DEND).value.substring(3);
+                                guest.days = bookEntry.querySelector('.' + SCHEMA.DAYS).value;
+                                guest.room = bookEntry.querySelector('.' + SCHEMA.ROOM).value;
+                                guest.base = bookEntry.querySelector('.' + SCHEMA.BASE).value;
+                                guest.adjs = bookEntry.querySelector('.' + SCHEMA.ADJS).value;
+                                guest.cost = bookEntry.querySelector('.' + SCHEMA.COST).value;
+                                guest.paid = bookEntry.querySelector('.' + SCHEMA.PAID).value;
+                                guest.name = bookEntry.querySelector('.' + SCHEMA.NAME).value;
+                                guest.teln = bookEntry.querySelector('.' + SCHEMA.TELN).value;
+                                guest.fnot = bookEntry.querySelector('.' + SCHEMA.FNOT).value;
+                                guest.city = bookEntry.querySelector('.' + SCHEMA.CITY).value;
         
                                 isAvailableBtn = false;
-        
+
                             } else {
-                                return;
-                            }
+
+                                var target = e.target.classList;
+
+                                if (target.contains(CLASS_LIST.SELECTED)) {
         
-                            EventBus.dispatch(gl.events.rcmenu, {
+                                    let idGroupFilter = function (el) { return el.match(/\bsel-group-\d+/g); }
+                                    var idGroup = e.target.className.split(' ').filter(idGroupFilter).toString(),
+                                        //FIX: dump row????    
+                                        group = document.querySelectorAll('#calendar > tbody > tr#R' + row + ' > td.' + idGroup),
+                                        begda = group[0].id.split('-'),
+                                        endda = group[group.length - 1].id.split('-');
+            
+                                    guest.unid = '-1';
+                                    guest.room = (e.target.id).substring(2, 4);
+                                    guest.dbeg = begda[2] + '.' + begda[1];
+                                    guest.dend = endda[2] + '.' + endda[1];
+                                    isAvailableBtn = true;
+            
+                                } else if (target.contains(CLASS_LIST.REDEEMED) || target.contains(CLASS_LIST.RESERVED)) {
+            
+                                    let idFilter = function (el) { return el.match(/^N\d+$/); }
+                                    guest.unid = e.target.className.split(' ').filter(idFilter).toString();
+                                    isAvailableBtn = false;
+            
+                                } else {
+                                    return;
+                                }
+                            }
+                            
+                            EventBus.dispatch(GL.CONST.EVENTS.CALENDAR.RC_MENU, {
                                 btn: {
                                     upd: !isAvailableBtn,
                                     del: !isAvailableBtn,
@@ -173,20 +166,20 @@ class Calendar extends DataWrapper {
                                 },
                                 x: e.pageX,
                                 y: e.pageY,
-                                data: data
+                                guest
                             });
         
                             return;
                         }
         
                         // Выделение при зажатой мыши
-                        gl.isMouseDown = true;
-                        if (e.target.classList.length == 0 || e.target.classList.contains(gl.class_selected)) {
-                            e.target.classList.toggle(gl.class_selected);
+                        GL.DATA.CORE.isMouseDown = true;
+                        if (e.target.classList.length == 0 || e.target.classList.contains(CLASS_LIST.SELECTED)) {
+                            e.target.classList.toggle(CLASS_LIST.SELECTED);
                         }
-                        gl.isSelected = e.target.classList.contains(gl.class_selected);
+                        GL.DATA.CALENDAR.isSelected = e.target.classList.contains(CLASS_LIST.SELECTED);
                         SelectionGroup.del(e);
-                        gl.isSelected ? SelectionGroup.add(e) : SelectionGroup.free();
+                        GL.DATA.CALENDAR.isSelected ? SelectionGroup.add(e) : SelectionGroup.free();
         
                         // Переключения CSS класса опредляющего подсвеченный элемент
                         let ids = e.target.className.split(' ').filter(function (el) {
@@ -194,22 +187,23 @@ class Calendar extends DataWrapper {
                         });
                         for (let i = 0; i < ids.length; i++) {
                             document.querySelectorAll('#calendar > tbody > tr > td.' + ids[i]).forEach(function (el) {
-                                el.classList.toggle(ids[i] + '-' + gl.class_viewfix);
-                                el.classList.toggle(ids[i] + '-' + gl.class_view);
+                                el.classList.toggle(ids[i] + '-' + CLASS_LIST.VIEW_FIX);
+                                el.classList.toggle(ids[i] + '-' + CLASS_LIST.VIEW);
                             });
-                            document.querySelector('.book > tbody > tr#' + ids[i]).classList.toggle(gl.class_viewfix);
-                            document.querySelector('.book > tbody > tr#' + ids[i]).classList.toggle(gl.class_view);
+                            document.querySelector('.book > tbody > tr#' + ids[i]).classList.toggle(CLASS_LIST.VIEW_FIX);
+                            document.querySelector('.book > tbody > tr#' + ids[i]).classList.toggle(CLASS_LIST.VIEW);
                         }
                     },
         
                     mouseOver: function mouseover(e) {
         
                         // Выделение при зажатой мыши
-                        if (gl.isMouseDown) {
-                            if (e.target.classList.length == 0 || e.target.classList.contains(gl.class_selected)) {
+                        const CLASS_LIST = GL.CONST.CSS.CALENDAR.CLASS;
+                        if (GL.DATA.CORE.isMouseDown) {
+                            if (e.target.classList.length == 0 || e.target.classList.contains(CLASS_LIST.SELECTED)) {
                                 SelectionGroup.del(e);
-                                gl.isSelected && SelectionGroup.add(e);
-                                e.target.classList.toggle(gl.class_selected, gl.isSelected);
+                                GL.DATA.CALENDAR.isSelected && SelectionGroup.add(e);
+                                e.target.classList.toggle(CLASS_LIST.SELECTED, GL.DATA.CALENDAR.isSelected);
                             } else {
                                 SelectionGroup.free();
                             }
@@ -221,44 +215,45 @@ class Calendar extends DataWrapper {
                         });
                         for (let i = 0; i < ids.length; i++) {
                             var els = document.querySelectorAll('#calendar > tbody > tr > td.' + ids[i]),
-                                viewfix = ids[i] + '-' + gl.class_viewfix,
-                                view = ids[i] + '-' + gl.class_view;
+                                viewfix = ids[i] + '-' + CLASS_LIST.VIEW_FIX,
+                                view = ids[i] + '-' + CLASS_LIST.VIEW;
                             for (let i = 0; i < els.length; i++) {
                                 if (!els[i].classList.contains(view)) {
                                     els[i].classList.add(view);
                                 }
                             }
-                            document.querySelector('.book > tbody > tr#' + ids[i]).classList.add(ids[i] + '-' + gl.class_view);
+                            document.querySelector('.book > tbody > tr#' + ids[i]).classList.add(ids[i] + '-' + CLASS_LIST.VIEW);
                         }
                         let id = e.target.id.substring(5);
-                        document.querySelector('#calendar thead tr:nth-child(2) th#D' + id).classList.add(gl.class_view);
+                        document.querySelector('#calendar thead tr:nth-child(2) th#D' + id).classList.add(CLASS_LIST.VIEW);
                     },
         
                     mouseOut: function mouseout(e) {
         
                         // Выделение при зажатой мыши
+                        const CLASS_LIST = GL.CONST.CSS.CALENDAR.CLASS;
                         let ids = e.target.className.split(' ').filter(function (el) {
                             return el.match(/^N\d+$/g);
                         });
                         for (let i = 0; i < ids.length; i++) {
                             var els = document.querySelectorAll('#calendar > tbody > tr > td.' + ids[i]),
-                                viewfix = ids[i] + '-' + gl.class_viewfix,
-                                view = ids[i] + '-' + gl.class_view;
+                                viewfix = ids[i] + '-' + CLASS_LIST.VIEW_FIX,
+                                view = ids[i] + '-' + CLASS_LIST.VIEW;
                             for (let i = 0; i < els.length; i++) {
                                 if (els[i].classList.contains(view)) {
                                     els[i].classList.remove(view);
                                 }
                             }
-                            document.querySelector('.book > tbody > tr#' + ids[i]).classList.remove(ids[i] + '-' + gl.class_view);
+                            document.querySelector('.book > tbody > tr#' + ids[i]).classList.remove(ids[i] + '-' + CLASS_LIST.VIEW);
                         }
                         let id = e.target.id.substring(5);
-                        document.querySelector('#calendar thead tr:nth-child(2) th#D' + id).classList.remove(gl.class_view);
+                        document.querySelector('#calendar thead tr:nth-child(2) th#D' + id).classList.remove(CLASS_LIST.VIEW);
                     },
         
                     mouseUp: function mouseup(e) {
         
                         SelectionGroup.free();
-                        gl.isMouseDown = false;
+                        GL.DATA.CORE.isMouseDown = false;
                     },
                 },
 
@@ -266,7 +261,7 @@ class Calendar extends DataWrapper {
 
                     mouseDown: function mousedown(e) {
     
-                        e.target.classList.toggle(gl.class_viewfix);
+                        e.target.classList.toggle(GL.CONST.CSS.CALENDAR.CLASS.VIEW_FIX);
                         var book = document.querySelector('#' + e.target.parentNode.id + '-book');
                         if (!book) {
                             console.log('Error. No book with id: ' + e.target.parentNode.id + '-book');
@@ -293,71 +288,73 @@ class Calendar extends DataWrapper {
                         if (e.which == 2) return;
         
                         if (e.which == 3) {
-                            EventBus.dispatch(gl.events.rcmenu, []);
+
+                            var guest = UTILS.CLONE(GL.CONST.SCHEMA.GUEST);
+                            guest.year = this._getYear();
+                            guest.mont = this._getMonth().num;
+                                
+                            var isAvailableBtn = true;
+
+                            EventBus.dispatch(GL.CONST.EVENTS.CALENDAR.RC_MENU, {
+                                btn: {
+                                    upd: isAvailableBtn,
+                                    del: isAvailableBtn,
+                                    add: !isAvailableBtn
+                                },
+                                x: e.pageX,
+                                y: e.pageY,
+                                guest
+                            });
                             return;
                         };
         
+                        const CLASS_LIST = GL.CONST.CSS.CALENDAR.CLASS;
                         if (!e.target.closest('.inner-book')) {
-                            var personRow = e.target.querySelector('.person-row'); //FIX: ???
-                            personRow.classList.toggle(gl.class_viewfix);
-                            personRow.classList.toggle(gl.class_view);
+                            var personRow = e.target.querySelector('.person-row');
+                            personRow.classList.toggle(CLASS_LIST.VIEW_FIX);
+                            personRow.classList.toggle(CLASS_LIST.VIEW);
                             document.querySelectorAll('#calendar > tbody > tr > td.' + personRow.id).forEach(function (el) {
-                                if (that.classList.contains(gl.class_viewfix)) {//FIX: ???
-                                    el.classList.add(id + '-' + gl.class_viewfix);//FIX: ???
-                                    el.classList.remove(id + '-' + gl.class_view);//FIX: ???
+                                if (that.classList.contains(CLASS_LIST.VIEW_FIX)) {
+                                    el.classList.add(id + '-' + CLASS_LIST.VIEW_FIX);
+                                    el.classList.remove(id + '-' + CLASS_LIST.VIEW);
                                 } else {
-                                    el.classList.add(id + '-' + gl.class_view);//FIX: ???
-                                    el.classList.remove(id + '-' + gl.class_viewfix);//FIX: ???
+                                    el.classList.add(id + '-' + CLASS_LIST.VIEW);
+                                    el.classList.remove(id + '-' +CLASS_LIST.VIEW_FIX);
                                 }
                             });
                         }
                     },
         
                     mouseOver: function mouseover(e) {
+
+                        const CLASS_LIST = GL.CONST.CSS.CALENDAR.CLASS;
                         var innerBook = e.target.closest('.book');
                         if (innerBook) {
                             var personRow = innerBook.querySelector('.person-row');
-                            if (!personRow.classList.contains(gl.class_viewfix)) {
-                                personRow.classList.add(gl.class_view);
+                            if (!personRow.classList.contains(CLASS_LIST.VIEW_FIX)) {
+                                personRow.classList.add(CLASS_LIST.VIEW);
                                 document.querySelectorAll('#calendar > tbody > tr > td.' + personRow.id).forEach(function (el) {
-                                    el.classList.add(personRow.id + '-' + gl.class_view);
+                                    el.classList.add(personRow.id + '-' + CLASS_LIST.VIEW);
                                 });
                             }
                         }
                     },
         
                     mouseOut: function mouseout(e) {
+
+                        const CLASS_LIST = GL.CONST.CSS.CALENDAR.CLASS;
                         var innerBook = e.target.closest('.book');
                         if (innerBook) {
                             var personRow = innerBook.querySelector('.person-row');
-                            if (!personRow.classList.contains(gl.class_viewfix)) {
-                                personRow.classList.remove(gl.class_view);
+                            if (!personRow.classList.contains(CLASS_LIST.VIEW_FIX)) {
+                                personRow.classList.remove(CLASS_LIST.VIEW);
                                 document.querySelectorAll('#calendar > tbody > tr > td.' + personRow.id).forEach(function (el) {
-                                    el.classList.remove(personRow.id + '-' + gl.class_view);
+                                    el.classList.remove(personRow.id + '-' + CLASS_LIST.VIEW);
                                 });
                             }
                         }
                     },
                 },
-            },
-
-            initialization: {
-
-                success: function success(e) {
-
-                    EventBus.unregister(gl.events.calendar.async.initialization.Success, success);
-                    var data = e.detail.data;
-                    if (data.status) {
-                        this._setData(data);
-                        this.init();
-                    } else {
-                        console.log(data.msg)
-                    };
-                },
-                
-                error: function error(e) {
-
-                }
             },
 
             control: {
@@ -366,52 +363,28 @@ class Calendar extends DataWrapper {
 
                     prev: function prevMonth(e) {
 
-                        function onSuccess(data) {
-                            if (data.status) {
-                                this._setYear(data.year);
-                                this._setMonth(data.month);
-                                this._prepare(data.year, data.month);
-                                this.addEntry(data.year, data.month, data.data);
-                            } else {
-                                console.log(data.msg)
-                            };
-                        }
-
-                        function onError(xhr, textStatus, errorThrown) {
-                            console.log(textStatus);
-                            console.log(errorThrown);
-                        }
-
                         var monthNum = this._getMonth().num;
                         monthNum > 1 ? monthNum-- : monthNum = 12;
                         
-                        var newMonth = gl.monthNames[monthNum];
-                        db.gl001.select(this._getYear(), newMonth, onSuccess.bind(this), onError);
+                        var data = {
+                            year: this._getYear(),
+                            month: GL.CONST.VALUES.CALENDAR.MONTH_NAMES[monthNum]
+                        }
+
+                        DB.GL001.SELECT(data, this.eventId);
                     },
 
                     next: function nextMonth(e) {
 
-                        function onSuccess(data) {
-                            if (data.status) {
-                                this._setYear(data.year);
-                                this._setMonth(data.month);
-                                this._prepare(data.year, data.month);
-                                this.addEntry(data.year, data.month, data.data);
-                            } else {
-                                console.log(data.msg)
-                            };
-                        }
-
-                        function onError(xhr, textStatus, errorThrown) {
-                            console.log(textStatus);
-                            console.log(errorThrown);
-                        }
-
                         var monthNum = this._getMonth().num;
                         monthNum > 11 ? monthNum = 1 : monthNum++;
-                        
-                        var newMonth = gl.monthNames[monthNum];
-                        db.gl001.select(this._getYear(), newMonth, onSuccess.bind(this), onError);
+
+                        var data = {
+                            year: this._getYear(),
+                            month: GL.CONST.VALUES.CALENDAR.MONTH_NAMES[monthNum]
+                        }
+
+                        DB.GL001.SELECT(data, this.eventId);
                     }
                 },
 
@@ -419,10 +392,7 @@ class Calendar extends DataWrapper {
 
                     var pickCalendar = new PickCalendar({
                         data: {
-                            intent: gl.intent_add,
-                            buttons: {
-                                ok: btnOk.bind(this)
-                            }
+                            intent: GL.CONST.VALUES.CALENDAR.INTENT.PICK_CALENDAR,
                         },
                     });
                     pickCalendar.bind();
@@ -431,57 +401,6 @@ class Calendar extends DataWrapper {
                         month: this._getMonth().num
                     });
                     pickCalendar.show();    
-
-                    function btnOk(data) {
-
-                        switch (data.intent) {
-                            case gl.intent_add:
-                                db.gl001.insert(data, glInsertSuccess.bind(this), glInsertError);
-                                break;
-        
-                            case gl.intent_upd:
-                                db.gl001.update(data, glUpdateSuccess.bind(this), glUpdateError);
-                                break;
-        
-                            case gl.intent_del:
-                                db.gl001.delete(data.id, glDeleteSuccess.bind(this), glDeleteError);
-                                break;
-        
-                            case gl.intent.selCalendar:
-                                if (data.year < 1900) return;
-                                this._setYear(data.year);
-                                this._setMonth(data.month);
-                                db.gl001.select(glSelectSuccess, glSelectError);
-                                db.cf001.update(cfUpdateSuccess, cfUpdateError);
-                                break;
-        
-                            default:
-                                break;
-                        }
-
-                        function glInsertSuccess(data) {
-                            if (data.status) {
-                                this._prepare(data.year, data.month);
-                                this.addEntry(data.year, data.month, data.data);
-                                this.init();
-                            } else {
-                                console.log(data.msg);
-                            }
-                        }
-                        function glInsertError(xhr, textStatus, errorThrown) { }
-
-                        function glUpdateSuccess(data) { }
-                        function glUpdateError(xhr, textStatus, errorThrown) { }
-
-                        function glDeleteSuccess(data) { }
-                        function glDeleteError(xhr, textStatus, errorThrown) { }
-
-                        function glSelectSuccess(data) { }
-                        function glSelectError(xhr, textStatus, errorThrown) { }
-
-                        function cfUpdateSuccess(data) { }
-                        function cfUpdateError(xhr, textStatus, errorThrown) { }
-                    }
                 }
             },
 
@@ -489,14 +408,22 @@ class Calendar extends DataWrapper {
 
                 save: function (e) {
 
+                    const E = GL.CONST.VALUES.CALENDAR.INTENT;
+                    const GL001 = DB.GL001;
                     var data = e.detail.data;
 
-                    //TODO: ajax send val + year, month
                     switch (data.intent) {
-                        case GL.CONST.VALUES.CALENDAR.INTENT.ADD: break;
-                        case GL.CONST.VALUES.CALENDAR.INTENT.UPD: break;
-                        case GL.CONST.VALUES.CALENDAR.INTENT.DEL: break;
+                        case E.ADD: GL001.INSERT(data, this.eventId); break;
+                        case E.UPD: GL001.UPDATE(data, this.eventId); break;
+                        case E.DEL: GL001.DELETE(data, this.eventId); break;
+                        case E.PICK_CALENDAR: pickCalendar(); break;    
                         default: break;
+                    }
+
+                    function pickCalendar() {
+                        if (data.year < 1900) return;
+                        GL001.SELECT(data, this.eventId);
+                        DB.CF001.UPDATE(data, this.eventId);
                     }
                 }
             },
@@ -504,42 +431,56 @@ class Calendar extends DataWrapper {
             db: {
                 cf001: {
                     select: {
-                        success: function (e) { },
+                        success: function (e) { console.log(e.detail.data.msg); },
                         error: function (e) { }
                     },
                     update: {
-                        success: function (e) { },
+                        success: function (e) { console.log(e.detail.data.msg); },
                         error: function (e) { }
                     },
                 },
                 rm001: {
                     select: {
-                        success: function (e) { },
+                        success: function (e) {
+                            const D = e.detail.data;
+                            D.status && (GL.DATA.CALENDAR.rooms = D.data);
+                        },
                         error: function (e) { }
                     },
                 },
                 gl001: {
                     insert: {
-                        success: function (e) { 
+                        success: function (e) {
+                            const D = e.detail.data;
+                            if (!D.status) return;
+                            this.addEntry(D.year, D.month, D.data);
 
                         },
                         error: function (e) { }
                     },
                     select: {
-                        success: function (e) { 
-
+                        success: function (e) {
+                            const D = e.detail.data;
+                            if (!D.status) return;
+                            this._setYear();
+                            this._setMonth();
+                            this._setEntries(D.data);
+                            this._prepare();
+                            this.addEntry(this._getEntries());
                         },
                         error: function (e) { }
                     },
                     update: {
-                        success: function (e) { 
-
+                        success: function (e) {
+                            const D = e.detail.data;
+                            D.status && this.updEntry(D.old, D.new);
                         },
                         error: function (e) { }
                     },
                     delete: {
                         success: function (e) { 
-
+                            const D = e.detail.data;
+                            D.status && this.delEntry(D.data);
                         },
                         error: function (e) { }
                     },
@@ -552,7 +493,7 @@ class Calendar extends DataWrapper {
 
         var tree =
             [{ tag: 'table', id: 'calendar', class: 'my-table' },
-                [{ tag: 'thead' },
+                [{ tag: 'thead', id: 'calendar-thead' },
                     [{ tag: 'tr', id: 'calendar-row-buttons' },
                         [{tag: 'td'},
                             [{ tag: 'table' },
@@ -579,7 +520,7 @@ class Calendar extends DataWrapper {
                         { tag: 'td' },
                     ],
                 ],
-                [{ tag: 'tbody' },
+                [{ tag: 'tbody', id: 'calendar-tbody' },
                 ],
             ];
 
@@ -587,158 +528,168 @@ class Calendar extends DataWrapper {
         if (tree) target.appendChild(tree);
         else console.log('tree is ' + tree);
 
+        const L = this.listeners;
         var qsParent, qsChild, qsParentExcl;
 
         qsParent = '#calendar > tbody'; qsChild = 'td', qsParentExcl = '.book-row';
-        this._setDelegate('mousedown', qsParent, qsChild, qsParentExcl, this.listeners.calendar.td.mouseDown);
-        this._setDelegate('mouseover', qsParent, qsChild, qsParentExcl, this.listeners.calendar.td.mouseOver);
-        this._setDelegate('mouseout', qsParent, qsChild, qsParentExcl, this.listeners.calendar.td.mouseOut);
-        this._setDelegate('mouseup', qsParent, qsChild, qsParentExcl, this.listeners.calendar.td.mouseUp);
+        this._setDelegate('mousedown', qsParent, qsChild, qsParentExcl, L.calendar.td.mouseDown.bind(this));
+        this._setDelegate('mouseover', qsParent, qsChild, qsParentExcl, L.calendar.td.mouseOver);
+        this._setDelegate('mouseout', qsParent, qsChild, qsParentExcl, L.calendar.td.mouseOut);
+        this._setDelegate('mouseup', qsParent, qsChild, qsParentExcl, L.calendar.td.mouseUp);
 
         qsParent = '#calendar > tbody'; qsChild = 'tr > th', qsParentExcl = '';
-        this._setDelegate('mousedown', qsParent, qsChild, qsParentExcl, this.listeners.calendar.th.mouseDown);
+        this._setDelegate('mousedown', qsParent, qsChild, qsParentExcl, L.calendar.th.mouseDown);
 
         qsParent = '#calendar > tbody'; qsChild = '.book', qsParentExcl = '';
-        this._setDelegate('mousedown', qsParent, qsChild, qsParentExcl, this.listeners.book.tr.mouseDown);
-        this._setDelegate('mouseover', qsParent, qsChild, qsParentExcl, this.listeners.book.tr.mouseOver);
-        this._setDelegate('mouseout', qsParent, qsChild, qsParentExcl, this.listeners.book.tr.mouseOut);
+        this._setDelegate('mousedown', qsParent, qsChild, qsParentExcl, L.book.tr.mouseDown.bind(this));
+        this._setDelegate('mouseover', qsParent, qsChild, qsParentExcl, L.book.tr.mouseOver);
+        this._setDelegate('mouseout', qsParent, qsChild, qsParentExcl, L.book.tr.mouseOut);
 
-        EVENT_BUS.register(GL.CONST.EVENTS.CALENDAR.PICK_CALENDAR, this.listeners.control.pickCalendar);
-        EVENT_BUS.register(GL.CONST.EVENTS.CALENDAR.DIALOG_SAVE, this.listeners.dialog.save.bind(this));
-        EVENT_BUS.register(GL.CONST.EVENTS.CALENDAR.RC_MENU.RC_MENU_OPEN, this.listeners.rcm.open);
-        EVENT_BUS.register(GL.CONST.EVENTS.CALENDAR.RC_MENU.RCM_ITEM_ADD_GUEST, this.listeners.rcm.items.add);
-        EVENT_BUS.register(GL.CONST.EVENTS.CALENDAR.RC_MENU.RCM_ITEM_DEL_GUEST, this.listeners.rcm.items.del);
-        EVENT_BUS.register(GL.CONST.EVENTS.CALENDAR.RC_MENU.RCM_ITEM_UPD_GUEST, this.listeners.rcm.items.upd);
+        const E = GL.CONST.EVENTS.CALENDAR;
+        EVENT_BUS.register(E.DIALOG_SAVE, L.dialog.save.bind(this));
+        EVENT_BUS.register(E.RC_MENU.RC_MENU_OPEN, L.rcm.open);
+        EVENT_BUS.register(E.RC_MENU.RCM_ITEM_ADD_GUEST, L.rcm.items.add);
+        EVENT_BUS.register(E.RC_MENU.RCM_ITEM_DEL_GUEST, L.rcm.items.del);
+        EVENT_BUS.register(E.RC_MENU.RCM_ITEM_UPD_GUEST, L.rcm.items.upd);
     
-        EVENT_BUS.register(GL.CONST.EVENTS.CALENDAR.DB.GL001.INSERT.SUCCESS, this.listeners.db.gl001.insert.success);
-        EVENT_BUS.register(GL.CONST.EVENTS.CALENDAR.DB.GL001.SELECT.SUCCESS, this.listeners.db.gl001.select.success);
-        EVENT_BUS.register(GL.CONST.EVENTS.CALENDAR.DB.GL001.UPDATE.SUCCESS, this.listeners.db.gl001.update.success);
-        EVENT_BUS.register(GL.CONST.EVENTS.CALENDAR.DB.GL001.DELETE.SUCCESS, this.listeners.db.gl001.delete.success);
+        EVENT_BUS.register(E.DB.GL001.INSERT.SUCCESS + this.eventId, L.db.gl001.insert.success.bind(this));
+        EVENT_BUS.register(E.DB.GL001.SELECT.SUCCESS + this.eventId, L.db.gl001.select.success.bind(this));
+        EVENT_BUS.register(E.DB.GL001.UPDATE.SUCCESS + this.eventId, L.db.gl001.update.success.bind(this));
+        EVENT_BUS.register(E.DB.GL001.DELETE.SUCCESS + this.eventId, L.db.gl001.delete.success.bind(this));
     }
 
     init() {
 
-        var monthName = utils.getMonthName(month),
-            days = new Date(year, month, 0).getDate();
-
-        //FIX: innerHTMl memory leak
-        // thead begin
-        //  --- чистим
-        //  --- --- тело
-        document.querySelector('#calendar > tbody').innerHTML = "";
-        // ---- --- дни месяца
-        var trdays = document.getElementById('calendar-row-days'),
-            childs = trdays.children.length;
-        for (let i = 0; i < childs; i++) {
-            try {
-                trdays.deleteCell(0);
-            } catch (e) {}
-        }
-        //  --- --- название месяца
-        document.getElementById('month').innerHTML = "";
-        //  --- --- год
-        document.getElementById('year').innerHTML = "";
-
-        //  --- добавляем
-        //  --- --- год
-        document.getElementById('year').innerHTML = year;
-        //  --- --- название месяца
-        var td = document.getElementById('calendar-row-buttons').getElementsByTagName('td')[0];
-        td.setAttribute('colspan', days + 1);
-        document.getElementById('month').innerHTML = monthName;
-        document.getElementById('month').value = monthName;
-        //  --- --- дни месяца
-        for (let i = 0; i <= days; i++) {
-            var th = document.createElement('th');
-            if (i == 0) {
-                th.classList.add('blank-cell');
-            } else {
-                let day = utils.overlay(i, '0', 2),
-                    date = year + '-' + utils.overlay(month, '0', 2) + '-' + day;
-                th.setAttribute('id', 'D' + date)
-                th.appendChild(document.createTextNode(i));
+        $.ajax({
+            url: '../db/init.php',
+            dataType: 'json',
+            success: function onSuccess(data) {
+                GL.DATA.CALENDAR.rooms = data.rooms;
+                this._setYear(data.year);
+                this._setMonth(data.month);
+                this._setEntries(data.data);
+                this._prepare();
+                this.addEntry(this._getEntries());
+            }.bind(this),
+            error: function onError(xhr, textStatus, errorThrown) {
+                console.log(textStatus);
+                console.log(errorThrown);
             }
-            trdays.appendChild(th);
-        }
-
-        //  tbody begin
-        var tbody = document.querySelector('#calendar > tbody');
-        for (let i = 0; i < gl.rooms.length; i++) {
-            var room = gl.rooms[i].room,
-                tr = document.createElement('tr');
-            tr.setAttribute('id', 'R' + room);
-            for (let j = 0; j < days + 1; j++) {
-                var node;
-                if (0 == j) {
-                    node = document.createElement('th');
-                    node.appendChild(document.createTextNode(room));
-                } else {
-                    let day = utils.overlay(j, '0', 2),
-                        date = year + '-' + utils.overlay(month, '0', 2) + '-' + day;
-                    node = document.createElement('td');
-                    node.setAttribute('id', 'RD' + room + '_' + date);
-                    node.appendChild(document.createTextNode(""));
-                }
-                tr.appendChild(node);
-            }
-            tbody.append(tr);
-        }
-
-        var data = this._getData();
-
-        if (!data) {
-            EventBus.register(gl.events.ajax.calendar.init.Success, this.listeners.ajax.success.bind(this));
-
-            $.ajax({
-                url: '../db/init.php',
-                dataType: 'json',
-                success: function (data) {
-                    EventBus.dispatch(gl.events.ajax.calendar.init.Success, data);
-                },
-                error: function (xhr, textStatus, errorThrown) {
-                    console.log(textStatus);
-                    console.log(errorThrown);
-                }
-            });
-
-            return;
-        }
-        
-        gl.rooms = data.rooms;
-        this._prepare(data.year, data.month);
-        this.addEntry(data.year, data.month, data.data);
+        });
     }
 
-    addEntry(list) {
+    _prepare() {
 
-        if (!list) return;
+        var self = this;
+        free ();
+        build ();
 
-        for (let i = 0; i < list.length; i++) {
-            fillCalendar(list[i]);
-            fillBook(list[i]);
+        function free() {
+            
+            var tbody = document.getElementById('calendar-tbody'),
+                daysRow = document.getElementById('calendar-row-days');
+            
+            if (tbody) while (tbody.hasChildNodes()) tbody.removeChild(tbody.firstChild);
+            if (daysRow) while (daysRow.hasChildNodes()) daysRow.removeChild(daysRow.firstChild);
         }
 
-        function fillCalendar(wa) {
+        function build() {
+            
+            var today = new Date();
+            const YEAR = self._getYear() || today.getFullYear();
+            const MONTH = self._getMonth() || GL.CONST.VALUES.CALENDAR.MONTH_NAMES[today.getMonth() + 1];
+            const DAYS = new Date(YEAR, MONTH.num, 0).getDate();
+            const ENTRIES = self._getEntries() || [];
 
+            document.getElementById('calendar-row-buttons').getElementsByTagName('td')[0].setAttribute('colspan', DAYS);
+
+            var calendar = document.getElementById('calendar'),
+                labelYear = calendar.querySelector('#year'),
+                labelMonth = calendar.querySelector('#month');
+            
+            while (labelYear.firstChild) labelYear.removeChild(labelYear.firstChild);
+            while (labelMonth.firstChild) labelMonth.removeChild(labelMonth.firstChild);
+
+            labelYear.appendChild(document.createTextNode(YEAR));
+            labelMonth.appendChild(document.createTextNode(MONTH.name));
+
+            var daysRow = document.getElementById('calendar-row-days');
+
+            var day = 0;
+            while (day <= DAYS) {
+                var th = document.createElement('th');
+                if (day == 0) {
+                    th.classList.add('blank-cell');
+                } else {
+                    let id = 'D' + YEAR + '-' + MONTH.num + '-' + UTILS.OVERLAY(day, '0', 2);
+                    th.setAttribute('id', id)
+                    th.appendChild(document.createTextNode(day));
+                }
+                daysRow.appendChild(th);
+                day++;
+            }
+
+            var tbody = document.getElementById('calendar-tbody');
+            for (var room of GL.DATA.CALENDAR.rooms) {
+                var id = 'R' + room.room,
+                    tr = document.createElement('tr');
+                tr.setAttribute('id', id);
+                var day = 0;
+                while (day <= DAYS) {
+                    var node;
+                    if (0 == day) {
+                        node = document.createElement('th');
+                        node.appendChild(document.createTextNode(room.room));
+                    } else {
+                        let id = 'RD' + room.room + '_'  + YEAR + '-' + MONTH.num + '-' + UTILS.OVERLAY(day, '0', 2);
+                        node = document.createElement('td');
+                        node.setAttribute('id', id);
+                        node.appendChild(document.createTextNode(''));
+                    }
+                    tr.appendChild(node);
+                    day++;
+                }
+                tbody.appendChild(tr);
+            }
+        }
+    }
+
+    addEntry(data) {
+
+        var self = this;
+        var data = data || self._getEntries();
+        if (!data) return;
+
+        for (let i = 0; i < data.length; i++) {
+            setCellColor(data[i]);
+            setBookEntry(data[i]);
+        }
+
+        function setCellColor(wa) {
+
+            const CLASS_LIST = GL.CONST.CSS.CALENDAR.CLASS;
             var begda = new Date(wa.dayin),
                 endda = new Date(wa.dayout),
                 curda = new Date(),
                 tmpda = begda;
 
             while (tmpda <= endda) {
-                if (!isDateValid(tmpda)) continue;
+                if (!isDateValid(tmpda)) {
+                    tmpda.setDate(tmpda.getDate() + 1);
+                    continue;
+                }
 
                 //FIX: replace innerHTML (memory leak)
                 var cell = document.querySelector('#calendar #R' + wa.room + ' #RD' + wa.room + '_' + tmpda.format('yyyy-mm-dd'));
                 cell.innerHTML = '';
 
                 // добавляем класс
-                if (cell.classList.contains(gl.class_redeemed) || cell.classList.contains(gl.class_reserved)) {
-                    cell.classList.remove(gl.class_redeemed, gl.class_reserved);
-                    cell.classList.add(gl.class_adjacent);
+                if (cell.classList.contains(CLASS_LIST.REDEEMED) || cell.classList.contains(CLASS_LIST.RESERVED)) {
+                    cell.classList.remove(CLASS_LIST.REDEEMED, CLASS_LIST.RESERVED);
+                    cell.classList.add(CLASS_LIST.ADJACENT);
                 } else {
-                    cell.classList.remove(gl.class_selected);
-                    (tmpda < curda) ? cell.classList.add(gl.class_redeemed) : cell.classList.add(gl.class_reserved);
+                    cell.classList.remove(CLASS_LIST.SELECTED);
+                    (tmpda < curda) ? cell.classList.add(CLASS_LIST.REDEEMED) : cell.classList.add(CLASS_LIST.RESERVED);
                 }
                 cell.classList.add('N' + wa.id);
 
@@ -762,13 +713,16 @@ class Calendar extends DataWrapper {
         }
 
         function isDateValid(d) {
-            return d.format('yyyy-mm') == (this.year + '-' + this.month);
+            return d.format('yyyy-mm') == (self._getYear() + '-' + self._getMonth().num);
         }
 
-        function fillBook(wa) {
+        function setBookEntry(wa) {
+
+            const SCHEMA = GL.CONST.SCHEMA.GUEST;
 
             var tree,
                 days = new Date(year, month, 0).getDate();
+            
             if (!document.getElementById('R' + wa.room + '-book')) {
                 tree =
                     [{ tag: 'tr', id: 'R' + wa.room + '-book', class: 'hidden book-row' },
@@ -784,32 +738,32 @@ class Calendar extends DataWrapper {
             }
 
             tree =
-                [{ tag: 'tr', id: 'N' + wa.id, class: 'person-row' },
-                    { tag: 'td', class: 'person-fields person-id', textNode: wa.id },
+                [{ tag: 'tr', id: 'N' + wa.unid, class: 'person-row' },
+                    { tag: 'td', class: 'person-fields ' + SCHEMA.UNID, textNode: wa.unid },
                     [{ tag: 'td' },
                         [{ tag: 'table', class: 'inner-book' },
                             [{ tag: 'tbody' },
                                 [{ tag: 'tr' },
                                     [{ tag: 'td', class: 'person-fields person-base-info' },
-                                        { tag: 'a', class: 'person-fields person-name', textNode: wa.name },
-                                        { tag: 'a', class: 'person-fields person-tel', textNode: wa.tel },
+                                        { tag: 'a', class: 'person-fields ' + SCHEMA.NAME, textNode: wa.name },
+                                        { tag: 'a', class: 'person-fields ' + SCHEMA.TELN, textNode: wa.teln },
                                     ],
-                                    { tag: 'td', class: 'person-fields person-dates person-dayin', textNode: 'с  ' + (new Date(wa.dayin).format('dd.mm')) },
-                                    { tag: 'td', class: 'person-fields person-room-num', rowspan: 2, textNode: wa.room },
-                                    { tag: 'td', class: 'person-fields person-room-cost', textNode: wa.cost },
+                                    { tag: 'td', class: 'person-fields person-dates ' + SCHEMA.DBEG, textNode: 'с  ' + (new Date(wa.dbeg).format('dd.mm')) },
+                                    { tag: 'td', class: 'person-fields ' + SCHEMA.ROOM, rowspan: 2, textNode: wa.room },
+                                    { tag: 'td', class: 'person-fields ' + SCHEMA.COST, textNode: wa.cost },
                                 ],
                                 [{ tag: 'tr' },
                                     [{ tag: 'td', class: 'person-fields person-additional-info' },
-                                        { tag: 'a', class: 'person-fields person-city', textNode: wa.city },
-                                        { tag: 'a', class: 'person-fields person-fn', textNode: wa.fn },
+                                        { tag: 'a', class: 'person-fields ' + SCHEMA.CITY, textNode: wa.city },
+                                        { tag: 'a', class: 'person-fields ' + SCHEMA.FNOT, textNode: wa.fnot },
                                     ],
-                                    { tag: 'td', class: 'person-fields person-dates person-dayout', textNode: 'по ' + (new Date(wa.dayout).format('dd.mm')) },
-                                    { tag: 'td', class: 'person-fields person-room-paid', textNode: wa.paid },
+                                    { tag: 'td', class: 'person-fields person-dates ' + SCHEMA.DEND, textNode: 'по ' + (new Date(wa.dend).format('dd.mm')) },
+                                    { tag: 'td', class: 'person-fields ' + SCHEMA.PAID , textNode: wa.paid },
                                 ],
                                 [{ tag: 'tr', style: 'display:none;' },
-                                    { tag: 'td', class: 'person-fields person-days', textNode: wa.days },
-                                    { tag: 'td', class: 'person-fields person-baseline', textNode: wa.baseline },
-                                    { tag: 'td', class: 'person-fields person-adjustment', textNode: wa.adjustment }
+                                    { tag: 'td', class: 'person-fields ' + SCHEMA.DAYS, textNode: wa.days },
+                                    { tag: 'td', class: 'person-fields ' + SCHEMA.BASE, textNode: wa.base },
+                                    { tag: 'td', class: 'person-fields ' + SCHEMA.ADJS, textNode: wa.adjs }
                                 ]
                             ]
                         ]
@@ -826,9 +780,10 @@ class Calendar extends DataWrapper {
             var wa = list[i];
 
             // calendar begin
+            const CLASS_LIST = GL.CONST.CSS.CALENDAR.CLASS;
             var room = wa.room,
-                begda = new Date(wa.dayin),
-                endda = new Date(wa.dayout),
+                begda = new Date(wa.dbeg),
+                endda = new Date(wa.dend),
                 curda = new Date();
 
             while (begda <= endda) {
@@ -838,19 +793,19 @@ class Calendar extends DataWrapper {
                     begda.setDate(begda.getDate() + 1);
                     continue;
                 }
-                td.classList.remove('N' + wa.id);
-                td.classList.remove('N' + wa.id + '-' + gl.class_viewfix);
-                td.classList.remove('N' + wa.id + '-' + gl.class_view);
-                if (td.classList.contains(gl.class_adjacent)) {
-                    td.classList.remove(gl.class_adjacent);
+                td.classList.remove('N' + wa.unid);
+                td.classList.remove('N' + wa.unid + '-' + CLASS_LIST.VIEW_FIX);
+                td.classList.remove('N' + wa.unid + '-' + CLASS_LIST.VIEW);
+                if (td.classList.contains(CLASS_LIST.ADJACENT)) {
+                    td.classList.remove(CLASS_LIST.ADJACENT);
                     if (begda < curda) {
-                        td.classList.add(gl.class_redeemed);
+                        td.classList.add(CLASS_LIST.REDEEMED);
                     } else {
-                        td.classList.add(gl.class_reserved);
+                        td.classList.add(CLASS_LIST.RESERVED);
                     }
                 } else {
-                    td.classList.remove(gl.class_redeemed);
-                    td.classList.remove(gl.class_reserved);
+                    td.classList.remove(CLASS_LIST.REDEEMED);
+                    td.classList.remove(CLASS_LIST.RESERVED);
                 }
                 td.innerHTML = ''; //FIX: memory leak
                 begda.setDate(begda.getDate() + 1);
@@ -858,7 +813,7 @@ class Calendar extends DataWrapper {
             // calendar end
 
             // book begin
-            var tr = document.querySelector('.book > tbody > tr#N' + wa.id);
+            var tr = document.querySelector('.book > tbody > tr#N' + wa.unid);
             tr.parentNode.removeChild(tr);
             if (this.isEmptyBook(wa.room)) {
                 tr = document.querySelector('#calendar > tbody > tr#R' + wa.room + '-book');
@@ -868,20 +823,21 @@ class Calendar extends DataWrapper {
         }
     }
 
-    updEntry(oldData, newData) {
+    updEntry(oldEntry, newEntry) {
 
-        this.delGuest(oldData);
-        var year = document.getElementById('year').innerHTML,
-            monthName = document.getElementById('month').innerHTML,
-            month = gl.monthNames.indexOf(monthName);
-        this.addGuest(year, month, newData)
+        this.delEntry(oldEntry);
+        this.addEntry(newEntry)
 
-        // book sort begin
-        var tr = document.querySelectorAll('#R' + newData[0].room + '-book > td > .book > tbody > tr'),
+        const wa = newEntry[0];
+
+        /**
+         * SORT  
+         */
+        var tr = document.querySelectorAll('#R' + wa.room + '-book > td > .book > tbody > tr'),
             pos = [];
         for (let i = 0; i < tr.length; i++) {
             pos.push({
-                id: parseInt(tr[i].children[0].innerHTML, 10),
+                id: parseInt(tr[i].querySelector('.' + GL.CONST.SCHEMA.GUEST.UNID), 10),
                 pos: i
             });
         }
@@ -890,25 +846,25 @@ class Calendar extends DataWrapper {
             return a.id - b.id;
         });
 
-        var prevRow = document.querySelector('#R' + newData[0].room + '-book tr#N' + pos[0].id);
+        var prevRow = document.querySelector('#R' + wa.room + '-book tr#N' + pos[0].id);
         for (let i = 0; i < (pos.length - 1); i++) {
             if (pos[i].pos > pos[i + 1].pos) {
-                var curRow = document.querySelector('#R' + newData[0].room + '-book tr#N' + pos[i].id),
-                    nextRow = document.querySelector('#R' + newData[0].room + '-book tr#N' + pos[i + 1].id);
+                var curRow = document.querySelector('#R' + wa.room + '-book tr#N' + pos[i].id),
+                    nextRow = document.querySelector('#R' + wa.room + '-book tr#N' + pos[i + 1].id);
                 nextRow.parentNode.insertBefore(nextRow, curRow);
             }
-            prevRow = document.querySelector('#R' + newData[0].room + '-book tbody tr#N' + pos[i].id);
+            prevRow = document.querySelector('#R' + wa.room + '-book tbody tr#N' + pos[i].id);
         }
-        // book sort end
     }
 
     _setMonth(month) {
+        Number.isInteger(parseInt(month)) && (month = GL.CONST.VALUES.CALENDAR.MONTH_NAMES[month]);
         document.getElementById('month').innerHTML = month;
     }
 
     _getMonth() {
-        var month = gl.monthNames.indexOf(document.getElementById('month').innerHTML);
-        month = utils.overlay(month, '0', 2)
+        var month = GL.CONST.VALUES.CALENDAR.MONTH_NAMES.indexOf(document.getElementById('month').innerHTML);
+        month = UTILS.OVERLAY(month, '0', 2)
         return {
             name: document.getElementById('month').innerHTML,
             num: month,
@@ -921,6 +877,14 @@ class Calendar extends DataWrapper {
 
     _getYear() {
         return document.getElementById('year').innerHTML;
+    }
+
+    _setEntries(entries) {
+        this.entries = entries;
+    }
+
+    _getEntries() {
+        return this.entries;
     }
 
     _isEmptyBook(room) {
@@ -989,6 +953,7 @@ class SelectionGroup {
      */
     static del(target) {
 
+        const CLASS_LIST = GL.CONST.CSS.CALENDAR.CLASS;
         if (target.className === '') return;
         var classId = target.className.split(' ').filter(function (el) {
             return el.match(/\bsel-group-\d+/);
@@ -999,12 +964,12 @@ class SelectionGroup {
             for (let i = group.length; i > 0; i--) {
                 if (group[0].id == target.id) {
                     group[0].innerHTML = '';
-                    group[0].classList.remove(gl.class_selected);
+                    group[0].classList.remove(CLASS_LIST.SELECTED);
                     group[0].classList.remove(classId);
                     break;
                 } else {
                     group[0].innerHTML = '';
-                    group[0].classList.remove(gl.class_selected);
+                    group[0].classList.remove(CLASS_LIST.SELECTED);
                     group[0].classList.remove(classId);
                 }
             }

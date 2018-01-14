@@ -135,20 +135,20 @@
     text-align: left;
 }
 
-.person-name {
+.person-cell-name {
     font-weight: bold;
 }
 
-.person-name:after {
+.person-cell-name:after {
     content: " ";
 }
 
-.person-tel:before {
+.person-cell-telephone-number:before {
     vertical-align: middle;
     content: url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" preserveAspectRatio="xMidYMid slice" height="15" width="15" fill="#00a4e4" xmlns="http://www.w3.org/2000/svg"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>');
 }
 
-.person-tel {
+.person-cell-telephone-number {
     font-size: 14px;
     color: var(--c-tab-inr-txt-cmt);
 }
@@ -157,23 +157,23 @@
     text-align: left;
 }
 
-.person-city,
-.person-fn {
+.person-cell-city,
+.person-cell-footnote {
     font-size: 14px;
     color: var(--c-tab-inr-txt-cmt);
     text-align: left;
     font-style: italic;
 }
 
-.person-city:after {
+.person-cell-city:after {
     content: " ";
 }
 
-.person-room-num {
+.person-cell-room-number {
     color: var(--c-tab-bck-col-res);
 }
 
-.person-room-num:before {
+.person-cell-room-number:before {
     display: block;
     content: url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" preserveAspectRatio="xMidYMid slice" height="15" width="15" fill="#00a4e4" xmlns="http://www.w3.org/2000/svg"><path d="M7 13c1.66 0 3-1.34 3-3S8.66 7 7 7s-3 1.34-3 3 1.34 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.21-1.79-4-4-4z"/></svg>');
 }
@@ -182,17 +182,10 @@
     text-align: right;
 }
 
-.person-room-cost,
-.person-room-paid {
+.person-cell-room-cost,
+.person-cell-room-paid {
     text-align: right;
 }
-
-/* .alignLeft {
-    text-align: left;
-}
-.alignRight {
-    text-align: right;
-} */
 
 #month {
     font-family: 'Century Gothic', sans-serif;

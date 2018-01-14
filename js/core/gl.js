@@ -8,17 +8,21 @@ const GL = {
         CSS: {
 
             CORE: {
-                CLASS_NAV_EL_SEL: 'nav-el-sel',
-                CLASS_VC_DW_SHOW: 'vc-data-wrapper-show',
+                CLASS: {
+                    NAV_EL_SEL: 'nav-el-sel',
+                    VC_DW_SHOW: 'vc-data-wrapper-show',
+                }
             },
     
             CALENDAR: {
-                CLASS_SELECTED: "selected", //выделен
-                CLASS_RESERVED: "reserved", //зарезервирован
-                CLASS_ADJACENT: "adjacent", //смежный
-                CLASS_REDEEMED: "redeemed", //выкупленный
-                CLASS_VIEWFIX: "view-fix", // выделен
-                CLASS_VIEW: "view", //предпросмотр
+                CLASS: {
+                    SELECTED: "selected", //выделен
+                    RESERVED: "reserved", //зарезервирован
+                    ADJACENT: "adjacent", //смежный
+                    REDEEMED: "redeemed", //выкупленный
+                    VIEW_FIX: "view-fix", // выделен
+                    VIEW: "view", //предпросмотр
+                }                
             },
         },
 
@@ -33,10 +37,6 @@ const GL = {
     
                 NEW_MONTH: {
                     SUCCESS: 'onMonthChangeSuccess'
-                },
-
-                PICK_CALENDAR: {
-                    SUCCESS: 'onPickCalendarSuccess'
                 },
 
                 DIALOG_SAVE: 'onSaveClick',
@@ -129,24 +129,44 @@ const GL = {
                     ADD: 1,
                     UPD: 0,
                     DEL: -1,
+                    PICK_CALENDAR: 666,
                 },
             },
         },
+
+        SCHEMA: {
+            GUEST: {//FIX: rename values + CSS
+                YEAR: 'person-cell-year',
+                MONT: 'person-cell-month',
+                UNID: 'person-cell-id',
+                DBEG: 'person-cell-checkin', 
+                DEND: 'person-cell-checkout', 
+                DAYS: 'person-cell-rest-days', 
+                ROOM: 'person-cell-room-number', 
+                BASE: 'person-cell-room-baseline', 
+                ADJS: 'person-cell-room-adjustment', 
+                COST: 'person-cell-room-cost', 
+                PAID: 'person-cell-room-paid', 
+                NAME: 'person-cell-name', 
+                TELN: 'person-cell-telephone-number', 
+                FNOT: 'person-cell-footnote', 
+                CITY: 'person-cell-city', 
+            }
+        }
     },
 
     DATA: {
 
-        CORE: { },
+        CORE: {
+            isMouseDown: false,
+        },
 
         CALENDAR: {
 
             rooms: [],
-            isMouseDown: false,
             isSelected: false,
         },
     },
 }
 
 UTILS.DEEPF_REEZE(GL.CONST);
-Object.freeze(GL.DATA.CORE);
-Object.freeze(GL.DATA.CALENDAR);
