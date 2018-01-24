@@ -24,27 +24,27 @@
     #---------------------------------------------------------------------------------
     # 
     #---------------------------------------------------------------------------------
-    isset($_GET['data']["id"])         ? $id         = $_GET['data']["id"]         : $id         = "";
-    isset($_GET['data']["year"])       ? $year       = $_GET['data']["year"]       : $year       = "";
-    isset($_GET['data']["month"])      ? $month      = $_GET['data']["month"]      : $month      = "";
-    isset($_GET['data']["dayin"])      ? $dayin      = $_GET['data']["dayin"]      : $dayin      = "";
-    isset($_GET['data']["dayout"])     ? $dayout     = $_GET['data']["dayout"]     : $dayout     = "";
-    isset($_GET['data']["days"])       ? $days       = $_GET['data']["days"]       : $days       = "";
-    isset($_GET['data']["room"])       ? $room       = $_GET['data']["room"]       : $room       = "";
-    isset($_GET['data']["baseline"])   ? $baseline   = $_GET['data']["baseline"]   : $baseline   = "";
-    isset($_GET['data']["adjustment"]) ? $adjustment = $_GET['data']["adjustment"] : $adjustment = "";
-    isset($_GET['data']["cost"])       ? $cost       = $_GET['data']["cost"]       : $cost       = "";
-    isset($_GET['data']["paid"])       ? $paid       = $_GET['data']["paid"]       : $paid       = "";
-    isset($_GET['data']["name"])       ? $name       = $_GET['data']["name"]       : $name       = "";
-    isset($_GET['data']["tel"])        ? $tel        = $_GET['data']["tel"]        : $tel        = "";
-    isset($_GET['data']["fn"])         ? $fn         = $_GET['data']["fn"]         : $fn         = "";
-    isset($_GET['data']["city"])       ? $city       = $_GET['data']["city"]       : $city       = "";
+    isset($_GET['data']["unid"]) ? $unid = $_GET['data']["unid"] : $unid = "";
+    isset($_GET['data']["year"]) ? $year = $_GET['data']["year"] : $year = "";
+    isset($_GET['data']["mont"]) ? $mont = $_GET['data']["mont"] : $mont = "";
+    isset($_GET['data']["dbeg"]) ? $dbeg = $_GET['data']["dbeg"] : $dbeg = "";
+    isset($_GET['data']["dend"]) ? $dend = $_GET['data']["dend"] : $dend = "";
+    isset($_GET['data']["days"]) ? $days = $_GET['data']["days"] : $days = "";
+    isset($_GET['data']["room"]) ? $room = $_GET['data']["room"] : $room = "";
+    isset($_GET['data']["base"]) ? $base = $_GET['data']["base"] : $base = "";
+    isset($_GET['data']["adjs"]) ? $adjs = $_GET['data']["adjs"] : $adjs = "";
+    isset($_GET['data']["cost"]) ? $cost = $_GET['data']["cost"] : $cost = "";
+    isset($_GET['data']["paid"]) ? $paid = $_GET['data']["paid"] : $paid = "";
+    isset($_GET['data']["name"]) ? $name = $_GET['data']["name"] : $name = "";
+    isset($_GET['data']["teln"]) ? $teln = $_GET['data']["teln"] : $teln = "";
+    isset($_GET['data']["fnot"]) ? $fnot = $_GET['data']["fnot"] : $fnot = "";
+    isset($_GET['data']["city"]) ? $city = $_GET['data']["city"] : $city = "";
     #---------------------------------------------------------------------------------
     # 
     #---------------------------------------------------------------------------------
     $begda = "";
-    if(strpos($dayin, ".")) {
-        $date = explode(".", $dayin);
+    if(strpos($dbeg, ".")) {
+        $date = explode(".", $dbeg);
         $m = $date[1];
         $d = $date[0];
         if(checkdate($m, $d, (float)$year)) {
@@ -53,12 +53,12 @@
             die(err2echo(22, 'Обновление гостя ', $mysqli));
         }
     } else {
-        $begda = $year . "-" . $month . "-" . $dayin;
+        $begda = $year . "-" . $month . "-" . $dbeg;
     }
     #
     $endda = "";
-    if(strpos($dayout, ".")) {
-        $date = explode(".", $dayout);
+    if(strpos($dend, ".")) {
+        $date = explode(".", $dend);
         $m = $date[1];
         $d = $date[0];
         if(checkdate($m, $d, $year + 0)) {
@@ -67,7 +67,7 @@
             die(err2echo(21, 'Обновление гостя', $mysqli));
         }
     } else {
-        $endda = $year . "-" . $month . "-" . $dayout;
+        $endda = $year . "-" . $month . "-" . $dend;
     }
     #
     if ($begda > $endda) {
@@ -78,10 +78,10 @@
     #---------------------------------------------------------------------------------
     # 
     #---------------------------------------------------------------------------------
-    $query = "SELECT * FROM gl001 WHERE id = ?";
+    $query = "SELECT * FROM gl001 WHERE unid = ?";
     #
     !($stmt = $mysqli->prepare($query)) && die(err2echo(10, 'Обновление гостя', $mysqli));
-    !($stmt->bind_param('i', $id))      && die(err2echo(11, 'Обновление гостя', $mysqli));
+    !($stmt->bind_param('i', $unid))    && die(err2echo(11, 'Обновление гостя', $mysqli));
     !($stmt->execute())                 && die(err2echo(12, 'Обновление гостя', $mysqli));
     !($result = $stmt->get_result())    && die(err2echo(15, 'Обновление гостя', $mysqli));   
     $rows = []; 
@@ -97,31 +97,30 @@
     # 
     #---------------------------------------------------------------------------------
     $query = "UPDATE gl001
-                 SET dayin = ?,
-                     dayout = ?,
+                 SET dbeg = ?,
+                     dend = ?,
                      days = ?,
                      room = ?,
-                     baseline = ?,
-                     adjustment = ?,
+                     base = ?,
+                     adjs = ?,
                      cost = ?,
                      paid = ?,
                      name = ?,
-                     tel = ?,
-                     fn = ?,
-                     city = ?,
-                     user = ?
+                     teln = ?,
+                     fnot = ?, 
+                     city = ?                     
                 WHERE id = ?";
     #
     !($stmt = $mysqli->prepare($query)) && die(err2echo(10, 'Обновление гостя', $mysqli));
-    !($stmt->bind_param('ssiiddddsssssi', $begda, $endda, $days, $room, $baseline, $adjustment, $cost, $paid, $name, $tel, $fn, $city, $user, $id)) && die(err2echo(11, 'Обновление гостя', $mysqli));
+    !($stmt->bind_param('ssiiddddsssssi', $dbeg, $dend, $days, $room, $base, $adjs, $cost, $paid, $name, $teln, $fnot, $city, $user, $unid)) && die(err2echo(11, 'Обновление гостя', $mysqli));
     !($stmt->execute()) && die(err2echo(12, 'Обновление гостя', $mysqli));
     #---------------------------------------------------------------------------------
     # 
     #---------------------------------------------------------------------------------
-    $query = "SELECT * FROM gl001 WHERE id = ?";
+    $query = "SELECT * FROM gl001 WHERE unid = ?";
     #
     !($stmt = $mysqli->prepare($query)) && die(err2echo(10, 'Обновление гостя', $mysqli));
-    !($stmt->bind_param('i', $id))      && die(err2echo(11, 'Обновление гостя', $mysqli));
+    !($stmt->bind_param('i', $unid))    && die(err2echo(11, 'Обновление гостя', $mysqli));
     !($stmt->execute())                 && die(err2echo(12, 'Обновление гостя', $mysqli));
     !($result = $stmt->get_result())    && die(err2echo(15, 'Обновление гостя', $mysqli));   
     $rows = []; 

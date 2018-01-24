@@ -13,7 +13,7 @@ class Calendar extends DataWrapper {
          */
         this.classId;
 
-        this.listeners = {
+        this.cb = {
 
             rcm: {
 
@@ -178,7 +178,7 @@ class Calendar extends DataWrapper {
                             e.target.classList.toggle(CLASS_LIST.SELECTED);
                         }
                         GL.DATA.CALENDAR.isSelected = e.target.classList.contains(CLASS_LIST.SELECTED);
-                        SelectionGroup.del(e);
+                        SelectionGroup.del(e.target);
                         GL.DATA.CALENDAR.isSelected ? SelectionGroup.add(e) : SelectionGroup.free();
         
                         // Переключения CSS класса опредляющего подсвеченный элемент
@@ -368,7 +368,7 @@ class Calendar extends DataWrapper {
                         
                         var data = {
                             year: this._getYear(),
-                            month: GL.CONST.VALUES.CALENDAR.MONTH_NAMES[monthNum]
+                            month: monthNum
                         }
 
                         DB.GL001.SELECT(data, this.eventId);
@@ -381,7 +381,7 @@ class Calendar extends DataWrapper {
 
                         var data = {
                             year: this._getYear(),
-                            month: GL.CONST.VALUES.CALENDAR.MONTH_NAMES[monthNum]
+                            month: monthNum
                         }
 
                         DB.GL001.SELECT(data, this.eventId);
@@ -462,8 +462,8 @@ class Calendar extends DataWrapper {
                         success: function (e) {
                             const D = e.detail.data;
                             if (!D.status) return;
-                            this._setYear();
-                            this._setMonth();
+                            this._setYear(D.year);
+                            this._setMonth(D.month);
                             this._setEntries(D.data);
                             this._prepare();
                             this.addEntry(this._getEntries());
@@ -500,16 +500,16 @@ class Calendar extends DataWrapper {
                                 [{ tag: 'tbody' },
                                     [{ tag: 'tr' },
                                         [{ tag: 'td' },
-                                            { tag: 'span', id: 'button-prev-month', class: 'month-button', event: { name: 'click', fn: this.listeners.control.month.prev.bind(this) } },
+                                            { tag: 'span', id: 'button-month-prev', class: 'button-month', events: [{ name: 'click', fn: this.cb.control.month.prev, bind: this }] },
                                         ],
                                         [{ tag: 'td' },
-                                            [{ tag: 'span', id: 'button-pick-calendar', event: { name: 'click', fn: this.listeners.control.pickCalendar.bind(this) } },
+                                            [{ tag: 'span', id: 'button-pick-calendar', events: [{ name: 'click', fn: this.cb.control.pickCalendar, bind: this }] },
                                                 { tag: 'label', id: 'month' },
                                                 { tag: 'label', id: 'year' },
                                             ],
                                         ],
                                         [{ tag: 'td' },
-                                            { tag: 'span', id: 'button-next-month', class: 'month-button', event: { name: 'click', fn: this.listeners.control.month.next.bind(this) } },
+                                            { tag: 'span', id: 'button-month-next', class: 'button-month', events: [{ name: 'click', fn: this.cb.control.month.next, bind: this }] },
                                         ],
                                     ],
                                 ],
@@ -528,7 +528,7 @@ class Calendar extends DataWrapper {
         if (tree) target.appendChild(tree);
         else console.log('tree is ' + tree);
 
-        const L = this.listeners;
+        const L = this.cb;
         var qsParent, qsChild, qsParentExcl;
 
         qsParent = '#calendar > tbody'; qsChild = 'td', qsParentExcl = '.book-row';
@@ -599,7 +599,7 @@ class Calendar extends DataWrapper {
             const YEAR = self._getYear() || today.getFullYear();
             const MONTH = self._getMonth() || GL.CONST.VALUES.CALENDAR.MONTH_NAMES[today.getMonth() + 1];
             const DAYS = new Date(YEAR, MONTH.num, 0).getDate();
-            const ENTRIES = self._getEntries() || [];
+            // const ENTRIES = self._getEntries() || [];
 
             document.getElementById('calendar-row-buttons').getElementsByTagName('td')[0].setAttribute('colspan', DAYS);
 
@@ -658,7 +658,11 @@ class Calendar extends DataWrapper {
 
         var self = this;
         var data = data || self._getEntries();
-        if (!data) return;
+
+        if (!data || data.length == 0) return;
+
+        const YEAR = this._getYear();
+        const MONTH = this._getMonth().num;
 
         for (let i = 0; i < data.length; i++) {
             setCellColor(data[i]);
@@ -668,8 +672,8 @@ class Calendar extends DataWrapper {
         function setCellColor(wa) {
 
             const CLASS_LIST = GL.CONST.CSS.CALENDAR.CLASS;
-            var begda = new Date(wa.dayin),
-                endda = new Date(wa.dayout),
+            var begda = new Date(wa.dbeg),
+                endda = new Date(wa.dend),
                 curda = new Date(),
                 tmpda = begda;
 
@@ -691,11 +695,11 @@ class Calendar extends DataWrapper {
                     cell.classList.remove(CLASS_LIST.SELECTED);
                     (tmpda < curda) ? cell.classList.add(CLASS_LIST.REDEEMED) : cell.classList.add(CLASS_LIST.RESERVED);
                 }
-                cell.classList.add('N' + wa.id);
+                cell.classList.add('N' + wa.unid);
 
                 // добавляем подсказку  
                 var div = cell.getElementsByTagName('div'),
-                    hintText = '№' + wa.id + ' ' + wa.name + ' с ' + begda.format('dd.mm') + ' по ' + endda.format('dd.mm');
+                    hintText = '№' + wa.unid + ' ' + wa.name + ' с ' + begda.format('dd.mm') + ' по ' + endda.format('dd.mm');
                 if (div.length == 0) {
                     var span = document.createElement('span');
                     span.setAttribute('class', 'hint-text');
@@ -713,7 +717,7 @@ class Calendar extends DataWrapper {
         }
 
         function isDateValid(d) {
-            return d.format('yyyy-mm') == (self._getYear() + '-' + self._getMonth().num);
+            return d.format('yyyy-mm') == (YEAR + '-' + MONTH);
         }
 
         function setBookEntry(wa) {
@@ -721,7 +725,7 @@ class Calendar extends DataWrapper {
             const SCHEMA = GL.CONST.SCHEMA.GUEST;
 
             var tree,
-                days = new Date(year, month, 0).getDate();
+                days = new Date(YEAR, MONTH, 0).getDate();
             
             if (!document.getElementById('R' + wa.room + '-book')) {
                 tree =
@@ -858,25 +862,28 @@ class Calendar extends DataWrapper {
     }
 
     _setMonth(month) {
-        Number.isInteger(parseInt(month)) && (month = GL.CONST.VALUES.CALENDAR.MONTH_NAMES[month]);
-        document.getElementById('month').innerHTML = month;
+        var parsedValue = parseInt(month);
+        Number.isInteger(parsedValue) ? this.month = parsedValue : GL.CONST.VALUES.CALENDAR.MONTH_NAMES.indexOf(month);
+        // document.getElementById('month').innerHTML = month;
     }
 
     _getMonth() {
-        var month = GL.CONST.VALUES.CALENDAR.MONTH_NAMES.indexOf(document.getElementById('month').innerHTML);
-        month = UTILS.OVERLAY(month, '0', 2)
+        // var month = GL.CONST.VALUES.CALENDAR.MONTH_NAMES.indexOf(document.getElementById('month').innerHTML);
+        // month = UTILS.OVERLAY(month, '0', 2)
         return {
-            name: document.getElementById('month').innerHTML,
-            num: month,
+            name: GL.CONST.VALUES.CALENDAR.MONTH_NAMES[this.month], //document.getElementById('month').innerHTML,
+            num: UTILS.OVERLAY(this.month, '0', 2),
         }
     }
 
     _setYear(year) {
-        document.getElementById('year').innerHTML = year;
+        this.year = year;
+        // document.getElementById('year').innerHTML = year;
     }
 
     _getYear() {
-        return document.getElementById('year').innerHTML;
+        return this.year;
+        // return document.getElementById('year').innerHTML;
     }
 
     _setEntries(entries) {

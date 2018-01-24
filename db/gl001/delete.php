@@ -22,14 +22,14 @@
     #---------------------------------------------------------------------------------
     # 
     #---------------------------------------------------------------------------------
-    isset($_GET['data']["id"]) ? $id = $_GET['data']["id"] : die(err2echo(27, 'Удаление гостя. ', ''));
+    isset($_GET['data']["unid"]) ? $unid = $_GET['data']["unid"] : die(err2echo(27, 'Удаление гостя. ', ''));
     #---------------------------------------------------------------------------------
     # 
     #---------------------------------------------------------------------------------
-    $query = "SELECT * FROM gl001 WHERE id = ?";
+    $query = "SELECT * FROM gl001 WHERE unid = ?";
     #
     !($stmt = $mysqli->prepare($query)) && die(err2echo(10, "Удаление гостя. ", $mysqli));
-    !($stmt->bind_param('i', $id)) && die(err2echo(11, "Удаление гостя. ", $mysqli));
+    !($stmt->bind_param('i', $unid)) && die(err2echo(11, "Удаление гостя. ", $mysqli));
     !($stmt->execute()) && die(err2echo(12, "Удаление гостя. ", $mysqli));
     !($result = $stmt->get_result()) && die(err2echo(15, 'Удаление гостя', $mysqli));
     $rows = []; 
@@ -41,13 +41,13 @@
     #---------------------------------------------------------------------------------
     # 
     #---------------------------------------------------------------------------------
-    $query = "DELETE FROM gl001 WHERE id = ?";
+    $query = "DELETE FROM gl001 WHERE unid = ?";
     #
     !($stmt = $mysqli->prepare($query)) && die(err2echo(10, "Удаление гостя. ", $mysqli));  
-    !($stmt->bind_param('i', $id)) && die(err2echo(11, "Удаление гостя. ", $mysqli));  
+    !($stmt->bind_param('i', $unid)) && die(err2echo(11, "Удаление гостя. ", $mysqli));  
     !($stmt->execute()) && die(err2echo(12, "Удаление гостя. ", $mysqli));  
     #
-    $data['id'] = $id;
+    $data['unid'] = $unid;
     $data['rows'] = mysqli_affected_rows($mysqli);
     #
     $stmt->free_result();

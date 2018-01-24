@@ -301,3 +301,111 @@ input:focus~label {
     background-color: cornflowerblue;
     color: white;
 }
+
+
+
+/*-----------------------------------------------------------------*/
+
+.pick-calendar-wrapper {
+    display: none;
+    z-index: 1;
+    font-family: 'Century Gothic', sans-serif;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    padding-top: 10%;
+    background-color: rgba(0, 0, 0, 0.3);
+    background-image: repeating-linear-gradient( -45deg, rgba(180, 180, 180, .3), rgba(180, 180, 180, .3) 6.5px, rgba(150, 150, 150, .3) 6.5px, rgba(150, 150, 150, .3) 13px);
+    text-align: center;
+}
+
+#pick-calendar-content {
+    user-select: none;
+    display: inline-block;
+    width: auto;
+    background-color: white;
+    border: 1px solid transparent;
+    border-radius: var(--r-bor-nor);
+    padding: 4px;
+    text-align: center;
+    animation: pcShow 0.4s;
+}
+
+#pick-calendar-content td {
+    padding: 8px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    border-radius: var(--r-bor-nor);
+}
+
+#pick-calendar-content thead td {
+    cursor: default;
+}
+
+#pick-calendar-content tbody td:hover {
+    border: 1px solid #00a4e4 !important;
+    /*FIX: use global color*/
+}
+
+#pick-calendar-footer {
+    padding-top: 4px;
+}
+
+.pick-calendar-input-year {
+    width: 100%;
+    font-family: 'Century Gothic', sans-serif;
+    outline: none;
+    border: none;
+    text-align: center;
+}
+
+.pick-calendar-input-year::-webkit-outer-spin-button,
+.pick-calendar-input-year::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.pick-calendar-month-sel {
+    border: 1px solid #ffdd00 !important;
+    /*FIX: use global color*/
+}
+
+.pick-calendar-button-year-prev,
+.pick-calendar-button-year-next {
+    cursor: pointer;
+    outline: none;
+    width: 100%;
+    height: 100%;
+    border: none;
+    background-color: transparent;
+}
+
+.pick-calendar-button-year-prev:before {
+    content: url('data:image/svg+xml;utf8,<svg fill="#000000" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M15.41 16.09l-4.58-4.59 4.58-4.59L14 5.5l-6 6 6 6z"/></svg>');
+}
+
+.pick-calendar-button-year-next:before {
+    content: url('data:image/svg+xml;utf8,<svg fill="#000000" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M8.59 16.34l4.58-4.59-4.58-4.59L10 5.75l6 6-6 6z"/></svg>');
+}
+
+.pick-calendar-button-year-prev:hover:before {
+    content: url('data:image/svg+xml;utf8,<svg fill="#00a4e4" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M15.41 16.09l-4.58-4.59 4.58-4.59L14 5.5l-6 6 6 6z"/></svg>');
+}
+
+.pick-calendar-button-year-next:hover:before {
+    content: url('data:image/svg+xml;utf8,<svg fill="#00a4e4" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M8.59 16.34l4.58-4.59-4.58-4.59L10 5.75l6 6-6 6z"/></svg>');
+}
+
+@keyframes pcShow {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+
+/*-----------------------------------------------------------------*/

@@ -152,6 +152,11 @@ const GL = {
                 FNOT: 'person-cell-footnote', 
                 CITY: 'person-cell-city', 
             }
+        },
+
+        PREFIX: {
+            PICK_PERIOD: 'pick-period',
+            //TODO: confirm delete calendar entry
         }
     },
 

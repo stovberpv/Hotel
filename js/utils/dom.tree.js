@@ -33,10 +33,11 @@ class DOMTree {
                             });
                             break;
 
-                        case 'event':
-                            let ev = twig[key];
-                            if (ev.bind) ev.fn.bind(ev.bind);
-                            el.addEventListener(ev.name, ev.fn);
+                        case 'events':
+                            for (let ev of twig[key]) {
+                                let callback = (ev.bind) ? ev.fn.bind(ev.bind) : ev.fn;
+                                el.addEventListener(ev.name, callback);
+                            }    
                             break;
 
                         case 'textNode':
@@ -48,6 +49,13 @@ class DOMTree {
                                 const attrVal = val[attr];
                                 el.setAttribute(attr, attrVal);
                             }
+                            break;
+
+                        case 'prop':
+                            for (let prop in val) {
+                                const propVal = val[prop];
+                                el[prop] = propVal;
+                            }    
                             break;
 
                         default:

@@ -16,9 +16,9 @@
     <title>Hotel Manager</title>
     <link rel='icon' href='/res/icons/favicon.png' />
     <link rel='stylesheet' href='/css/vars.css' />
+    <link rel='stylesheet' href='/css/buttons.css' />
     <link rel='stylesheet' href='/css/modal.css' />
     <link rel='stylesheet' href='/css/rcmenu.css' />
-    <link rel='stylesheet' href='/css/buttons.css' />
     <link rel='stylesheet' href='/css/calendar.css' />
     <link rel='stylesheet' href='/css/contacts.css' />
     <link rel='stylesheet' href='/css/diagrams.css' />
@@ -136,10 +136,11 @@
     
     <script type="text/javascript" src="/js/utils/date.format.js"></script>
     <script type="text/javascript" src="/js/utils/jquery.min.js"></script>
+    
     <script type='text/javascript' src='/js/utils/sandbox.js'></script>
     <script type="text/javascript" src="/js/utils/dom.tree.js"></script>
     <script type='text/javascript' src='/js/utils/event.bus.js'></script>
-    <script type="text/javascript" src="/js/utils/modal.js"></script>
+    <script type="text/javascript" src="/js/utils/modal.dialog.js"></script>
     
     <script type='text/javascript' src='/js/modules/definition.js'></script>
     <script type='text/javascript' src='/js/modules/calendar.js'></script>

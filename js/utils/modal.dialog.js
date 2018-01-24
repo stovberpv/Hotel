@@ -1,8 +1,16 @@
 class Dialog {
 
     constructor(opts) {
-        this.Opts = opts;
-        this.Id = Math.floor(Math.random() * 100000);
+        this.opts = opts;
+        this.id = Math.floor(Math.random() * 100000);
+
+        this.cb = {
+            control: {},
+            command: {
+                ok: function () { },
+                no: function () { }
+            }
+        }
     }
 
     bind() {}
@@ -17,20 +25,25 @@ class ConfirmDialog extends Dialog {
     constructor() {
         super();
     
-        this.listeners = {
-
-            ok: function (e) {
-                EventBus.dispatch(GL.CONST.EVENTS.CALENDAR.DIALOG_SAVE, { intent: this.Opts.data.intent, data: this.Opts.data });
-                this.unbind();
-            },
-
-            no: function (e) {
-                this.unbind();
-            }
-        }
+        this.cb.command.ok = function (e) {
+            EventBus.dispatch(GL.CONST.EVENTS.CALENDAR.DIALOG_SAVE, { intent: this.opts.data.intent, data: this.opts.data });
+            this.unbind();
+        };
+                
+        this.cb.command.no = function (e) {
+            this.unbind();
+        };
     }
 
     bind() {
+
+        var tree = [{ tag: '', id: ``, class: `` },
+             //TODO: tree
+        ];
+
+        tree = new DOMTree(tree).cultivate();
+        if (tree) document.body.appendChild(tree);
+        else console.log('tree is ' + tree);
 
         var divDialog, divContent, divHeader, divBody, divFooter,
             a, button;
@@ -48,26 +61,26 @@ class ConfirmDialog extends Dialog {
         divBody.classList.add(additionalClass);
 
         a = document.createElement('a');
-        a.appendChild(document.createTextNode('Удалить запись под номером №' + this.Opts.data.id + ' из гостевой книги?\r\nДействие нельзя будет отменить!'));
+        a.appendChild(document.createTextNode('Удалить запись под номером №' + this.opts.data.id + ' из гостевой книги?\r\nДействие нельзя будет отменить!'));
         divBody.appendChild(a);
 
         divFooter = document.createElement('div');
         divFooter.classList.add('modal-footer');
         button = document.createElement('button');
-        button.setAttribute('id', 'btn-no');
+        button.setAttribute('id', 'button-no');
         button.setAttribute('type', 'button');
-        button.classList.add('btn');
+        button.classList.add('button');
         button.classList.add('negative');
         button.appendChild(document.createTextNode('Отменить'));
-        button.addEventListener('click', this.listeners.no);
+        button.addEventListener('click', this.cb.no);
         divFooter.appendChild(button);
 
         button = document.createElement('button');
-        button.setAttribute('id', 'btn-ok');
+        button.setAttribute('id', 'button-ok');
         button.setAttribute('type', 'button');
-        button.classList.add('btn');
+        button.classList.add('button');
         button.classList.add('positive');
-        button.addEventListener('click', this.listeners.ok).bind( { id: this.Opts.data.id } );
+        button.addEventListener('click', this.cb.ok).bind( { id: this.opts.data.id } );
         button.appendChild(document.createTextNode('Подтвердить'));
         divFooter.appendChild(button);
 
@@ -79,7 +92,7 @@ class ConfirmDialog extends Dialog {
         divContent.appendChild(divFooter);
 
         divDialog = document.createElement('div')
-        divDialog.setAttribute('id', 'modal-dialog-' + this.Id);
+        divDialog.setAttribute('id', 'modal-dialog-' + this.id);
         divDialog.classList.add('modal-dialog');
         divDialog.appendChild(divContent);
 
@@ -87,12 +100,12 @@ class ConfirmDialog extends Dialog {
     }
 
     show() {
-        var dialog = document.getElementById('modal-dialog-' + this.Id);
+        var dialog = document.getElementById('modal-dialog-' + this.id);
         dialog.style.display = 'block';
     }
 
     unbind() {
-        var dialog = document.getElementById('modal-dialog-' + this.Id);
+        var dialog = document.getElementById('modal-dialog-' + this.id);
         dialog.style.display = 'none';
         dialog.parentNode.removeChild(dialog);
     }
@@ -103,10 +116,10 @@ class InOutDialog extends Dialog {
     constructor() {
         super();
 
-        this.listeners = {
+        this.cb = {
 
             ok: function (e) {
-                EventBus.dispatch(GL.CONST.EVENTS.CALENDAR.DIALOG_SAVE, { intent: this.Opts.data.intent, data: this.getVal() });
+                EventBus.dispatch(GL.CONST.EVENTS.CALENDAR.DIALOG_SAVE, { intent: this.opts.data.intent, data: this.getVal() });
                 this.unbind();
             },
 
@@ -131,7 +144,7 @@ class InOutDialog extends Dialog {
 
         label = document.createElement('label');
         let additionalClass, title;
-        switch (this.Opts.flag) {
+        switch (this.opts.flag) {
             case -1:
                 additionalClass = "modal-header-negative";
                 title = 'Удаление';
@@ -199,7 +212,7 @@ class InOutDialog extends Dialog {
         divDropDown = document.createElement('div');
         divDropDown.setAttribute('id', 'RDDL');
         this.setHandler(divDropDown, 'click');
-        this.Opts.rooms.forEach(el => {
+        this.opts.rooms.forEach(el => {
             a = document.createElement('a');
             a.innerText = el.room;
             divDropDown.appendChild(a);
@@ -277,7 +290,7 @@ class InOutDialog extends Dialog {
             var button = document.createElement('button');
             button.setAttribute('type', 'button');
             button.setAttribute('id', id);
-            button.classList.add('btn');
+            button.classList.add('button');
             classes.forEach(el => {
                 button.classList.add(el);
             });
@@ -286,20 +299,20 @@ class InOutDialog extends Dialog {
             return button;
         }
 
-        button = createButton('btn-no', ['negative'], 'Отменить');
-        button.addEventListener('click', this.listeners.no);
+        button = createButton('button-no', ['negative'], 'Отменить');
+        button.addEventListener('click', this.cb.no);
         divFooter.appendChild(button);
 
-        button = createButton('btn-ok', ['positive'], 'Подтвердить');
-        button.addEventListener('click', this.listeners.ok);
+        button = createButton('button-ok', ['positive'], 'Подтвердить');
+        button.addEventListener('click', this.cb.ok);
         divFooter.appendChild(button);
 
         divWrapper.appendChild(divFooter);
 
-        dialog = document.getElementById('pio-dialog-' + this.Id);
+        dialog = document.getElementById('pio-dialog-' + this.id);
         var dialog = document.createElement('div');
         dialog.className = 'popup-input-output';
-        dialog.setAttribute('id', 'popup-input-output-' + this.Id);
+        dialog.setAttribute('id', 'popup-input-output-' + this.id);
         dialog.appendChild(divWrapper);
         document.body.appendChild(dialog);
     }
@@ -369,7 +382,7 @@ class InOutDialog extends Dialog {
             cost.value = mustBePaid;
             cost.dispatchEvent(new Event('change'));
 
-        }.bind( { rooms: this.Opts.data.rooms, month: this.Opts.data.month, year: this.Opts.data.year, id: this.Id } );
+        }.bind( { rooms: this.opts.data.rooms, month: this.opts.data.month, year: this.opts.data.year, id: this.id } );
 
         var handlers = {
 
@@ -560,7 +573,7 @@ class InOutDialog extends Dialog {
                         baseline = document.querySelector('#baseline input');
                     baseline.value = room.length != 0 ? room[0].price : 0;
                     baseline.dispatchEvent(new Event('change'));
-                }.bind({ rooms: this.Opts.data.rooms }),
+                }.bind({ rooms: this.opts.data.rooms }),
 
                 baseline: function (e) {
 
@@ -584,13 +597,13 @@ class InOutDialog extends Dialog {
     }
 
     show(id) {
-        var dialogId = id ? id : this.Id,
+        var dialogId = id ? id : this.id,
             dialog = document.getElementById('popup-input-output-' + dialogId);
         dialog.style.display = 'block';
     }
 
     unbind(id) {
-        var dialogId = id ? id : this.Id,
+        var dialogId = id ? id : this.id,
             dialog = document.getElementById('popup-input-output-' + dialogId);
         dialog.style.display = 'none';
         dialog.parentNode.removeChild(dialog);
@@ -598,7 +611,7 @@ class InOutDialog extends Dialog {
 
     setVal(val) {
         if (val != undefined) {
-            var dialog = document.getElementById('popup-input-output-' + this.Id);
+            var dialog = document.getElementById('popup-input-output-' + this.id);
             dialog.querySelector('#id input').value = val.id;
             dialog.querySelector('#intent input').value = val.intent;
             dialog.querySelector('#dayin input').value = val.dayin;
@@ -617,7 +630,7 @@ class InOutDialog extends Dialog {
     }
 
     getVal() {
-        var dialog = document.getElementById('popup-input-output-' + this.Id);
+        var dialog = document.getElementById('popup-input-output-' + this.id);
         return {
             intent: dialog.querySelector('#intent input').value,
             id: dialog.querySelector('#id input').value,
@@ -637,212 +650,164 @@ class InOutDialog extends Dialog {
     }
 }
 
-class PickCalendar extends Dialog {
+class PickPeriod extends Dialog {
     
     constructor(opts) {
         super();
 
-        this.listeners = {
-
-            yearKeyDown: function (e) {
-                if (isNaN(e.key)) {
-                    return;
-                } else {
-                    this.value.length >= 4 && e.preventDefault();
-                }
+        this.cb.control.year = {
+                    
+            keyDown: function (e) {
+                if (isNaN(e.key)) return;
+                else this.value.length >= 4 && e.preventDefault();
             },
-            
-            yearKeyUp: function (e) {
+
+            keyUp: function (e) {
                 var val = this.value;
                 val.length == 0 && (this.value = 1900);
             },
-
-            prevYear: function prevYear (e) {
-                var year = document.getElementById('pc-' + this.id + '-year'),
-                    val = parseInt(year.value);
-                val > 0 && val <= 9999 && (val-- , year.value = val);
+        
+            prev: function prevYear(e) {
+                var id = `${GL.CONST.PREFIX.PICK_PERIOD}-${this.id}-input-year`,
+                    year = document.getElementById(id) || 0,
+                if (!year) {
+                    console.log('ERROR. Year not find in DOM!');
+                    return;
+                };
+                val = parseInt(year.value);
+                val > 1900 && val <= 9999 && (val-- , year.value = val);
             },
-
-            nextYear: function nextYear (e) {
-                var year = document.getElementById('pc-' + this.id + '-year'),
-                    val = parseInt(year.value);
+                    
+            next: function nextYear(e) {
+                var id = `${GL.CONST.PREFIX.PICK_PERIOD}-${this.id}-input-year`,
+                    year = document.getElementById(id) || 0,
+                if (!year) {
+                    console.log('ERROR. Year not find in DOM!');
+                    return;
+                };
+                val = parseInt(year.value);
                 val >= 0 && val < 9999 && (val++ , year.value = val);
-            },
-
-            monthSel: function monthSel(e) {
-                //FIX: this -> e??
-                var sel = document.getElementsByClassName('pc-month-sel');
-                for (let i = 0; i < sel.length; i++) {
-                    sel[i].classList.remove('pc-month-sel');
-                }
-                this.setAttribute('class', 'pc-month-sel');
-            },
-
-            ok: function ok (e) {
-                var val = this.getVal();
-                this.unbind();
-                EventBus.dispatch(GL.CONST.EVENTS.CALENDAR.DIALOG_SAVE, { intent: this.Opts.data.intent, year: val.year, month: val.month });
-
-            },
-
-            no: function no (e) {
-                this.unbind();
             }
-        }
+        };
+                
+        this.cb.control.month = {
+                    
+            sel: function monthSel(e) {
+                var className = `${GL.CONST.PREFIX.PICK_PERIOD}-month-sel`,
+                    sel = document.getElementsByClassName(className);
+                for (let i = 0; i < sel.length; i++) {
+                    sel[i].classList.remove(className);
+                }
+                e.target.setAttribute('class', className);
+            }
+        };
+
+        this.cb.command.ok = function ok(e) {
+            var val = this.getVal();
+            this.unbind();
+            EventBus.dispatch(GL.CONST.EVENTS.CALENDAR.DIALOG_SAVE, { intent: this.opts.data.intent, year: val.year, month: val.month });
+        };
+                
+        this.cb.command.no = function no(e) {
+            this.unbind();
+        };
     }
 
     bind() {
 
-        var div,
-            divContent, divHead, divBody, divFooter,
-            table, thead, tbody, tr, td,
-            input, button;
+        const P = GL.CONST.PREFIX.PICK_PERIOD;
+        var tree =
+            [{ tag: 'div', id: `${P}-${this.id}`, class: `${P}-wrapper`},
+                [{ tag: 'div', id: `${P}-content` },
+                    { tag: 'div', id: `${P}-head` },
+                    [{ tag: 'div', id: `${P}-body` },
+                        [{ tag: 'table' },
+                            [{ tag: 'thead' },
+                                [{ tag: 'tr' },
+                                    [{ tag: 'td' },
+                                        { tag: 'button', id: `${P}-button-year-prev`, class: 'button year', type: 'button', events: [{ name: 'click', fn: this.cb.control.year.prev, bind: this }] }
+                                    ],
+                                    [{ tag: 'td' },
+                                        {
+                                            tag: 'input',
+                                            id: `${P}-${this.id}-input-year`,
+                                            class: `${P}-input-year`,
+                                            name: 'year',
+                                            type: 'number',
+                                            attr: { maxlength: 4, size: 4, min: 1900, max: 9999 },
+                                            events: [
+                                                { name: 'keydown', fn: this.cb.control.year.keyDown },
+                                                { name: 'keyup', fn: this.cb.control.year.keyUp }
+                                            ]
+                                        }
+                                    ],
+                                    [{ tag: 'td' },
+                                        { tag: 'button', id: `${P}-button-year-next`, class: 'button year', type: 'button', events: [{ name: 'click', fn: this.cb.control.year.next, bind: this }] }
+                                    ]
+                                ]
+                            ],
+                            [{ tag: 'tbody', events: [{ name: 'click', fn: this.cb.control.month.sel }] },
+                                [{ tag: 'tr' },
+                                    { tag: 'td', id: `01-month-${P}-${this.id}`, class: `${P}-month`, textNode: 'Январь' },
+                                    { tag: 'td', id: `02-month-${P}-${this.id}`, class: `${P}-month`, textNode: 'Февраль' },
+                                    { tag: 'td', id: `03-month-${P}-${this.id}`, class: `${P}-month`, textNode: 'Март' },
+                                ],
+                                [{ tag: 'tr' },
+                                    { tag: 'td', id: `04-month-${P}-${this.id}`, class: `${P}-month`, textNode: 'Апрель' },
+                                    { tag: 'td', id: `05-month-${P}-${this.id}`, class: `${P}-month`, textNode: 'Май' },
+                                    { tag: 'td', id: `06-month-${P}-${this.id}`, class: `${P}-month`, textNode: 'Июнь' },  
+                                ],
+                                [{ tag: 'tr' },
+                                    { tag: 'td', id: `07-month-${P}-${this.id}`, class: `${P}-month`, textNode: 'Июль' },
+                                    { tag: 'td', id: `08-month-${P}-${this.id}`, class: `${P}-month`, textNode: 'Август' },
+                                    { tag: 'td', id: `09-month-${P}-${this.id}`, class: `${P}-month`, textNode: 'Сентябрь' },
+                                ],
+                                [{ tag: 'tr' },
+                                    { tag: 'td', id: `10-month-${P}-${this.id}`, class: `${P}-month`, textNode: 'Октябрь' },
+                                    { tag: 'td', id: `11-month-${P}-${this.id}`, class: `${P}-month`, textNode: 'Ноябрь' },
+                                    { tag: 'td', id: `12-month-${P}-${this.id}`, class: `${P}-month`, textNode: 'Декабрь' },
+                                ],
+                            ],
+                        ]
+                    ],
+                    [{ tag: 'div', id: `${P}-footer` },
+                        { tag: 'button', class: 'button negative', type: 'button', textNode: 'Отменить', events: [{ name: '', fn: this.cb.command.no, bind: this }] },
+                        { tag: 'button', class: 'button positive', type: 'button', textNode: 'Подтвердить', events: [{ name: '', fn: this.cb.command.ok, bind: this }] },
+                    ]
+                ]
+            ];
         
-        divContent = document.createElement('div');
-        divContent.setAttribute('id', 'pc-content');
-
-        divHead = document.createElement('div');
-        divHead.setAttribute('id', 'pc-head');
-
-        divContent.appendChild(divHead);
-
-        tr = document.createElement('tr');
-        
-        td = document.createElement('td');
-        button = document.createElement('button');
-        button.setAttribute('id', 'pc-' + this.Id + '-prev');
-        button.setAttribute('type', 'button');
-        button.classList.add('pc-btn-prev');
-        prev.addEventListener('click', this.listeners.prevYear.bind({ id: this.Id }));
-        td.appendChild(button);
-        tr.appendChild(td);
-
-        td = document.createElement('td');
-        input = document.createElement('input');
-        input.setAttribute('id', 'pc-' + this.Id + '-year');
-        input.setAttribute('type', 'number');
-        input.setAttribute('name', 'year');
-        input.setAttribute('maxlength', '4');
-        input.setAttribute('size', '4');
-        input.setAttribute('min', '1900');
-        input.setAttribute('max', '9999');
-        input.classList.add('pc-year');
-        input.keydown(this.listeners.yearKeyDown);
-        input.keyup(this.listeners.yearKeyUp);
-        td.appendChild(input);
-        tr.appendChild(td);
-
-        td = document.createElement('td');
-        button = document.createElement('button');
-        button.setAttribute('id', 'pc-' + this.Id + '-next');
-        button.setAttribute('type', 'button');
-        button.classList.add('pc-btn-next');
-        next.addEventListener('click', this.listeners.nextYear.bind({ id: this.Id }));
-        td.appendChild(button);
-        tr.appendChild(td);
-        
-        thead = document.createElement('thead');
-        thead.appendChild(tr);
-
-        table = document.createElement('table');
-        table.appendChild(thead);  
-
-        tbody = document.createElement('tbody');
-        
-        function createMonth(id, name) {
-            var td = document.createElement('td');
-            td.setAttribute('id', id + '-pc-' + this.Id + '-month');
-            td.classList.add('pc-month');
-            td.appendChild(document.createTextNode(name));
-            return td;
-        }
-        
-        tr = document.createElement('tr');
-        tr.appendChild(createMonth('01', 'Январь'));
-        tr.appendChild(createMonth('02', 'Февраль'));
-        tr.appendChild(createMonth('03', 'Март'));
-        tbody.appendChild(tr);
-
-        tr = document.createElement('tr');
-        tr.appendChild(createMonth('04', 'Апрель'));
-        tr.appendChild(createMonth('05', 'Май'));
-        tr.appendChild(createMonth('06', 'Июнь'));
-        tbody.appendChild(tr);
-
-        tr = document.createElement('tr');
-        tr.appendChild(createMonth('07', 'Июль'));
-        tr.appendChild(createMonth('08', 'Август'));
-        tr.appendChild(createMonth('09', 'Сентябрь'));
-        tbody.appendChild(tr);
-        
-        tr = document.createElement('tr');
-        tr.appendChild(createMonth('10', 'Октябрь'));
-        tr.appendChild(createMonth('11', 'Ноябрь'));
-        tr.appendChild(createMonth('12', 'Декабрь'));
-        tbody.appendChild(tr);
-
-        tbody.addEventListener('click', this.listeners.monthSel)
-        
-        table.appendChild(tbody);
-        
-        divBody = document.createElement('div');
-        divBody.setAttribute('id', 'pc-body');
-        divBody.appendChild(table);
-
-        divContent.appendChild(divBody);
-
-        divFooter = document.createElement('div');
-        divFooter.setAttribute('id', 'pc-footer');
-
-        button = document.createElement('button');
-        button.setAttribute('id', 'pc-' + this.Id + '-no');
-        button.setAttribute('type', 'button');
-        button.classList.add('btn');
-        button.classList.add('negative');
-        button.appendChild(document.createTextNode('Отменить'));
-        no.addEventListener('click', this.listeners.no);
-        divFooter.appendChild(button);
-
-        button = document.createElement('button');
-        button.setAttribute('id', 'pc-' + this.Id + '-ok');
-        button.setAttribute('type', 'button');
-        button.classList.add('btn');
-        button.classList.add('positive');
-        button.appendChild(document.createTextNode('Подтвердить'));
-        ok.addEventListener('click', this.listeners.ok);
-        divFooter.appendChild(button);
-
-        divContent.appendChild(divFooter);
-        
-        var div = document.createElement('div');
-        div.classList.add('pick-calendar');
-        div.setAttribute('id', 'pick-calendar-' + this.Id);
-        div.appendChild(divContent);
-
-        document.body.appendChild(div);
+        tree = new DOMTree(tree).cultivate();
+        if (tree) document.body.appendChild(tree);
+        else console.log('tree is ' + tree);
     }
 
     setVal(val) {
-        document.getElementById('pc-' + this.Id + '-year').value = val.year;
-        document.getElementById(val.month + '-pc-' + this.Id + '-month').classList.add('pc-month-sel');
+        const P = GL.CONST.PREFIX.PICK_PERIOD;
+        var year = document.getElementById(`${P}-${this.id}-input-year`) || {},
+            month = document.getElementById(`${val.month}-month-${P}-${this.id}`);
+        year.value = val.year;
+        (month.classList) && month.classList.add(`${P}-month-sel`);
     }
 
     show() {
-        var pick = document.getElementById('pick-calendar-' + this.Id);
+        const P = GL.CONST.PREFIX.PICK_PERIOD;
+        var pick = document.getElementById(`${P}-${this.id}`);
         pick.style.display = 'block';
     }
 
     getVal() {
-        var month = document.getElementsByClassName('pc-month-sel')[0];
+        const P = GL.CONST.PREFIX.PICK_PERIOD;
+        var month = document.getElementsByClassName(`${P}-month-sel`)[0];
         return {
-            year: document.getElementById('pc-' + this.Id + '-year').value,
+            year: document.getElementById(`${P}-${this.id}-input-year`).value,
             monthId: (month.getAttribute('id')).substring(0, 2),
             monthName: month.innerHTML
         }
     }
 
     unbind() {
-        var pick = document.getElementById('pick-calendar-' + this.Id);
+        var pick = document.getElementById(`${P}-${this.id}-wrapper`);
         pick.style.display = 'none';
         pick.parentNode.removeChild(pick);
     }
@@ -851,25 +816,25 @@ class PickCalendar extends Dialog {
 class RCMenu extends Dialog {
 
     constructor (opts) {
-        this.Opts = opts;
+        this.opts = opts;
         this.X = opts.x;
         this.Y = opts.y;
 
-        this.listeners = {
+        this.cb = {
 
             upd: function upd (e) {
                 this.unbind();
-                EventBus.dispatch(GL.CONST.EVENTS.CALENDAR.RC_MENU.RCM_ITEM_UPD_GUEST, { data: this.Opts.data });
+                EventBus.dispatch(GL.CONST.EVENTS.CALENDAR.RC_MENU.RCM_ITEM_UPD_GUEST, { data: this.opts.data });
             },
 
             del: function del (e) {
                 this.unbind();
-                EventBus.dispatch(GL.CONST.EVENTS.CALENDAR.RC_MENU.RCM_ITEM_DEL_GUEST, { data: this.Opts.data });
+                EventBus.dispatch(GL.CONST.EVENTS.CALENDAR.RC_MENU.RCM_ITEM_DEL_GUEST, { data: this.opts.data });
             },
 
             add: function add (e) {
                 this.unbind();
-                EventBus.dispatch(GL.CONST.EVENTS.CALENDAR.RC_MENU.RCM_ITEM_ADD_GUEST, { data: this.Opts.data });
+                EventBus.dispatch(GL.CONST.EVENTS.CALENDAR.RC_MENU.RCM_ITEM_ADD_GUEST, { data: this.opts.data });
             },
 
             lmc: function lmc(e) {
@@ -884,28 +849,28 @@ class RCMenu extends Dialog {
         ul = document.createElement('ul');
         ul.setAttribute('id', 'rcmenu-list');
 
-        if (this.Opts.btn.upd) {
+        if (this.opts.button.upd) {
             li = document.createElement('li');
             li.setAttribute('id', 'editGuest');
             li.classList.add('rcmenu-item');
             li.appendChild(document.createTextNode('Изменить'));
-            li.addEventListener('click', this.listeners.upd);
+            li.addEventListener('click', this.cb.upd);
             ul.appendChild(li);
         }
-        if (this.Opts.btn.del) {
+        if (this.opts.button.del) {
             li = document.createElement('li');
             li.setAttribute('id', 'delGuest');
             li.classList.add('rcmenu-item');
             li.appendChild(document.createTextNode('Удалить'));
-            li.addEventListener('click', this.listeners.del);
+            li.addEventListener('click', this.cb.del);
             ul.appendChild(li);
         }
-        if (this.Opts.btn.add) {
+        if (this.opts.button.add) {
             li = document.createElement('li');
             li.setAttribute('id', 'addGuest');
             li.classList.add('rcmenu-item');
             li.appendChild(document.createTextNode('Добавить'));
-            li.addEventListener('click', this.listeners.add);
+            li.addEventListener('click', this.cb.add);
             ul.appendChild(li);
         }
 
@@ -914,7 +879,7 @@ class RCMenu extends Dialog {
         div.appendChild(ul);
         document.body.appendChild(div);
 
-        EventBus.register(GL.CONST.EVENTS.CORE.LEFT_CLICK, this.listeners.lmc);
+        EventBus.register(GL.CONST.EVENTS.CORE.LEFT_CLICK, this.cb.lmc);
     }
 
     setVal () {}

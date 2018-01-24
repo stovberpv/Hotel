@@ -51,14 +51,14 @@
     #---------------------------------------------------------------------------------
     # query 3 -- get guest list
     #---------------------------------------------------------------------------------
-    $dayin  = $year . "-" . $month . "-" . 01;
-    $dayout = $year . "-" . $month . "-" . cal_days_in_month(CAL_GREGORIAN, $month, $year);
+    $dbeg = $year . "-" . $month . "-" . 01;
+    $dend = $year . "-" . $month . "-" . cal_days_in_month(CAL_GREGORIAN, $month, $year);
     #
-    $query = "SELECT * FROM gl001 WHERE dayout >= ? AND dayin  <= ?";
-    !($stmt = $mysqli->prepare($query))         && die(err2echo(10, "Выборка 3. ", $mysqli));
-    !($stmt->bind_param('ss', $dayin, $dayout)) && die(err2echo(11, "Выборка 3. ", $mysqli));
-    !($stmt->execute() )                        && die(err2echo(12, "Выборка 3. ", $mysqli));
-    !($result = $stmt->get_result())            && die(err2echo(15, "Выборка 3. ", $mysqli));
+    $query = "SELECT * FROM gl001 WHERE dbeg >= ? AND dend  <= ?";
+    !($stmt = $mysqli->prepare($query))      && die(err2echo(10, "Выборка 3. ", $mysqli));
+    !($stmt->bind_param('ss', $dbeg, $dend)) && die(err2echo(11, "Выборка 3. ", $mysqli));
+    !($stmt->execute() )                     && die(err2echo(12, "Выборка 3. ", $mysqli));
+    !($result = $stmt->get_result())         && die(err2echo(15, "Выборка 3. ", $mysqli));
     $guestList = []; 
     while($row = $result->fetch_array()) {
         $guestList[] = $row;
