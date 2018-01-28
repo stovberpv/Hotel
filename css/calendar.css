@@ -33,11 +33,6 @@
     animation: blink 5s infinite;
 }
 
-.hidden {
-    cursor: default;
-    display: none;
-}
-
 #calendar>tbody>.book-row>td {
     border: none;
     cursor: default;
@@ -58,6 +53,11 @@
     box-shadow: var(--s-hov);
     transition: all 0.3s;
     transform: translateZ(10px);
+}
+
+.hidden {
+    cursor: default;
+    display: none;
 }
 
 .book {
@@ -143,12 +143,12 @@
     content: " ";
 }
 
-.person-cell-telephone-number:before {
+.person-cell-teln-number:before {
     vertical-align: middle;
     content: url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" preserveAspectRatio="xMidYMid slice" height="15" width="15" fill="#00a4e4" xmlns="http://www.w3.org/2000/svg"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>');
 }
 
-.person-cell-telephone-number {
+.person-cell-teln-number {
     font-size: 14px;
     color: var(--c-tab-inr-txt-cmt);
 }
@@ -158,7 +158,7 @@
 }
 
 .person-cell-city,
-.person-cell-footnote {
+.person-cell-fnot {
     font-size: 14px;
     color: var(--c-tab-inr-txt-cmt);
     text-align: left;
@@ -169,11 +169,11 @@
     content: " ";
 }
 
-.person-cell-room-number {
+.person-cell-room {
     color: var(--c-tab-bck-col-res);
 }
 
-.person-cell-room-number:before {
+.person-cell-room:before {
     display: block;
     content: url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" preserveAspectRatio="xMidYMid slice" height="15" width="15" fill="#00a4e4" xmlns="http://www.w3.org/2000/svg"><path d="M7 13c1.66 0 3-1.34 3-3S8.66 7 7 7s-3 1.34-3 3 1.34 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.21-1.79-4-4-4z"/></svg>');
 }
@@ -182,8 +182,8 @@
     text-align: right;
 }
 
-.person-cell-room-cost,
-.person-cell-room-paid {
+.person-cell-cost,
+.person-cell-paid {
     text-align: right;
 }
 
@@ -238,7 +238,7 @@
     width: 90%;
 }
 
-#button-month-prev {
+#calendar-button-month-prev {
     border: none;
     border-bottom: 1px solid var(--c-tab-bor-bod-nor);
     border-left: 1px solid var(--c-tab-bor-bod-nor);
@@ -247,17 +247,17 @@
     border-bottom-left-radius: 2px;
 }
 
-#button-month-prev:hover {
+#calendar-button-month-prev:hover {
     border-top: 1px solid transparent;
     border-left: 1px solid transparent;
     border-bottom: 1px solid transparent;
 }
 
-#button-month-prev:before {
+#calendar-button-month-prev:before {
     content: url('data:image/svg+xml;utf8,<svg fill="#6a737b" height="10" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M15.41 16.09l-4.58-4.59 4.58-4.59L14 5.5l-6 6 6 6z"/></svg>');
 }
 
-#button-month-next {
+#calendar-button-month-next {
     border: none;
     border-bottom: 1px solid var(--c-tab-bor-bod-nor);
     border-right: 1px solid var(--c-tab-bor-bod-nor);
@@ -266,17 +266,17 @@
     border-bottom-right-radius: 2px;
 }
 
-#button-month-next:hover {
+#calendar-button-month-next:hover {
     border-top: 1px solid transparent;
     border-right: 1px solid transparent;
     border-bottom: 1px solid transparent;
 }
 
-#button-month-next:before {
+#calendar-button-month-next:before {
     content: url('data:image/svg+xml;utf8,<svg fill="#6a737b" height="10" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M8.59 16.34l4.58-4.59-4.58-4.59L10 5.75l6 6-6 6z"/></svg>');
 }
 
-.button-month {
+#calendar-row-buttons .button {
     display: block;
     outline: none;
     border: none;
@@ -288,7 +288,7 @@
     background-color: var(--c-btn-bck-nor-neu);
 }
 
-.button-month:hover {
+#calendar-row-buttons .button:hover {
     animation: blink2 5s infinite;
 }
 
@@ -304,7 +304,7 @@
     }
 }
 
-#button-pick-calendar {
+#button-pick-period {
     display: block;
     border: 1px solid var(--c-tab-bor-bod-nor);
     outline: none;
@@ -315,7 +315,7 @@
     margin: 0;
 }
 
-#button-pick-calendar:hover {
+#button-pick-period:hover {
     color: var(--c-btn-txt-hov-pos);
     animation: blink2 5s infinite;
     border: 1px solid transparent;

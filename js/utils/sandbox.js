@@ -1,3 +1,7 @@
+/*jshint esversion: 6 */
+(function () {
+    "use strict";
+})();
 const UTILS = {
 
     OVERLAY: function (val, char, len) {
@@ -21,46 +25,33 @@ const UTILS = {
     },
 
     GET_GUEST_KEY_VALUE: function (data, index) {
-        switch (index) {
-            case 0:
-                return data.id;
-                break;
-            case 1:
-                return data.dayin.substring(8) + '.' + data.dayin.substring(5, 7);
-                break;
-            case 2:
-                return data.dayout.substring(8) + '.' + data.dayout.substring(5, 7);
-                break;
-            case 3:
-                return data.days;
-                break;    
-            case 4:
-                return data.room;
-                break;
-            case 5:
-                return data.baseline;
-                break;
-            case 6:
-                return data.adjustment;
-                break;                  
-            case 7:
-                return data.cost;
-                break;
-            case 8:
-                return data.paid;
-                break;
-            case 9:
-                return data.name;
-                break;
-            case 10:
-                return data.tel;
-                break;
-            case 11:
-                return data.fn;
-                break;
-            case 12:
-                return data.city;
-                break;
+        switch (index) { //TODO:
+            // case 0:
+            //     return data.id;
+            // case 1:
+            //     return data.dayin.substring(8) + '.' + data.dayin.substring(5, 7);
+            // case 2:
+            //     return data.dayout.substring(8) + '.' + data.dayout.substring(5, 7);
+            // case 3:
+            //     return data.days;
+            // case 4:
+            //     return data.room;
+            // case 5:
+            //     return data.baseline;
+            // case 6:
+            //     return data.adjustment;
+            // case 7:
+            //     return data.cost;
+            // case 8:
+            //     return data.paid;
+            // case 9:
+            //     return data.name;
+            // case 10:
+            //     return data.tel;
+            // case 11:
+            //     return data.fn;
+            // case 12:
+            //     return data.city;
             default:
                 break;
         }
@@ -79,10 +70,10 @@ const UTILS = {
         return map;
     },
 
-    CLONE (source) {
+    CLONE(source) {
         var obj = {};
         for (let key in source) {
-          obj[key.toLowerCase()] = '';
+            obj[key.toLowerCase()] = '';
         }
         return obj;
     },
@@ -91,14 +82,14 @@ const UTILS = {
 
         var propNames = Object.getOwnPropertyNames(obj);
       
-        propNames.forEach(function(name) {
-          var prop = obj[name];
-          if (typeof prop == 'object' && prop !== null)
-            deepFreeze(prop);
+        propNames.forEach(function (name) {
+            var prop = obj[name];
+            if (typeof prop == 'object' && prop !== null)
+                deepFreeze(prop);
         });
       
         return Object.freeze(obj);
-      }
-}
+    }
+};
 
 UTILS.DEEPF_REEZE(UTILS);

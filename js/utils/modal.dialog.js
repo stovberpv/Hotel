@@ -1,3 +1,8 @@
+/*jshint esversion: 6 */
+/*jshint -W030 */
+(function () {
+    "use strict";
+})();
 class Dialog {
 
     constructor(opts) {
@@ -10,7 +15,7 @@ class Dialog {
                 ok: function () { },
                 no: function () { }
             }
-        }
+        };
     }
 
     bind() {}
@@ -22,12 +27,12 @@ class Dialog {
 
 class ConfirmDialog extends Dialog {
 
-    constructor() {
-        super();
+    constructor(opts) {
+        super(opts);
     
         this.cb.command.ok = function (e) {
-            EventBus.dispatch(GL.CONST.EVENTS.CALENDAR.DIALOG_SAVE, { intent: this.opts.data.intent, data: this.opts.data });
             this.unbind();
+            this.opts.cb.ok(this.opts.data);
         };
                 
         this.cb.command.no = function (e) {
@@ -37,442 +42,194 @@ class ConfirmDialog extends Dialog {
 
     bind() {
 
-        var tree = [{ tag: '', id: ``, class: `` },
-             //TODO: tree
-        ];
+        const I = GL.CONST.VALUES.CALENDAR.INTENT;
+        const P = GL.CONST.PREFIX.CONFIRM_DIALOG;
+        const O = this.opts;
+        var tree =
+            [{ tag: 'div', id: `${P}-${this.id}`, class: `${P} modal modal-wrapper` },
+                [{ tag: 'div', class: `${P} modal-content` },
+                    [{ tag: 'div', class: `${P} modal-header ${I}-${O.intent}` },
+                        { tag: 'label', textNode: O.title }    
+                    ],
+                    [{ tag: 'div', class: `${P} modal-body` },
+                        { tag: 'label', textNode: O.text }
+                    ],
+                    [{ tag: 'div', class: `${P} modal-footer` },
+                        { tag: 'button', class: 'button negative', type: 'button', textNode: 'Отменить', events: [{ name: 'click', fn: this.cb.command.no, bind: this }] },
+                        { tag: 'button', class: 'button positive', type: 'button', textNode: 'Подтвердить', events: [{ name: 'click', fn: this.cb.command.ok, bind: this }] },
+                    ]
+                ]
+            ];
 
         tree = new DOMTree(tree).cultivate();
         if (tree) document.body.appendChild(tree);
         else console.log('tree is ' + tree);
-
-        var divDialog, divContent, divHeader, divBody, divFooter,
-            a, button;
-
-        divHeader = document.createElement('div');
-        divHeader.classList.add('modal-header');
-        divHeader.classList.add('modal-header-negative');
-
-        a = document.createElement('a');
-        a.appendChild(document.createTextNode('Удаление'));
-        divHeader.appendChild(a);
-
-        divBody = document.createElement('div');
-        divBody.classList.add('modal-body');
-        divBody.classList.add(additionalClass);
-
-        a = document.createElement('a');
-        a.appendChild(document.createTextNode('Удалить запись под номером №' + this.opts.data.id + ' из гостевой книги?\r\nДействие нельзя будет отменить!'));
-        divBody.appendChild(a);
-
-        divFooter = document.createElement('div');
-        divFooter.classList.add('modal-footer');
-        button = document.createElement('button');
-        button.setAttribute('id', 'button-no');
-        button.setAttribute('type', 'button');
-        button.classList.add('button');
-        button.classList.add('negative');
-        button.appendChild(document.createTextNode('Отменить'));
-        button.addEventListener('click', this.cb.no);
-        divFooter.appendChild(button);
-
-        button = document.createElement('button');
-        button.setAttribute('id', 'button-ok');
-        button.setAttribute('type', 'button');
-        button.classList.add('button');
-        button.classList.add('positive');
-        button.addEventListener('click', this.cb.ok).bind( { id: this.opts.data.id } );
-        button.appendChild(document.createTextNode('Подтвердить'));
-        divFooter.appendChild(button);
-
-        divContent = document.createElement('div')
-        divContent.classList.add('modal-content');
-        divContent.classList.add('modal-confirm');
-        divContent.appendChild(divHeader);
-        divContent.appendChild(divBody);
-        divContent.appendChild(divFooter);
-
-        divDialog = document.createElement('div')
-        divDialog.setAttribute('id', 'modal-dialog-' + this.id);
-        divDialog.classList.add('modal-dialog');
-        divDialog.appendChild(divContent);
-
-        document.appendChild(divDialog);
     }
 
     show() {
-        var dialog = document.getElementById('modal-dialog-' + this.id);
+        const P = GL.CONST.PREFIX.CONFIRM_DIALOG;
+        var dialog = document.getElementById(`${P}-${this.id}`);
         dialog.style.display = 'block';
     }
 
     unbind() {
-        var dialog = document.getElementById('modal-dialog-' + this.id);
+        const P = GL.CONST.PREFIX.CONFIRM_DIALOG;
+        var dialog = document.getElementById(`${P}-${this.id}`);
         dialog.style.display = 'none';
         dialog.parentNode.removeChild(dialog);
     }
 }
 
-class InOutDialog extends Dialog {
+class GuestCard extends Dialog {
 
-    constructor() {
-        super();
+    constructor(opts) {
+        super(opts);
 
-        this.cb = {
+        this.cb.command.ok = function (e) {
+            EVENT_BUS.dispatch(GL.CONST.EVENTS.CALENDAR.DIALOG_SAVE, { intent: this.opts.intent, data: this.getVal() });
+            this.unbind();
+        };
 
-            ok: function (e) {
-                EventBus.dispatch(GL.CONST.EVENTS.CALENDAR.DIALOG_SAVE, { intent: this.opts.data.intent, data: this.getVal() });
-                this.unbind();
+        this.cb.command.no = function (e) {
+            this.unbind();
+        };
+
+        this.utils = { //new function () { }();
+            checkDate: function (value, key) {
+
+                var allowedChars = '0123456789.',
+                    dot = '.',
+                    strlen = value.length,
+                    dotIndex = value.indexOf('.'),
+                    newValue = value.toString().concat(key);
+    
+                // только цифры и точка
+                if (allowedChars.indexOf(key) == -1) return false;
+                // точка не должна быть первой
+                // не более двух точек
+                // точка не может быть на 3 позиции
+                if (key == dot) {
+                    if (strlen == 0) return false;
+                    if (strlen > 2) return false;
+                    if (dotIndex != -1) return false;
+                    if (value == 0) return false;
+                }
+                // не более 5 символов (dd.mm)
+                if (strlen > 4) return false;
+                // не более 2 цифр подряд
+                if (strlen > 1 && (key != dot && dotIndex == -1)) return false;
+                // день не больше 31 числа
+                if (strlen == 1 && parseInt(newValue) > 31) return false;
+                // месяц на старше 12
+                if (dotIndex != -1) {
+                    var date = newValue.substring(dotIndex + 1);
+                    if (date > 12) return false;
+                }
+                // корректная дата по календарю
+    
+                //
+                return true;
             },
 
-            no: function (e) {
-                this.unbind();
+            calcFields: function (that) {
+
+                const O = that.opts;
+                const E = GL.CONST.SCHEMA.GUEST;
+                const P = GL.CONST.PREFIX.GUEST_CARD;
+
+                var dialog = document.getElementById(`${P}-${that.id}`),
+                    dbeg = dialog.querySelector(`#${P}-el-${E.DBEG.key} input`),
+                    dend = dialog.querySelector(`#${P}-el-${E.DEND.key} input`),
+                    days = dialog.querySelector(`#${P}-el-${E.DAYS.key} input`),
+                    room = dialog.querySelector(`#${P}-el-${E.ROOM.key} input`),
+                    base = dialog.querySelector(`#${P}-el-${E.BASE.key} input`),
+                    adjs = dialog.querySelector(`#${P}-el-${E.ADJS.key} input`),
+                    cost = dialog.querySelector(`#${P}-el-${E.COST.key} input`);
+    
+                var begda = dbeg.value.split('.'),
+                    endda = dend.value.split('.');
+                begda = new Date(''.concat(O.year, '.', (begda[1] ? begda[1] : O.month), '.', begda[0]));
+                endda = new Date(''.concat(O.year, '.', (endda[1] ? endda[1] : O.month), '.', endda[0]));
+                var totalDays = (endda - begda) / 86400000;
+    
+                var rooms = O.rooms.filter(function (el) { return el.room == room.value; });
+                (base.value == 0) && (base.value = rooms[0].price);
+                
+                var price = (parseInt(base.value) || 0) + (parseInt(adjs.value) || 0),
+                    mustBePaid = price * totalDays;
+    
+                days.value = totalDays;
+                cost.value = mustBePaid;
+                cost.dispatchEvent(new Event('change'));
+            }
+        };
+
+        this.cb.control = {
+    
+            dbeg: { 
+                keypress: function (e) { !this.utils.checkDate(e.target.value, e.key) && e.preventDefault(); }, 
+                paste: function(e) { e.preventDefault(); }, 
+                change: function(e) { this.utils.calcFields(this); }
             },
-        }
-    }
-
-    bind() {
-
-        var dialog, button, attr,
-            div, divWrapper, divHead, divBody, divFooter, divDropDown,
-            a, label, input;
-
-        divWrapper = document.createElement('div');
-        divWrapper.setAttribute('id', 'pio-data-wrapper');
-
-        divHead = document.createElement('div');
-        divHead.setAttribute('id', 'pio-dw-head');
-        divHead.classList.add('pio-unit');
-
-        label = document.createElement('label');
-        let additionalClass, title;
-        switch (this.opts.flag) {
-            case -1:
-                additionalClass = "modal-header-negative";
-                title = 'Удаление';
-                break;
-            case 0:
-                additionalClass = "modal-header-neutral";
-                title = 'Изменение';
-                break;
-            case 1:
-                additionalClass = "modal-header-positive";
-                title = 'Добавление';
-                break;
-            case 2:
-                additionalClass = "modal-header-extend";
-                title = 'Обработка';
-                break;
-            default:
-                break;
-        }
-        label.appendChild(document.createTextNode(title));
-        // label.classList.add(additionalClass);
-
-        divHead.appendChild(label);
-
-        divWrapper.appendChild(divHead);
-
-        divBody = document.createElement('div');
-        divBody.setAttribute('id', 'pio-dw-body');
-        divBody.classList.add('pio-unit');
-
-        div = this.createInputNode('intent', ['pio-el', 'output'], 'Цель');
-        div.getElementsByTagName('input')[0].setAttribute('readonly', '');
-        div.setAttribute('style', 'display:none;');
-        divBody.appendChild(div);
-
-        div = this.createInputNode('id', ['pio-el', 'output'], 'Идентификатор');
-        div.getElementsByTagName('input')[0].setAttribute('readonly', '');
-        div.setAttribute('style', 'display:none;');
-        divBody.appendChild(div);
-
-        div = this.createInputNode('dayin', ['pio-el', 'input'], 'Заезд');
-        this.setHandler(div.getElementsByTagName('input')[0], 'keypress');
-        this.setHandler(div.getElementsByTagName('input')[0], 'paste');
-        this.setHandler(div.getElementsByTagName('input')[0], 'change');
-        divBody.appendChild(div);
-
-        div = this.createInputNode('dayout', ['pio-el', 'input'], 'Выезд');
-        this.setHandler(div.getElementsByTagName('input')[0], 'keypress');
-        this.setHandler(div.getElementsByTagName('input')[0], 'paste');
-        this.setHandler(div.getElementsByTagName('input')[0], 'change');
-        divBody.appendChild(div);
-
-        div = this.createInputNode('days', ['pio-el', 'output'], 'Дней');
-        this.setHandler(div.getElementsByTagName('input')[0], 'keypress');
-        this.setHandler(div.getElementsByTagName('input')[0], 'paste');
-        this.setHandler(div.getElementsByTagName('input')[0], 'change');
-        divBody.appendChild(div);
-
-        div = this.createInputNode('room', ['pio-el', 'input'], 'Комната');
-        this.setHandler(div.getElementsByTagName('input')[0], 'keypress');
-        this.setHandler(div.getElementsByTagName('input')[0], 'click');
-        this.setHandler(div.getElementsByTagName('input')[0], 'paste');
-        this.setHandler(div.getElementsByTagName('input')[0], 'change');
-
-        divDropDown = document.createElement('div');
-        divDropDown.setAttribute('id', 'RDDL');
-        this.setHandler(divDropDown, 'click');
-        this.opts.rooms.forEach(el => {
-            a = document.createElement('a');
-            a.innerText = el.room;
-            divDropDown.appendChild(a);
-        });
-        div.appendChild(divDropDown);
-
-        divBody.appendChild(div);
-
-        function createInputNode(id, classes, text) {
-
-            var div = document.createElement('div');
-            div.setAttribute('id', id);
-            classes.forEach(el => {
-                div.classList.add(el);
-            });
-    
-            var input = document.createElement('input');
-            input.setAttribute('type', 'text');
-            input.setAttribute('required', '');
-    
-            var label = document.createElement('label');
-            label.innerText = text;
-    
-            div.appendChild(input);
-            div.appendChild(label);
-    
-            return div;
-        }
-
-        div = createInputNode('baseline', ['pio-el', 'output'], 'База');
-        this.setHandler(div.getElementsByTagName('input')[0], 'keypress');
-        this.setHandler(div.getElementsByTagName('input')[0], 'paste');
-        this.setHandler(div.getElementsByTagName('input')[0], 'change');
-        divBody.appendChild(div);
-
-        div = createInputNode('adjustment', ['pio-el', 'input'], 'Корр.');
-        this.setHandler(div.getElementsByTagName('input')[0], 'keypress');
-        this.setHandler(div.getElementsByTagName('input')[0], 'paste');
-        this.setHandler(div.getElementsByTagName('input')[0], 'change');
-        divBody.appendChild(div);
-
-        div = createInputNode('cost', ['pio-el', 'output'], 'Стоимость');
-        this.setHandler(div.getElementsByTagName('input')[0], 'keypress');
-        this.setHandler(div.getElementsByTagName('input')[0], 'paste');
-        this.setHandler(div.getElementsByTagName('input')[0], 'change');
-        divBody.appendChild(div);
-
-        div = createInputNode('paid', ['pio-el', 'input'], 'Оплачено');
-        this.setHandler(div.getElementsByTagName('input')[0], 'keypress');
-        this.setHandler(div.getElementsByTagName('input')[0], 'paste');
-        divBody.appendChild(div);
-
-        div = createInputNode('name', ['pio-el', 'input'], 'ФИО');
-        divBody.appendChild(div);
-
-        div = createInputNode('city', ['pio-el', 'input'], 'Город');
-        divBody.appendChild(div);
-
-        div = createInputNode('tel', ['pio-el', 'input'], 'Телефон');
-        this.setHandler(div.getElementsByTagName('input')[0], 'keypress');
-        this.setHandler(div.getElementsByTagName('input')[0], 'paste');
-        divBody.appendChild(div);
-
-        div = createInputNode('fn', ['pio-el', 'input'], 'Примечание');
-        divBody.appendChild(div);
-
-        divWrapper.appendChild(divBody);
-
-        divFooter = document.createElement('div');
-        divFooter.setAttribute('id', 'pio-dw-footer');
-        divFooter.classList.add('pio-unit');
-
-        function createButton (id, classes, text) {
-
-            var button = document.createElement('button');
-            button.setAttribute('type', 'button');
-            button.setAttribute('id', id);
-            button.classList.add('button');
-            classes.forEach(el => {
-                button.classList.add(el);
-            });
-            button.innerText = text;
-    
-            return button;
-        }
-
-        button = createButton('button-no', ['negative'], 'Отменить');
-        button.addEventListener('click', this.cb.no);
-        divFooter.appendChild(button);
-
-        button = createButton('button-ok', ['positive'], 'Подтвердить');
-        button.addEventListener('click', this.cb.ok);
-        divFooter.appendChild(button);
-
-        divWrapper.appendChild(divFooter);
-
-        dialog = document.getElementById('pio-dialog-' + this.id);
-        var dialog = document.createElement('div');
-        dialog.className = 'popup-input-output';
-        dialog.setAttribute('id', 'popup-input-output-' + this.id);
-        dialog.appendChild(divWrapper);
-        document.body.appendChild(dialog);
-    }
-
-    setHandler(target, event) {
-
-        var checkDate = function (value, key) {
-
-            var allowedChars = '0123456789.',
-                dot = '.',
-                strlen = value.length,
-                dotIndex = value.indexOf('.'),
-                newValue = value.toString().concat(key);
-
-            // только цифры и точка
-            if (allowedChars.indexOf(key) == -1) return false;
-            // точка не должна быть первой
-            // не более двух точек
-            // точка не может быть на 3 позиции
-            if (key == dot) {
-                if (strlen == 0) return false;
-                if (strlen > 2) return false;
-                if (dotIndex != -1) return false;
-                if (value == 0) return false;
-            }
-            // не более 5 символов (dd.mm)
-            if (strlen > 4) return false;
-            // не более 2 цифр подряд
-            if (strlen > 1 && (key != dot && dotIndex == -1)) return false;
-            // день не больше 31 числа
-            if (strlen == 1 && parseInt(newValue) > 31) return false;
-            // месяц на старше 12
-            if (dotIndex != -1) {
-                var date = newValue.substring(dotIndex + 1);
-                if (date > 12) return false;
-            }
-            // корректная дата по календарю
-
-            //
-            return true;
-        }
-
-        var calcFields = function () {
-
-            var dialog = document.getElementById('popup-input-output-' + this.id),
-                dayin = dialog.querySelector('#dayin input'),
-                dayout = dialog.querySelector('#dayout input'),
-                days = dialog.querySelector('#days input'),
-                room = dialog.querySelector('#room input'),
-                baseline = dialog.querySelector('#baseline input'),
-                adjustment = dialog.querySelector('#adjustment input'),
-                cost = dialog.querySelector('#cost input');
-
-            var begda = dayin.value.split('.'),
-                begda = new Date(''.concat(this.year, '.', (begda[1] ? begda[1] : this.month), '.', begda[0])),
-                endda = dayout.value.split('.'),
-                endda = new Date(''.concat(this.year, '.', (endda[1] ? endda[1] : this.month), '.', endda[0])),
-                totalDays = (endda - begda) / 86400000;
-
-            var rooms = this.rooms.filter(function (el) { return el.room == room.value; });
-            (baseline.value == 0) && (baseline.value = rooms[0].price);
-            
-            var price = (parseInt(baseline.value) || 0) + (parseInt(adjustment.value) || 0),
-                mustBePaid = price * totalDays;
-
-            days.value = totalDays;
-            cost.value = mustBePaid;
-            cost.dispatchEvent(new Event('change'));
-
-        }.bind( { rooms: this.opts.data.rooms, month: this.opts.data.month, year: this.opts.data.year, id: this.id } );
-
-        var handlers = {
-
-            keypress: {
-
-                dayin: function (e) {
-
-                    if (!this(e.target.value, e.key)) {
-                        e.preventDefault();
-                    }
-                }.bind(checkDate),
-
-                dayout: function (e) {
-
-                    if (!this(e.target.value, e.key)) {
-                        e.preventDefault();
-                    }
-                }.bind(checkDate),
-
-                days: function (e) {
-
-                    e.preventDefault();
-                },
-
-                room: function (e) {
-
-                    e.preventDefault();
-                },
-
-                baseline: function (e) {
-
-                    e.preventDefault();
-                },
-
-                adjustment: function (e) {
-
+            dend: { 
+                keypress: function(e) { !this.checkDate(e.target.value, e.key) && e.preventDefault(); }, 
+                paste: function(e) { e.preventDefault(); }, 
+                change: function(e) { this.utils.calcFields(this); }
+            },
+            days: { 
+                keypress: function (e) { e.preventDefault(); }, 
+                paste: function (e) { e.preventDefault(); },
+                change: function (e) { e.preventDefault(); }
+            },
+            room: { 
+                keypress: function(e) { e.preventDefault(); }, 
+                click: function(e) { e.target.parentNode.querySelector('#rooms-drop-down-list').style.display = 'block'; }, 
+                paste: function(e) { e.preventDefault(); }, 
+                change: function(e) {
+                    var room = this.rooms.filter(function (el) { return el.room == e.target.value; }),
+                        baseline = document.querySelector(`${GL.CONST.SCHEMA.GUEST.BASE.key} input`);
+                    baseline.value = room.length != 0 ? room[0].price : 0;
+                    baseline.dispatchEvent(new Event('change'));
+                }
+            },
+            base: { 
+                keypress: function(e) { e.preventDefault(); }, 
+                paste: function(e) { e.preventDefault(); }, 
+                change: function(e) { this.utils.calcFields(this); }
+            },
+            adjs: { 
+                keypress: function(e) {
                     var allowedChars = '-0123456789',
                         strlen = e.target.value.length;
                     if (e.key == '-') {
-                        if (e.target.value.indexOf('-') != -1) {
-                            e.preventDefault();
-                            return;
-                        }
-                        if (e.target.value.length != 0) {
-                            e.preventDefault();
-                            return;
-                        }
+                        if (e.target.value.indexOf('-') != -1) { e.preventDefault(); return; }
+                        if (e.target.value.length != 0) { e.preventDefault(); return; }
                     }
-                    if (allowedChars.indexOf(e.key) == -1) {
-                        e.preventDefault();
-                        return;
-                    }
-                    if (strlen > 5) {
-                        e.preventDefault();
-                        return;
-                    }
-                },
-
-                cost: function (e) {
-
-                    e.preventDefault();
-                },
-
-                paid: function (e) {
-
+                    if (allowedChars.indexOf(e.key) == -1) { e.preventDefault(); return; }
+                    if (strlen > 5) { e.preventDefault(); return; }
+                }, 
+                paste: function(e) { e.preventDefault(); }, 
+                change: function(e) { this.utils.calcFields(this); }
+            },
+            cost: { 
+                keypress: function(e) { e.preventDefault(); }, 
+                paste: function(e) { e.preventDefault(); }, 
+                change: function(e) { console.log('change cost'); }
+            },
+            paid: { 
+                keypress: function(e) {
                     var allowedChars = '0123456789',
                         strlen = e.target.value.length;
 
-                    if (allowedChars.indexOf(e.key) == -1) {
-                        e.preventDefault();
-                        return;
-                    }
-                    if (strlen > 4) {
-                        e.preventDefault();
-                        return;
-                    }
-                },
-
-                name: function (e) {
-
-                },
-
-                city: function (e) {
-
-                },
-
-                tel: function (e) {
-
+                    if (allowedChars.indexOf(e.key) == -1) { e.preventDefault(); return; }
+                    if (strlen > 4) { e.preventDefault(); return; }
+                }, 
+                paste: function(e) { e.preventDefault(); }
+            },
+            teln: { 
+                keypress: function(e) {
                     var allowedChars = '+-() 0123456789',
-                        strlen = e.target.value.length;
+                    strlen = e.target.value.length;
 
                     if (allowedChars.indexOf(e.key) == -1) {
                         e.preventDefault();
@@ -482,178 +239,232 @@ class InOutDialog extends Dialog {
                         e.preventDefault();
                         return;
                     }
-
-                },
-
-                fn: function (e) {
-
-                }
+                }, 
+                paste: function(e) { e.preventDefault(); }, 
             },
-
-            click: {
-
-                room: function (e) {
-
-                    e.target.parentNode.querySelector('#RDDL').style.display = 'block';
-                },
-
-                RDDL: function (e) {
-
+            rddl: {
+                click: function (e) {
                     var roomInput = e.target.parentNode.offsetParent.querySelector('input');
                     roomInput.value = e.target.textContent;
                     roomInput.dispatchEvent(new Event('change'));
 
                     e.target.parentNode.style.display = 'none';
                 }
-            },
-
-            paste: {
-
-                dayin: function (e) {
-
-                    e.preventDefault();
-                },
-
-                dayout: function (e) {
-                    
-                    e.preventDefault();
-                },
-
-                days: function (e) {
-
-                    e.preventDefault();
-                },
-
-                room: function (e) {
-                    
-                    e.preventDefault();
-                },
-
-                baseline: function (e) {
-                    
-                    e.preventDefault();
-                },
-
-                adjustment: function (e) {
-                    
-                    e.preventDefault();
-                },
-
-                cost: function (e) {
-                    
-                    e.preventDefault();
-                },
-
-                paid: function (e) { 
-                    
-                    e.preventDefault();
-                },
-
-                tel: function (e) {
-                    
-                    e.preventDefault();
-                }
-            },
-
-            change: {
-
-                dayin: function (e) {
-                
-                    this();
-                }.bind(calcFields),
-
-                dayout: function (e) {
-                
-                    this();
-                }.bind(calcFields),
-
-                room: function (e) {
-
-                    var room = this.rooms.filter(function(el) { return el.room == e.target.value }),
-                        baseline = document.querySelector('#baseline input');
-                    baseline.value = room.length != 0 ? room[0].price : 0;
-                    baseline.dispatchEvent(new Event('change'));
-                }.bind({ rooms: this.opts.data.rooms }),
-
-                baseline: function (e) {
-
-                    this();
-                }.bind(calcFields),
-
-                adjustment: function (e) {
-                    
-                    this();
-                }.bind(calcFields),
-
-                cost: function (e) {
-                
-                    console.log('change cost');
-                }
             }
-        }
-
-        var id = target.id ? target.id : target.parentNode.id;
-        target.addEventListener(event, handlers[event][id]);
+        };
     }
 
-    show(id) {
-        var dialogId = id ? id : this.id,
-            dialog = document.getElementById('popup-input-output-' + dialogId);
+    bind() {
+
+        const O = this.opts;
+        const E = GL.CONST.SCHEMA.GUEST;
+        const P = GL.CONST.PREFIX.GUEST_CARD;
+        const I = GL.CONST.VALUES.CALENDAR.INTENT[O.intent.toUpperCase()];
+        var tree =
+            [{ tag: 'div' , id: `${P}-${this.id}`, class: `${P} modal modal-wrapper` },
+                [{ tag: 'div', class: `${P} modal-content` },
+                    [{ tag: 'div', class: `${P} modal-header intent-${O.intent}` },
+                        { tag: 'label', textNode: `${O.title}` }
+                    ],
+                    [{ tag: 'div', class: `${P} modal-body` },
+                        [{ tag: 'div', id: `${P}-el-intent`, class: `${P}-el output`, style: { display: 'none;' } },
+                            { tag: 'input', type: 'text', attr: { readonly: '' } },
+                            { tag: 'label', textNode: `${I.txt}` }
+                        ],
+                        [{ tag: 'div', id: `${P}-el-${E.UNID.key}`, class: `${P}-el output`, style: { display: 'none;' } },
+                            { tag: 'input', type: 'text', attr: { readonly: '' } },
+                            { tag: 'label', textNode: `${E.UNID.txt}` }
+                        ],
+                        [{ tag: 'div', id: `${P}-el-${E.DBEG.key}`, class: `${P}-el input` },
+                            {
+                                tag: 'input', type: 'text', attr: { readonly: O.isEditable, required: O.isStrict },
+                                events: [
+                                   { name: 'keypress', fn: this.cb.control.dbeg.keypress },
+                                   { name: 'paste', fn: this.cb.control.dbeg.paste },
+                                   { name: 'change', fn: this.cb.control.dbeg.change.bind(this) }
+                                ]
+                            },
+                            { tag: 'label', textNode: `${E.DBEG.txt}` }
+                        ],
+                        [{ tag: 'div', id: `${P}-el-${E.DEND.key}`, class: `${P}-el input` },
+                            {
+                                tag: 'input', type: 'text', attr: { readonly: O.isEditable, required: O.isStrict },
+                                events: [
+                                    { name: 'keypress', fn: this.cb.control.dend.keypress },
+                                    { name: 'paste', fn: this.cb.control.dend.paste },
+                                    { name: 'change', fn: this.cb.control.dend.change.bind(this) }
+                                ]
+                            },
+                            { tag: 'label', textNode: `${E.DEND.txt}` }
+                        ],
+                        [{ tag: 'div', id: `${P}-el-${E.DAYS.key}`, class: `${P}-el output` },
+                            {
+                                tag: 'input', type: 'text',
+                                events: [
+                                    { name: 'keypress', fn: this.cb.control.days.keypress },
+                                    { name: 'paste', fn: this.cb.control.days.paste },
+                                    { name: 'change', fn: this.cb.control.days.change.bind(this) }
+                                ]
+                            },
+                            { tag: 'label', textNode: `${E.DAYS.txt}` }
+                        ],
+                        [{ tag: 'div', id: `${P}-el-${E.ROOM.key}`, class: `${P}-el output` },
+                            {
+                                tag: 'input', type: 'text',
+                                events: [
+                                    { name: 'keypress', fn: this.cb.control.room.keypress },
+                                    { name: 'paste', fn: this.cb.control.room.paste },
+                                    { name: 'change', fn: this.cb.control.room.change.bind({ rooms: this.opts.rooms }) },
+                                    { name: 'click', fn: this.cb.control.room.click }
+                                ]
+                            },
+                            { tag: 'label', textNode: `${E.ROOM.txt}` },
+                            { tag: 'div', id: 'rooms-drop-down-list', events: [{ name: 'click', fn: this.cb.control.rddl.click }] }
+                        ],
+                        [{ tag: 'div', id: `${P}-el-${E.BASE.key}`, class: `${P}-el output` },
+                            {
+                                tag: 'input', type: 'text',
+                                events: [
+                                    { name: 'keypress', fn: this.cb.control.base.keypress },
+                                    { name: 'paste', fn: this.cb.control.base.paste },
+                                    { name: 'change', fn: this.cb.control.base.change.bind(this) }
+                                ]
+                            },
+                            { tag: 'label', textNode: `${E.BASE.txt}` }
+                        ],
+                        [{ tag: 'div', id: `${P}-el-${E.ADJS.key}`, class: `${P}-el input` },
+                            {
+                                tag: 'input', type: 'text', attr: { readonly: O.isEditable },
+                                events: [
+                                    { name: 'keypress', fn: this.cb.control.adjs.keypress },
+                                    { name: 'paste', fn: this.cb.control.adjs.paste },
+                                    { name: 'change', fn: this.cb.control.adjs.change.bind(this) }
+                                ]
+                            },
+                            { tag: 'label', textNode: `${E.ADJS.txt}` }
+                        ],
+                        [{ tag: 'div', id: `${P}-el-${E.COST.key}`, class: `${P}-el output` },
+                            {
+                                tag: 'input', type: 'text',
+                                events: [
+                                    { name: 'keypress', fn: this.cb.control.cost.keypress },
+                                    { name: 'paste', fn: this.cb.control.cost.paste },
+                                    { name: 'change', fn: this.cb.control.cost.change.bind(this) }
+                                ]
+                            },
+                            { tag: 'label', textNode: `${E.COST.txt}` }
+                        ],
+                        [{ tag: 'div', id: `${P}-el-${E.PAID.key}`, class: `${P}-el input` },
+                            {
+                                tag: 'input', type: 'text', attr: { readonly: O.isEditable, required: O.isStrict },
+                                events: [
+                                    { name: 'keypress', fn: this.cb.control.paid.keypress },
+                                    { name: 'paste', fn: this.cb.control.paid.paste }
+                                ]
+                            },
+                            { tag: 'label', textNode: `${E.PAID.txt}` }
+                        ],
+                        [{ tag: 'div', id: `${P}-el-${E.NAME.key}`, class: `${P}-el input` },
+                            { tag: 'input', type: 'text', attr: { readonly: O.isEditable, required: O.isStrict } },
+                            { tag: 'label', textNode: `${E.NAME.txt}` }
+                        ],
+                        [{ tag: 'div', id: `${P}-el-${E.CITY.key}`, class: `${P}-el input` },
+                            { tag: 'input', type: 'text', attr: { readonly: O.isEditable, required: O.isStrict } },
+                            { tag: 'label', textNode: `${E.CITY.txt}` }
+                        ],
+                        [{ tag: 'div', id: `${P}-el-${E.TELN.key}`, class: `${P}-el input` },
+                            {
+                                tag: 'input', type: 'text', attr: { readonly: O.isEditable },
+                                events: [
+                                    { name: 'keypress', fn: this.cb.control.teln.keypress },
+                                    { name: 'paste', fn: this.cb.control.teln.paste }
+                                ]
+                            },
+                            { tag: 'label', textNode: `${E.TELN.txt}` }
+                        ],
+                        [{ tag: 'div', id: `${P}-el-${E.FNOT.key}`, class: `${P}-el input` },
+                            { tag: 'input', type: 'text', attr: { readonly: O.isEditable } },
+                            { tag: 'label', textNode: `${E.FNOT.txt}` }
+                        ],
+                    ],
+                    [{ tag: 'div', class: `${P} modal-footer` },
+                        { tag: 'button', class: 'button negative', type: 'button', textNode: 'Отменить', events: [{ name: 'click', fn: this.cb.command.no, bind: this }] },
+                        { tag: 'button', class: 'button positive', type: 'button', textNode: 'Подтвердить', events: [{ name: 'click', fn: this.cb.command.ok, bind: this }] },
+                    ],
+                ]
+            ];
+        
+        tree = new DOMTree(tree).cultivate();
+        var rddl = tree.querySelector('#rooms-drop-down-list');
+        O.rooms.forEach(el => {
+            var a = document.createElement('a');
+            a.appendChild(document.createTextNode(el.room));
+            rddl.appendChild(a);
+        });
+        if (tree) document.body.appendChild(tree);
+        else console.log('tree is ' + tree);
+    }
+
+    show() {
+        var dialog = document.getElementById(`${GL.CONST.PREFIX.GUEST_CARD}-${this.id}`);
         dialog.style.display = 'block';
     }
 
-    unbind(id) {
-        var dialogId = id ? id : this.id,
-            dialog = document.getElementById('popup-input-output-' + dialogId);
+    unbind() {
+        var dialog = document.getElementById(`${GL.CONST.PREFIX.GUEST_CARD}-${this.id}`);
         dialog.style.display = 'none';
         dialog.parentNode.removeChild(dialog);
     }
 
     setVal(val) {
-        if (val != undefined) {
-            var dialog = document.getElementById('popup-input-output-' + this.id);
-            dialog.querySelector('#id input').value = val.id;
-            dialog.querySelector('#intent input').value = val.intent;
-            dialog.querySelector('#dayin input').value = val.dayin;
-            dialog.querySelector('#dayout input').value = val.dayout;
-            dialog.querySelector('#room input').value = val.room;
-            dialog.querySelector('#baseline input').value = val.baseline;
-            dialog.querySelector('#adjustment input').value = val.adjustment;
-            dialog.querySelector('#cost input').value = val.cost;
-            dialog.querySelector('#paid input').value = val.paid;
-            dialog.querySelector('#name input').value = val.name;
-            dialog.querySelector('#city input').value = val.city;
-            dialog.querySelector('#tel input').value = val.tel;
-            dialog.querySelector('#fn input').value = val.fn;
+        if (val == undefined) {
+            console.log('ERROR. Nothig to set.');
+            return;
         }
-        document.querySelector('#dayin input').dispatchEvent(new Event('change'));
+        const E = GL.CONST.SCHEMA.GUEST;
+        const P = GL.CONST.PREFIX.GUEST_CARD;
+        var dialog = document.getElementById(`${P}-${this.id}`);
+        dialog.querySelector(`#${P}-el-intent input`).value = this.opts.intent;
+        dialog.querySelector(`#${P}-el-${E.UNID.key} input`).value = val.unid;
+        dialog.querySelector(`#${P}-el-${E.DBEG.key} input`).value = val.dbeg;
+        dialog.querySelector(`#${P}-el-${E.DEND.key} input`).value = val.dend;
+        dialog.querySelector(`#${P}-el-${E.ROOM.key} input`).value = val.room;
+        dialog.querySelector(`#${P}-el-${E.BASE.key} input`).value = val.base;
+        dialog.querySelector(`#${P}-el-${E.ADJS.key} input`).value = val.adjs;
+        dialog.querySelector(`#${P}-el-${E.COST.key} input`).value = val.cost;
+        dialog.querySelector(`#${P}-el-${E.PAID.key} input`).value = val.paid;
+        dialog.querySelector(`#${P}-el-${E.NAME.key} input`).value = val.name;
+        dialog.querySelector(`#${P}-el-${E.CITY.key} input`).value = val.city;
+        dialog.querySelector(`#${P}-el-${E.TELN.key} input`).value = val.teln;
+        dialog.querySelector(`#${P}-el-${E.FNOT.key} input`).value = val.fnot;
+        document.querySelector(`#${P}-el-${E.DBEG.key} input`).dispatchEvent(new Event('change'));
     }
 
     getVal() {
-        var dialog = document.getElementById('popup-input-output-' + this.id);
+        var dialog = document.getElementById(`${GL.CONST.PREFIX.GUEST_CARD}-${this.id}`);
         return {
-            intent: dialog.querySelector('#intent input').value,
-            id: dialog.querySelector('#id input').value,
-            dayin: dialog.querySelector('#dayin input').value,
-            dayout: dialog.querySelector('#dayout input').value,
-            days: dialog.querySelector('#days input').value,
-            room: dialog.querySelector('#room input').value,
-            baseline: dialog.querySelector('#baseline input').value,
-            adjustment: dialog.querySelector('#adjustment input').value,
-            cost: dialog.querySelector('#cost input').value,
-            paid: dialog.querySelector('#paid input').value,
-            name: dialog.querySelector('#name input').value,
-            city: dialog.querySelector('#city input').value,
-            tel: dialog.querySelector('#tel input').value,
-            fn: dialog.querySelector('#fn input').value
-        }
+            intent: dialog.querySelector(`${GL.CONST.VALUES.CALENDAR.INTENT} input`).value,
+            unid: dialog.querySelector(`${E.UNID.key} input`).value,
+            dbeg: dialog.querySelector(`${E.DBEG.key} input`).value,
+            dend: dialog.querySelector(`${E.DEND.key} input`).value,
+            days: dialog.querySelector(`${E.DAYS.key} input`).value,
+            room: dialog.querySelector(`${E.ROOM.key} input`).value,
+            base: dialog.querySelector(`${E.BASE.key} input`).value,
+            adjs: dialog.querySelector(`${E.ADJS.key} input`).value,
+            cost: dialog.querySelector(`${E.COST.key} input`).value,
+            paid: dialog.querySelector(`${E.PAID.key} input`).value,
+            name: dialog.querySelector(`${E.NAME.key} input`).value,
+            city: dialog.querySelector(`${E.CITY.key} input`).value,
+            teln: dialog.querySelector(`${E.TELN.key} input`).value,
+            fnot: dialog.querySelector(`${E.FNOT.key} input`).value
+        };
     }
 }
 
 class PickPeriod extends Dialog {
     
     constructor(opts) {
-        super();
+        super(opts);
 
         this.cb.control.year = {
                     
@@ -669,23 +480,23 @@ class PickPeriod extends Dialog {
         
             prev: function prevYear(e) {
                 var id = `${GL.CONST.PREFIX.PICK_PERIOD}-${this.id}-input-year`,
-                    year = document.getElementById(id) || 0,
+                    year = document.getElementById(id) || 0;
                 if (!year) {
                     console.log('ERROR. Year not find in DOM!');
                     return;
-                };
-                val = parseInt(year.value);
+                }
+                var val = parseInt(year.value);
                 val > 1900 && val <= 9999 && (val-- , year.value = val);
             },
                     
             next: function nextYear(e) {
                 var id = `${GL.CONST.PREFIX.PICK_PERIOD}-${this.id}-input-year`,
-                    year = document.getElementById(id) || 0,
+                    year = document.getElementById(id) || 0;
                 if (!year) {
                     console.log('ERROR. Year not find in DOM!');
                     return;
-                };
-                val = parseInt(year.value);
+                }
+                var val = parseInt(year.value);
                 val >= 0 && val < 9999 && (val++ , year.value = val);
             }
         };
@@ -705,7 +516,7 @@ class PickPeriod extends Dialog {
         this.cb.command.ok = function ok(e) {
             var val = this.getVal();
             this.unbind();
-            EventBus.dispatch(GL.CONST.EVENTS.CALENDAR.DIALOG_SAVE, { intent: this.opts.data.intent, year: val.year, month: val.month });
+            EVENT_BUS.dispatch(GL.CONST.EVENTS.CALENDAR.DIALOG_SAVE, { intent: this.opts.intent, year: val.year, month: val.month.num });
         };
                 
         this.cb.command.no = function no(e) {
@@ -717,15 +528,15 @@ class PickPeriod extends Dialog {
 
         const P = GL.CONST.PREFIX.PICK_PERIOD;
         var tree =
-            [{ tag: 'div', id: `${P}-${this.id}`, class: `${P}-wrapper`},
-                [{ tag: 'div', id: `${P}-content` },
-                    { tag: 'div', id: `${P}-head` },
-                    [{ tag: 'div', id: `${P}-body` },
+            [{ tag: 'div', id: `${P}-${this.id}`, class: `${P} modal modal-wrapper`},
+                [{ tag: 'div', class: `${P} modal-content` },
+                    { tag: 'div', class: `${P} modal-header` },
+                    [{ tag: 'div', class: `${P} modal-body` },
                         [{ tag: 'table' },
                             [{ tag: 'thead' },
                                 [{ tag: 'tr' },
                                     [{ tag: 'td' },
-                                        { tag: 'button', id: `${P}-button-year-prev`, class: 'button year', type: 'button', events: [{ name: 'click', fn: this.cb.control.year.prev, bind: this }] }
+                                        { tag: 'button', id: `${P}-button-year-prev`, class: 'button', type: 'button', events: [{ name: 'click', fn: this.cb.control.year.prev, bind: this }] }
                                     ],
                                     [{ tag: 'td' },
                                         {
@@ -742,7 +553,7 @@ class PickPeriod extends Dialog {
                                         }
                                     ],
                                     [{ tag: 'td' },
-                                        { tag: 'button', id: `${P}-button-year-next`, class: 'button year', type: 'button', events: [{ name: 'click', fn: this.cb.control.year.next, bind: this }] }
+                                        { tag: 'button', id: `${P}-button-year-next`, class: 'button', type: 'button', events: [{ name: 'click', fn: this.cb.control.year.next, bind: this }] }
                                     ]
                                 ]
                             ],
@@ -770,9 +581,9 @@ class PickPeriod extends Dialog {
                             ],
                         ]
                     ],
-                    [{ tag: 'div', id: `${P}-footer` },
-                        { tag: 'button', class: 'button negative', type: 'button', textNode: 'Отменить', events: [{ name: '', fn: this.cb.command.no, bind: this }] },
-                        { tag: 'button', class: 'button positive', type: 'button', textNode: 'Подтвердить', events: [{ name: '', fn: this.cb.command.ok, bind: this }] },
+                    [{ tag: 'div', class: `${P} modal-footer` },
+                        { tag: 'button', class: 'button negative', type: 'button', textNode: 'Отменить', events: [{ name: 'click', fn: this.cb.command.no, bind: this }] },
+                        { tag: 'button', class: 'button positive', type: 'button', textNode: 'Подтвердить', events: [{ name: 'click', fn: this.cb.command.ok, bind: this }] },
                     ]
                 ]
             ];
@@ -801,13 +612,15 @@ class PickPeriod extends Dialog {
         var month = document.getElementsByClassName(`${P}-month-sel`)[0];
         return {
             year: document.getElementById(`${P}-${this.id}-input-year`).value,
-            monthId: (month.getAttribute('id')).substring(0, 2),
-            monthName: month.innerHTML
-        }
+            month: {
+                num: (month.getAttribute('id')).substring(0, 2),
+                name: month.textContent
+            }
+        };
     }
 
     unbind() {
-        var pick = document.getElementById(`${P}-${this.id}-wrapper`);
+        var pick = document.getElementById(`${ GL.CONST.PREFIX.PICK_PERIOD}-${this.id}`);
         pick.style.display = 'none';
         pick.parentNode.removeChild(pick);
     }
@@ -816,31 +629,26 @@ class PickPeriod extends Dialog {
 class RCMenu extends Dialog {
 
     constructor (opts) {
-        this.opts = opts;
-        this.X = opts.x;
-        this.Y = opts.y;
+        super(opts);
 
-        this.cb = {
+        this.cb.command.upd = function upd(e) {
+            this.unbind();
+            EVENT_BUS.dispatch(GL.CONST.EVENTS.CALENDAR.RC_MENU.RCM_ITEM_UPD_GUEST, this.opts.guest);
+        };
 
-            upd: function upd (e) {
-                this.unbind();
-                EventBus.dispatch(GL.CONST.EVENTS.CALENDAR.RC_MENU.RCM_ITEM_UPD_GUEST, { data: this.opts.data });
-            },
+        this.cb.command.del = function del(e) {
+            this.unbind();
+            EVENT_BUS.dispatch(GL.CONST.EVENTS.CALENDAR.RC_MENU.RCM_ITEM_DEL_GUEST, this.opts.guest);
+        };
 
-            del: function del (e) {
-                this.unbind();
-                EventBus.dispatch(GL.CONST.EVENTS.CALENDAR.RC_MENU.RCM_ITEM_DEL_GUEST, { data: this.opts.data });
-            },
+        this.cb.command.add = function add(e) {
+            this.unbind();
+            EVENT_BUS.dispatch(GL.CONST.EVENTS.CALENDAR.RC_MENU.RCM_ITEM_ADD_GUEST, this.opts.guest);
+        };
 
-            add: function add (e) {
-                this.unbind();
-                EventBus.dispatch(GL.CONST.EVENTS.CALENDAR.RC_MENU.RCM_ITEM_ADD_GUEST, { data: this.opts.data });
-            },
-
-            lmc: function lmc(e) {
-                this.unbind();
-            }
-        }
+        this.cb.command.lmc = function lmc(e) {
+            this.unbind();
+        };
     }
 
     bind () {
@@ -849,28 +657,28 @@ class RCMenu extends Dialog {
         ul = document.createElement('ul');
         ul.setAttribute('id', 'rcmenu-list');
 
-        if (this.opts.button.upd) {
+        if (this.opts.item.upd) {
             li = document.createElement('li');
             li.setAttribute('id', 'editGuest');
             li.classList.add('rcmenu-item');
             li.appendChild(document.createTextNode('Изменить'));
-            li.addEventListener('click', this.cb.upd);
+            li.addEventListener('click', this.cb.command.upd.bind(this));
             ul.appendChild(li);
         }
-        if (this.opts.button.del) {
+        if (this.opts.item.del) {
             li = document.createElement('li');
             li.setAttribute('id', 'delGuest');
             li.classList.add('rcmenu-item');
             li.appendChild(document.createTextNode('Удалить'));
-            li.addEventListener('click', this.cb.del);
+            li.addEventListener('click', this.cb.command.del.bind(this));
             ul.appendChild(li);
         }
-        if (this.opts.button.add) {
+        if (this.opts.item.add) {
             li = document.createElement('li');
             li.setAttribute('id', 'addGuest');
             li.classList.add('rcmenu-item');
             li.appendChild(document.createTextNode('Добавить'));
-            li.addEventListener('click', this.cb.add);
+            li.addEventListener('click', this.cb.command.add.bind(this));
             ul.appendChild(li);
         }
 
@@ -879,20 +687,20 @@ class RCMenu extends Dialog {
         div.appendChild(ul);
         document.body.appendChild(div);
 
-        EventBus.register(GL.CONST.EVENTS.CORE.LEFT_CLICK, this.cb.lmc);
+        EVENT_BUS.register(GL.CONST.EVENTS.CORE.LEFT_CLICK, this.cb.command.lmc.bind(this));
     }
 
     setVal () {}
 
     show () {
         var rcmenu = document.getElementById('rcmenu');
-        if (rcmenu) {
-            this.unbind();
-        } else {    
-            rcmenu.style.left = this.X + 'px';
-            rcmenu.style.top = this.Y + 'px';
+        // if (rcmenu) {
+            // this.unbind();
+        // } else {    
+            rcmenu.style.left = this.opts.x + 'px';
+            rcmenu.style.top = this.opts.y + 'px';
             rcmenu.style.display = 'block';
-        }
+        // }
     }
 
     getVal () {}

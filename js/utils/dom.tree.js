@@ -1,3 +1,9 @@
+/*jshint esversion: 6 */
+/*jshint -W030 */
+/*jshint -W083 */
+(function () {
+    "use strict";
+})();
 class DOMTree {
     constructor(tree) {
         this.tree = tree;
@@ -20,11 +26,14 @@ class DOMTree {
                         case 'id':
                         case 'type':
                         case 'style':
+                        case 'rowspan':
+                        case 'colspan':
+                            el.setAttribute(key, val);
+                            break;
+
                         case 'required':
                         case 'readonly':
-                        case 'rowspan':
-                        case 'colspan':    
-                            el.setAttribute(key, val);
+                            val && el.setAttribute(key, '');
                             break;
 
                         case 'class':
@@ -37,7 +46,7 @@ class DOMTree {
                             for (let ev of twig[key]) {
                                 let callback = (ev.bind) ? ev.fn.bind(ev.bind) : ev.fn;
                                 el.addEventListener(ev.name, callback);
-                            }    
+                            }
                             break;
 
                         case 'textNode':
@@ -55,7 +64,7 @@ class DOMTree {
                             for (let prop in val) {
                                 const propVal = val[prop];
                                 el[prop] = propVal;
-                            }    
+                            }
                             break;
 
                         default:
@@ -63,7 +72,7 @@ class DOMTree {
                     }
                 }
                 return el;
-            }
+            };
 
             let DOMelement;
             for (let i = 0; i < tree.length; i++) {

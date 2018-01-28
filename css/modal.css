@@ -1,5 +1,8 @@
-/* @import 'vars.css'; */
-.modal-dialog {
+/*
+    DIALOG
+*/
+
+.modal-wrapper {
     font-family: 'Century Gothic', sans-serif;
     display: none;
     z-index: 1;
@@ -22,21 +25,21 @@
     animation: MDShow 0.4s;
 }
 
-.modal-content .btn {
+/* .modal-content .button {
     color: var(--c-btn-txt-nor-neu);
-}
+} */
 
-.modal-input {
+/* .modal-input {
     width: auto;
-}
+} */
 
-.modal-inout {
+/* .modal-inout {
     width: auto;
-}
+} */
 
-.modal-confirm {
+/* .modal-confirm {
     width: 420px;
-}
+} */
 
 .modal-header {
     border-radius: 3px 3px 0px 0px;
@@ -64,26 +67,26 @@
     width: 100%;
 }
 
-.modal-header-negative {
+.intent-del {
     color: var(--c-mod-txt-top-neg);
     background-color: var(--c-mod-bck-top-neg);
 }
 
-.modal-header-positive {
+.intent-add {
     color: var(--c-mod-txt-top-pos);
     background-color: var(--c-mod-bck-top-pos);
 }
 
-.modal-header-neutral {
+.intent-upd {
     color: var(--c-mod-txt-top-neu);
     background-color: var(--c-mod-bck-top-neu);
 }
 
-.modal-header-extend {
+.intent-ext {
     color: var(--c-mod-txt-top-ext);
     background-color: var(--c-mod-bck-top-ext);
 }
-
+/* 
 .modal-dialog-href {
     position: fixed;
     width: 100%;
@@ -115,29 +118,31 @@
 .modal-body-href {
     width: 100%;
     height: 100%;
-}
+} */
 
 @keyframes MDShow {
-    from {
-        opacity: 0
-    }
-    to {
-        opacity: 1
-    }
+    from { opacity: 0 }
+    to { opacity: 1 }
 }
 
+/*
+    CONFIRM-DIALOG
+*/
 
-/* new */
 
-.popup-input-output {
+/*
+    GUEST-CARD
+*/
+
+/* .popup-input-output {
     display: none;
     position: fixed;
     width: 100%;
     height: 100%;
     font-size: 10px;
-}
+} */
 
-#pio-data-wrapper {
+#guest-card.modal-content {
     position: relative;
     width: 400px;
     height: 350px;
@@ -148,7 +153,7 @@
     background-color: rgba(255, 255, 255, .99);
 }
 
-#pio-dw-head {
+#guest-card.modal-header {
     position: relative;
     width: 100%;
     text-align: center;
@@ -156,26 +161,26 @@
     font-size: 1.5em;
 }
 
-#pio-dw-body {
+#guest-card.modal-body {
     position: relative;
     width: 100%;
     height: 85%;
     font-size: 1.2em;
 }
 
-#pio-dw-footer {
+#guest-card.modal-footer {
     position: relative;
     width: 100%;
     font-size: 1.2em;
     text-align: center;
 }
 
-.pio-el {
+#guest-card.guest-card-el {
     position: absolute;
     border-bottom: 1px solid #929292;
 }
 
-.pio-el input {
+#guest-card.guest-card-el input {
     color: #2d2d2d;
     outline: none;
     margin: 30px 0px 0px 0px;
@@ -185,7 +190,7 @@
     background-color: transparent;
 }
 
-.pio-el label {
+#guest-card.guest-card-el label {
     position: absolute;
     color: #929292;
     top: 35px;
@@ -194,90 +199,29 @@
     transition: 0.3s ease all;
 }
 
-input:focus~label,
-input:valid~label {
+#guest-card input:focus~label,
+#guest-card input:valid~label {
     top: 15px;
     left: 0;
     font-size: 1em;
 }
 
-input:focus~label {
-    color: cornflowerblue;
-}
+#guest-card input:focus~label { color: cornflowerblue; }
 
-#dayin {
-    width: 20%;
-    top: 0px;
-    left: 0px;
-}
+#guest-card-el-dbeg { width: 20%;  top: 0px;   left: 0px;}
+#guest-card-el-dend { width: 20%;  top: 0px;   left: 25%;}
+#guest-card-el-days { width: 20%;  top: 0px;   left: 50%;}
+#guest-card-el-room { width: 20%;  top: 0px;   left: 75%;}
+#guest-card-el-base { width: 20%;  top: 60px;  left: 0px;}
+#guest-card-el-adjs { width: 20%;  top: 60px;  left: 25%;}
+#guest-card-el-cost { width: 20%;  top: 60px;  left: 50%;}
+#guest-card-el-paid { width: 20%;  top: 60px;  left: 75%;}
+#guest-card-el-name { width: 100%; top: 120px; left: 0px;}
+#guest-card-el-city { width: 60%;  top: 180px; left: 0px;}
+#guest-card-el-teln { width: 35%;  top: 180px; left: 65%;}
+#guest-card-el-fnot { width: 100%; top: 240px; left: 0px;}
 
-#dayout {
-    width: 20%;
-    top: 0px;
-    left: 25%;
-}
-
-#days {
-    width: 20%;
-    top: 0px;
-    left: 50%;
-}
-
-#room {
-    width: 20%;
-    top: 0px;
-    left: 75%;
-}
-
-#baseline {
-    width: 20%;
-    top: 60px;
-    left: 0px;
-}
-
-#adjustment {
-    width: 20%;
-    top: 60px;
-    left: 25%;
-}
-
-#cost {
-    width: 20%;
-    top: 60px;
-    left: 50%;
-}
-
-#paid {
-    width: 20%;
-    top: 60px;
-    left: 75%;
-}
-
-#name {
-    width: 100%;
-    top: 120px;
-    left: 0px;
-}
-
-#city {
-    width: 60%;
-    top: 180px;
-    left: 0px;
-}
-
-#tel {
-    width: 35%;
-    top: 180px;
-    left: 65%;
-}
-
-#fn {
-    width: 100%;
-    top: 240px;
-    left: 0px;
-}
-
-#RDDL {
+#rooms-drop-down-list {
     display: none;
     position: absolute;
     top: 60px;
@@ -289,7 +233,7 @@ input:focus~label {
     overflow-y: auto;
 }
 
-#RDDL a {
+#rooms-drop-down-list a {
     padding: 2px;
     z-index: 2;
     display: block;
@@ -297,31 +241,18 @@ input:focus~label {
     text-decoration: none;
 }
 
-#RDDL a:hover {
+#rooms-drop-down-list a:hover {
     background-color: cornflowerblue;
     color: white;
 }
 
 
 
-/*-----------------------------------------------------------------*/
+/*
+    PICK-PERIOD
+*/
 
-.pick-calendar-wrapper {
-    display: none;
-    z-index: 1;
-    font-family: 'Century Gothic', sans-serif;
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    left: 0;
-    top: 0;
-    padding-top: 10%;
-    background-color: rgba(0, 0, 0, 0.3);
-    background-image: repeating-linear-gradient( -45deg, rgba(180, 180, 180, .3), rgba(180, 180, 180, .3) 6.5px, rgba(150, 150, 150, .3) 6.5px, rgba(150, 150, 150, .3) 13px);
-    text-align: center;
-}
-
-#pick-calendar-content {
+#pick-period.modal-content {
     user-select: none;
     display: inline-block;
     width: auto;
@@ -333,27 +264,24 @@ input:focus~label {
     animation: pcShow 0.4s;
 }
 
-#pick-calendar-content td {
+#pick-period.modal-content td {
     padding: 8px;
     cursor: pointer;
     border: 1px solid transparent;
     border-radius: var(--r-bor-nor);
 }
 
-#pick-calendar-content thead td {
-    cursor: default;
+#pick-period.modal-content thead td { cursor: default; }
+
+#pick-period.modal-content tbody td:hover {
+    border: 1px solid #00a4e4; /*FIX: use global color*/
 }
 
-#pick-calendar-content tbody td:hover {
-    border: 1px solid #00a4e4 !important;
-    /*FIX: use global color*/
-}
-
-#pick-calendar-footer {
+#pick-period.modal-footer {
     padding-top: 4px;
 }
 
-.pick-calendar-input-year {
+.pick-period-input-year {
     width: 100%;
     font-family: 'Century Gothic', sans-serif;
     outline: none;
@@ -361,19 +289,18 @@ input:focus~label {
     text-align: center;
 }
 
-.pick-calendar-input-year::-webkit-outer-spin-button,
-.pick-calendar-input-year::-webkit-inner-spin-button {
+.pick-period-input-year::-webkit-outer-spin-button,
+.pick-period-input-year::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
 }
 
-.pick-calendar-month-sel {
-    border: 1px solid #ffdd00 !important;
-    /*FIX: use global color*/
+.pick-period-month-sel {
+    border: 1px solid #ffdd00; /*FIX: use global color*/
 }
 
-.pick-calendar-button-year-prev,
-.pick-calendar-button-year-next {
+.pick-period-button-year-prev,
+.pick-period-button-year-next {
     cursor: pointer;
     outline: none;
     width: 100%;
@@ -382,30 +309,17 @@ input:focus~label {
     background-color: transparent;
 }
 
-.pick-calendar-button-year-prev:before {
-    content: url('data:image/svg+xml;utf8,<svg fill="#000000" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M15.41 16.09l-4.58-4.59 4.58-4.59L14 5.5l-6 6 6 6z"/></svg>');
-}
-
-.pick-calendar-button-year-next:before {
-    content: url('data:image/svg+xml;utf8,<svg fill="#000000" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M8.59 16.34l4.58-4.59-4.58-4.59L10 5.75l6 6-6 6z"/></svg>');
-}
-
-.pick-calendar-button-year-prev:hover:before {
-    content: url('data:image/svg+xml;utf8,<svg fill="#00a4e4" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M15.41 16.09l-4.58-4.59 4.58-4.59L14 5.5l-6 6 6 6z"/></svg>');
-}
-
-.pick-calendar-button-year-next:hover:before {
-    content: url('data:image/svg+xml;utf8,<svg fill="#00a4e4" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M8.59 16.34l4.58-4.59-4.58-4.59L10 5.75l6 6-6 6z"/></svg>');
-}
+.pick-period-button-year-prev:before { content: url('data:image/svg+xml;utf8,<svg fill="#000000" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M15.41 16.09l-4.58-4.59 4.58-4.59L14 5.5l-6 6 6 6z"/></svg>');}
+.pick-period-button-year-next:before { content: url('data:image/svg+xml;utf8,<svg fill="#000000" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M8.59 16.34l4.58-4.59-4.58-4.59L10 5.75l6 6-6 6z"/></svg>');}
+.pick-period-button-year-prev:hover:before { content: url('data:image/svg+xml;utf8,<svg fill="#00a4e4" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M15.41 16.09l-4.58-4.59 4.58-4.59L14 5.5l-6 6 6 6z"/></svg>');}
+.pick-period-button-year-next:hover:before { content: url('data:image/svg+xml;utf8,<svg fill="#00a4e4" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M8.59 16.34l4.58-4.59-4.58-4.59L10 5.75l6 6-6 6z"/></svg>');}
 
 @keyframes pcShow {
-    0% {
-        opacity: 0;
-    }
-    100% {
-        opacity: 1;
-    }
+    0% { opacity: 0; }
+    100% { opacity: 1; }
 }
 
 
-/*-----------------------------------------------------------------*/
+/*
+    RIGHT-CLICK-MENU
+*/

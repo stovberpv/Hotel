@@ -1,3 +1,7 @@
+/*jshint esversion: 6 */
+(function () {
+    "use strict";
+})();
 const EVENT_BUS = {
 
     _id: 'event-bus',
@@ -61,7 +65,7 @@ const EVENT_BUS = {
         tree = tree.cultivate();
         document.body.appendChild(tree);
     }
-}
+};
 
 // /**
 //  * Автобус уведомлений
