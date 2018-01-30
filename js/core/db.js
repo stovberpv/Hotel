@@ -1,6 +1,11 @@
+/*jshint esversion: 6 */
+/*jshint -W030 */
+(function () {
+    "use strict";
+})();
 const DB = {
 
-    urls: { 
+    urls: {
         //TODO:
     },
 
@@ -117,6 +122,6 @@ const DB = {
             });
         }
     }
-}
+};
 
 UTILS.DEEPF_REEZE(DB);

@@ -1,4 +1,8 @@
 /*jshint esversion: 6 */
+/*jshint -W030 */
+(function () {
+    "use strict";
+})();
 /**
  * Область извечного зла...
  */
@@ -31,63 +35,63 @@ const GL = {
 
             CORE: {
     
-                LEFT_CLICK: 'onLeftClick',
+                LEFT_CLICK: 'leftClick',
             },
     
             CALENDAR: {
     
                 NEW_MONTH: {
-                    SUCCESS: 'onMonthChangeSuccess'
+                    SUCCESS: 'monthChangeSuccess'
                 },
 
-                DIALOG_SAVE: 'onSaveClick',
+                DIALOG_SAVE: 'saveClick',
     
                 RC_MENU: {//TODO: rename for using in global scope
 
-                    RC_MENU_OPEN: 'onrightclickmenu',
-                    RCM_ITEM_ADD_GUEST: 'onRCMitemAddClick',
-                    RCM_ITEM_DEL_GUEST: 'onRCMitemDelClick',
-                    RCM_ITEM_UPD_GUEST: 'onRCMitemUpdClick',
+                    RC_MENU_OPEN: 'rcmClick',
+                    RCM_ITEM_ADD_GUEST: 'rcmItemAddClick',
+                    RCM_ITEM_DEL_GUEST: 'rcmItemDelClick',
+                    RCM_ITEM_UPD_GUEST: 'rcmItemUpdClick',
                 },
 
                 DB: {
                     
                     INITIALIZATION: {
-                        SUCCESS: 'onDBinitializationSuccess'
+                        SUCCESS: 'dbInitializationSuccess'
                     },
 
                     CF001: {
                         SELECT: {
-                            SUCCESS: 'onDBcf001SelectSuccess',
-                            ERROR: 'onDBcf001SelectError'
+                            SUCCESS: 'dbCf001SelectSuccess',
+                            ERROR: 'dbCf001SelectError'
                         },
                         UPDATE: {
-                            SUCCESS: 'onDBcf001SelectSuccess',
-                            ERROR: 'onDBcf001SelectError'
+                            SUCCESS: 'dbCf001SelectSuccess',
+                            ERROR: 'dbCf001SelectError'
                         }
                     },
                     RM001: {
                         SELECT: {
-                            SUCCESS: 'onDBrm001SelectSuccess',
-                            ERROR: 'onDBrm001SelectError'
+                            SUCCESS: 'dbRm001SelectSuccess',
+                            ERROR: 'DBRm001SelectError'
                         }
                     },
                     GL001: {
                         INSERT: {
-                            SUCCESS: 'onDBgl001InsertSuccess',
-                            ERROR: 'onDBgl001InsertError'
+                            SUCCESS: 'dbGl001InsertSuccess',
+                            ERROR: 'dbGl001InsertError'
                         },
                         SELECT: {
-                            SUCCESS: 'onDBgl001SelectSuccess',
-                            ERROR: 'onDBgl001SelectError'
+                            SUCCESS: 'dbGl001SelectSuccess',
+                            ERROR: 'dbGl001SelectError'
                         },
                         UPDATE: {
-                            SUCCESS: 'onDBgl001UpdateSuccess',
-                            ERROR: 'onDBgl001UpdateError'
+                            SUCCESS: 'dbGl001UpdateSuccess',
+                            ERROR: 'dbGl001UpdateError'
                         },
                         DELETE: {
-                            SUCCESS: 'onDBgl001DeleteSuccess',
-                            ERROR: 'onDBgl001DeleteError'
+                            SUCCESS: 'dbGl001DeleteSuccess',
+                            ERROR: 'dbGl001DeleteError'
                         },
                     },
                 }
@@ -161,6 +165,28 @@ const GL = {
             PICK_PERIOD: 'pick-period',
             CONFIRM_DIALOG: 'confirm-dialog',
             GUEST_CARD: 'guest-card'
+        },
+
+        ERROR: {
+            LEVEL: {
+                ERROR: 0,
+                WARN: 1,
+                INFO: 2,
+                VERBOSE: 3,
+                DEBUG: 4,
+                SILLY: 5
+            },
+            ID: {
+                A000: '',
+                A001: '',
+                A002: '',
+                B000: '',
+                B001: '',
+                B002: '',
+                C000: '',
+                C001: '',
+                C002: ''
+            }
         }
     },
 

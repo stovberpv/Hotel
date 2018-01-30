@@ -25,7 +25,6 @@ class DOMTree {
 
                         case 'id':
                         case 'type':
-                        case 'style':
                         case 'rowspan':
                         case 'colspan':
                             el.setAttribute(key, val);
@@ -52,7 +51,13 @@ class DOMTree {
                         case 'textNode':
                             el.appendChild(document.createTextNode(val));
                             break;
-                            
+
+                        case 'style':
+                            for (let attr in val) {
+                                const attrVal = val[attr];
+                                el.setAttribute('style', `${attr}:${attrVal}`); 
+                            }
+                            break;
                         case 'attr':
                             for (let attr in val) {
                                 const attrVal = val[attr];

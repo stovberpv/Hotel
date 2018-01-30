@@ -72,16 +72,32 @@ class Calendar extends DataWrapper {
         
                     upd: function RCMItemUpdGuest(e) {
         
-                        var guestCard = new GuestCard({
-                            intent: GL.CONST.VALUES.CALENDAR.INTENT.UPD.key,
-                            title: GL.CONST.VALUES.CALENDAR.INTENT.UPD.txt,
-                            month: this._getMonth().num,
-                            year: this._getYear(),
-                            rooms: GL.DATA.CALENDAR.rooms
-                        });
-                        guestCard.bind();
-                        guestCard.setVal(e.detail.data);
-                        guestCard.show();
+                        const I = GL.CONST.VALUES.CALENDAR.INTENT.UPD;
+                        const E = GL.CONST.EVENTS.CALENDAR.DB.GL001.SELECT.SUCCESS;
+
+                        var regExp = /\d+/,
+                            unid = e.detail.data.unid,
+                            year = this._getYear(),
+                            month = this._getMonth();
+                        
+                        unid = regExp.test(unid) ? unid.match(/\d+/)[0] : -1;
+                        EVENT_BUS.register(`${E}${I.key}`, showGuestCard, true);
+                        DB.GL001.SELECT({ unid: unid }, I.key);
+
+                        function showGuestCard(e) {
+                            var guestCard = new GuestCard({
+                                intent: I.key,
+                                title: I.txt,
+                                isEditable: true,
+                                isStrict: true,
+                                month: month.num,
+                                year: year,
+                                rooms: GL.DATA.CALENDAR.rooms
+                            });
+                            guestCard.bind();
+                            guestCard.setVal(e.detail.data.data[0]);
+                            guestCard.show();
+                        }
                     },
                 },
             },
@@ -781,7 +797,7 @@ class Calendar extends DataWrapper {
                                     { tag: 'td', class: `person-fields person-dates person-cell-${E.DEND.key}`, textNode: 'по ' + (new Date(wa.dend).format('dd.mm')) },
                                     { tag: 'td', class: `person-fields person-cell-${E.PAID.key}` , textNode: wa.paid },
                                 ],
-                                [{ tag: 'tr', style: 'display:none;' },
+                                [{ tag: 'tr', style: { display: 'none;'} },
                                     { tag: 'td', class: `person-fields person-cell-${E.DAYS.key}`, textNode: wa.days },
                                     { tag: 'td', class: `person-fields person-cell-${E.BASE.key}`, textNode: wa.base },
                                     { tag: 'td', class: `person-fields person-cell-${E.ADJS.key}`, textNode: wa.adjs }

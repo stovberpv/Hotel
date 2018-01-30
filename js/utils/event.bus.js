@@ -6,7 +6,7 @@ const EVENT_BUS = {
 
     _id: 'event-bus',
     _tag: 'event-bus',
-    _style: 'display:none;',
+    _style: { display: 'none;' },
     _eventBus: '',
 
     init: function () {
@@ -20,10 +20,15 @@ const EVENT_BUS = {
         document.body.removeChild(this._get());
     },
 
-    register: function (eventName, callbackFunction) {
+    register: function (eventName, callbackFunction, isSelfRemoved = false) {
         if (!this._isInitialized()) return;
-        this.unregister(eventName, callbackFunction);
-        this._get().addEventListener(eventName, callbackFunction);
+        var self = this;
+        var selfRemovedFunction = function selfRemovedFunction(e) {
+            callbackFunction(e);
+            self.unregister(eventName, selfRemovedFunction);
+        };
+        var cb = isSelfRemoved ? selfRemovedFunction : callbackFunction;
+        this._get().addEventListener(eventName, cb);
     },
 
     unregister: function (eventName, callbackFunction) {
@@ -32,7 +37,7 @@ const EVENT_BUS = {
     },
 
     dispatch: function (eventName, data) {
-        const STACK = new Error().stack; //TODO: test stack trace
+        const STACK = new Error().stack;
         if (!this._isInitialized()) return;
         this._get().dispatchEvent(new CustomEvent(eventName, {
             'detail': {
@@ -48,7 +53,7 @@ const EVENT_BUS = {
     },
 
     _get: function () {
-        return this._eventBus;
+        return this._find() || this._eventBus;
     },
 
     _isInitialized: function () {
@@ -57,7 +62,7 @@ const EVENT_BUS = {
     },
 
     _find: function () {
-        return document.getElementsByTagName(this._tag)[0];
+        return document.getElementById(this._id);
     },
 
     _create: function () {

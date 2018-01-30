@@ -260,6 +260,7 @@ class GuestCard extends Dialog {
         const E = GL.CONST.SCHEMA.GUEST;
         const P = GL.CONST.PREFIX.GUEST_CARD;
         const I = GL.CONST.VALUES.CALENDAR.INTENT[O.intent.toUpperCase()];
+        var isReadOnly = !O.isEditable;
         var tree =
             [{ tag: 'div' , id: `${P}-${this.id}`, class: `${P} modal modal-wrapper` },
                 [{ tag: 'div', class: `${P} modal-content` },
@@ -268,16 +269,16 @@ class GuestCard extends Dialog {
                     ],
                     [{ tag: 'div', class: `${P} modal-body` },
                         [{ tag: 'div', id: `${P}-el-intent`, class: `${P}-el output`, style: { display: 'none;' } },
-                            { tag: 'input', type: 'text', attr: { readonly: '' } },
+                            { tag: 'input', type: 'text', readonly: true },
                             { tag: 'label', textNode: `${I.txt}` }
                         ],
                         [{ tag: 'div', id: `${P}-el-${E.UNID.key}`, class: `${P}-el output`, style: { display: 'none;' } },
-                            { tag: 'input', type: 'text', attr: { readonly: '' } },
+                            { tag: 'input', type: 'text', readonly: true },
                             { tag: 'label', textNode: `${E.UNID.txt}` }
                         ],
                         [{ tag: 'div', id: `${P}-el-${E.DBEG.key}`, class: `${P}-el input` },
                             {
-                                tag: 'input', type: 'text', attr: { readonly: O.isEditable, required: O.isStrict },
+                                tag: 'input', type: 'text', readonly: isReadOnly, required: O.isStrict ,
                                 events: [
                                    { name: 'keypress', fn: this.cb.control.dbeg.keypress },
                                    { name: 'paste', fn: this.cb.control.dbeg.paste },
@@ -288,7 +289,7 @@ class GuestCard extends Dialog {
                         ],
                         [{ tag: 'div', id: `${P}-el-${E.DEND.key}`, class: `${P}-el input` },
                             {
-                                tag: 'input', type: 'text', attr: { readonly: O.isEditable, required: O.isStrict },
+                                tag: 'input', type: 'text', readonly: isReadOnly, required: O.isStrict,
                                 events: [
                                     { name: 'keypress', fn: this.cb.control.dend.keypress },
                                     { name: 'paste', fn: this.cb.control.dend.paste },
@@ -334,7 +335,7 @@ class GuestCard extends Dialog {
                         ],
                         [{ tag: 'div', id: `${P}-el-${E.ADJS.key}`, class: `${P}-el input` },
                             {
-                                tag: 'input', type: 'text', attr: { readonly: O.isEditable },
+                                tag: 'input', type: 'text', readonly: isReadOnly,
                                 events: [
                                     { name: 'keypress', fn: this.cb.control.adjs.keypress },
                                     { name: 'paste', fn: this.cb.control.adjs.paste },
@@ -356,7 +357,7 @@ class GuestCard extends Dialog {
                         ],
                         [{ tag: 'div', id: `${P}-el-${E.PAID.key}`, class: `${P}-el input` },
                             {
-                                tag: 'input', type: 'text', attr: { readonly: O.isEditable, required: O.isStrict },
+                                tag: 'input', type: 'text', readonly: isReadOnly, required: O.isStrict,
                                 events: [
                                     { name: 'keypress', fn: this.cb.control.paid.keypress },
                                     { name: 'paste', fn: this.cb.control.paid.paste }
@@ -365,16 +366,16 @@ class GuestCard extends Dialog {
                             { tag: 'label', textNode: `${E.PAID.txt}` }
                         ],
                         [{ tag: 'div', id: `${P}-el-${E.NAME.key}`, class: `${P}-el input` },
-                            { tag: 'input', type: 'text', attr: { readonly: O.isEditable, required: O.isStrict } },
+                            { tag: 'input', type: 'text', readonly: isReadOnly, required: O.isStrict },
                             { tag: 'label', textNode: `${E.NAME.txt}` }
                         ],
                         [{ tag: 'div', id: `${P}-el-${E.CITY.key}`, class: `${P}-el input` },
-                            { tag: 'input', type: 'text', attr: { readonly: O.isEditable, required: O.isStrict } },
+                            { tag: 'input', type: 'text', readonly: isReadOnly, required: O.isStrict },
                             { tag: 'label', textNode: `${E.CITY.txt}` }
                         ],
                         [{ tag: 'div', id: `${P}-el-${E.TELN.key}`, class: `${P}-el input` },
                             {
-                                tag: 'input', type: 'text', attr: { readonly: O.isEditable },
+                                tag: 'input', type: 'text', readonly: isReadOnly,
                                 events: [
                                     { name: 'keypress', fn: this.cb.control.teln.keypress },
                                     { name: 'paste', fn: this.cb.control.teln.paste }
@@ -383,7 +384,7 @@ class GuestCard extends Dialog {
                             { tag: 'label', textNode: `${E.TELN.txt}` }
                         ],
                         [{ tag: 'div', id: `${P}-el-${E.FNOT.key}`, class: `${P}-el input` },
-                            { tag: 'input', type: 'text', attr: { readonly: O.isEditable } },
+                            { tag: 'input', type: 'text', readonly: isReadOnly },
                             { tag: 'label', textNode: `${E.FNOT.txt}` }
                         ],
                     ],
@@ -423,20 +424,21 @@ class GuestCard extends Dialog {
         }
         const E = GL.CONST.SCHEMA.GUEST;
         const P = GL.CONST.PREFIX.GUEST_CARD;
+        const U = UTILS.GET_GUEST_KEY_VALUE;
         var dialog = document.getElementById(`${P}-${this.id}`);
         dialog.querySelector(`#${P}-el-intent input`).value = this.opts.intent;
-        dialog.querySelector(`#${P}-el-${E.UNID.key} input`).value = val.unid;
-        dialog.querySelector(`#${P}-el-${E.DBEG.key} input`).value = val.dbeg;
-        dialog.querySelector(`#${P}-el-${E.DEND.key} input`).value = val.dend;
-        dialog.querySelector(`#${P}-el-${E.ROOM.key} input`).value = val.room;
-        dialog.querySelector(`#${P}-el-${E.BASE.key} input`).value = val.base;
-        dialog.querySelector(`#${P}-el-${E.ADJS.key} input`).value = val.adjs;
-        dialog.querySelector(`#${P}-el-${E.COST.key} input`).value = val.cost;
-        dialog.querySelector(`#${P}-el-${E.PAID.key} input`).value = val.paid;
-        dialog.querySelector(`#${P}-el-${E.NAME.key} input`).value = val.name;
-        dialog.querySelector(`#${P}-el-${E.CITY.key} input`).value = val.city;
-        dialog.querySelector(`#${P}-el-${E.TELN.key} input`).value = val.teln;
-        dialog.querySelector(`#${P}-el-${E.FNOT.key} input`).value = val.fnot;
+        dialog.querySelector(`#${P}-el-${E.UNID.key} input`).value = U(val, E.UNID.key);
+        dialog.querySelector(`#${P}-el-${E.DBEG.key} input`).value = U(val, E.DBEG.key);
+        dialog.querySelector(`#${P}-el-${E.DEND.key} input`).value = U(val, E.DEND.key);
+        dialog.querySelector(`#${P}-el-${E.ROOM.key} input`).value = U(val, E.ROOM.key);
+        dialog.querySelector(`#${P}-el-${E.BASE.key} input`).value = U(val, E.BASE.key);
+        dialog.querySelector(`#${P}-el-${E.ADJS.key} input`).value = U(val, E.ADJS.key);
+        dialog.querySelector(`#${P}-el-${E.COST.key} input`).value = U(val, E.COST.key);
+        dialog.querySelector(`#${P}-el-${E.PAID.key} input`).value = U(val, E.PAID.key);
+        dialog.querySelector(`#${P}-el-${E.NAME.key} input`).value = U(val, E.NAME.key);
+        dialog.querySelector(`#${P}-el-${E.CITY.key} input`).value = U(val, E.CITY.key);
+        dialog.querySelector(`#${P}-el-${E.TELN.key} input`).value = U(val, E.TELN.key);
+        dialog.querySelector(`#${P}-el-${E.FNOT.key} input`).value = U(val, E.FNOT.key);
         document.querySelector(`#${P}-el-${E.DBEG.key} input`).dispatchEvent(new Event('change'));
     }
 

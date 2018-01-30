@@ -142,45 +142,77 @@
     font-size: 10px;
 } */
 
-#guest-card.modal-content {
+.guest-card .modal-content {
     position: relative;
     width: 400px;
     height: 350px;
-    margin: 50px auto;
-    padding: 20px;
+    /* margin: 50px auto; */
+    /* padding: 20px 20px 50px 20px; */
     box-shadow: 0 0 10px 5px rgba(0, 0, 0, .1);
-    border-radius: 3px;
     background-color: rgba(255, 255, 255, .99);
+    font-size: 10px;
+    border-radius: 5px; /* !hide artifact of header background! */
+    border-bottom-right-radius: 0px;
+    border-bottom-left-radius: 0px;
 }
 
-#guest-card.modal-header {
+.guest-card .modal-header {
     position: relative;
-    width: 100%;
+    /* width: 100%; */
     text-align: center;
     vertical-align: middle;
     font-size: 1.5em;
 }
 
-#guest-card.modal-body {
+.guest-card .modal-body {
     position: relative;
-    width: 100%;
+    padding: 0;
+    padding-top: 8px;
+    margin: 0px 20px 20px 20px;
+    /* width: 100%; */
     height: 85%;
     font-size: 1.2em;
 }
 
-#guest-card.modal-footer {
+.guest-card .modal-footer {
     position: relative;
-    width: 100%;
+    /* width: 100%; */
     font-size: 1.2em;
     text-align: center;
+    padding: 0;
+    /* background-color: beige; */
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
 }
 
-#guest-card.guest-card-el {
+.guest-card .modal-footer button {
+    width: 50%;
+    margin: 0;
+    border: none;
+}
+/* TODO: сдвигать цвет при перемещении мышкой. при смене фокуса с одной кнопки на другую менять направление цветов с задержкой */
+.guest-card .modal-footer button .negative {
+    color: var(--c-btn-txt-hov-neg);
+    /* background: var(--c-btn-bck-hov-neg); */
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+    background: linear-gradient(to left, var(--c-btn-bck-hov-neg), var(--c-btn-bck-hov-pos));
+}
+
+.guest-card .modal-footer button .positive {
+    color: var(--c-btn-txt-hov-pos);
+    /* background: var(--c-btn-bck-hov-pos); */
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+    background: linear-gradient(to right, var(--c-btn-bck-hov-neg), var(--c-btn-bck-hov-pos));
+}
+
+.guest-card .guest-card-el {
     position: absolute;
     border-bottom: 1px solid #929292;
 }
 
-#guest-card.guest-card-el input {
+.guest-card .guest-card-el input {
     color: #2d2d2d;
     outline: none;
     margin: 30px 0px 0px 0px;
@@ -190,7 +222,7 @@
     background-color: transparent;
 }
 
-#guest-card.guest-card-el label {
+.guest-card .guest-card-el label {
     position: absolute;
     color: #929292;
     top: 35px;
@@ -199,14 +231,14 @@
     transition: 0.3s ease all;
 }
 
-#guest-card input:focus~label,
-#guest-card input:valid~label {
+.guest-card input:focus~label,
+.guest-card input:valid~label {
     top: 15px;
     left: 0;
     font-size: 1em;
 }
 
-#guest-card input:focus~label { color: cornflowerblue; }
+.guest-card-el input:focus~label { color: cornflowerblue; }
 
 #guest-card-el-dbeg { width: 20%;  top: 0px;   left: 0px;}
 #guest-card-el-dend { width: 20%;  top: 0px;   left: 25%;}

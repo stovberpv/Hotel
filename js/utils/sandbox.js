@@ -24,36 +24,23 @@ const UTILS = {
         return [31, (isLeap ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][m];
     },
 
-    GET_GUEST_KEY_VALUE: function (data, index) {
-        switch (index) { //TODO:
-            // case 0:
-            //     return data.id;
-            // case 1:
-            //     return data.dayin.substring(8) + '.' + data.dayin.substring(5, 7);
-            // case 2:
-            //     return data.dayout.substring(8) + '.' + data.dayout.substring(5, 7);
-            // case 3:
-            //     return data.days;
-            // case 4:
-            //     return data.room;
-            // case 5:
-            //     return data.baseline;
-            // case 6:
-            //     return data.adjustment;
-            // case 7:
-            //     return data.cost;
-            // case 8:
-            //     return data.paid;
-            // case 9:
-            //     return data.name;
-            // case 10:
-            //     return data.tel;
-            // case 11:
-            //     return data.fn;
-            // case 12:
-            //     return data.city;
-            default:
-                break;
+    GET_GUEST_KEY_VALUE: function (guest, key) {
+        const E = GL.CONST.SCHEMA.GUEST;
+        switch (key) {
+            case E.UNID.key: return guest[key];
+            case E.DBEG.key: return new Date(guest[key]).format('dd.mm');
+            case E.DEND.key: return new Date(guest[key]).format('dd.mm');
+            case E.DAYS.key: return guest[key];
+            case E.ROOM.key: return guest[key];
+            case E.BASE.key: return guest[key];
+            case E.ADJS.key: return guest[key];
+            case E.COST.key: return guest[key];
+            case E.PAID.key: return guest[key];
+            case E.NAME.key: return guest[key];
+            case E.TELN.key: return guest[key];
+            case E.FNOT.key: return guest[key];
+            case E.CITY.key: return guest[key];
+            default: return null;
         }
     },
 
@@ -78,7 +65,9 @@ const UTILS = {
         return obj;
     },
 
-    DEEPF_REEZE: function deepFreeze(obj) {
+    DEEP_FREEZE: function deepFreeze(obj) {
+
+        if (true) return;
 
         var propNames = Object.getOwnPropertyNames(obj);
       
@@ -89,7 +78,12 @@ const UTILS = {
         });
       
         return Object.freeze(obj);
+    },
+
+    //TODO: console log format
+    LOG: function(id, src, msg) {
+        console.log();
     }
 };
 
-UTILS.DEEPF_REEZE(UTILS);
+UTILS.DEEP_FREEZE(UTILS);

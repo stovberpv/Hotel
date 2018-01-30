@@ -22,20 +22,27 @@
     #---------------------------------------------------------------------------------
     # get values
     #---------------------------------------------------------------------------------
-    isset($_GET["year"])  ? $year  = $_GET["year"]  : die(err2echo(24, '', ''));
-    isset($_GET["month"]) ? $month = $_GET["month"] : die(err2echo(25, '', ''));
+    $year  = isset($_GET["year"])  ? $_GET["year"]  : 1900;
+    $month = isset($_GET["month"]) ? $_GET["month"] : 12;
+    $unid = isset($_GET["unid"]) ? $_GET["unid"] : -1;
     #
     $dbeg = $year . "-" . $month . "-" . 01;
     $dend = $year . "-" . $month . "-" . cal_days_in_month(CAL_GREGORIAN, intval($month), intval($year));
+    #
+    $where = ($unid != -1) ? "unid = ?" : "dend >= ? AND dbeg <= ?";
     #---------------------------------------------------------------------------------
     # get guest list
     #---------------------------------------------------------------------------------
-    $query = "SELECT * FROM gl001 WHERE dend >= ? AND dbeg  <= ?";
+    $query = "SELECT * FROM gl001 WHERE" ." " . $where;
     #
-    !($stmt = $mysqli->prepare($query))      && die(err2echo(10, "Выборка Список гостей. ", $mysqli));
-    !($stmt->bind_param('ss', $dbeg, $dend)) && die(err2echo(11, "Выборка Список гостей. ", $mysqli));
-    !($stmt->execute())                      && die(err2echo(12, "Выборка Список гостей. ", $mysqli));   
-    !($result = $stmt->get_result())         && die(err2echo(15, "Выборка Список гостей. ", $mysqli)); 
+    !($stmt = $mysqli->prepare($query))          && die(err2echo(10, "Выборка Список гостей. ", $mysqli));
+    if ($unid != -1) {//TODO: dynamic bindparam
+        !($stmt->bind_param('i', $unid))         && die(err2echo(11, "Выборка Список гостей. ", $mysqli));
+    } else {
+        !($stmt->bind_param('ss', $dbeg, $dend)) && die(err2echo(11, "Выборка Список гостей. ", $mysqli));
+    }
+    !($stmt->execute())                          && die(err2echo(12, "Выборка Список гостей. ", $mysqli));   
+    !($result = $stmt->get_result())             && die(err2echo(15, "Выборка Список гостей. ", $mysqli)); 
     #
     $rows = []; 
     while($row = $result->fetch_assoc()) {
