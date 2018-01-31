@@ -27,7 +27,7 @@ class Calendar extends DataWrapper {
                 open: function RCMenuOpen(e) {
 
                     if (!e.detail.EventBus) {
-                        console.log('Invalid function call.');
+                        console.log('Invalid function call.');//TODO: console log
                         return;
                     }
 
@@ -40,6 +40,7 @@ class Calendar extends DataWrapper {
 
                     add: function RCMItemAddGuest(e) {
     
+                        //FIX: not working invalid date maybe str 208
                         var guestCard = new GuestCard({
                             intent: GL.CONST.VALUES.CALENDAR.INTENT.ADD.key,
                             title: GL.CONST.VALUES.CALENDAR.INTENT.ADD.txt,
@@ -54,12 +55,11 @@ class Calendar extends DataWrapper {
         
                     del: function RCMItemDelGuest(e) {
 
-                        var intent = GL.CONST.VALUES.CALENDAR.INTENT.ADD;
-
                         var confirmDialog = new ConfirmDialog({
-                            intent: intent.key,
-                            title: intent.txt,
-                            text: `Вы действительно хотите удалить запись под номером${e.detail.data.id.substring(1)}?\nДействие нельзя будет отменить`,
+                            intent: GL.CONST.VALUES.CALENDAR.INTENT.DEL.key,
+                            title: GL.CONST.VALUES.CALENDAR.INTENT.DEL.txt,
+                            text: `Вы действительно хотите удалить запись под номером${e.detail.data.unid}?
+                                    Действие нельзя будет отменить`, //TODO: move to localizable constants
                             cb: {
                                 ok: function (result) {
                                     EVENT_BUS.dispatch(GL.CONST.EVENTS.CALENDAR.DIALOG_SAVE, { data: result.intent });
@@ -108,13 +108,12 @@ class Calendar extends DataWrapper {
 
                     mouseDown: function mousedown(e) {
 
-                        var that = this;
-                        
                         const CLASS = GL.CONST.CSS.CALENDAR.CLASS;
                         const TARGET = e.target;
-
-                        var isAvailableButton;
-                        var guest = UTILS.CLONE(GL.CONST.SCHEMA.GUEST);
+                        
+                        var self = this,
+                            guest = UTILS.CLONE(GL.CONST.SCHEMA.GUEST),
+                            isAvailableButton;
 
                         switch (e.which) {
                             case 1: leftMouse(); return;
@@ -134,7 +133,7 @@ class Calendar extends DataWrapper {
                             }
                             GL.DATA.CALENDAR.isSelected = TARGET.classList.contains(CLASS.SELECTED);
                             SelectionGroup.del(TARGET);
-                            GL.DATA.CALENDAR.isSelected ? SelectionGroup.add(e) : SelectionGroup.free();
+                            GL.DATA.CALENDAR.isSelected ? SelectionGroup.add(e.target) : SelectionGroup.free();
                         }
 
                         function toggleView() {
@@ -151,57 +150,76 @@ class Calendar extends DataWrapper {
                         }
 
                         function rightMouse() {
-                            TARGET.closest('.book') ? getBookEntry() : getCalendarEntry();
-                            guest.year = that._getYear();
-                            guest.month = that._getMonth().num;
+                            if (!getCalendarEntry()) return;
+                            guest.year = self._getYear();
+                            guest.mnth = self._getMonth().num;
                             openRCMenu();
-                        }
-
-                        function getBookEntry() {
-                            const SCHEMA = GL.CONST.SCHEMA.GUEST;
-                            guest.unid = bookEntry.querySelector(`.${SCHEMA.UNID.key}`).value;
-                            guest.dbeg = bookEntry.querySelector(`.${SCHEMA.DBEG.key}`).value.substring(3);
-                            guest.dend = bookEntry.querySelector(`.${SCHEMA.DEND.key}`).value.substring(3);
-                            guest.days = bookEntry.querySelector(`.${SCHEMA.DAYS.key}`).value;
-                            guest.room = bookEntry.querySelector(`.${SCHEMA.ROOM.key}`).value;
-                            guest.base = bookEntry.querySelector(`.${SCHEMA.BASE.key}`).value;
-                            guest.adjs = bookEntry.querySelector(`.${SCHEMA.ADJS.key}`).value;
-                            guest.cost = bookEntry.querySelector(`.${SCHEMA.COST.key}`).value;
-                            guest.paid = bookEntry.querySelector(`.${SCHEMA.PAID.key}`).value;
-                            guest.name = bookEntry.querySelector(`.${SCHEMA.NAME.key}`).value;
-                            guest.teln = bookEntry.querySelector(`.${SCHEMA.TELN.key}`).value;
-                            guest.fnot = bookEntry.querySelector(`.${SCHEMA.FNOT.key}`).value;
-                            guest.city = bookEntry.querySelector(`.${SCHEMA.CITY.key}`).value;
-                            isAvailableButton = false;
                         }
 
                         function getCalendarEntry() {
 
-                            let idFilter = function (el) { return el.match(/^N\d+$/); };
-                            let idGroupFilter = function (el) { return el.match(/\bsel-group-\d+/g); };
+                            var result = false;
                             
                             if (TARGET.classList.contains(CLASS.SELECTED)) {
+                                isAvailableButton = true;
+                                result = getNewEntryData();
+                            } else if (TARGET.classList.contains(CLASS.REDEEMED) || TARGET.classList.contains(CLASS.RESERVED)) {
+                                isAvailableButton = false;
+                                result = getExistingEntryData();
+                            } else {
+                                isAvailableButton = null;
+                                //TODO: console log
+                                // result = false;
+                            }
+
+                            return result;
+                            
+                            function getNewEntryData() {
+                                var idGroupFilter = function (el) { return el.match(/\bsel-group-\d+/g); },
+                                    groupId = TARGET.className.split(' ').filter(idGroupFilter).toString(),
+                                    rowId = TARGET.id.match(/[^R]\d+/i) || [];
+                            
+                                if (!groupId) {
+                                    //TODO: console log
+                                    return false;
+                                }
+
+                                if (!rowId[0]) {
+                                    //TODO: console log
+                                    return false;
+                                }
+                                
+                                var group = document.querySelectorAll(`#calendar > tbody > tr#R${rowId[0]} > td.${groupId}`),
+                                    begda = group[0].id.match(/\d{4}-\d{2}-\d{2}/) || [],
+                                    endda = group[group.length - 1].id.match(/\d{4}-\d{2}-\d{2}/) || [];
         
-                                var idGrp = TARGET.className.split(' ').filter(idGroupFilter).toString(),
-                                    rowId = TARGET.id.substring(2, 4),
-                                    group = document.querySelectorAll(`#calendar > tbody > tr#R${rowId} > td.${idGrp}`),
-                                    begda = group[0].id.split('-'),
-                                    endda = group[group.length - 1].id.split('-');
-        
+                                if (!begda) {
+                                    //TODO: console log
+                                    return false;
+                                }
+
+                                if (!endda) {
+                                    //TODO: console log
+                                    return false;
+                                }
                                 guest.unid = '-1';
                                 guest.room = rowId;
-                                guest.dbeg = `${begda[2]}.${begda[1]}`;
-                                guest.dend = `${endda[2]}.${endda[1]}`;
-                                isAvailableButton = true;
-        
-                            } else if (TARGET.classList.contains(CLASS.REDEEMED) || TARGET.classList.contains(CLASS.RESERVED)) {
-        
-                                guest.unid = TARGET.className.split(' ').filter(idFilter).toString();
-                                isAvailableButton = false;
-        
-                            } else {
-                                return;
+                                guest.dbeg = new Date(begda[0]).format('dd.mm');
+                                guest.dend = new Date(endda[0]).format('dd.mm');
+                                return true;
                             }
+
+                            function getExistingEntryData() {
+                                var idFilter = function (el) { return el.match(/^N\d+$/); },
+                                    unid = TARGET.className.split(' ').filter(idFilter).toString();
+                                if (!unid) {
+                                    //TODO: console log
+                                    return false;
+                                }
+                                guest.unid = unid;
+                                return true;
+                            }
+
                         }
 
                         function openRCMenu() {
@@ -229,8 +247,8 @@ class Calendar extends DataWrapper {
                         function toggleSelection() {
                             if (GL.DATA.CORE.isMouseDown) {
                                 if (TARGET.classList.length == 0 || TARGET.classList.contains(CLASS.SELECTED)) {
-                                    SelectionGroup.del(e);
-                                    GL.DATA.CALENDAR.isSelected && SelectionGroup.add(e);
+                                    SelectionGroup.del(e.target);
+                                    GL.DATA.CALENDAR.isSelected && SelectionGroup.add(e.target);
                                     TARGET.classList.toggle(CLASS.SELECTED, GL.DATA.CALENDAR.isSelected);
                                 } else {
                                     SelectionGroup.free();
@@ -239,42 +257,56 @@ class Calendar extends DataWrapper {
                         }
 
                         function toggleView() {
-                            let ids = TARGET.className.split(' ').filter(function (el) { return el.match(/^N\d+$/g); });
-                            let id = TARGET.id.substring(5);
-                            for (let i = 0; i < ids.length; i++) {
-                                var els = document.querySelectorAll(`#calendar > tbody > tr > td.${ids[i]}`),
-                                    viewfix = `${ids[i]}-${CLASS.VIEW_FIX}`,
-                                    view = `${ids[i]}-${CLASS.VIEW}`;
-                                for (let i = 0; i < els.length; i++) {
-                                    !els[i].classList.contains(view) && els[i].classList.add(view);
+                            var idList = TARGET.className.split(' ').filter(function (el) { return el.match(/^N\d+$/g); });
+                            for (let id of idList) {
+
+                                var cells = document.querySelectorAll(`#calendar > tbody > tr > td.${id}`),
+                                    bookRow = document.querySelector(`.book > tbody > tr#${id}`), 
+                                    viewfix = `${id}-${CLASS.VIEW_FIX}`,
+                                    view = `${id}-${CLASS.VIEW}`;
+                                
+                                for (let cell of cells) {
+                                    if (cell.classList.contains(viewfix)) continue;
+                                    if (cell.classList.contains(view)) continue;
+                                    cell.classList.add(view);
                                 }
-                                document.querySelector(`.book > tbody > tr#${ids[i]}`).classList.add(view);
+                                if (bookRow.classList.contains(CLASS.VIEW_FIX)) continue;
+                                if (bookRow.classList.contains(CLASS.VIEW)) continue;
+                                bookRow.classList.add(CLASS.VIEW);
                             }
-                            document.querySelector(`#calendar thead tr:nth-child(2) th#D${id}`).classList.add(CLASS.VIEW);
+                            var date = TARGET.id.match(/\d{4}-\d{2}-\d{2}/i) || [];
+                            if (!date[0]) {
+                                //TODO: log
+                                return;
+                            }
+                            document.querySelector(`#calendar > thead tr:nth-child(2) th#D${date[0]}`).classList.add(CLASS.VIEW);
                         }
                     },
         
                     mouseOut: function mouseout(e) {
         
-                        // Выделение при зажатой мыши
                         const CLASS = GL.CONST.CSS.CALENDAR.CLASS;
                         const TARGET = e.target;
                         
                         toggleView();
 
                         function toggleView() {
-                            var ids = TARGET.className.split(' ').filter(function (el) { return el.match(/^N\d+$/g); });
-                            var id = TARGET.id.substring(5);
-                            for (let i = 0; i < ids.length; i++) {
-                                var els = document.querySelectorAll(`#calendar > tbody > tr > td.${ids[i]}`),
-                                    viewfix = `${ids[i]}-${CLASS.VIEW_FIX}`,
-                                    view = `${ids[i]}-${CLASS.VIEW}`;
-                                for (let i = 0; i < els.length; i++) {
-                                    els[i].classList.contains(view) && els[i].classList.remove(view);
-                                }
-                                document.querySelector(`.book > tbody > tr#${ids[i]}`).classList.remove(view);
+                            var idList = TARGET.className.split(' ').filter(function (el) { return el.match(/^N\d+$/g); });
+                            for (let id of idList) {
+
+                                var cells = document.querySelectorAll(`#calendar > tbody > tr > td.${id}`),
+                                    viewfix = `${id}-${CLASS.VIEW_FIX}`,
+                                    view = `${id}-${CLASS.VIEW}`;
+                                
+                                for (let cell of cells) { cell.classList.remove(view); }
+                                document.querySelector(`.book > tbody > tr#${id}`).classList.remove(CLASS.VIEW);
                             }
-                            document.querySelector(`#calendar thead tr:nth-child(2) th#D${id}`).classList.remove(CLASS.VIEW);
+                            var date = TARGET.id.match(/\d{4}-\d{2}-\d{2}/i) || [];
+                            if (!date[0]) {
+                                //TODO: log
+                                return;
+                            }
+                            document.querySelector(`#calendar > thead tr:nth-child(2) th#D${date[0]}`).classList.remove(CLASS.VIEW);
                         }
                     },
         
@@ -294,7 +326,7 @@ class Calendar extends DataWrapper {
                         TARGET.classList.toggle(GL.CONST.CSS.CALENDAR.CLASS.VIEW_FIX);
                         var book = document.querySelector(`#${TARGET.parentNode.id}-book`);
                         if (!book) {
-                            console.log(`Error. No book with id: ${TARGET.parentNode.id}-book`);
+                            console.log(`Error. No book with id: ${TARGET.parentNode.id}-book`); //FIX: log
                             return;
                         }
         
@@ -315,19 +347,62 @@ class Calendar extends DataWrapper {
 
                     mouseDown: function mousedown(e) {
 
+                        const CLASS = GL.CONST.CSS.CALENDAR.CLASS;
+                        const TARGET = e.target;
+
+                        var self = this,
+                            book = TARGET.closest('.book'),
+                            guest = UTILS.CLONE(GL.CONST.SCHEMA.GUEST),
+                            isAvailableButton;
+                        
                         switch (e.which) {
                             case 1: leftMouse(); return;
                             case 3: rightMouse(); return;
                             default: return;
                         }
+                        
+                        function leftMouse() {
+
+                            var personRow = book.querySelector('.person-row'),
+                                id = personRow.id;
+                            personRow.classList.toggle(CLASS.VIEW_FIX);
+                            personRow.classList.toggle(CLASS.VIEW);
+                            document.querySelectorAll(`#calendar > tbody > tr > td.${id}`).forEach(function (el) {
+                                el.classList.toggle(`${id}-${CLASS.VIEW_FIX}`);
+                                el.classList.toggle(`${id}-${CLASS.VIEW}`);
+                            });
+                        }
 
                         function rightMouse() {
-                            var isAvailableButton = true;
-                            var guest = UTILS.CLONE(GL.CONST.SCHEMA.GUEST);
-                            guest.year = this._getYear();
-                            guest.mont = this._getMonth().num;
-                                
-                            EVENT_BUS.dispatch(GL.CONST.EVENTS.CALENDAR.RC_MENU, {
+                            getBookEntry();
+                            guest.year = self._getYear();
+                            guest.mnth = self._getMonth().num;
+                            isAvailableButton = true;
+                            openRCMenu();
+                        }
+
+                        function getBookEntry() {
+                            const SCHEMA = GL.CONST.SCHEMA.GUEST;
+                            guest.unid = book.querySelector(`.person-cell-${SCHEMA.UNID.key}`).textContent;
+                            guest.dbeg = book.querySelector(`.person-cell-${SCHEMA.DBEG.key}`).getAttribute('value');
+                            guest.dend = book.querySelector(`.person-cell-${SCHEMA.DEND.key}`).getAttribute('value');
+                            guest.days = book.querySelector(`.person-cell-${SCHEMA.DAYS.key}`).textContent;
+                            guest.room = book.querySelector(`.person-cell-${SCHEMA.ROOM.key}`).textContent;
+                            guest.base = book.querySelector(`.person-cell-${SCHEMA.BASE.key}`).textContent;
+                            guest.adjs = book.querySelector(`.person-cell-${SCHEMA.ADJS.key}`).textContent;
+                            guest.cost = book.querySelector(`.person-cell-${SCHEMA.COST.key}`).textContent;
+                            guest.paid = book.querySelector(`.person-cell-${SCHEMA.PAID.key}`).textContent;
+                            guest.name = book.querySelector(`.person-cell-${SCHEMA.NAME.key}`).textContent;
+                            guest.teln = book.querySelector(`.person-cell-${SCHEMA.TELN.key}`).textContent;
+                            guest.fnot = book.querySelector(`.person-cell-${SCHEMA.FNOT.key}`).textContent;
+                            guest.city = book.querySelector(`.person-cell-${SCHEMA.CITY.key}`).textContent;
+
+                            guest.dbeg = new Date(guest.dbeg).format('dd.mm');
+                            guest.dend = new Date(guest.dend).format('dd.mm');
+                        }
+
+                        function openRCMenu() {
+                            EVENT_BUS.dispatch(GL.CONST.EVENTS.CALENDAR.RC_MENU.RC_MENU_OPEN, {
                                 item: {
                                     upd: isAvailableButton,
                                     del: isAvailableButton,
@@ -336,23 +411,6 @@ class Calendar extends DataWrapper {
                                 x: e.pageX,
                                 y: e.pageY,
                                 guest
-                            });
-                        }
-        
-                        function leftMouse() {
-
-                            const CLASS = GL.CONST.CSS.CALENDAR.CLASS;
-                            const TARGET = e.target;
-
-                            if (TARGET.closest('.inner-book')) return;
-
-                            var personRow = TARGET.querySelector('.person-row'),
-                                id = personRow.id;
-                            personRow.classList.toggle(CLASS.VIEW_FIX);
-                            personRow.classList.toggle(CLASS.VIEW);
-                            document.querySelectorAll(`#calendar > tbody > tr > td.${id}`).forEach(function (el) {
-                                el.classList.toggle(`${id}-${CLASS.VIEW_FIX}`);
-                                el.classList.toggle(`${id}-${CLASS.VIEW}`);
                             });
                         }
                     },
@@ -532,7 +590,7 @@ class Calendar extends DataWrapper {
                             [{ tag: 'table' },
                                 [{ tag: 'tbody' },
                                     [{ tag: 'tr' },
-                                        [{ tag: 'td' }, //TODO: button rename ID class
+                                        [{ tag: 'td' },
                                             { tag: 'span', id: 'calendar-button-month-prev', class: 'button', events: [{ name: 'click', fn: this.cb.control.month.prev, bind: this }] },
                                         ],
                                         [{ tag: 'td' },
@@ -674,7 +732,7 @@ class Calendar extends DataWrapper {
                         node = document.createElement('th');
                         node.appendChild(document.createTextNode(room.room));
                     } else {
-                        let id = 'RD' + room.room + '_'  + YEAR + '-' + MONTH.num + '-' + UTILS.OVERLAY(day, '0', 2);
+                        let id = `R${room.room}D${YEAR}-${MONTH.num}-${UTILS.OVERLAY(day, '0', 2)}`;
                         node = document.createElement('td');
                         node.setAttribute('id', id);
                         node.appendChild(document.createTextNode(''));
@@ -717,7 +775,7 @@ class Calendar extends DataWrapper {
                 }
 
                 //FIX: replace innerHTML (memory leak)
-                var cell = document.querySelector(`#calendar #R${wa.room} #RD${wa.room}_${tmpda.format('yyyy-mm-dd')}`);
+                var cell = document.querySelector(`#calendar #R${wa.room} #R${wa.room}D${tmpda.format('yyyy-mm-dd')}`);
                 cell.innerHTML = '';
 
                 // добавляем класс
@@ -776,7 +834,7 @@ class Calendar extends DataWrapper {
 
             tree =//TODO: переделать классы
                 [{ tag: 'tr', id: 'N' + wa.unid, class: 'person-row' },
-                    { tag: 'td', class: 'person-fields ' + E.UNID.key, textNode: wa.unid },
+                    { tag: 'td', class: `person-fields person-cell-${E.UNID.key}`, textNode: wa.unid },
                     [{ tag: 'td' },
                         [{ tag: 'table', class: 'inner-book' },
                             [{ tag: 'tbody' },
@@ -785,7 +843,7 @@ class Calendar extends DataWrapper {
                                         { tag: 'a', class: `person-fields person-cell-${E.NAME.key}`, textNode: wa.name },
                                         { tag: 'a', class: `person-fields person-cell-${E.TELN.key}`, textNode: wa.teln },
                                     ],
-                                    { tag: 'td', class: `person-fields person-dates ${E.DBEG.key}`, textNode: 'с  ' + (new Date(wa.dbeg).format('dd.mm')) },
+                                    { tag: 'td', class: `person-fields person-dates person-cell-${E.DBEG.key}`, attr: { value: wa.dbeg }, textNode: new Date(wa.dbeg).format('dd.mm') },
                                     { tag: 'td', class: `person-fields person-cell-${E.ROOM.key}`, rowspan: 2, textNode: wa.room },
                                     { tag: 'td', class: `person-fields person-cell-${E.COST.key}`, textNode: wa.cost },
                                 ],
@@ -794,7 +852,7 @@ class Calendar extends DataWrapper {
                                         { tag: 'a', class: `person-fields person-cell-${E.CITY.key}`, textNode: wa.city },
                                         { tag: 'a', class: `person-fields person-cell-${E.FNOT.key}`, textNode: wa.fnot },
                                     ],
-                                    { tag: 'td', class: `person-fields person-dates person-cell-${E.DEND.key}`, textNode: 'по ' + (new Date(wa.dend).format('dd.mm')) },
+                                    { tag: 'td', class: `person-fields person-dates person-cell-${E.DEND.key}`, attr: { value: wa.dend }, textNode: new Date(wa.dend).format('dd.mm') },
                                     { tag: 'td', class: `person-fields person-cell-${E.PAID.key}` , textNode: wa.paid },
                                 ],
                                 [{ tag: 'tr', style: { display: 'none;'} },
@@ -825,7 +883,7 @@ class Calendar extends DataWrapper {
 
             while (begda <= endda) {
                 var date = begda.format('yyyy-mm-dd'),
-                    td = document.querySelector(`#calendar tbody tr#R${room} td#RD${room}_date`);
+                    td = document.querySelector(`#calendar tbody tr#R${room} td#R${room}D${date}`); //FIX: R##D####-##-##
                 if (!td) {
                     begda.setDate(begda.getDate() + 1);
                     continue;
@@ -897,26 +955,21 @@ class Calendar extends DataWrapper {
     _setMonth(month) {
         var parsedValue = parseInt(month);
         this.month = Number.isInteger(parsedValue) ? parsedValue : GL.CONST.VALUES.CALENDAR.MONTH_NAMES.indexOf(month);
-        // document.getElementById('month').innerHTML = month;
     }
 
     _getMonth() {
-        // var month = GL.CONST.VALUES.CALENDAR.MONTH_NAMES.indexOf(document.getElementById('month').innerHTML);
-        // month = UTILS.OVERLAY(month, '0', 2)
         return {
-            name: GL.CONST.VALUES.CALENDAR.MONTH_NAMES[this.month], //document.getElementById('month').innerHTML,
+            name: GL.CONST.VALUES.CALENDAR.MONTH_NAMES[this.month],
             num: UTILS.OVERLAY(this.month, '0', 2),
         };
     }
 
     _setYear(year) {
         this.year = year;
-        // document.getElementById('year').innerHTML = year;
     }
 
     _getYear() {
         return this.year;
-        // return document.getElementById('year').innerHTML;
     }
 
     _setEntries(entries) {

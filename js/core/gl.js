@@ -144,7 +144,7 @@ const GL = {
         SCHEMA: {
             GUEST: {//FIX: rename values + CSS
                 YEAR: { key: 'year', txt: 'Год' }, // 'person-cell-year',
-                MONT: { key: 'mont', txt: 'Месяц' }, // 'person-cell-month',
+                MNTH: { key: 'mnth', txt: 'Месяц' }, // 'person-cell-month',
                 UNID: { key: 'unid', txt: 'Идентиф' }, // 'person-cell-id',
                 DBEG: { key: 'dbeg', txt: 'ДатЗаез' }, // 'person-cell-checkin', 
                 DEND: { key: 'dend', txt: 'ДатВыез' }, // 'person-cell-checkout', 
@@ -204,4 +204,4 @@ const GL = {
     },
 };
 
-UTILS.DEEPF_REEZE(GL.CONST);
+// UTILS.DEEPF_REEZE(GL.CONST);
