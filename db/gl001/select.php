@@ -36,7 +36,7 @@
     $query = "SELECT * FROM gl001 WHERE" ." " . $where;
     #
     !($stmt = $mysqli->prepare($query))          && die(err2echo(10, "Выборка Список гостей. ", $mysqli));
-    if ($unid != -1) {//TODO: dynamic bindparam
+    if ($unid != -1) {// TODO  dynamic bindparam
         !($stmt->bind_param('i', $unid))         && die(err2echo(11, "Выборка Список гостей. ", $mysqli));
     } else {
         !($stmt->bind_param('ss', $dbeg, $dend)) && die(err2echo(11, "Выборка Список гостей. ", $mysqli));

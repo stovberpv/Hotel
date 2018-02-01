@@ -46,7 +46,7 @@ const GL = {
 
                 DIALOG_SAVE: 'saveClick',
     
-                RC_MENU: {//TODO: rename for using in global scope
+                RC_MENU: {// TODO  rename for using in global scope
 
                     RC_MENU_OPEN: 'rcmClick',
                     RCM_ITEM_ADD_GUEST: 'rcmItemAddClick',
@@ -139,10 +139,14 @@ const GL = {
                     toString: function () { return 'intent'; }
                 },
             },
+
+            UTILS: {
+                ONE_DAY: 86400000
+            }
         },
 
         SCHEMA: {
-            GUEST: {//FIX: rename values + CSS
+            GUEST: {// FIX  rename values + CSS
                 YEAR: { key: 'year', txt: 'Год' }, // 'person-cell-year',
                 MNTH: { key: 'mnth', txt: 'Месяц' }, // 'person-cell-month',
                 UNID: { key: 'unid', txt: 'Идентиф' }, // 'person-cell-id',

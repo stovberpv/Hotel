@@ -190,7 +190,7 @@
     margin: 0;
     border: none;
 }
-/* TODO: сдвигать цвет при перемещении мышкой. при смене фокуса с одной кнопки на другую менять направление цветов с задержкой */
+/* TODO  сдвигать цвет при перемещении мышкой. при смене фокуса с одной кнопки на другую менять направление цветов с задержкой */
 .guest-card .modal-footer button .negative {
     color: var(--c-btn-txt-hov-neg);
     /* background: var(--c-btn-bck-hov-neg); */
@@ -306,7 +306,7 @@
 #pick-period.modal-content thead td { cursor: default; }
 
 #pick-period.modal-content tbody td:hover {
-    border: 1px solid #00a4e4; /*FIX: use global color*/
+    border: 1px solid #00a4e4; /* FIX  use global color*/
 }
 
 #pick-period.modal-footer {
@@ -328,7 +328,7 @@
 }
 
 .pick-period-month-sel {
-    border: 1px solid #ffdd00; /*FIX: use global color*/
+    border: 1px solid #ffdd00; /* FIX  use global color*/
 }
 
 .pick-period-button-year-prev,

@@ -1,4 +1,10 @@
-'use strict';
+/*jshint esversion: 6 */
+/*jshint -W030 */
+/*jshint -W040 */
+/*jshint -W083 */
+(function () {
+    "use strict";
+})();
 $(document).ready(function () {
     var movementStrength = 25;
     var height = movementStrength / $(window).height();

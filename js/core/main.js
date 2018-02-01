@@ -1,5 +1,10 @@
-'use strict';
-
+/*jshint esversion: 6 */
+/*jshint -W030 */
+/*jshint -W040 */
+/*jshint -W083 */
+(function () {
+    "use strict";
+})();
 /**
  * Группа обработки оберток данных, которые отображаются в
  * контейнере данных.
@@ -21,7 +26,7 @@ const WRAPPER = {
             case C[2].DATA_WRAPPER: return new Diagrams();
             case C[3].DATA_WRAPPER: return new Settings();
             case C[4].DATA_WRAPPER: return new InfoPage();
-            case C[5].DATA_WRAPPER: return new SignOut(); 
+            case C[5].DATA_WRAPPER: return new SignOut();
             default: break;
         }
     },
@@ -55,9 +60,9 @@ const WRAPPER = {
 
         var dw = this.getWrapperId(navEl);
         if (this.isEmpty(dw)) {
-            var inst = this.getInstance(dw);
-            inst.bind(document.getElementById(dw));
-            inst.init();
+            var instance = this.getInstance(dw);
+            instance.bind(document.getElementById(dw));
+            instance.init();
         }
     },
 
@@ -76,14 +81,11 @@ const WRAPPER = {
      */
     hide: function () {
 
-        const CL = GL.CONST.CSS.CORE.CLASS.VC_DW_SHOW;
-        var el = document.getElementById('view-container').getElementsByClassName(CL);
-        for (let i = 0; i < el.length; i++) {
-            const el = el[i];
-            el.classList.remove(CL);
-        }
+        const C = GL.CONST.CSS.CORE.CLASS.VC_DW_SHOW;
+        var mapped = document.querySelectorAll(`#view-container .${C}`);
+        mapped != null && mapped.forEach(el => { el.classList.remove(C); });
     }
-}
+};
 
 /**
  * Группа обработки контейнера.
@@ -101,8 +103,9 @@ const CONTAINER = {
         this.hide();
         WRAPPER.hide();
         if (!isSelf) {
-            WRAPPER.fill(el.parentNode.id);
-            WRAPPER.show(el.parentNode.id);
+            const ITEM_ID = el.id;
+            WRAPPER.fill(ITEM_ID);
+            WRAPPER.show(ITEM_ID);
             this.show();
         }
     },
@@ -123,7 +126,7 @@ const CONTAINER = {
         document.getElementById('view-container').style.display = 'initial';
     }
 
-}
+};
 
 /**
  * Группа слушателей
@@ -140,7 +143,7 @@ const LISTENERS = {
     onLoad: function (e) {
 
         // Навигационное меню
-        document.getElementById('nav-menu').addEventListener('click', LISTENERS.navMenuClick);
+        // document.getElementById('nav-menu').addEventListener('click', LISTENERS.navMenuClick);
 
         const EL = GL.CONST.VALUES.CORE.NAV_El;
         const NAV_EL =
@@ -189,13 +192,13 @@ const LISTENERS = {
      */
     navMenuClick: function (e) {
 
-        const CL = GL.CONST.CSS.CORE.CLASS.NAV_EL_SEL;
-        var el = document.getElementById('view-container').getElementsByClassName(CL);
-        for (let i = 0; i < el.length; i++) {
-            if (!e.target.closest('#' + el[i].parentNode.id)) {
-                el[i].classList.remove(CL);
-            }
-        }
+        // FIX  ???
+        // const C = GL.CONST.CSS.CORE.CLASS.NAV_EL_SEL;
+        // document.querySelectorAll(`#view-container .${C}`).forEach(el => {
+        //     if (!e.target.closest('#' + el.parentNode.id)) {
+        //         el.classList.remove(C);
+        //     }
+        // });
     },
 
     /**
@@ -207,12 +210,11 @@ const LISTENERS = {
      */
     navElClick: function (e) {
 
-        const CL = GL.CONST.CSS.CORE.CLASS.NAV_EL_SEL;
-        var svg = document.getElementById('nav-container').getElementsByTagName('svg'),
-            el = svg[0],
-            isSelf = !el.classList.toggle(CL);
-
-        CONTAINER.toggle(el, isSelf);
+        const C = GL.CONST.CSS.CORE.CLASS.NAV_EL_SEL;
+        var target = e.currentTarget;
+        document.querySelectorAll(`#nav-menu .${C}`).forEach(el => { (el.id != target.id) && el.classList.remove(C); });
+        var isSelf = !target.classList.toggle(C);
+        CONTAINER.toggle(target, isSelf);
     }
 };
 

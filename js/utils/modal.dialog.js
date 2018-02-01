@@ -32,7 +32,7 @@ class ConfirmDialog extends Dialog {
     
         this.cb.command.ok = function (e) {
             this.unbind();
-            this.opts.cb.ok(this.opts.data);
+            this.opts.cb.ok({ intent: this.opts.intent, unid: this.opts.data.unid });
         };
                 
         this.cb.command.no = function (e) {
@@ -80,6 +80,7 @@ class ConfirmDialog extends Dialog {
     }
 }
 
+// TODO  P-el-Name replace with normal logic
 class GuestCard extends Dialog {
 
     constructor(opts) {
@@ -131,13 +132,13 @@ class GuestCard extends Dialog {
                 return true;
             },
 
-            calcFields: function (that) {
+            calcFields: function (self) {
 
-                const O = that.opts;
+                const O = self.opts;
                 const E = GL.CONST.SCHEMA.GUEST;
                 const P = GL.CONST.PREFIX.GUEST_CARD;
 
-                var dialog = document.getElementById(`${P}-${that.id}`),
+                var dialog = document.getElementById(`${P}-${self.id}`),
                     dbeg = dialog.querySelector(`#${P}-el-${E.DBEG.key} input`),
                     dend = dialog.querySelector(`#${P}-el-${E.DEND.key} input`),
                     days = dialog.querySelector(`#${P}-el-${E.DAYS.key} input`),
@@ -150,7 +151,7 @@ class GuestCard extends Dialog {
                     endda = dend.value.split('.');
                 begda = new Date(''.concat(O.year, '.', (begda[1] ? begda[1] : O.month), '.', begda[0]));
                 endda = new Date(''.concat(O.year, '.', (endda[1] ? endda[1] : O.month), '.', endda[0]));
-                var totalDays = (endda - begda) / 86400000;
+                var totalDays = (endda - begda) / GL.CONST.VALUES.UTILS.ONE_DAY;
     
                 var rooms = O.rooms.filter(function (el) { return el.room == room.value; });
                 (base.value == 0) && (base.value = rooms[0].price);
@@ -179,15 +180,50 @@ class GuestCard extends Dialog {
             days: { 
                 keypress: function (e) { e.preventDefault(); }, 
                 paste: function (e) { e.preventDefault(); },
-                change: function (e) { e.preventDefault(); }
+                change: function (e) {
+                    const E = GL.CONST.SCHEMA.GUEST;
+                    const P = GL.CONST.PREFIX.GUEST_CARD;
+
+                    var dialog = document.getElementById(`${P}-${this.id}`),
+                        dbeg = dialog.querySelector(`#${P}-el-${E.DBEG.key} input`),
+                        dend = dialog.querySelector(`#${P}-el-${E.DEND.key} input`);
+                    
+                    if (!dbeg) {
+                        // TODO  console log
+                        return;
+                    }
+
+                    if (!dend) {
+                        // TODO  console log
+                        return;
+                    }
+
+                    var firstDay = buildDate(this.opts.year, dbeg.value).getTime(),
+                        lastDay = buildDate(this.opts.year, dend.value).getTime(),
+                        oneDay = GL.CONST.VALUES.UTILS.ONE_DAY,
+                        totalDays = ((lastDay - firstDay) / oneDay) + 1;
+                    
+                    dialog.querySelector(`#${P}-el-${E.DAYS.key} input`).value = totalDays;
+                    
+                    e.preventDefault();
+
+                    function buildDate(year, ddmm) {
+                        var period = ddmm.split('.');
+                        return new Date(`${year}.${period[1]}.${period[0]}`);
+                    }
+                }
             },
             room: { 
                 keypress: function(e) { e.preventDefault(); }, 
                 click: function(e) { e.target.parentNode.querySelector('#rooms-drop-down-list').style.display = 'block'; }, 
                 paste: function(e) { e.preventDefault(); }, 
-                change: function(e) {
-                    var room = this.rooms.filter(function (el) { return el.room == e.target.value; }),
-                        baseline = document.querySelector(`${GL.CONST.SCHEMA.GUEST.BASE.key} input`);
+                change: function (e) {
+                    const P = GL.CONST.PREFIX.GUEST_CARD;
+
+                    var dialog = document.getElementById(`${P}-${this.id}`),
+                        room = this.opts.rooms.filter(function (el) { return el.room == e.target.value; }),
+                        baseline = dialog.querySelector(`#${P}-el-${GL.CONST.SCHEMA.GUEST.BASE.key} input`);
+                    
                     baseline.value = room.length != 0 ? room[0].price : 0;
                     baseline.dispatchEvent(new Event('change'));
                 }
@@ -214,7 +250,7 @@ class GuestCard extends Dialog {
             cost: { 
                 keypress: function(e) { e.preventDefault(); }, 
                 paste: function(e) { e.preventDefault(); }, 
-                change: function(e) { console.log('change cost'); }
+                change: function(e) { console.log('change cost'); /*  TODO  console log*/ }
             },
             paid: { 
                 keypress: function(e) {
@@ -260,7 +296,6 @@ class GuestCard extends Dialog {
         const E = GL.CONST.SCHEMA.GUEST;
         const P = GL.CONST.PREFIX.GUEST_CARD;
         const I = GL.CONST.VALUES.CALENDAR.INTENT[O.intent.toUpperCase()];
-        var isReadOnly = !O.isEditable;
         var tree =
             [{ tag: 'div' , id: `${P}-${this.id}`, class: `${P} modal modal-wrapper` },
                 [{ tag: 'div', class: `${P} modal-content` },
@@ -278,9 +313,9 @@ class GuestCard extends Dialog {
                         ],
                         [{ tag: 'div', id: `${P}-el-${E.DBEG.key}`, class: `${P}-el input` },
                             {
-                                tag: 'input', type: 'text', readonly: isReadOnly, required: O.isStrict ,
+                                tag: 'input', type: 'text', readonly: O.isReadOnly, required: O.isStrict ,
                                 events: [
-                                   { name: 'keypress', fn: this.cb.control.dbeg.keypress },
+                                   { name: 'keypress', fn: this.cb.control.dbeg.keypress.bind(this) },
                                    { name: 'paste', fn: this.cb.control.dbeg.paste },
                                    { name: 'change', fn: this.cb.control.dbeg.change.bind(this) }
                                 ]
@@ -289,9 +324,9 @@ class GuestCard extends Dialog {
                         ],
                         [{ tag: 'div', id: `${P}-el-${E.DEND.key}`, class: `${P}-el input` },
                             {
-                                tag: 'input', type: 'text', readonly: isReadOnly, required: O.isStrict,
+                                tag: 'input', type: 'text', readonly: O.isReadOnly, required: O.isStrict,
                                 events: [
-                                    { name: 'keypress', fn: this.cb.control.dend.keypress },
+                                    { name: 'keypress', fn: this.cb.control.dend.keypress.bind(this) },
                                     { name: 'paste', fn: this.cb.control.dend.paste },
                                     { name: 'change', fn: this.cb.control.dend.change.bind(this) }
                                 ]
@@ -315,7 +350,7 @@ class GuestCard extends Dialog {
                                 events: [
                                     { name: 'keypress', fn: this.cb.control.room.keypress },
                                     { name: 'paste', fn: this.cb.control.room.paste },
-                                    { name: 'change', fn: this.cb.control.room.change.bind({ rooms: this.opts.rooms }) },
+                                    { name: 'change', fn: this.cb.control.room.change.bind(this) },
                                     { name: 'click', fn: this.cb.control.room.click }
                                 ]
                             },
@@ -335,7 +370,7 @@ class GuestCard extends Dialog {
                         ],
                         [{ tag: 'div', id: `${P}-el-${E.ADJS.key}`, class: `${P}-el input` },
                             {
-                                tag: 'input', type: 'text', readonly: isReadOnly,
+                                tag: 'input', type: 'text', readonly: O.isReadOnly,
                                 events: [
                                     { name: 'keypress', fn: this.cb.control.adjs.keypress },
                                     { name: 'paste', fn: this.cb.control.adjs.paste },
@@ -357,7 +392,7 @@ class GuestCard extends Dialog {
                         ],
                         [{ tag: 'div', id: `${P}-el-${E.PAID.key}`, class: `${P}-el input` },
                             {
-                                tag: 'input', type: 'text', readonly: isReadOnly, required: O.isStrict,
+                                tag: 'input', type: 'text', readonly: O.isReadOnly, required: O.isStrict,
                                 events: [
                                     { name: 'keypress', fn: this.cb.control.paid.keypress },
                                     { name: 'paste', fn: this.cb.control.paid.paste }
@@ -366,16 +401,16 @@ class GuestCard extends Dialog {
                             { tag: 'label', textNode: `${E.PAID.txt}` }
                         ],
                         [{ tag: 'div', id: `${P}-el-${E.NAME.key}`, class: `${P}-el input` },
-                            { tag: 'input', type: 'text', readonly: isReadOnly, required: O.isStrict },
+                            { tag: 'input', type: 'text', readonly: O.isReadOnly, required: O.isStrict },
                             { tag: 'label', textNode: `${E.NAME.txt}` }
                         ],
                         [{ tag: 'div', id: `${P}-el-${E.CITY.key}`, class: `${P}-el input` },
-                            { tag: 'input', type: 'text', readonly: isReadOnly, required: O.isStrict },
+                            { tag: 'input', type: 'text', readonly: O.isReadOnly, required: O.isStrict },
                             { tag: 'label', textNode: `${E.CITY.txt}` }
                         ],
                         [{ tag: 'div', id: `${P}-el-${E.TELN.key}`, class: `${P}-el input` },
                             {
-                                tag: 'input', type: 'text', readonly: isReadOnly,
+                                tag: 'input', type: 'text', readonly: O.isReadOnly,
                                 events: [
                                     { name: 'keypress', fn: this.cb.control.teln.keypress },
                                     { name: 'paste', fn: this.cb.control.teln.paste }
@@ -384,7 +419,7 @@ class GuestCard extends Dialog {
                             { tag: 'label', textNode: `${E.TELN.txt}` }
                         ],
                         [{ tag: 'div', id: `${P}-el-${E.FNOT.key}`, class: `${P}-el input` },
-                            { tag: 'input', type: 'text', readonly: isReadOnly },
+                            { tag: 'input', type: 'text', readonly: O.isReadOnly },
                             { tag: 'label', textNode: `${E.FNOT.txt}` }
                         ],
                     ],
@@ -439,7 +474,9 @@ class GuestCard extends Dialog {
         dialog.querySelector(`#${P}-el-${E.CITY.key} input`).value = U(val, E.CITY.key);
         dialog.querySelector(`#${P}-el-${E.TELN.key} input`).value = U(val, E.TELN.key);
         dialog.querySelector(`#${P}-el-${E.FNOT.key} input`).value = U(val, E.FNOT.key);
+
         document.querySelector(`#${P}-el-${E.DBEG.key} input`).dispatchEvent(new Event('change'));
+        document.querySelector(`#${P}-el-${E.DAYS.key} input`).dispatchEvent(new Event('change'));
     }
 
     getVal() {

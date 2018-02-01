@@ -1,3 +1,10 @@
+/*jshint esversion: 6 */
+/*jshint -W030 */
+/*jshint -W040 */
+/*jshint -W083 */
+(function () {
+    "use strict";
+})();
 class Contacts extends DataWrapper {
 
     bind(target) {
@@ -61,12 +68,12 @@ class Contacts extends DataWrapper {
                 });
                 this.that.setData(data.data);
             }
-        }
+        };
 
         var error = function (xhr, textStatus, errorThrown) {
             console.log(textStatus);
             console.log(errorThrown);
-        }
+        };
 
         $.ajax({
             url: '../db/pb001/select.php',

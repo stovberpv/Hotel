@@ -16,7 +16,7 @@ class Calendar extends DataWrapper {
         this.entries = null;
         /** 
          * ID обрабатываемого класса 
-         * FIX: при переходе на новую строку начинать отсчет заново
+         *  FIX  при переходе на новую строку начинать отсчет заново
          */
         this.classId = null;
 
@@ -27,7 +27,7 @@ class Calendar extends DataWrapper {
                 open: function RCMenuOpen(e) {
 
                     if (!e.detail.EventBus) {
-                        console.log('Invalid function call.');//TODO: console log
+                        console.log('Invalid function call.');// TODO  console log
                         return;
                     }
 
@@ -40,10 +40,11 @@ class Calendar extends DataWrapper {
 
                     add: function RCMItemAddGuest(e) {
     
-                        //FIX: not working invalid date maybe str 208
                         var guestCard = new GuestCard({
                             intent: GL.CONST.VALUES.CALENDAR.INTENT.ADD.key,
                             title: GL.CONST.VALUES.CALENDAR.INTENT.ADD.txt,
+                            isReadOnly: false,
+                            isStrict: true,
                             month: this._getMonth().num,
                             year: this._getYear(),
                             rooms: GL.DATA.CALENDAR.rooms
@@ -55,14 +56,18 @@ class Calendar extends DataWrapper {
         
                     del: function RCMItemDelGuest(e) {
 
+                        var unid = e.detail.data.unid.match(/\d+/)[0];
                         var confirmDialog = new ConfirmDialog({
                             intent: GL.CONST.VALUES.CALENDAR.INTENT.DEL.key,
                             title: GL.CONST.VALUES.CALENDAR.INTENT.DEL.txt,
-                            text: `Вы действительно хотите удалить запись под номером${e.detail.data.unid}?
-                                    Действие нельзя будет отменить`, //TODO: move to localizable constants
+                            text: `Вы действительно хотите удалить запись под номером${unid}?
+                                    Действие нельзя будет отменить`, // TODO  move to localizable constants
+                            data: {
+                                unid: unid
+                            },
                             cb: {
-                                ok: function (result) {
-                                    EVENT_BUS.dispatch(GL.CONST.EVENTS.CALENDAR.DIALOG_SAVE, { data: result.intent });
+                                ok: function (data) {
+                                    EVENT_BUS.dispatch(GL.CONST.EVENTS.CALENDAR.DIALOG_SAVE, data);
                                 }
                             }
                         });
@@ -88,7 +93,7 @@ class Calendar extends DataWrapper {
                             var guestCard = new GuestCard({
                                 intent: I.key,
                                 title: I.txt,
-                                isEditable: true,
+                                isReadOnly: false,
                                 isStrict: true,
                                 month: month.num,
                                 year: year,
@@ -168,7 +173,7 @@ class Calendar extends DataWrapper {
                                 result = getExistingEntryData();
                             } else {
                                 isAvailableButton = null;
-                                //TODO: console log
+                                // TODO  console log
                                 // result = false;
                             }
 
@@ -177,35 +182,36 @@ class Calendar extends DataWrapper {
                             function getNewEntryData() {
                                 var idGroupFilter = function (el) { return el.match(/\bsel-group-\d+/g); },
                                     groupId = TARGET.className.split(' ').filter(idGroupFilter).toString(),
-                                    rowId = TARGET.id.match(/[^R]\d+/i) || [];
+                                    rowId = TARGET.id.match(/[^R]\d+/i) || [],
+                                    room = rowId[0];
                             
                                 if (!groupId) {
-                                    //TODO: console log
+                                    // TODO  console log
                                     return false;
                                 }
 
-                                if (!rowId[0]) {
-                                    //TODO: console log
+                                if (!room) {
+                                    // TODO  console log
                                     return false;
                                 }
                                 
-                                var group = document.querySelectorAll(`#calendar > tbody > tr#R${rowId[0]} > td.${groupId}`),
+                                var group = document.querySelectorAll(`#calendar > tbody > tr#R${room} > td.${groupId}`),
                                     begda = group[0].id.match(/\d{4}-\d{2}-\d{2}/) || [],
                                     endda = group[group.length - 1].id.match(/\d{4}-\d{2}-\d{2}/) || [];
         
                                 if (!begda) {
-                                    //TODO: console log
+                                    // TODO  console log
                                     return false;
                                 }
 
                                 if (!endda) {
-                                    //TODO: console log
+                                    // TODO  console log
                                     return false;
                                 }
                                 guest.unid = '-1';
-                                guest.room = rowId;
-                                guest.dbeg = new Date(begda[0]).format('dd.mm');
-                                guest.dend = new Date(endda[0]).format('dd.mm');
+                                guest.room = room;
+                                guest.dbeg = begda[0];
+                                guest.dend = endda[0];
                                 return true;
                             }
 
@@ -213,7 +219,7 @@ class Calendar extends DataWrapper {
                                 var idFilter = function (el) { return el.match(/^N\d+$/); },
                                     unid = TARGET.className.split(' ').filter(idFilter).toString();
                                 if (!unid) {
-                                    //TODO: console log
+                                    // TODO  console log
                                     return false;
                                 }
                                 guest.unid = unid;
@@ -276,7 +282,7 @@ class Calendar extends DataWrapper {
                             }
                             var date = TARGET.id.match(/\d{4}-\d{2}-\d{2}/i) || [];
                             if (!date[0]) {
-                                //TODO: log
+                                // TODO  log
                                 return;
                             }
                             document.querySelector(`#calendar > thead tr:nth-child(2) th#D${date[0]}`).classList.add(CLASS.VIEW);
@@ -303,7 +309,7 @@ class Calendar extends DataWrapper {
                             }
                             var date = TARGET.id.match(/\d{4}-\d{2}-\d{2}/i) || [];
                             if (!date[0]) {
-                                //TODO: log
+                                // TODO  log
                                 return;
                             }
                             document.querySelector(`#calendar > thead tr:nth-child(2) th#D${date[0]}`).classList.remove(CLASS.VIEW);
@@ -326,7 +332,7 @@ class Calendar extends DataWrapper {
                         TARGET.classList.toggle(GL.CONST.CSS.CALENDAR.CLASS.VIEW_FIX);
                         var book = document.querySelector(`#${TARGET.parentNode.id}-book`);
                         if (!book) {
-                            console.log(`Error. No book with id: ${TARGET.parentNode.id}-book`); //FIX: log
+                            console.log(`Error. No book with id: ${TARGET.parentNode.id}-book`); // FIX  log
                             return;
                         }
         
@@ -774,7 +780,7 @@ class Calendar extends DataWrapper {
                     continue;
                 }
 
-                //FIX: replace innerHTML (memory leak)
+                // FIX  replace innerHTML (memory leak)
                 var cell = document.querySelector(`#calendar #R${wa.room} #R${wa.room}D${tmpda.format('yyyy-mm-dd')}`);
                 cell.innerHTML = '';
 
@@ -832,7 +838,7 @@ class Calendar extends DataWrapper {
                 tr.parentNode.insertBefore(tree, tr.nextSibling);
             }
 
-            tree =//TODO: переделать классы
+            tree =// TODO  переделать классы
                 [{ tag: 'tr', id: 'N' + wa.unid, class: 'person-row' },
                     { tag: 'td', class: `person-fields person-cell-${E.UNID.key}`, textNode: wa.unid },
                     [{ tag: 'td' },
@@ -871,6 +877,8 @@ class Calendar extends DataWrapper {
 
     delEntry(list) {
 
+        // TODO  replace find all cell with classname = list[i].unid => remove view_fix/view ; replace class_list
+
         for (let i = 0; i < list.length; i++) {
             var wa = list[i];
 
@@ -883,7 +891,7 @@ class Calendar extends DataWrapper {
 
             while (begda <= endda) {
                 var date = begda.format('yyyy-mm-dd'),
-                    td = document.querySelector(`#calendar tbody tr#R${room} td#R${room}D${date}`); //FIX: R##D####-##-##
+                    td = document.querySelector(`#calendar tbody tr#R${room} td#R${room}D${date}`);
                 if (!td) {
                     begda.setDate(begda.getDate() + 1);
                     continue;
@@ -902,12 +910,13 @@ class Calendar extends DataWrapper {
                     td.classList.remove(CLASS_LIST.REDEEMED);
                     td.classList.remove(CLASS_LIST.RESERVED);
                 }
-                td.innerHTML = ''; //FIX: memory leak
+                td.innerHTML = ''; // FIX  memory leak
                 begda.setDate(begda.getDate() + 1);
             }
             // calendar end
 
             // book begin
+            //  FIX this.isEmptyBook is not a function
             var tr = document.querySelector(`.book > tbody > tr#N${wa.unid}`);
             tr.parentNode.removeChild(tr);
             if (this.isEmptyBook(wa.room)) {
@@ -1053,7 +1062,7 @@ class SelectionGroup {
         }).toString();
         if (classId !== '') {
             var group = document.getElementsByClassName(classId);
-            //FIX: inner html memory leak
+            // FIX  inner html memory leak
             for (let i = group.length; i > 0; i--) {
                 if (group[0].id == target.id) {
                     group[0].innerHTML = '';
@@ -1079,7 +1088,7 @@ class SelectionGroup {
 
         var group = document.getElementsByClassName(classId);
         for (let i = 0; i < group.length; i++) {
-            //FIX: inner html memory leak
+            // FIX  inner html memory leak
             group[i].innerHTML = (i + 1);
         }
     }
