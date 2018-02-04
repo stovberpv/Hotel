@@ -1,17 +1,22 @@
 /*jshint esversion: 6 */
-(function () {
-    "use strict";
-})();
+/*jshint -W061 */
+(function () { "use strict"; })();
 const UTILS = {
 
+    /**
+     * @return {string}
+     */
     OVERLAY: function (val, char, len) {
-        var overlayedVal = val + "";
+        let overlayedVal = val + "";
         while (overlayedVal.length < len) overlayedVal = char + "" + overlayedVal;
         return overlayedVal;
     },
 
+    /**
+     * @return {string}
+     */
     GET_MONTH_NAME: function (id) {
-        return gl.monthNames[parseInt(id)];
+        return GL.CONST.VALUES.CALENDAR.MONTH_NAMES[parseInt(id)];
     },
 
     GET_MONTH_ID: function (month) {
@@ -20,28 +25,8 @@ const UTILS = {
 
     GET_DAYS_IN_MONTH: function (m, y) {
         m--;
-        var isLeap = ((y % 4) == 0 && ((y % 100) != 0 || (y % 400) == 0));
+        let isLeap = ((y % 4) == 0 && ((y % 100) != 0 || (y % 400) == 0));
         return [31, (isLeap ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][m];
-    },
-
-    GET_GUEST_KEY_VALUE: function (guest, key) {
-        const E = GL.CONST.SCHEMA.GUEST;
-        switch (key) {
-            case E.UNID.key: return guest[key];
-            case E.DBEG.key: return new Date(guest[key]).format('dd.mm');
-            case E.DEND.key: return new Date(guest[key]).format('dd.mm');
-            case E.DAYS.key: return guest[key];
-            case E.ROOM.key: return guest[key];
-            case E.BASE.key: return guest[key];
-            case E.ADJS.key: return guest[key];
-            case E.COST.key: return guest[key];
-            case E.PAID.key: return guest[key];
-            case E.NAME.key: return guest[key];
-            case E.TELN.key: return guest[key];
-            case E.FNOT.key: return guest[key];
-            case E.CITY.key: return guest[key];
-            default: return null;
-        }
     },
 
     GROUP_BY: function (list, keyGetter) {
@@ -58,7 +43,7 @@ const UTILS = {
     },
 
     CLONE(source) {
-        var obj = {};
+        let obj = {};
         for (let key in source) {
             obj[key.toLowerCase()] = '';
         }
@@ -69,24 +54,32 @@ const UTILS = {
 
         if (true) return;
 
-        var propNames = Object.getOwnPropertyNames(obj);
-      
+        let propNames = Object.getOwnPropertyNames(obj);
+
         propNames.forEach(function (name) {
-            var prop = obj[name];
+            let prop = obj[name];
             if (typeof prop == 'object' && prop !== null)
                 deepFreeze(prop);
         });
-      
+
         return Object.freeze(obj);
     },
 
-    // TODO  console log format
-    LOG: function(id, src, msg) {
-        console.log();
+    LOG: function (id = "info", src = "", msg = "", srcColor = 'black', msgColor = "black") {
+        eval(`console.${id}('%c${src}::%c${msg}', 'color:${srcColor}', 'color:${msgColor}')`);
     },
 
-    CONVERT_MS: function(milliseconds ) {
-        var day, hour, minute, seconds;
+    /**
+     * @return {string}
+     */
+    FORMAT: function (text, values = {}) {
+        let aa = "";
+        Object.keys(values).map(function (key, i) { aa = text.replace(`{${i + 1}}`, values[key]); });
+        return aa;
+    },
+
+    CONVERT_MS: function(milliseconds) {
+        let day, hour, minute, seconds;
         seconds = Math.floor(milliseconds / 1000);
         minute = Math.floor(seconds / 60);
         seconds = seconds % 60;

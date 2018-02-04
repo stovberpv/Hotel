@@ -1,8 +1,6 @@
 /*jshint esversion: 6 */
 /*jshint -W030 */
-(function () {
-    "use strict";
-})();
+(function () { "use strict";})();
 /**
  * Область извечного зла...
  */
@@ -46,7 +44,7 @@ const GL = {
 
                 DIALOG_SAVE: 'saveClick',
     
-                RC_MENU: {// TODO  rename for using in global scope
+                RC_MENU: {
 
                     RC_MENU_OPEN: 'rcmClick',
                     RCM_ITEM_ADD_GUEST: 'rcmItemAddClick',
@@ -131,12 +129,11 @@ const GL = {
                 MONTH_NAMES: ["", "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"],
     
                 INTENT: {
-                    ADD: { key: 'add', txt: 'Добавить', toString: function() { return this.txt; }},
-                    UPD: { key: 'upd', txt: 'Изменить', toString: function() { return this.txt; }},
-                    DEL: { key: 'del', txt: 'Удалить', toString: function() { return this.txt; }},
-                    EXT: { key: 'ext', txt: '', toString: function() { return this.txt; }},
-                    PICK_PERIOD: 'pick-period',
-                    toString: function () { return 'intent'; }
+                    ADD: { key: 'add', txt: 'Добавить' },
+                    UPD: { key: 'upd', txt: 'Изменить' },
+                    DEL: { key: 'del', txt: 'Удалить' },
+                    EXT: { key: 'ext', txt: '' },
+                    PICK_PERIOD: 'pick-period'
                 },
             },
 
@@ -145,52 +142,78 @@ const GL = {
             }
         },
 
-        SCHEMA: {
-            GUEST: {// FIX  rename values + CSS
-                YEAR: { key: 'year', txt: 'Год' }, // 'person-cell-year',
-                MNTH: { key: 'mnth', txt: 'Месяц' }, // 'person-cell-month',
-                UNID: { key: 'unid', txt: 'Идентиф' }, // 'person-cell-id',
-                DBEG: { key: 'dbeg', txt: 'ДатЗаез' }, // 'person-cell-checkin', 
-                DEND: { key: 'dend', txt: 'ДатВыез' }, // 'person-cell-checkout', 
-                DAYS: { key: 'days', txt: 'ДнейОтд' }, // 'person-cell-rest-days', 
-                ROOM: { key: 'room', txt: 'Комната' }, // 'person-cell-room-number', 
-                BASE: { key: 'base', txt: 'БазЦена' }, // 'person-cell-room-baseline', 
-                ADJS: { key: 'adjs', txt: 'Коррект' }, // 'person-cell-room-adjustment', 
-                COST: { key: 'cost', txt: 'Стоимос' }, // 'person-cell-room-cost', 
-                PAID: { key: 'paid', txt: 'Оплачен' }, // 'person-cell-room-paid', 
-                NAME: { key: 'name', txt: 'ФИО' }, // 'person-cell-name', 
-                TELN: { key: 'teln', txt: 'Телефон' }, // 'person-cell-telephone-number', 
-                FNOT: { key: 'fnot', txt: 'Примеча' }, // 'person-cell-footnote', 
-                CITY: { key: 'city', txt: 'Город' } // 'person-cell-city', 
-            }
-        },
-
         PREFIX: {
-            PICK_PERIOD: 'pick-period',
+            SELECTION_GROUP: 'sel-group',
             CONFIRM_DIALOG: 'confirm-dialog',
-            GUEST_CARD: 'guest-card'
+            PICK_PERIOD: 'pick-period',
+            GUEST_CARD: 'guest-card',
+            PERSON: {
+                CELL: 'percon-cell',
+                FIELD: 'person-field'
+            }
         },
 
-        ERROR: {
+        LOG: {
             LEVEL: {
-                ERROR: 0,
-                WARN: 1,
-                INFO: 2,
-                VERBOSE: 3,
-                DEBUG: 4,
-                SILLY: 5
+                DEBUG: "debug",
+                ERROR: "error",
+                INFO: "info",
+                WARN: "warn"
             },
-            ID: {
-                A000: '',
-                A001: '',
-                A002: '',
-                B000: '',
-                B001: '',
-                B002: '',
-                C000: '',
-                C001: '',
-                C002: ''
+            ID: { // TODO correct grammar
+                A000: { TITLE: 'Invalid function call', GIST: 'Invalid function call' },
+                A001: { TITLE: 'Error while obtaining data', GIST: '' },
+                A002: { TITLE: 'No Id', GIST: '' },
+                A003: { TITLE: 'Data was updated', GIST: '' },
+                B000: { TITLE: '', GIST: '' },
+                B001: { TITLE: 'Data from DB was fetched', GIST: '' },
+                B002: { TITLE: 'Data from DB was not fetched', GIST: '' },
+                B003: { TITLE: 'Data in DB was updated', GIST: '' },
+                B004: { TITLE: 'Data in DB was not updated', GIST: '' },
+                B005: { TITLE: 'Data was inserted in DB', GIST: '' },
+                B006: { TITLE: 'Data was not inserted in DB', GIST: '' },
+                B007: { TITLE: 'Data was deleted from DB', GIST: '' },
+                B008: { TITLE: 'Data was not deleted from DB', GIST: '' },
+                C000: { TITLE: '', GIST: '' },
+                C001: { TITLE: '', GIST: '' },
+                D000: { TITLE: '', GIST: '' },
+                D001: { TITLE: '', GIST: '' },
             }
+        },
+
+        LOCALIZABLE: { // TODO rename MSG
+            MSG001: "Вы действительно хотите удалить запись под номером {1}?\nДействие нельзя будет отменить!",
+            MSG002: {
+                YEAR: "Год", 
+                MNTH: "Месяц",
+                UNID: "Идентиф",
+                DBEG: "ДатЗаез",
+                DEND: "ДатВыез",
+                DAYS: "ДнейОтд",
+                ROOM: "Комната",
+                BASE: "БазЦена",
+                ADJS: "Коррект",
+                COST: "Стоимос",
+                PAID: "Оплачен",
+                NAME: "ФИО",
+                TELN: "Телефон",
+                FNOT: "Примеча",
+                CITY: "Город"
+            },
+            MSG003: {
+                OK: "Подтвердить",
+                NO: "Отменить"
+            },
+            MSG004: {
+                DELETE: "Удалить",
+                UPDATE: "Изменить",
+                ADD: "Добавить"
+            },
+            MSG005: "",
+            MSG006: "",
+            MSG007: "",
+            MSG008: "",
+            MSG009: "",
         }
     },
 
