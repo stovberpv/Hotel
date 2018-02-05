@@ -23,7 +23,7 @@
     # get values
     #---------------------------------------------------------------------------------
     $year  = isset($_GET["year"])  ? $_GET["year"]  : 1900;
-    $month = isset($_GET["month"]) ? $_GET["month"] : 12;
+    $month = isset($_GET["mnth"]) ? $_GET["mnth"] : 12;
     $unid = isset($_GET["unid"]) ? $_GET["unid"] : -1;
     #
     $dbeg = $year . "-" . $month . "-" . 01;

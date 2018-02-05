@@ -22,7 +22,7 @@ const UTILS = {
     GET_MONTH_ID: function (month) {
         return this.overlay(gl.monthNames.indexOf(month), '0', 2);
     },
-
+    
     GET_DAYS_IN_MONTH: function (m, y) {
         m--;
         let isLeap = ((y % 4) == 0 && ((y % 100) != 0 || (y % 400) == 0));
@@ -73,9 +73,7 @@ const UTILS = {
      * @return {string}
      */
     FORMAT: function (text, values = {}) {
-        let aa = "";
-        Object.keys(values).map(function (key, i) { aa = text.replace(`{${i + 1}}`, values[key]); });
-        return aa;
+        return Object.keys(values).map(function (key, i) { return text.replace(`{${i + 1}}`, values[key]); });
     },
 
     CONVERT_MS: function(milliseconds) {

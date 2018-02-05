@@ -42,14 +42,13 @@ class ConfirmDialog extends Dialog {
 
     bind() {
 
-        const B = GL.CONST.LOCALIZABLE.MSG003;
-        const I = GL.CONST.VALUES.CALENDAR.INTENT;
+        const B = GL.CONST.LOCALIZABLE.VAR002;
         const P = GL.CONST.PREFIX.CONFIRM_DIALOG;
         const O = this.opts;
         let tree =
             [{ tag: 'div', id: `${P}-${this.id}`, class: `${P} modal modal-wrapper` },
                 [{ tag: 'div', class: `${P} modal-content` },
-                    [{ tag: 'div', class: `${P} modal-header ${I}-${O.intent}` },
+                    [{ tag: 'div', class: `${P} modal-header intent-${O.intent}` },
                         { tag: 'label', textNode: O.title }    
                     ],
                     [{ tag: 'div', class: `${P} modal-body` },
@@ -87,7 +86,7 @@ class GuestCard extends Dialog {
         super(opts);
 
         this.cb.command.ok = function (e) {
-            EVENT_BUS.dispatch(GL.CONST.EVENTS.CALENDAR.DIALOG_SAVE, { intent: this.opts.intent, data: this.getVal() });
+            EVENT_BUS.dispatch(GL.CONST.EVENTS.CALENDAR.DIALOG_SAVE, { intent: this.opts.intent, guest: this.getVal() } );
             this.unbind();
         };
 
@@ -288,8 +287,8 @@ class GuestCard extends Dialog {
 
     bind() {
 
-        const T = GL.CONST.LOCALIZABLE.MSG002;
-        const B = GL.CONST.LOCALIZABLE.MSG003;
+        const T = GL.CONST.LOCALIZABLE.VAR001;
+        const B = GL.CONST.LOCALIZABLE.VAR002;
         const O = this.opts;
         const P = GL.CONST.PREFIX.GUEST_CARD;
         let tree =
@@ -301,7 +300,7 @@ class GuestCard extends Dialog {
                     [{ tag: 'div', class: `${P} modal-body` },
                         [{ tag: 'div', id: `${P}-el-intent`, class: `${P}-el output`, style: { display: 'none;' } },
                             { tag: 'input', type: 'text', readonly: true },
-                            { tag: 'label', textNode: `${GL.CONST.VALUES.CALENDAR.INTENT[O.intent.toUpperCase()].txt}` }
+                            { tag: 'label', textNode: `${O.intent}` }
                         ],
                         [{ tag: 'div', id: `${P}-el-${IGuest.unid}`, class: `${P}-el output`, style: { display: 'none;' } },
                             { tag: 'input', type: 'text', readonly: true },
@@ -427,14 +426,17 @@ class GuestCard extends Dialog {
             ];
         
         tree = new DOMTree(tree).cultivate();
+        if (!tree) {
+            UTILS.LOG(GL.CONST.LOG.LEVEL.ERROR, GL.CONST.LOG.ID.B000.TITLE, GL.CONST.LOG.ID.B000.GIST);
+            return;
+        }
         let rddl = tree.querySelector('#rooms-drop-down-list');
         O.rooms.forEach(el => {
             let a = document.createElement('a');
             a.appendChild(document.createTextNode(el.room));
             rddl.appendChild(a);
         });
-        if (tree) document.body.appendChild(tree);
-        else console.log('tree is ' + tree);
+        document.body.appendChild(tree);
     }
 
     show() {
@@ -471,26 +473,30 @@ class GuestCard extends Dialog {
 
         document.querySelector(`#${P}-el-${IGuest.dbeg} input`).dispatchEvent(new Event('change'));
         document.querySelector(`#${P}-el-${IGuest.days} input`).dispatchEvent(new Event('change'));
+        document.querySelector(`#${P}-el-${IGuest.room} input`).dispatchEvent(new Event('change'));
     }
 
     getVal() {
+        const P = GL.CONST.PREFIX.GUEST_CARD;
         let dialog = document.getElementById(`${GL.CONST.PREFIX.GUEST_CARD}-${this.id}`);
-        return {
-            intent: dialog.querySelector(`${GL.CONST.VALUES.CALENDAR.INTENT} input`).value,
-            unid: dialog.querySelector(`${IGuest.unid} input`).value,
-            dbeg: dialog.querySelector(`${IGuest.dbeg} input`).value,
-            dend: dialog.querySelector(`${IGuest.dend} input`).value,
-            days: dialog.querySelector(`${IGuest.days} input`).value,
-            room: dialog.querySelector(`${IGuest.room} input`).value,
-            base: dialog.querySelector(`${IGuest.base} input`).value,
-            adjs: dialog.querySelector(`${IGuest.adjs} input`).value,
-            cost: dialog.querySelector(`${IGuest.cost} input`).value,
-            paid: dialog.querySelector(`${IGuest.paid} input`).value,
-            name: dialog.querySelector(`${IGuest.name} input`).value,
-            city: dialog.querySelector(`${IGuest.city} input`).value,
-            teln: dialog.querySelector(`${IGuest.teln} input`).value,
-            fnot: dialog.querySelector(`${IGuest.fnot} input`).value
-        };
+        let guest = new Guest();
+        guest.year = this.opts.year;
+        guest.mnth = this.opts.month;
+        guest.intn = this.opts.intent;
+        guest.unid = dialog.querySelector(`#${P}-el-${IGuest.unid} input`).value;
+        guest.dbeg = dialog.querySelector(`#${P}-el-${IGuest.dbeg} input`).value;
+        guest.dend = dialog.querySelector(`#${P}-el-${IGuest.dend} input`).value;
+        guest.days = dialog.querySelector(`#${P}-el-${IGuest.days} input`).value;
+        guest.room = dialog.querySelector(`#${P}-el-${IGuest.room} input`).value;
+        guest.base = dialog.querySelector(`#${P}-el-${IGuest.base} input`).value;
+        guest.adjs = dialog.querySelector(`#${P}-el-${IGuest.adjs} input`).value;
+        guest.cost = dialog.querySelector(`#${P}-el-${IGuest.cost} input`).value;
+        guest.paid = dialog.querySelector(`#${P}-el-${IGuest.paid} input`).value;
+        guest.name = dialog.querySelector(`#${P}-el-${IGuest.name} input`).value;
+        guest.city = dialog.querySelector(`#${P}-el-${IGuest.city} input`).value;
+        guest.teln = dialog.querySelector(`#${P}-el-${IGuest.teln} input`).value;
+        guest.fnot = dialog.querySelector(`#${P}-el-${IGuest.fnot} input`).value;
+        return guest;
     }
 }
 
@@ -519,7 +525,7 @@ class PickPeriod extends Dialog {
                     return;
                 }
                 let val = parseInt(year.value);
-                val > 1900 && val <= 9999 && (val-- , year.value = val);
+                val > 1900 && val <= 9999 && (val--, year.value = val);
             },
                     
             next: function nextYear(e) {
@@ -559,7 +565,7 @@ class PickPeriod extends Dialog {
 
     bind() {
 
-        const B = GL.CONST.LOCALIZABLE.MSG003;
+        const B = GL.CONST.LOCALIZABLE.VAR002;
         const P = GL.CONST.PREFIX.PICK_PERIOD;
         let tree =
             [{ tag: 'div', id: `${P}-${this.id}`, class: `${P} modal modal-wrapper`},
@@ -687,7 +693,7 @@ class RCMenu extends Dialog {
 
     bind() {
         
-        const T = GL.CONST.LOCALIZABLE.MSG004;
+        const T = GL.CONST.LOCALIZABLE.VAR003;
         let div, ul, li;
 
         ul = document.createElement('ul');

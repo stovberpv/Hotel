@@ -26,7 +26,7 @@
     #---------------------------------------------------------------------------------
     isset($_GET['data']["unid"]) ? $unid = $_GET['data']["unid"] : $unid = "";
     isset($_GET['data']["year"]) ? $year = $_GET['data']["year"] : $year = "";
-    isset($_GET['data']["mont"]) ? $mont = $_GET['data']["mont"] : $mont = "";
+    isset($_GET['data']["mnth"]) ? $mnth = $_GET['data']["mnth"] : $mnth = "";
     isset($_GET['data']["dbeg"]) ? $dbeg = $_GET['data']["dbeg"] : $dbeg = "";
     isset($_GET['data']["dend"]) ? $dend = $_GET['data']["dend"] : $dend = "";
     isset($_GET['data']["days"]) ? $days = $_GET['data']["days"] : $days = "";

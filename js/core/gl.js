@@ -1,9 +1,6 @@
 /*jshint esversion: 6 */
 /*jshint -W030 */
 (function () { "use strict";})();
-/**
- * Область извечного зла...
- */
 const GL = {
 
     CONST: {
@@ -124,19 +121,6 @@ const GL = {
                 ],
             },
     
-            CALENDAR: {
-    
-                MONTH_NAMES: ["", "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"],
-    
-                INTENT: {
-                    ADD: { key: 'add', txt: 'Добавить' },
-                    UPD: { key: 'upd', txt: 'Изменить' },
-                    DEL: { key: 'del', txt: 'Удалить' },
-                    EXT: { key: 'ext', txt: '' },
-                    PICK_PERIOD: 'pick-period'
-                },
-            },
-
             UTILS: {
                 ONE_DAY: 86400000
             }
@@ -148,7 +132,7 @@ const GL = {
             PICK_PERIOD: 'pick-period',
             GUEST_CARD: 'guest-card',
             PERSON: {
-                CELL: 'percon-cell',
+                CELL: 'person-cell',
                 FIELD: 'person-field'
             }
         },
@@ -165,15 +149,9 @@ const GL = {
                 A001: { TITLE: 'Error while obtaining data', GIST: '' },
                 A002: { TITLE: 'No Id', GIST: '' },
                 A003: { TITLE: 'Data was updated', GIST: '' },
-                B000: { TITLE: '', GIST: '' },
-                B001: { TITLE: 'Data from DB was fetched', GIST: '' },
-                B002: { TITLE: 'Data from DB was not fetched', GIST: '' },
-                B003: { TITLE: 'Data in DB was updated', GIST: '' },
-                B004: { TITLE: 'Data in DB was not updated', GIST: '' },
-                B005: { TITLE: 'Data was inserted in DB', GIST: '' },
-                B006: { TITLE: 'Data was not inserted in DB', GIST: '' },
-                B007: { TITLE: 'Data was deleted from DB', GIST: '' },
-                B008: { TITLE: 'Data was not deleted from DB', GIST: '' },
+                B000: { TITLE: 'General fault', GIST: 'General fault' },
+                B001: { TITLE: 'DB successful response', GIST: 'Data was processed' },
+                B002: { TITLE: 'DB error response', GIST: 'Error has occurred' },
                 C000: { TITLE: '', GIST: '' },
                 C001: { TITLE: '', GIST: '' },
                 D000: { TITLE: '', GIST: '' },
@@ -181,9 +159,11 @@ const GL = {
             }
         },
 
-        LOCALIZABLE: { // TODO rename MSG
+        LOCALIZABLE: {
+            MSG000: "",
             MSG001: "Вы действительно хотите удалить запись под номером {1}?\nДействие нельзя будет отменить!",
-            MSG002: {
+            VAR000: "",
+            VAR001: {
                 YEAR: "Год", 
                 MNTH: "Месяц",
                 UNID: "Идентиф",
@@ -200,35 +180,26 @@ const GL = {
                 FNOT: "Примеча",
                 CITY: "Город"
             },
-            MSG003: {
+            VAR002: {
                 OK: "Подтвердить",
                 NO: "Отменить"
             },
-            MSG004: {
+            VAR003: {
                 DELETE: "Удалить",
                 UPDATE: "Изменить",
                 ADD: "Добавить"
-            },
-            MSG005: "",
-            MSG006: "",
-            MSG007: "",
-            MSG008: "",
-            MSG009: "",
-        }
+            }
+        },
+
+        LOCALE: "ru-Ru"
     },
 
     DATA: {
 
         CORE: {
             isMouseDown: false,
-        },
-
-        CALENDAR: {
-
-            rooms: [],
-            isSelected: false,
-        },
-    },
+        }
+    }
 };
 
 // UTILS.DEEPF_REEZE(GL.CONST);

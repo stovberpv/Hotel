@@ -24,8 +24,9 @@
     #---------------------------------------------------------------------------------
     # 
     #---------------------------------------------------------------------------------
+    // FIX isset = false!
     isset($_GET['data']["year"]) ? $year = $_GET['data']["year"] : $year = "";
-    isset($_GET['data']["mont"]) ? $mont = $_GET['data']["mont"] : $mont = "";
+    isset($_GET['data']["mnth"]) ? $mnth = $_GET['data']["mnth"] : $mnth = "";
     isset($_GET['data']["dbeg"]) ? $dbeg = $_GET['data']["dbeg"] : $dbeg = "";
     isset($_GET['data']["dend"]) ? $dend = $_GET['data']["dend"] : $dend = "";
     isset($_GET['data']["days"]) ? $days = $_GET['data']["days"] : $days = "";
@@ -52,7 +53,7 @@
             die(err2echo(22, 'Обновление гостя ', $mysqli));
         }
     } else {
-        $begda = $year . "-" . $month . "-" . $dbeg;
+        $begda = $year . "-" . $mnth . "-" . $dbeg;
     }
     #
     $endda = "";
@@ -66,7 +67,7 @@
             die(err2echo(21, 'Обновление гостя', $mysqli));
         }
     } else {
-        $endda = $year . "-" . $month . "-" . $dend;
+        $endda = $year . "-" . $mnth . "-" . $dend;
     }
     #
     if (strtotime($begda) > strtotime($endda)) {
@@ -78,20 +79,7 @@
     # 
     #---------------------------------------------------------------------------------
     $query = "INSERT
-                INTO gl001(
-                        dbeg = ?,
-                        dend = ?,
-                        days = ?,
-                        room = ?,
-                        base = ?,
-                        adjs = ?,
-                        cost = ?,
-                        paid = ?,
-                        name = ?,
-                        teln = ?,
-                        fnot = ?,
-                        city = ?,
-                        user = ?
+                INTO gl001 (dbeg, dend, days, room , base, adjs, cost, paid, name, teln, fnot, city, user)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     #
     !($stmt = $mysqli->prepare($query)) && die(err2echo(10, 'Добавление гостя', $mysqli));
@@ -112,22 +100,21 @@
     ) && die(err2echo(11, 'Добавление гостя', $mysqli));
     !($stmt->execute()) && die(err2echo(12, 'Добавление гостя', $mysqli));
     #
-    $data['data'][0]['unid'] = mysqli_insert_id($mysqli);
-    $data['data'][0]['dbeg'] = $dbeg;
-    $data['data'][0]['dend'] = $dend;
-    $data['data'][0]['days'] = $days;
-    $data['data'][0]['room'] = $room;
-    $data['data'][0]['base'] = $base;
-    $data['data'][0]['adjs'] = $adjs;
-    $data['data'][0]['cost'] = $cost;
-    $data['data'][0]['paid'] = $paid;
-    $data['data'][0]['name'] = $name;
-    $data['data'][0]['teln'] = $teln;
-    $data['data'][0]['fnot'] = $fnot;
-    $data['data'][0]['city'] = $city;
-    #
-    $data['year'] = $year;
-    $data['month'] = $month;
+    $data['data']['year'] = $year;
+    $data['data']['mnth'] = $mnth;
+    $data['data']['unid'] = mysqli_insert_id($mysqli);
+    $data['data']['dbeg'] = $dbeg;
+    $data['data']['dend'] = $dend;
+    $data['data']['days'] = $days;
+    $data['data']['room'] = $room;
+    $data['data']['base'] = $base;
+    $data['data']['adjs'] = $adjs;
+    $data['data']['cost'] = $cost;
+    $data['data']['paid'] = $paid;
+    $data['data']['name'] = $name;
+    $data['data']['teln'] = $teln;
+    $data['data']['fnot'] = $fnot;
+    $data['data']['city'] = $city;
     #
     $stmt->free_result();
     $stmt->close();
@@ -138,7 +125,8 @@
     #---------------------------------------------------------------------------------
     # 
     #---------------------------------------------------------------------------------
-    include $_SERVER['DOCUMENT_ROOT'] . '/db/pb001/insert.php';
+    // FIX 
+    // include $_SERVER['DOCUMENT_ROOT'] . '/db/pb001/insert.php';
     #---------------------------------------------------------------------------------
     # 
     #---------------------------------------------------------------------------------    
