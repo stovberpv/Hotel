@@ -71,40 +71,40 @@ class SelectionGroup {
 class IGuest {
     constructor(entries) {
         if (entries === undefined) return;
-        this._intn = entries.intn;
-        this._year = entries.year;
-        this._mnth = entries.mnth;
-        this._unid = entries.unid;
-        this._dbeg = entries.dbeg;
-        this._dend = entries.dend;
-        this._days = entries.days;
-        this._room = entries.room;
-        this._base = entries.base;
-        this._adjs = entries.adjs;
-        this._cost = entries.cost;
-        this._paid = entries.paid;
-        this._name = entries.name;
-        this._teln = entries.teln;
-        this._fnot = entries.fnot;
-        this._city = entries.city;
+        this.intn = entries.intn || '';
+        this.year = entries.year || '';
+        this.mnth = entries.mnth || '';
+        this.unid = entries.unid || '';
+        this.dbeg = entries.dbeg || '';
+        this.dend = entries.dend || '';
+        this.days = entries.days || '';
+        this.room = entries.room || '';
+        this.base = entries.base || '';
+        this.adjs = entries.adjs || '';
+        this.cost = entries.cost || '';
+        this.paid = entries.paid || '';
+        this.name = entries.name || '';
+        this.teln = entries.teln || '';
+        this.fnot = entries.fnot || '';
+        this.city = entries.city || '';
     }
 
-    static get intn() { return 'intn'; }
-    static get year() { return 'year'; }
-    static get mnth() { return 'mnth'; }
-    static get unid() { return 'unid'; }
-    static get dbeg() { return 'dbeg'; }
-    static get dend() { return 'dend'; }
-    static get days() { return 'days'; }
-    static get room() { return 'room'; }
-    static get base() { return 'base'; }
-    static get adjs() { return 'adjs'; }
-    static get cost() { return 'cost'; }
-    static get paid() { return 'paid'; }
-    static get name() { return 'name'; }
-    static get teln() { return 'teln'; }
-    static get fnot() { return 'fnot'; }
-    static get city() { return 'city'; }
+    static get Intn() { return 'intn'; }
+    static get Year() { return 'year'; }
+    static get Mnth() { return 'mnth'; }
+    static get Unid() { return 'unid'; }
+    static get Dbeg() { return 'dbeg'; }
+    static get Dend() { return 'dend'; }
+    static get Days() { return 'days'; }
+    static get Room() { return 'room'; }
+    static get Base() { return 'base'; }
+    static get Adjs() { return 'adjs'; }
+    static get Cost() { return 'cost'; }
+    static get Paid() { return 'paid'; }
+    static get Name() { return 'name'; }
+    static get Teln() { return 'teln'; }
+    static get Fnot() { return 'fnot'; }
+    static get City() { return 'city'; }
 }
 
 /**
@@ -123,22 +123,22 @@ class Guest extends IGuest {
         super(entries);
         this.id = Math.floor(Math.random() * 100000);
     }
-    set intn(intn) { this._intn = intn || ''; } get intn() { return this._intn || ''; }
-    set year(year) { this._year = year || ''; } get year() { return this._year || ''; }
-    set mnth(mnth) { this._mnth = mnth || ''; } get mnth() { return this._mnth || ''; }
-    set unid(unid) { this._unid = unid || ''; } get unid() { return this._unid || ''; }
-    set dbeg(dbeg) { this._dbeg = dbeg || ''; } get dbeg() { return this._dbeg || ''; }
-    set dend(dend) { this._dend = dend || ''; } get dend() { return this._dend || ''; }
-    set days(days) { this._days = days || ''; } get days() { return this._days || ''; }
-    set room(room) { this._room = room || ''; } get room() { return this._room || ''; }
-    set base(base) { this._base = base || ''; } get base() { return this._base || ''; }
-    set adjs(adjs) { this._adjs = adjs || ''; } get adjs() { return this._adjs || ''; }
-    set cost(cost) { this._cost = cost || ''; } get cost() { return this._cost || ''; }
-    set paid(paid) { this._paid = paid || ''; } get paid() { return this._paid || ''; }
-    set name(name) { this._name = name || ''; } get name() { return this._name || ''; }
-    set teln(teln) { this._teln = teln || ''; } get teln() { return this._teln || ''; }
-    set fnot(fnot) { this._fnot = fnot || ''; } get fnot() { return this._fnot || ''; }
-    set city(city) { this._city = city || ''; } get city() { return this._city || ''; }
+    set Intn(Intn) { this.intn = Intn || ''; } get Intn() { return this.intn || ''; }
+    set Year(Year) { this.year = Year || ''; } get Year() { return this.year || ''; }
+    set Mnth(Mnth) { this.mnth = Mnth || ''; } get Mnth() { return this.mnth || ''; }
+    set Unid(Unid) { this.unid = Unid || ''; } get Unid() { return this.unid || ''; }
+    set Dbeg(Dbeg) { this.dbeg = Dbeg || ''; } get Dbeg() { return this.dbeg || ''; }
+    set Dend(Dend) { this.dend = Dend || ''; } get Dend() { return this.dend || ''; }
+    set Days(Days) { this.days = Days || ''; } get Days() { return this.days || ''; }
+    set Room(Room) { this.room = Room || ''; } get Room() { return this.room || ''; }
+    set Base(Base) { this.base = Base || ''; } get Base() { return this.base || ''; }
+    set Adjs(Adjs) { this.adjs = Adjs || ''; } get Adjs() { return this.adjs || ''; }
+    set Cost(Cost) { this.cost = Cost || ''; } get Cost() { return this.cost || ''; }
+    set Paid(Paid) { this.paid = Paid || ''; } get Paid() { return this.paid || ''; }
+    set Name(Name) { this.name = Name || ''; } get Name() { return this.name || ''; }
+    set Teln(Teln) { this.teln = Teln || ''; } get Teln() { return this.teln || ''; }
+    set Fnot(Fnot) { this.fnot = Fnot || ''; } get Fnot() { return this.fnot || ''; }
+    set City(City) { this.city = City || ''; } get City() { return this.city || ''; }
 }
 
 /**
@@ -205,13 +205,13 @@ class Calendar extends DataWrapper {
                     },
         
                     del: function RCMItemDelGuest(e) {
-
+                        // FIX unid must be without 'N'-prefix 
                         let unid = e.detail.data.unid.match(/\d+/)[0];
                         let confirmDialog = new ConfirmDialog({
                             intent: this.intent.del.key,
                             title: this.intent.del.txt,
                             text: UTILS.FORMAT(GL.CONST.LOCALIZABLE.MSG001, {1:unid}),
-                            data: { unid: unid },
+                            data: { guest: e.detail.data },
                             cb: { ok: function (data) { EVENT_BUS.dispatch(GL.CONST.EVENTS.CALENDAR.DIALOG_SAVE, data); } }
                         });
                         confirmDialog.bind();
@@ -232,6 +232,13 @@ class Calendar extends DataWrapper {
                         DB.GL001.SELECT({ unid: unid }, I.key);
 
                         function showGuestCard(e) {
+                            let guest;
+                            try {
+                                guest = new Guest(e.detail.data.guest[0]);
+                            } catch (err) {
+                                UTILS.LOG(GL.CONST.LOG.LEVEL.ERROR, GL.CONST.LOG.ID.B000, err.message);
+                                return;
+                            }
                             let guestCard = new GuestCard({
                                 intent: I.key,
                                 title: I.txt,
@@ -242,7 +249,7 @@ class Calendar extends DataWrapper {
                                 rooms: self.rooms
                             });
                             guestCard.bind();
-                            guestCard.setVal(e.detail.data.data[0]);
+                            guestCard.setVal(guest);
                             guestCard.show();
                         }
                     },
@@ -297,8 +304,8 @@ class Calendar extends DataWrapper {
 
                         function rightMouse() {
                             if (!getCalendarEntry()) return;
-                            guest.year = self.year;
-                            guest.mnth = self.month.num;
+                            guest.Year = self.year;
+                            guest.Mnth = self.month.num;
                             openRCMenu();
                         }
 
@@ -350,11 +357,11 @@ class Calendar extends DataWrapper {
                                     return false;
                                 }
 
-                                guest.intn = self.intent.add.key;
-                                guest.unid = '-1';
-                                guest.room = room;
-                                guest.dbeg = begda[0];
-                                guest.dend = endda[0];
+                                guest.Intn = self.intent.add.key;
+                                guest.Unid = '-1';
+                                guest.Room = room;
+                                guest.Dbeg = begda[0];
+                                guest.Dend = endda[0];
                                 return true;
                             }
 
@@ -367,7 +374,7 @@ class Calendar extends DataWrapper {
                                     return false;
                                 }
 
-                                guest.unid = unid;
+                                guest.Unid = unid;
                                 return true;
                             }
 
@@ -529,30 +536,30 @@ class Calendar extends DataWrapper {
 
                         function rightMouse() {
                             getBookEntry();
-                            guest.year = self.year;
-                            guest.mnth = self.month.num;
+                            guest.Year = self.year;
+                            guest.Mnth = self.month.num;
                             isAvailableButton = true;
                             openRCMenu();
                         }
 
                         function getBookEntry() {
                             const P = GL.CONST.PREFIX.PERSON.CELL;
-                            guest.unid = book.querySelector(`.${P}-${IGuest.unid}`).textContent;
-                            guest.dbeg = book.querySelector(`.${P}-${IGuest.dbeg}`).getAttribute('value');
-                            guest.dend = book.querySelector(`.${P}-${IGuest.dend}`).getAttribute('value');
-                            guest.days = book.querySelector(`.${P}-${IGuest.days}`).textContent;
-                            guest.room = book.querySelector(`.${P}-${IGuest.room}`).textContent;
-                            guest.base = book.querySelector(`.${P}-${IGuest.base}`).textContent;
-                            guest.adjs = book.querySelector(`.${P}-${IGuest.adjs}`).textContent;
-                            guest.cost = book.querySelector(`.${P}-${IGuest.cost}`).textContent;
-                            guest.paid = book.querySelector(`.${P}-${IGuest.paid}`).textContent;
-                            guest.name = book.querySelector(`.${P}-${IGuest.name}`).textContent;
-                            guest.teln = book.querySelector(`.${P}-${IGuest.teln}`).textContent;
-                            guest.fnot = book.querySelector(`.${P}-${IGuest.fnot}`).textContent;
-                            guest.city = book.querySelector(`.${P}-${IGuest.city}`).textContent;
+                            guest.Unid = book.querySelector(`.${P}-${IGuest.Unid}`).textContent;
+                            guest.Dbeg = book.querySelector(`.${P}-${IGuest.Dbeg}`).getAttribute('value');
+                            guest.Dend = book.querySelector(`.${P}-${IGuest.Dend}`).getAttribute('value');
+                            guest.Days = book.querySelector(`.${P}-${IGuest.Days}`).textContent;
+                            guest.Room = book.querySelector(`.${P}-${IGuest.Room}`).textContent;
+                            guest.Base = book.querySelector(`.${P}-${IGuest.Base}`).textContent;
+                            guest.Adjs = book.querySelector(`.${P}-${IGuest.Adjs}`).textContent;
+                            guest.Cost = book.querySelector(`.${P}-${IGuest.Cost}`).textContent;
+                            guest.Paid = book.querySelector(`.${P}-${IGuest.Paid}`).textContent;
+                            guest.Name = book.querySelector(`.${P}-${IGuest.Name}`).textContent;
+                            guest.Teln = book.querySelector(`.${P}-${IGuest.Teln}`).textContent;
+                            guest.Fnot = book.querySelector(`.${P}-${IGuest.Fnot}`).textContent;
+                            guest.City = book.querySelector(`.${P}-${IGuest.City}`).textContent;
 
-                            guest.dbeg = new Date(guest.dbeg).format('dd.mm');
-                            guest.dend = new Date(guest.dend).format('dd.mm');
+                            guest.Dbeg = new Date(guest.Dbeg).format('dd.mm');
+                            guest.Dend = new Date(guest.Dend).format('dd.mm');
                         }
 
                         function openRCMenu() {
@@ -689,7 +696,7 @@ class Calendar extends DataWrapper {
                         success: function (e) {
                             UTILS.LOG(GL.CONST.LOG.LEVEL.INFO, GL.CONST.LOG.ID.B001.TITLE, e.detail.data.msg);
                             const D = e.detail.data;
-                            D.status && (this.rooms = D.data);
+                            D.status && (this.rooms = D.room);
                         },
                         error: function (e) { UTILS.LOG(GL.CONST.LOG.LEVEL.ERROR, GL.CONST.LOG.ID.B002.TITLE, e.detail.data.xhr); }
                     },
@@ -700,9 +707,7 @@ class Calendar extends DataWrapper {
                             UTILS.LOG(GL.CONST.LOG.LEVEL.INFO, GL.CONST.LOG.ID.B001.TITLE, e.detail.data.msg);
                             const D = e.detail.data;
                             if (!D.status) return;
-                            this.year = D.year;
-                            this.month = D.month;
-                            this.guest = D.data;
+                            this.guest = D.guest;
                             this.add(this.guest);
                         },
                         error: function (e) { UTILS.LOG(GL.CONST.LOG.LEVEL.ERROR, GL.CONST.LOG.ID.B002.TITLE, e.detail.data.xhr); }
@@ -714,7 +719,7 @@ class Calendar extends DataWrapper {
                             if (!D.status) return;
                             this.year = D.year;
                             this.month = D.month;
-                            this.guest = D.data;
+                            this.guest = D.guest;
                             this._resetView();
                             this.add(this.guest);
                         },
@@ -722,9 +727,17 @@ class Calendar extends DataWrapper {
                     },
                     update: {
                         success: function (e) {
-                            UTILS.LOG(GL.CONST.LOG.LEVEL.INFO, GL.CONST.LOG.ID.B001.TITLE, e.detail.data.msg);
                             const D = e.detail.data;
-                            D.status && this.upd(new Guest(D.old), new Guest(D.new));
+                            UTILS.LOG(GL.CONST.LOG.LEVEL.INFO, GL.CONST.LOG.ID.B001.TITLE, D.msg);
+                            let oldEntries = [], newEntries = [];
+                            try {
+                                D.old.forEach(el => { oldEntries.push(new Guest(el)); });
+                                D.new.forEach(el => { newEntries.push(new Guest(el)); });
+                            } catch (err) {
+                                UTILS.LOG(GL.CONST.LOG.LEVEL.ERROR, GL.CONST.LOG.ID.B000, err.message);
+                                return;
+                            }
+                            D.status && this.upd(oldEntries, newEntries);
                         },
                         error: function (e) { UTILS.LOG(GL.CONST.LOG.LEVEL.ERROR, GL.CONST.LOG.ID.B001.TITLE, e.detail.data.xhr); }
                     },
@@ -732,7 +745,7 @@ class Calendar extends DataWrapper {
                         success: function (e) {
                             UTILS.LOG(GL.CONST.LOG.LEVEL.INFO, GL.CONST.LOG.ID.B001.TITLE, e.detail.data.msg);
                             const D = e.detail.data;
-                            this.guest = D.data;
+                            this.guest = D.guest;
                             D.status && this.del(this.guest);
                         },
                         error: function (e) { UTILS.LOG(GL.CONST.LOG.LEVEL.ERROR, GL.CONST.LOG.ID.B002.TITLE, e.detail.data.xhr); }
@@ -881,8 +894,8 @@ class Calendar extends DataWrapper {
         function setCellColor(guest) {
 
             const CLASS_LIST = GL.CONST.CSS.CALENDAR.CLASS;
-            let begda = new Date(guest.dbeg),
-                endda = new Date(guest.dend),
+            let begda = new Date(guest.Dbeg),
+                endda = new Date(guest.Dend),
                 curda = new Date(),
                 tmpda = begda;
 
@@ -892,7 +905,7 @@ class Calendar extends DataWrapper {
                     continue;
                 }
 
-                let cell = document.querySelector(`#calendar #R${guest.room} #R${guest.room}D${tmpda.format('yyyy-mm-dd')}`);
+                let cell = document.querySelector(`#calendar #R${guest.Room} #R${guest.Room}D${tmpda.format('yyyy-mm-dd')}`);
                 while (cell.hasChildNodes()) cell.removeChild(cell.firstChild);
 
                 // добавляем класс
@@ -903,11 +916,11 @@ class Calendar extends DataWrapper {
                     cell.classList.remove(CLASS_LIST.SELECTED);
                     (tmpda < curda) ? cell.classList.add(CLASS_LIST.REDEEMED) : cell.classList.add(CLASS_LIST.RESERVED);
                 }
-                cell.classList.add(`N${guest.unid}`);
+                cell.classList.add(`N${guest.Unid}`);
 
                 // добавляем подсказку  
                 let div = cell.getElementsByTagName('div'),
-                    hintText = `№${guest.unid} ${guest.name} с ${begda.format('dd.mm')} по ${endda.format('dd.mm')}`;
+                    hintText = `№${guest.Unid} ${guest.Name} с ${begda.format('dd.mm')} по ${endda.format('dd.mm')}`;
                 if (div.length === 0) {
                     let span = document.createElement('span');
                     span.setAttribute('class', 'hint-text');
@@ -934,9 +947,9 @@ class Calendar extends DataWrapper {
 
             let tree, days = new Date(self.year, self.month.num, 0).getDate();
             
-            if (!document.getElementById(`R${guest.room}-book`)) {
+            if (!document.getElementById(`R${guest.Room}-book`)) {
                 tree =
-                    [{ tag: 'tr', id: `R${guest.room}-book`, class: 'hidden book-row' },
+                    [{ tag: 'tr', id: `R${guest.Room}-book`, class: 'hidden book-row' },
                         [{ tag: 'td', colspan: (days + 1) },
                             [{ tag: 'table', class: 'book' },
                                 { tag: 'tbody' }
@@ -944,45 +957,45 @@ class Calendar extends DataWrapper {
                         ]
                     ];
                 tree = new DOMTree(tree).cultivate();
-                let tr = document.querySelector(`#calendar tbody tr#R${guest.room}`);
+                let tr = document.querySelector(`#calendar tbody tr#R${guest.Room}`);
                 tr.parentNode.insertBefore(tree, tr.nextSibling);
             }
 
             const P = GL.CONST.PREFIX.PERSON;
             tree =
-                [{ tag: 'tr', id: `N${guest.unid}`, class: 'person-row' },
-                    { tag: 'td', class: `${P.FIELD} ${P.CELL}-${IGuest.unid}`, textNode: guest.unid },
+                [{ tag: 'tr', id: `N${guest.Unid}`, class: 'person-row' },
+                    { tag: 'td', class: `${P.FIELD} ${P.CELL}-${IGuest.Unid}`, textNode: guest.Unid },
                     [{ tag: 'td' },
                         [{ tag: 'table', class: 'inner-book' },
                             [{ tag: 'tbody' },
                                 [{ tag: 'tr' },
                                     [{ tag: 'td', class: `${P.FIELD} person-base-info` },
-                                        { tag: 'a', class: `${P.FIELD} ${P.CELL}-${IGuest.name}`, textNode: guest.name },
-                                        { tag: 'a', class: `${P.FIELD} ${P.CELL}-${IGuest.teln}`, textNode: guest.teln },
+                                        { tag: 'a', class: `${P.FIELD} ${P.CELL}-${IGuest.Name}`, textNode: guest.Name },
+                                        { tag: 'a', class: `${P.FIELD} ${P.CELL}-${IGuest.Teln}`, textNode: guest.Teln },
                                     ],
-                                    { tag: 'td', class: `${P.FIELD} person-dates ${P.CELL}-${IGuest.dbeg}`, attr: { value: guest.dbeg }, textNode: new Date(guest.dbeg).format('dd.mm') },
-                                    { tag: 'td', class: `${P.FIELD} ${P.CELL}-${IGuest.room}`, rowspan: 2, textNode: guest.room },
-                                    { tag: 'td', class: `${P.FIELD} ${P.CELL}-${IGuest.cost}`, textNode: guest.cost },
+                                    { tag: 'td', class: `${P.FIELD} person-dates ${P.CELL}-${IGuest.Dbeg}`, attr: { value: guest.Dbeg }, textNode: new Date(guest.Dbeg).format('dd.mm') },
+                                    { tag: 'td', class: `${P.FIELD} ${P.CELL}-${IGuest.Room}`, rowspan: 2, textNode: guest.Room },
+                                    { tag: 'td', class: `${P.FIELD} ${P.CELL}-${IGuest.Cost}`, textNode: guest.Cost },
                                 ],
                                 [{ tag: 'tr' },
                                     [{ tag: 'td', class: `${P.FIELD} person-additional-info` },
-                                        { tag: 'a', class: `${P.FIELD} ${P.CELL}-${IGuest.city}`, textNode: guest.city },
-                                        { tag: 'a', class: `${P.FIELD} ${P.CELL}-${IGuest.fnot}`, textNode: guest.fnot },
+                                        { tag: 'a', class: `${P.FIELD} ${P.CELL}-${IGuest.City}`, textNode: guest.City },
+                                        { tag: 'a', class: `${P.FIELD} ${P.CELL}-${IGuest.Fnot}`, textNode: guest.Fnot },
                                     ],
-                                    { tag: 'td', class: `${P.FIELD} person-dates ${P.CELL}-${IGuest.dend}`, attr: { value: guest.dend }, textNode: new Date(guest.dend).format('dd.mm') },
-                                    { tag: 'td', class: `${P.FIELD} ${P.CELL}-${IGuest.paid}` , textNode: guest.paid },
+                                    { tag: 'td', class: `${P.FIELD} person-dates ${P.CELL}-${IGuest.Dend}`, attr: { value: guest.Dend }, textNode: new Date(guest.Dend).format('dd.mm') },
+                                    { tag: 'td', class: `${P.FIELD} ${P.CELL}-${IGuest.Paid}` , textNode: guest.Paid },
                                 ],
                                 [{ tag: 'tr', style: { display: 'none;'} },
-                                    { tag: 'td', class: `${P.FIELD} ${P.CELL}-${IGuest.days}`, textNode: guest.days },
-                                    { tag: 'td', class: `${P.FIELD} ${P.CELL}-${IGuest.base}`, textNode: guest.base },
-                                    { tag: 'td', class: `${P.FIELD} ${P.CELL}-${IGuest.adjs}`, textNode: guest.adjs }
+                                    { tag: 'td', class: `${P.FIELD} ${P.CELL}-${IGuest.Days}`, textNode: guest.Days },
+                                    { tag: 'td', class: `${P.FIELD} ${P.CELL}-${IGuest.Base}`, textNode: guest.Base },
+                                    { tag: 'td', class: `${P.FIELD} ${P.CELL}-${IGuest.Adjs}`, textNode: guest.Adjs }
                                 ]
                             ]
                         ]
                     ]
                 ];    
             tree = new DOMTree(tree).cultivate();
-            document.querySelector(`#R${guest.room}-book .book tbody`).appendChild(tree);
+            document.querySelector(`#R${guest.Room}-book .book tbody`).appendChild(tree);
         }
     }
 
@@ -997,7 +1010,7 @@ class Calendar extends DataWrapper {
         entries.forEach(guest => {
             //test
 
-            let test = document.getElementsByClassName(`N${guest.unid}`);
+            let test = document.getElementsByClassName(`N${guest.Unid}`);
             for (let el of test) {
                 
             }
@@ -1005,9 +1018,9 @@ class Calendar extends DataWrapper {
 
 
             const CLASS_LIST = GL.CONST.CSS.CALENDAR.CLASS;
-            let room = guest.room,
-                begda = new Date(guest.dbeg),
-                endda = new Date(guest.dend),
+            let room = guest.Room,
+                begda = new Date(guest.Dbeg),
+                endda = new Date(guest.Dend),
                 curda = new Date();
 
             while (begda <= endda) {
@@ -1017,9 +1030,9 @@ class Calendar extends DataWrapper {
                     begda.setDate(begda.getDate() + 1);
                     continue;
                 }
-                td.classList.remove(`N${guest.unid}`);
-                td.classList.remove(`N${guest.unid}_${CLASS_LIST.VIEW_FIX}`);
-                td.classList.remove(`N${guest.unid}_${CLASS_LIST.VIEW}`);
+                td.classList.remove(`N${guest.Unid}`);
+                td.classList.remove(`N${guest.Unid}_${CLASS_LIST.VIEW_FIX}`);
+                td.classList.remove(`N${guest.Unid}_${CLASS_LIST.VIEW}`);
                 if (td.classList.contains(CLASS_LIST.ADJACENT)) {
                     td.classList.remove(CLASS_LIST.ADJACENT);
                     if (begda < curda)  td.classList.add(CLASS_LIST.REDEEMED);
@@ -1032,10 +1045,10 @@ class Calendar extends DataWrapper {
                 begda.setDate(begda.getDate() + 1);
             }
 
-            let tr = document.querySelector(`.book > tbody > tr#N${guest.unid}`);
+            let tr = document.querySelector(`.book > tbody > tr#N${guest.Unid}`);
             tr.parentNode.removeChild(tr);
-            if (Calendar._isEmptyBook(guest.room)) {
-                tr = document.querySelector(`#calendar > tbody > tr#R${guest.room}-book`);
+            if (Calendar._isEmptyBook(guest.Room)) {
+                tr = document.querySelector(`#calendar > tbody > tr#R${guest.Room}-book`);
                 tr.parentNode.removeChild(tr);
             }
         });
@@ -1056,10 +1069,10 @@ class Calendar extends DataWrapper {
         function sort() {
 
             newEntries.forEach(guest => {
-                let tr = document.querySelectorAll(`#R${guest.room}-book > td > .book > tbody > tr`),
+                let tr = document.querySelectorAll(`#R${guest.Room}-book > td > .book > tbody > tr`),
                     pos = [];
                 for (let i = 0; i < tr.length; i++) {
-                    let id = tr[i].querySelector(`.${IGuest.unid}`) || "";
+                    let id = tr[i].querySelector(`.${IGuest.Unid}`) || "";
                     pos.push({
                         id: parseInt(id, 10),
                         pos: i
@@ -1070,8 +1083,8 @@ class Calendar extends DataWrapper {
 
                 for (let i = 0; i < (pos.length - 1); i++) {
                     if (pos[i].pos > pos[i + 1].pos) {
-                        let curRow = document.querySelector(`#R${guest.room}-book tr#N${pos[i].id}`),
-                        nextRow = document.querySelector(`#R${guest.room}-book tr#N${pos[i + 1].id}`);
+                        let curRow = document.querySelector(`#R${guest.Room}-book tr#N${pos[i].id}`),
+                        nextRow = document.querySelector(`#R${guest.Room}-book tr#N${pos[i + 1].id}`);
                         nextRow.parentNode.insertBefore(nextRow, curRow);
                     }
                 }
@@ -1091,11 +1104,17 @@ class Calendar extends DataWrapper {
 
         function free() {
 
-            let tbody = document.getElementById('calendar-tbody'),
-                daysRow = document.getElementById('calendar-row-days');
+            let calendar   = document.getElementById('calendar'),
+                labelYear  = calendar.querySelector('#year'),
+                labelMonth = calendar.querySelector('#month'),
+                tbody      = calendar.querySelector('#calendar-tbody'),
+                daysRow    = calendar.querySelector('#calendar-row-days');
             
             if (tbody) while (tbody.hasChildNodes()) tbody.removeChild(tbody.firstChild);
             if (daysRow) while (daysRow.hasChildNodes()) daysRow.removeChild(daysRow.firstChild);
+            
+            while (labelYear.firstChild) labelYear.removeChild(labelYear.firstChild);
+            while (labelMonth.firstChild) labelMonth.removeChild(labelMonth.firstChild);
         }
 
         function build() {
@@ -1104,12 +1123,9 @@ class Calendar extends DataWrapper {
 
             document.getElementById('calendar-row-buttons').getElementsByTagName('td')[0].setAttribute('colspan', DAYS);
 
-            let calendar = document.getElementById('calendar'),
-                labelYear = calendar.querySelector('#year'),
+            let calendar   = document.getElementById('calendar'),
+                labelYear  = calendar.querySelector('#year'),
                 labelMonth = calendar.querySelector('#month');
-            
-            while (labelYear.firstChild) labelYear.removeChild(labelYear.firstChild);
-            while (labelMonth.firstChild) labelMonth.removeChild(labelMonth.firstChild);
 
             labelYear.appendChild(document.createTextNode(self.year));
             labelMonth.appendChild(document.createTextNode(self.month.name));

@@ -32,7 +32,7 @@ class ConfirmDialog extends Dialog {
     
         this.cb.command.ok = function (e) {
             this.unbind();
-            this.opts.cb.ok({ intent: this.opts.intent, unid: this.opts.data.unid });
+            this.opts.cb.ok({ intent: this.opts.intent, guest: this.opts.data.guest });
         };
                 
         this.cb.command.no = function (e) {
@@ -137,13 +137,13 @@ class GuestCard extends Dialog {
                 const P = GL.CONST.PREFIX.GUEST_CARD;
 
                 let dialog = document.getElementById(`${P}-${self.id}`),
-                    dbeg = dialog.querySelector(`#${P}-el-${IGuest.dbeg} input`),
-                    dend = dialog.querySelector(`#${P}-el-${IGuest.dend} input`),
-                    days = dialog.querySelector(`#${P}-el-${IGuest.days} input`),
-                    room = dialog.querySelector(`#${P}-el-${IGuest.room} input`),
-                    base = dialog.querySelector(`#${P}-el-${IGuest.base} input`),
-                    adjs = dialog.querySelector(`#${P}-el-${IGuest.adjs} input`),
-                    cost = dialog.querySelector(`#${P}-el-${IGuest.cost} input`);
+                    dbeg = dialog.querySelector(`#${P}-el-${IGuest.Dbeg} input`),
+                    dend = dialog.querySelector(`#${P}-el-${IGuest.Dend} input`),
+                    days = dialog.querySelector(`#${P}-el-${IGuest.Days} input`),
+                    room = dialog.querySelector(`#${P}-el-${IGuest.Room} input`),
+                    base = dialog.querySelector(`#${P}-el-${IGuest.Base} input`),
+                    adjs = dialog.querySelector(`#${P}-el-${IGuest.Adjs} input`),
+                    cost = dialog.querySelector(`#${P}-el-${IGuest.Cost} input`);
 
                 let begda = dbeg.value.split('.'),
                     endda = dend.value.split('.');
@@ -182,8 +182,8 @@ class GuestCard extends Dialog {
                     const P = GL.CONST.PREFIX.GUEST_CARD;
 
                     let dialog = document.getElementById(`${P}-${this.id}`),
-                        dbeg = dialog.querySelector(`#${P}-el-${IGuest.dbeg} input`),
-                        dend = dialog.querySelector(`#${P}-el-${IGuest.dend} input`);
+                        dbeg = dialog.querySelector(`#${P}-el-${IGuest.Dbeg} input`),
+                        dend = dialog.querySelector(`#${P}-el-${IGuest.Dend} input`);
                     
                     if (!dbeg) {
                         UTILS.LOG(GL.CONST.LOG.LEVEL.ERROR, GL.CONST.LOG.ID.A001.TITLE, GL.CONST.LOG.ID.A001.GIST);
@@ -198,7 +198,7 @@ class GuestCard extends Dialog {
                     let firstDay = buildDate(this.opts.year, dbeg.value).getTime(),
                         lastDay = buildDate(this.opts.year, dend.value).getTime(),
                         oneDay = GL.CONST.VALUES.UTILS.ONE_DAY;
-                    dialog.querySelector(`#${P}-el-${IGuest.days} input`).value = ((lastDay - firstDay) / oneDay) + 1;
+                    dialog.querySelector(`#${P}-el-${IGuest.Days} input`).value = ((lastDay - firstDay) / oneDay) + 1;
                     
                     e.preventDefault();
 
@@ -217,7 +217,7 @@ class GuestCard extends Dialog {
 
                     let dialog = document.getElementById(`${P}-${this.id}`),
                         room = this.opts.rooms.filter(function (el) { return el.room == e.target.value; }),
-                        baseline = dialog.querySelector(`#${P}-el-${IGuest.base} input`);
+                        baseline = dialog.querySelector(`#${P}-el-${IGuest.Base} input`);
                     
                     baseline.value = room.length !== 0 ? room[0].price : 0;
                     baseline.dispatchEvent(new Event('change'));
@@ -302,11 +302,11 @@ class GuestCard extends Dialog {
                             { tag: 'input', type: 'text', readonly: true },
                             { tag: 'label', textNode: `${O.intent}` }
                         ],
-                        [{ tag: 'div', id: `${P}-el-${IGuest.unid}`, class: `${P}-el output`, style: { display: 'none;' } },
+                        [{ tag: 'div', id: `${P}-el-${IGuest.Unid}`, class: `${P}-el output`, style: { display: 'none;' } },
                             { tag: 'input', type: 'text', readonly: true },
                             { tag: 'label', textNode: `${T.UNID}` }
                         ],
-                        [{ tag: 'div', id: `${P}-el-${IGuest.dbeg}`, class: `${P}-el input` },
+                        [{ tag: 'div', id: `${P}-el-${IGuest.Dbeg}`, class: `${P}-el input` },
                             {
                                 tag: 'input', type: 'text', readonly: O.isReadOnly, required: O.isStrict ,
                                 events: [
@@ -317,7 +317,7 @@ class GuestCard extends Dialog {
                             },
                             { tag: 'label', textNode: `${T.DBEG}` }
                         ],
-                        [{ tag: 'div', id: `${P}-el-${IGuest.dend}`, class: `${P}-el input` },
+                        [{ tag: 'div', id: `${P}-el-${IGuest.Dend}`, class: `${P}-el input` },
                             {
                                 tag: 'input', type: 'text', readonly: O.isReadOnly, required: O.isStrict,
                                 events: [
@@ -328,7 +328,7 @@ class GuestCard extends Dialog {
                             },
                             { tag: 'label', textNode: `${T.DEND}` }
                         ],
-                        [{ tag: 'div', id: `${P}-el-${IGuest.days}`, class: `${P}-el output` },
+                        [{ tag: 'div', id: `${P}-el-${IGuest.Days}`, class: `${P}-el output` },
                             {
                                 tag: 'input', type: 'text',
                                 events: [
@@ -339,7 +339,7 @@ class GuestCard extends Dialog {
                             },
                             { tag: 'label', textNode: `${T.DAYS}` }
                         ],
-                        [{ tag: 'div', id: `${P}-el-${IGuest.room}`, class: `${P}-el output` },
+                        [{ tag: 'div', id: `${P}-el-${IGuest.Room}`, class: `${P}-el output` },
                             {
                                 tag: 'input', type: 'text',
                                 events: [
@@ -352,7 +352,7 @@ class GuestCard extends Dialog {
                             { tag: 'label', textNode: `${T.ROOM}` },
                             { tag: 'div', id: 'rooms-drop-down-list', events: [{ name: 'click', fn: this.cb.control.rddl.click }] }
                         ],
-                        [{ tag: 'div', id: `${P}-el-${IGuest.base}`, class: `${P}-el output` },
+                        [{ tag: 'div', id: `${P}-el-${IGuest.Base}`, class: `${P}-el output` },
                             {
                                 tag: 'input', type: 'text',
                                 events: [
@@ -363,7 +363,7 @@ class GuestCard extends Dialog {
                             },
                             { tag: 'label', textNode: `${T.BASE}` }
                         ],
-                        [{ tag: 'div', id: `${P}-el-${IGuest.adjs}`, class: `${P}-el input` },
+                        [{ tag: 'div', id: `${P}-el-${IGuest.Adjs}`, class: `${P}-el input` },
                             {
                                 tag: 'input', type: 'text', readonly: O.isReadOnly,
                                 events: [
@@ -374,7 +374,7 @@ class GuestCard extends Dialog {
                             },
                             { tag: 'label', textNode: `${T.ADJS}` }
                         ],
-                        [{ tag: 'div', id: `${P}-el-${IGuest.cost}`, class: `${P}-el output` },
+                        [{ tag: 'div', id: `${P}-el-${IGuest.Cost}`, class: `${P}-el output` },
                             {
                                 tag: 'input', type: 'text',
                                 events: [
@@ -385,7 +385,7 @@ class GuestCard extends Dialog {
                             },
                             { tag: 'label', textNode: `${T.COST}` }
                         ],
-                        [{ tag: 'div', id: `${P}-el-${IGuest.paid}`, class: `${P}-el input` },
+                        [{ tag: 'div', id: `${P}-el-${IGuest.Paid}`, class: `${P}-el input` },
                             {
                                 tag: 'input', type: 'text', readonly: O.isReadOnly, required: O.isStrict,
                                 events: [
@@ -395,15 +395,15 @@ class GuestCard extends Dialog {
                             },
                             { tag: 'label', textNode: `${T.PAID}` }
                         ],
-                        [{ tag: 'div', id: `${P}-el-${IGuest.name}`, class: `${P}-el input` },
+                        [{ tag: 'div', id: `${P}-el-${IGuest.Name}`, class: `${P}-el input` },
                             { tag: 'input', type: 'text', readonly: O.isReadOnly, required: O.isStrict },
                             { tag: 'label', textNode: `${T.NAME}` }
                         ],
-                        [{ tag: 'div', id: `${P}-el-${IGuest.city}`, class: `${P}-el input` },
+                        [{ tag: 'div', id: `${P}-el-${IGuest.City}`, class: `${P}-el input` },
                             { tag: 'input', type: 'text', readonly: O.isReadOnly, required: O.isStrict },
                             { tag: 'label', textNode: `${T.CITY}` }
                         ],
-                        [{ tag: 'div', id: `${P}-el-${IGuest.teln}`, class: `${P}-el input` },
+                        [{ tag: 'div', id: `${P}-el-${IGuest.Teln}`, class: `${P}-el input` },
                             {
                                 tag: 'input', type: 'text', readonly: O.isReadOnly,
                                 events: [
@@ -413,7 +413,7 @@ class GuestCard extends Dialog {
                             },
                             { tag: 'label', textNode: `${T.TELN}` }
                         ],
-                        [{ tag: 'div', id: `${P}-el-${IGuest.fnot}`, class: `${P}-el input` },
+                        [{ tag: 'div', id: `${P}-el-${IGuest.Fnot}`, class: `${P}-el input` },
                             { tag: 'input', type: 'text', readonly: O.isReadOnly },
                             { tag: 'label', textNode: `${T.FNOT}` }
                         ],
@@ -458,44 +458,44 @@ class GuestCard extends Dialog {
         const P = GL.CONST.PREFIX.GUEST_CARD;
         let dialog = document.getElementById(`${P}-${this.id}`);
         dialog.querySelector(`#${P}-el-intent input`).value = this.opts.intent;
-        dialog.querySelector(`#${P}-el-${IGuest.unid} input`).value = guest.unid;
-        dialog.querySelector(`#${P}-el-${IGuest.dbeg} input`).value = new Date(guest.dbeg).format('dd.mm');
-        dialog.querySelector(`#${P}-el-${IGuest.dend} input`).value = new Date(guest.dend).format('dd.mm');
-        dialog.querySelector(`#${P}-el-${IGuest.room} input`).value = guest.room;
-        dialog.querySelector(`#${P}-el-${IGuest.base} input`).value = guest.base;
-        dialog.querySelector(`#${P}-el-${IGuest.adjs} input`).value = guest.adjs;
-        dialog.querySelector(`#${P}-el-${IGuest.cost} input`).value = guest.cost;
-        dialog.querySelector(`#${P}-el-${IGuest.paid} input`).value = guest.paid;
-        dialog.querySelector(`#${P}-el-${IGuest.name} input`).value = guest.name;
-        dialog.querySelector(`#${P}-el-${IGuest.city} input`).value = guest.city;
-        dialog.querySelector(`#${P}-el-${IGuest.teln} input`).value = guest.teln;
-        dialog.querySelector(`#${P}-el-${IGuest.fnot} input`).value = guest.fnot;
+        dialog.querySelector(`#${P}-el-${IGuest.Unid} input`).value = guest.Unid;
+        dialog.querySelector(`#${P}-el-${IGuest.Dbeg} input`).value = new Date(guest.Dbeg).format('dd.mm');
+        dialog.querySelector(`#${P}-el-${IGuest.Dend} input`).value = new Date(guest.Dend).format('dd.mm');
+        dialog.querySelector(`#${P}-el-${IGuest.Room} input`).value = guest.Room;
+        dialog.querySelector(`#${P}-el-${IGuest.Base} input`).value = guest.Base;
+        dialog.querySelector(`#${P}-el-${IGuest.Adjs} input`).value = guest.Adjs;
+        dialog.querySelector(`#${P}-el-${IGuest.Cost} input`).value = guest.Cost;
+        dialog.querySelector(`#${P}-el-${IGuest.Paid} input`).value = guest.Paid;
+        dialog.querySelector(`#${P}-el-${IGuest.Name} input`).value = guest.Name;
+        dialog.querySelector(`#${P}-el-${IGuest.City} input`).value = guest.City;
+        dialog.querySelector(`#${P}-el-${IGuest.Teln} input`).value = guest.Teln;
+        dialog.querySelector(`#${P}-el-${IGuest.Fnot} input`).value = guest.Fnot;
 
-        document.querySelector(`#${P}-el-${IGuest.dbeg} input`).dispatchEvent(new Event('change'));
-        document.querySelector(`#${P}-el-${IGuest.days} input`).dispatchEvent(new Event('change'));
-        document.querySelector(`#${P}-el-${IGuest.room} input`).dispatchEvent(new Event('change'));
+        document.querySelector(`#${P}-el-${IGuest.Dbeg} input`).dispatchEvent(new Event('change'));
+        document.querySelector(`#${P}-el-${IGuest.Days} input`).dispatchEvent(new Event('change'));
+        document.querySelector(`#${P}-el-${IGuest.Room} input`).dispatchEvent(new Event('change'));
     }
 
     getVal() {
         const P = GL.CONST.PREFIX.GUEST_CARD;
         let dialog = document.getElementById(`${GL.CONST.PREFIX.GUEST_CARD}-${this.id}`);
         let guest = new Guest();
-        guest.year = this.opts.year;
-        guest.mnth = this.opts.month;
-        guest.intn = this.opts.intent;
-        guest.unid = dialog.querySelector(`#${P}-el-${IGuest.unid} input`).value;
-        guest.dbeg = dialog.querySelector(`#${P}-el-${IGuest.dbeg} input`).value;
-        guest.dend = dialog.querySelector(`#${P}-el-${IGuest.dend} input`).value;
-        guest.days = dialog.querySelector(`#${P}-el-${IGuest.days} input`).value;
-        guest.room = dialog.querySelector(`#${P}-el-${IGuest.room} input`).value;
-        guest.base = dialog.querySelector(`#${P}-el-${IGuest.base} input`).value;
-        guest.adjs = dialog.querySelector(`#${P}-el-${IGuest.adjs} input`).value;
-        guest.cost = dialog.querySelector(`#${P}-el-${IGuest.cost} input`).value;
-        guest.paid = dialog.querySelector(`#${P}-el-${IGuest.paid} input`).value;
-        guest.name = dialog.querySelector(`#${P}-el-${IGuest.name} input`).value;
-        guest.city = dialog.querySelector(`#${P}-el-${IGuest.city} input`).value;
-        guest.teln = dialog.querySelector(`#${P}-el-${IGuest.teln} input`).value;
-        guest.fnot = dialog.querySelector(`#${P}-el-${IGuest.fnot} input`).value;
+        guest.Year = this.opts.year;
+        guest.Mnth = this.opts.month;
+        guest.Intn = this.opts.intent;
+        guest.Unid = dialog.querySelector(`#${P}-el-${IGuest.Unid} input`).value;
+        guest.Dbeg = dialog.querySelector(`#${P}-el-${IGuest.Dbeg} input`).value;
+        guest.Dend = dialog.querySelector(`#${P}-el-${IGuest.Dend} input`).value;
+        guest.Days = dialog.querySelector(`#${P}-el-${IGuest.Days} input`).value;
+        guest.Room = dialog.querySelector(`#${P}-el-${IGuest.Room} input`).value;
+        guest.Base = dialog.querySelector(`#${P}-el-${IGuest.Base} input`).value;
+        guest.Adjs = dialog.querySelector(`#${P}-el-${IGuest.Adjs} input`).value;
+        guest.Cost = dialog.querySelector(`#${P}-el-${IGuest.Cost} input`).value;
+        guest.Paid = dialog.querySelector(`#${P}-el-${IGuest.Paid} input`).value;
+        guest.Name = dialog.querySelector(`#${P}-el-${IGuest.Name} input`).value;
+        guest.City = dialog.querySelector(`#${P}-el-${IGuest.City} input`).value;
+        guest.Teln = dialog.querySelector(`#${P}-el-${IGuest.Teln} input`).value;
+        guest.Fnot = dialog.querySelector(`#${P}-el-${IGuest.Fnot} input`).value;
         return guest;
     }
 }

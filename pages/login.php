@@ -1,16 +1,7 @@
 <?php
-    #
-    #
-    #
-    $host      = $_SERVER['HTTP_HOST'];
-    $uri       = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
-    $mainPage  = 'Location: http://' . $host . $uri . '/pages/main.php';
-    #
-    # 
-    #
-    include $_SERVER['DOCUMENT_ROOT'] . '/db/utils.php';
+    require $_SERVER['DOCUMENT_ROOT'] . '/utils.php';
     if (isAuthorized()) {
-        header($mainPage);
+        header('Location: ../pages/main.php');
         die();
     }
 ?>

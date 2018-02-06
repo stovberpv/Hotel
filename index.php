@@ -70,7 +70,7 @@
     #
     # the next one we check an active session
     #
-    include $_SERVER['DOCUMENT_ROOT'] . '/db/utils.php';
+    require 'utils.php';
     if (isAuthorized()) {
         header($mainPage);
         die();

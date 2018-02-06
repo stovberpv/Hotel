@@ -10,7 +10,7 @@
     #---------------------------------------------------------------------------------
     # 
     #---------------------------------------------------------------------------------
-    require $_SERVER['DOCUMENT_ROOT'] . '/db/utils.php';
+    require $_SERVER['DOCUMENT_ROOT'] . '/utils.php';
     #---------------------------------------------------------------------------------
     # check autorization
     #---------------------------------------------------------------------------------
@@ -25,54 +25,38 @@
     # 
     #---------------------------------------------------------------------------------
     // FIX isset = false!
-    isset($_GET['data']["year"]) ? $year = $_GET['data']["year"] : $year = "";
-    isset($_GET['data']["mnth"]) ? $mnth = $_GET['data']["mnth"] : $mnth = "";
-    isset($_GET['data']["dbeg"]) ? $dbeg = $_GET['data']["dbeg"] : $dbeg = "";
-    isset($_GET['data']["dend"]) ? $dend = $_GET['data']["dend"] : $dend = "";
-    isset($_GET['data']["days"]) ? $days = $_GET['data']["days"] : $days = "";
-    isset($_GET['data']["room"]) ? $room = $_GET['data']["room"] : $room = "";
-    isset($_GET['data']["base"]) ? $base = $_GET['data']["base"] : $base = "";
-    isset($_GET['data']["adjs"]) ? $adjs = $_GET['data']["adjs"] : $adjs = "";
-    isset($_GET['data']["cost"]) ? $cost = $_GET['data']["cost"] : $cost = "";
-    isset($_GET['data']["paid"]) ? $paid = $_GET['data']["paid"] : $paid = "";
-    isset($_GET['data']["name"]) ? $name = $_GET['data']["name"] : $name = "";
-    isset($_GET['data']["teln"]) ? $teln = $_GET['data']["teln"] : $teln = "";
-    isset($_GET['data']["fnot"]) ? $fnot = $_GET['data']["fnot"] : $fnot = "";
-    isset($_GET['data']["city"]) ? $city = $_GET['data']["city"] : $city = "";
+    $year = isset($_GET["year"]) ? $_GET["year"] : "";
+    $mnth = isset($_GET["mnth"]) ? $_GET["mnth"] : "";
+    $dbeg = isset($_GET["dbeg"]) ? $_GET["dbeg"] : "";
+    $dend = isset($_GET["dend"]) ? $_GET["dend"] : "";
+    $days = isset($_GET["days"]) ? $_GET["days"] : "";
+    $room = isset($_GET["room"]) ? $_GET["room"] : "";
+    $base = isset($_GET["base"]) ? $_GET["base"] : "";
+    $adjs = isset($_GET["adjs"]) ? $_GET["adjs"] : "";
+    $cost = isset($_GET["cost"]) ? $_GET["cost"] : "";
+    $paid = isset($_GET["paid"]) ? $_GET["paid"] : "";
+    $name = isset($_GET["name"]) ? $_GET["name"] : "";
+    $teln = isset($_GET["teln"]) ? $_GET["teln"] : "";
+    $fnot = isset($_GET["fnot"]) ? $_GET["fnot"] : "";
+    $city = isset($_GET["city"]) ? $_GET["city"] : "";
     #---------------------------------------------------------------------------------
     # 
     #---------------------------------------------------------------------------------
     $begda = "";
     if(strpos($dbeg, ".")) {
-        $date = explode(".", $dbeg);
-        $m = $date[1];
-        $d = $date[0];
-        if(checkdate($m, $d, (float)$year)) {
-            $begda = $year . "-" . $m . "-" . $d;
-        } else {
-            die(err2echo(22, 'Обновление гостя ', $mysqli));
-        }
-    } else {
-        $begda = $year . "-" . $mnth . "-" . $dbeg;
-    }
+        $date = explode(".", $dbeg); $m = $date[1]; $d = $date[0];
+        if(checkdate($m, $d, (float)$year)) { $begda = $year . "-" . $m . "-" . $d; }
+        else { die(err2echo(22, 'Обновление гостя ', $mysqli)); }
+    } else { $begda = $year . "-" . $mnth . "-" . $dbeg; }
     #
     $endda = "";
     if(strpos($dend, ".")) {
-        $date = explode(".", $dend);
-        $m = $date[1];
-        $d = $date[0];
-        if(checkdate($m, $d, $year + 0)) {
-            $endda = $year . "-" . $m . "-" . $d;
-        } else {
-            die(err2echo(21, 'Обновление гостя', $mysqli));
-        }
-    } else {
-        $endda = $year . "-" . $mnth . "-" . $dend;
-    }
+        $date = explode(".", $dend); $m = $date[1]; $d = $date[0];
+        if(checkdate($m, $d, $year + 0)) { $endda = $year . "-" . $m . "-" . $d; }
+        else { die(err2echo(21, 'Обновление гостя', $mysqli)); }
+    } else { $endda = $year . "-" . $mnth . "-" . $dend; }
     #
-    if (strtotime($begda) > strtotime($endda)) {
-        die(err2echo(26, 'Добавление гостя', $mysqli));
-    }
+    if (strtotime($begda) > strtotime($endda)) { die(err2echo(26, 'Добавление гостя', $mysqli)); }
     #
     // $timestamp = date('Y-m-d H:i:s');
     #---------------------------------------------------------------------------------
@@ -83,38 +67,39 @@
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     #
     !($stmt = $mysqli->prepare($query)) && die(err2echo(10, 'Добавление гостя', $mysqli));
-    !($stmt->bind_param('ssiiddddsssss', 
-                                        $dbeg, 
-                                        $dend, 
-                                        $days, 
-                                        $room, 
-                                        $base, 
-                                        $adjs, 
-                                        $cost, 
-                                        $paid, 
-                                        $name, 
-                                        $teln, 
-                                        $fnot, 
-                                        $city, 
+    !($stmt->bind_param('ssiiddddsssss',
+                                        $begda,
+                                        $endda,
+                                        $days,
+                                        $room,
+                                        $base,
+                                        $adjs,
+                                        $cost,
+                                        $paid,
+                                        $name,
+                                        $teln,
+                                        $fnot,
+                                        $city,
                                         $user)
     ) && die(err2echo(11, 'Добавление гостя', $mysqli));
     !($stmt->execute()) && die(err2echo(12, 'Добавление гостя', $mysqli));
     #
-    $data['data']['year'] = $year;
-    $data['data']['mnth'] = $mnth;
-    $data['data']['unid'] = mysqli_insert_id($mysqli);
-    $data['data']['dbeg'] = $dbeg;
-    $data['data']['dend'] = $dend;
-    $data['data']['days'] = $days;
-    $data['data']['room'] = $room;
-    $data['data']['base'] = $base;
-    $data['data']['adjs'] = $adjs;
-    $data['data']['cost'] = $cost;
-    $data['data']['paid'] = $paid;
-    $data['data']['name'] = $name;
-    $data['data']['teln'] = $teln;
-    $data['data']['fnot'] = $fnot;
-    $data['data']['city'] = $city;
+    // TODO replace for select
+    $data['guest']['year'] = $year;
+    $data['guest']['mnth'] = $mnth;
+    $data['guest']['unid'] = mysqli_insert_id($mysqli);
+    $data['guest']['dbeg'] = $begda;
+    $data['guest']['dend'] = $endda;
+    $data['guest']['days'] = $days;
+    $data['guest']['room'] = $room;
+    $data['guest']['base'] = $base;
+    $data['guest']['adjs'] = $adjs;
+    $data['guest']['cost'] = $cost;
+    $data['guest']['paid'] = $paid;
+    $data['guest']['name'] = $name;
+    $data['guest']['teln'] = $teln;
+    $data['guest']['fnot'] = $fnot;
+    $data['guest']['city'] = $city;
     #
     $stmt->free_result();
     $stmt->close();
