@@ -91,6 +91,10 @@ const UTILS = {
             minute: minute,
             seconds: seconds
         };
+    },
+
+    IS_DOM(obj) {
+        return !!(obj && obj.nodeType === 1);
     }
 };
 

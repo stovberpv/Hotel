@@ -8,28 +8,19 @@ const GL = {
         CSS: {
 
             CORE: {
+
                 CLASS: {
+
                     NAV_EL_SEL: 'nav-el-sel',
                     VC_DW_SHOW: 'vc-data-wrapper-show',
                 }
-            },
-    
-            CALENDAR: {
-                CLASS: {
-                    SELECTED: "selected", //выделен
-                    RESERVED: "reserved", //зарезервирован
-                    ADJACENT: "adjacent", //смежный
-                    REDEEMED: "redeemed", //выкупленный
-                    VIEW_FIX: "view-fix", // выделен
-                    VIEW: "view", //предпросмотр
-                }
-            },
+            }
         },
 
         EVENTS: {
 
             CORE: {
-    
+
                 LEFT_CLICK: 'leftClick',
             },
     
@@ -127,7 +118,6 @@ const GL = {
         },
 
         PREFIX: {
-            SELECTION_GROUP: 'sel-group',
             CONFIRM_DIALOG: 'confirm-dialog',
             PICK_PERIOD: 'pick-period',
             GUEST_CARD: 'guest-card',
@@ -148,7 +138,7 @@ const GL = {
                 A000: { TITLE: 'Invalid function call', GIST: 'Invalid function call' },
                 A001: { TITLE: 'Error while obtaining data', GIST: '' },
                 A002: { TITLE: 'No Id', GIST: '' },
-                A003: { TITLE: 'Data was updated', GIST: '' },
+                A003: { TITLE: 'Fields was updated', GIST: '' },
                 B000: { TITLE: 'General fault', GIST: 'General fault' },
                 B001: { TITLE: 'DB successful response', GIST: 'Data was processed' },
                 B002: { TITLE: 'DB error response', GIST: 'Error has occurred' },
@@ -197,6 +187,7 @@ const GL = {
     DATA: {
 
         CORE: {
+            
             isMouseDown: false,
         }
     }

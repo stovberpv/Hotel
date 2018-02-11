@@ -2,6 +2,16 @@
 /*jshint -W030 */
 /*jshint -W040 */
 /*jshint -W083 */
+
+/*
+     TODO 
+    1. ID гостя вынести из классов в атрибут data-*
+    2. переделать логику ПКМ
+    3. переделать класс VIEW & VIEW_FIX на атрибут data-vaie: fix/hov
+
+
+*/
+
 (function () { "use strict"; })();
 
 /**
@@ -10,54 +20,75 @@
  */
 class SelectionGroup {
 
-    constructor() { this.classId = undefined; }
+    constructor() {
+        this.prefix = 'selection-group';
+        this.attr = 'data-selection-group';
+        this.unid = undefined;
+    }
     
     /**
      * Очистка ID текущего обрабатываемого класса
+     * @static
+     * @return {void}@memberof SelectionGroup
      */
-    static free() { this.classId = undefined; }
+    static free() { this.unid = undefined; }
 
     /**
      * Формирование ID нового класса
+     * @static
+     * @return {void}@memberof SelectionGroup
      */
-    static gen() { this.classId = `${GL.CONST.PREFIX.SELECTION_GROUP}-${Math.ceil(Math.random() * 100000)}`; }
+    static gen() {
+        this.unid = Math.ceil(Math.random() * 100000);
+    }
 
     /**
      * Добавление класса к объекту.
      * Если ID класса не сформирован то перед добавление будет вызван метод формирующий ID класса
+     * @static
+     * @param  {any} target 
+     * @return {void}@memberof SelectionGroup
      */
     static add(target) {
 
-        !this.classId && this.gen();
-        target.classList.add(this.classId);
-        this.enum(this.classId);
+        !this.unid && this.gen();
+        target.setAttribute(this.attr, this.unid);
+        this.enum(this.unid);
     }
 
     /**
      * Поиск ID класса присвоенного объекту с последующим удалением и пересчетом оставшихся элементов 
      * которым присвоей этот ID
+     * @static
+     * @param  {any} target 
+     * @return {void}@memberof SelectionGroup
      */
     static del(target) {
 
-        let classId = target.className.split(' ').filter(function (el) { return el.match(/\bsel-group-\d+/); }).toString();
-        let group = document.getElementsByClassName(classId);
+        let unid = target.target.getAttribute(this.attr);
+        let group = document.querySelectorAll(`[${this.attr}='${unid}']`);
         for (let i = group.length; i > 0; i--) {
             let el = group[0];
             while (el.hasChildNodes()) el.removeChild(el.firstChild);
-            el.classList.remove(GL.CONST.CSS.CALENDAR.CLASS.SELECTED);
-            el.classList.remove(classId);
+            // el.classList.remove(GL.CONST.CSS.CALENDAR.CLASS.SELECTED); // FIX перенести логику удаления выделения в календарь
+            el.removeAttribute(this.attr);
             if (el.id == target.id) break; 
         }
-        this.enum(classId);
+        this.enum(unid);
     }
 
     /**
      * Пересчет кол-ва объектов класса по ID класса 
+     * @static
+     * @param  {any} unid 
+     * @return {void}@memberof SelectionGroup
      */
-    static enum(classId) {
+    static enum(unid) {
 
         let i = 1;
-        for (let el of document.getElementsByClassName(classId)) {
+        let group = document.querySelectorAll(`[${this.attr}='${unid}']`);
+        for (let j = group.length; j > 0; j--) {
+            let el = group[0];
             while (el.hasChildNodes()) el.removeChild(el.firstChild);
             el.textContent = (i++);
         }
@@ -162,12 +193,29 @@ class Calendar extends DataWrapper {
         this._rooms = [];
         this._isSelected = false;
 
-        this._intent = {
+        this._intent = { // TODO как-нибудь передлать это гавно
             add: { key: 'add', txt: 'Добавить' },
             upd: { key: 'upd', txt: 'Изменить' },
             del: { key: 'del', txt: 'Удалить' },
             ext: { key: 'ext', txt: '' },
             pickPeriod: 'pick-period'
+        };
+
+        this._dataAttr = {
+            view: {
+                name: 'data-view',
+                keys: {
+                    fixed: 'fixex',
+                    hovered: 'hovered'
+                }
+            },
+            status: {
+                name: 'data-day-status',
+                selected: "selected", // выделен
+                reserved: "reserved", // зарезервирован
+                adjacent: "adjacent", // смежный
+                redeemed: "redeemed", // выкупленный
+            }
         };
 
         this.cb = {
@@ -205,12 +253,11 @@ class Calendar extends DataWrapper {
                     },
         
                     del: function RCMItemDelGuest(e) {
-                        // FIX unid must be without 'N'-prefix 
-                        let unid = e.detail.data.unid.match(/\d+/)[0];
+
                         let confirmDialog = new ConfirmDialog({
                             intent: this.intent.del.key,
                             title: this.intent.del.txt,
-                            text: UTILS.FORMAT(GL.CONST.LOCALIZABLE.MSG001, {1:unid}),
+                            text: UTILS.FORMAT(GL.CONST.LOCALIZABLE.MSG001, { 1: e.detail.data.unid }),
                             data: { guest: e.detail.data },
                             cb: { ok: function (data) { EVENT_BUS.dispatch(GL.CONST.EVENTS.CALENDAR.DIALOG_SAVE, data); } }
                         });
@@ -222,14 +269,10 @@ class Calendar extends DataWrapper {
         
                         const I = this.intent.upd;
                         const E = GL.CONST.EVENTS.CALENDAR.DB.GL001.SELECT.SUCCESS;
+                        let self = this;
 
-                        let self = this,
-                            regExp = /\d+/,
-                            unid = e.detail.data.unid;
-                        
-                        unid = regExp.test(unid) ? unid.match(/\d+/)[0] : -1;
                         EVENT_BUS.register(`${E}${I.key}`, showGuestCard, true);
-                        DB.GL001.SELECT({ unid: unid }, I.key);
+                        DB.GL001.SELECT({ unid: e.detail.data.unid }, I.key);
 
                         function showGuestCard(e) {
                             let guest;
@@ -262,11 +305,10 @@ class Calendar extends DataWrapper {
 
                     mouseDown: function mousedown(e) {
 
-                        const CLASS = GL.CONST.CSS.CALENDAR.CLASS;
-                        const TARGET = e.target;
-
                         let self = this,
-                            guest = new Guest(),
+                            target = e.target;
+                        
+                        let guest = new Guest(),
                             isAvailableButton;
 
                         switch (e.which) {
@@ -282,25 +324,60 @@ class Calendar extends DataWrapper {
 
                         function toggleSelection() {
                             GL.DATA.CORE.isMouseDown = true;
-                            (TARGET.classList.length === 0 || TARGET.classList.contains(CLASS.SELECTED)) && TARGET.classList.toggle(CLASS.SELECTED);
-                            self.isSelected = TARGET.classList.contains(CLASS.SELECTED);
-                            SelectionGroup.del(TARGET);
+                            (target.classList.length === 0 || target.classList.contains(self.css.selected)) && target.classList.toggle(self.css.selected);
+                            self.isSelected = target.classList.contains(self.css.selected);
+                            SelectionGroup.del(target);
                             self.isSelected ? SelectionGroup.add(e.target) : SelectionGroup.free();
                         }
 
                         function toggleView() {
-                            let ids = TARGET.className.split(' ').filter(function (el) { return el.match(/^N\d+$/g); });
+                            let ids = self._getElementInfo(target).class.unid;
                             for (let i = 0; i < ids.length; i++) {
                                 document.querySelectorAll(`#calendar > tbody > tr > td.${ids[i]}`).forEach(function (el) {
-                                    el.classList.toggle(`${ids[i]}-${CLASS.VIEW_FIX}`);
-                                    el.classList.toggle(`${ids[i]}-${CLASS.VIEW}`);
+                                    let view = el.getAttribute('data-view');
+                                    (view == 'hov') ? el.setAttribute('data-view', 'fix') : ;
+                                    el.hasAttribute() ? : ;
+                                    el.classList.toggle(`${ids[i]}-${self.css.viewFix}`);
+                                    el.classList.toggle(`${ids[i]}-${self.css.view}`);
                                 });
 
                                 let bookRow = document.querySelector(`.book > tbody > tr#${ids[i]}`);
-                                bookRow.classList.toggle(CLASS.VIEW_FIX);
-                                bookRow.classList.toggle(CLASS.VIEW);
+                                bookRow.classList.toggle(self.css.viewFix);
+                                bookRow.classList.toggle(self.css.view);
                             }
                         }
+
+                        /*
+                        //test begin
+                        function rightMouse() {
+                        yield
+                            1. get: id / selection-group
+                                if id && selgroup <> "" => error + close
+                                if id && selgroup == "" => error + error
+                                id || selgroup <> "" => ok
+                                    data1 = get room + day + month + year
+
+                            2. fetch db <= data1
+                                if result err => error + close
+                                if result ok => ok
+                                    if data2 == "" => data3 = add
+                                    if data2 <> "" => update calendar => data3 = del + upd
+
+                            3. show guest card / del popup <= (data1 | data2) + data3
+                                if close = > close
+                                if save => ok
+
+                            4. update db <= (data1 | data2)
+                                if result err => error + close
+                                if result ok => ok
+                                    if data4 == "" => error + close
+                                    if data4 <> "" => ok
+
+                            5. update calendar <= data4     
+                            6.close
+                        }
+                        //test end
+                        */
 
                         function rightMouse() {
                             if (!getCalendarEntry()) return;
@@ -313,10 +390,10 @@ class Calendar extends DataWrapper {
 
                             let result;
                             
-                            if (TARGET.classList.contains(CLASS.SELECTED)) {
+                            if (target.classList.contains(self.css.selected)) {
                                 isAvailableButton = true;
                                 result = obtainNewEntryData();
-                            } else if (TARGET.classList.contains(CLASS.REDEEMED) || TARGET.classList.contains(CLASS.RESERVED)) {
+                            } else if (target.classList.contains(self.css.redeemed) || target.classList.contains(self.css.reserved)) {
                                 isAvailableButton = false;
                                 result = obtainExistingEntryData();
                             } else {
@@ -328,52 +405,29 @@ class Calendar extends DataWrapper {
                             return result;
                             
                             function obtainNewEntryData() {
-                                let idGroupFilter = function (el) { return el.match(/\bsel-group-\d+/g); },
-                                    groupId = TARGET.className.split(' ').filter(idGroupFilter).toString(),
-                                    rowId = TARGET.id.match(/[^R]\d+/i) || [],
-                                    room = rowId[0];
+                                let groupId, room;
+                                
+                                    groupId = self._getElementInfo(target).attr.selGroup;
+                                    room = selft._getElementInfo(target).id.room;
                             
-                                if (!groupId) {
-                                    UTILS.LOG(GL.CONST.LOG.LEVEL.ERROR, GL.CONST.LOG.ID.A001.TITLE, GL.CONST.LOG.ID.A001.GIST);
-                                    return false;
-                                }
-
-                                if (!room) {
-                                    UTILS.LOG(GL.CONST.LOG.LEVEL.ERROR, GL.CONST.LOG.ID.A001.TITLE, GL.CONST.LOG.ID.A001.GIST);
-                                    return false;
-                                }
-
                                 let group = document.querySelectorAll(`#calendar > tbody > tr#R${room} > td.${groupId}`),
-                                    begda = group[0].id.match(/\d{4}-\d{2}-\d{2}/) || [],
-                                    endda = group[group.length - 1].id.match(/\d{4}-\d{2}-\d{2}/) || [];
-        
-                                if (!begda) {
-                                    UTILS.LOG(GL.CONST.LOG.LEVEL.ERROR, GL.CONST.LOG.ID.A001.TITLE, GL.CONST.LOG.ID.A001.GIST);
-                                    return false;
-                                }
-
-                                if (!endda) {
-                                    UTILS.LOG(GL.CONST.LOG.LEVEL.ERROR, GL.CONST.LOG.ID.A001.TITLE, GL.CONST.LOG.ID.A001.GIST);
-                                    return false;
-                                }
+                                    begda, endda;
+                                
+                                    begda = self._getElementInfo(group[0]).id.date;
+                                    endda = selft._getElementInfo(group[group.length - 1]).id.date;
 
                                 guest.Intn = self.intent.add.key;
                                 guest.Unid = '-1';
                                 guest.Room = room;
-                                guest.Dbeg = begda[0];
-                                guest.Dend = endda[0];
+                                guest.Dbeg = begda;
+                                guest.Dend = endda;
                                 return true;
                             }
 
                             function obtainExistingEntryData() {
-                                let idFilter = function (el) { return el.match(/^N\d+$/); },
-                                    unid = TARGET.className.split(' ').filter(idFilter).toString();
+                                let unid;
+                                    unid = self._getElementInfo(target).class.unid[0];
                                 
-                                if (!unid) {
-                                    UTILS.LOG(GL.CONST.LOG.LEVEL.ERROR, GL.CONST.LOG.ID.A001.TITLE, GL.CONST.LOG.ID.A001.GIST);
-                                    return false;
-                                }
-
                                 guest.Unid = unid;
                                 return true;
                             }
@@ -396,80 +450,79 @@ class Calendar extends DataWrapper {
         
                     mouseOver: function mouseover(e) {
         
-                        const CLASS = GL.CONST.CSS.CALENDAR.CLASS;
-                        const TARGET = e.target;
-                        let self = this;
+                        let target = e.target,
+                            self = this;
                         
                         toggleSelection();
                         toggleView();
 
                         function toggleSelection() {
                             if (!GL.DATA.CORE.isMouseDown) return; 
-                            if (TARGET.classList.length === 0 || TARGET.classList.contains(CLASS.SELECTED)) {
+                            if (target.classList.length === 0 || target.classList.contains(self.css.selected)) {
                                 SelectionGroup.del(e.target);
                                 self.isSelected && SelectionGroup.add(e.target);
-                                TARGET.classList.toggle(CLASS.SELECTED, self.isSelected);
+                                target.classList.toggle(self.css.selected, self.isSelected);
                             } else {
                                 SelectionGroup.free();
                             }
                         }
 
                         function toggleView() {
-                            let idList = TARGET.className.split(' ').filter(function (el) { return el.match(/^N\d+$/g); });
+                            let idList = self._getElementInfo(target).class.unid;
                             for (let id of idList) {
 
                                 let cells = document.querySelectorAll(`#calendar > tbody > tr > td.${id}`),
                                     bookRow = document.querySelector(`.book > tbody > tr#${id}`), 
-                                    viewfix = `${id}-${CLASS.VIEW_FIX}`,
-                                    view = `${id}-${CLASS.VIEW}`;
+                                    viewfix = `${id}-${self.css.viewFix}`,
+                                    view = `${id}-${self.css.view}`;
                                 
                                 for (let cell of cells) {
                                     if (cell.classList.contains(viewfix)) continue;
                                     if (cell.classList.contains(view)) continue;
                                     cell.classList.add(view);
                                 }
-                                if (bookRow.classList.contains(CLASS.VIEW_FIX)) continue;
-                                if (bookRow.classList.contains(CLASS.VIEW)) continue;
-                                bookRow.classList.add(CLASS.VIEW);
+                                if (bookRow.classList.contains(self.css.viewFix)) continue;
+                                if (bookRow.classList.contains(self.css.view)) continue;
+                                bookRow.classList.add(self.css.view);
                             }
 
-                            let date = TARGET.id.match(/\d{4}-\d{2}-\d{2}/i) || [];
+                            let date = self._getElementInfo(target).id.date;
 
-                            if (!date[0]) {
+                            if (!date) {
                                 UTILS.LOG(GL.CONST.LOG.LEVEL.WARN, GL.CONST.LOG.ID.A002.TITLE, GL.CONST.LOG.ID.A002.GIST);
                                 return;
                             }
 
-                            document.querySelector(`#calendar > thead tr:nth-child(2) th#D${date[0]}`).classList.add(CLASS.VIEW);
+                            document.querySelector(`#calendar > thead tr:nth-child(2) th#D${date}`).classList.add(self.css.view);
                         }
                     },
         
                     mouseOut: function mouseout(e) {
         
-                        const CLASS = GL.CONST.CSS.CALENDAR.CLASS;
-                        const TARGET = e.target;
+                        let target = e.target,
+                            self = this;
                         
                         toggleView();
 
                         function toggleView() {
-                            let idList = TARGET.className.split(' ').filter(function (el) { return el.match(/^N\d+$/g); });
+                            let idList = self._getElementInfo(target).class.unid;
                             for (let id of idList) {
 
                                 let cells = document.querySelectorAll(`#calendar > tbody > tr > td.${id}`),
-                                    view = `${id}-${CLASS.VIEW}`;
+                                    view = `${id}-${self.css.view}`;
                                 
                                 for (let cell of cells) { cell.classList.remove(view); }
-                                document.querySelector(`.book > tbody > tr#${id}`).classList.remove(CLASS.VIEW);
+                                document.querySelector(`.book > tbody > tr#${id}`).classList.remove(self.css.view);
                             }
 
-                            let date = TARGET.id.match(/\d{4}-\d{2}-\d{2}/i) || [];
+                            let date = self._getElementInfo(target).id.date;
 
-                            if (!date[0]) {
+                            if (!date) {
                                 UTILS.LOG(GL.CONST.LOG.LEVEL.WARN, GL.CONST.LOG.ID.A002.TITLE, GL.CONST.LOG.ID.A002.GIST);
                                 return;
                             }
 
-                            document.querySelector(`#calendar > thead tr:nth-child(2) th#D${date[0]}`).classList.remove(CLASS.VIEW);
+                            document.querySelector(`#calendar > thead tr:nth-child(2) th#D${date}`).classList.remove(self.css.view);
                         }
                     },
         
@@ -484,13 +537,14 @@ class Calendar extends DataWrapper {
 
                     mouseDown: function mousedown(e) {
 
-                        const TARGET = e.target;
+                        let target = e.target,
+                            self = this;
     
-                        TARGET.classList.toggle(GL.CONST.CSS.CALENDAR.CLASS.VIEW_FIX);
-                        let book = document.querySelector(`#${TARGET.parentNode.id}-book`);
+                        target.classList.toggle(self.css.viewFix);
+                        let book = document.querySelector(`#${target.parentNode.id}-book`);
 
                         if (!book) {
-                            UTILS.LOG(GL.CONST.LOG.LEVEL.WARN, GL.CONST.LOG.ID.A002.TITLE, TARGET.parentNode.id);
+                            UTILS.LOG(GL.CONST.LOG.LEVEL.WARN, GL.CONST.LOG.ID.A002.TITLE, target.parentNode.id);
                             return;
                         }
 
@@ -508,11 +562,9 @@ class Calendar extends DataWrapper {
 
                     mouseDown: function mousedown(e) {
 
-                        const CLASS = GL.CONST.CSS.CALENDAR.CLASS;
-                        const TARGET = e.target;
-
-                        let self = this,
-                            book = TARGET.closest('.book'),
+                        let target = e.target,
+                            self = this,
+                            book = target.closest('.book'),
                             guest = new Guest(),
                             isAvailableButton;
                         
@@ -526,11 +578,11 @@ class Calendar extends DataWrapper {
 
                             let personRow = book.querySelector('.person-row'),
                                 id = personRow.id;
-                            personRow.classList.toggle(CLASS.VIEW_FIX);
-                            personRow.classList.toggle(CLASS.VIEW);
+                            personRow.classList.toggle(self.css.viewFix);
+                            personRow.classList.toggle(self.css.view);
                             document.querySelectorAll(`#calendar > tbody > tr > td.${id}`).forEach(function (el) {
-                                el.classList.toggle(`${id}-${CLASS.VIEW_FIX}`);
-                                el.classList.toggle(`${id}-${CLASS.VIEW}`);
+                                el.classList.toggle(`${id}-${self.css.viewFix}`);
+                                el.classList.toggle(`${id}-${self.css.view}`);
                             });
                         }
 
@@ -578,33 +630,33 @@ class Calendar extends DataWrapper {
         
                     mouseOver: function mouseover(e) {
 
-                        const CLASS = GL.CONST.CSS.CALENDAR.CLASS;
+                        let self = this;
 
                         let innerBook = e.target.closest('.book');
                         if (!innerBook) return;
 
                         let personRow = innerBook.querySelector('.person-row');
-                        if (personRow.classList.contains(CLASS.VIEW_FIX)) return;
+                        if (personRow.classList.contains(self.css.viewFix)) return;
 
-                        personRow.classList.add(CLASS.VIEW);
+                        personRow.classList.add(self.css.view);
                         document.querySelectorAll(`#calendar > tbody > tr > td.${personRow.id}`).forEach(function (el) {
-                            el.classList.add(`${personRow.id}-${CLASS.VIEW}`);
+                            el.classList.add(`${personRow.id}-${self.css.view}`);
                         });
                     },
         
                     mouseOut: function mouseout(e) {
 
-                        const CLASS = GL.CONST.CSS.CALENDAR.CLASS;
+                        let self = this;
 
                         let innerBook = e.target.closest('.book');
                         if (!innerBook) return;
 
                         let personRow = innerBook.querySelector('.person-row');
-                        if (personRow.classList.contains(CLASS.VIEW_FIX)) return;
+                        if (personRow.classList.contains(self.css.viewFix)) return;
 
-                        personRow.classList.remove(CLASS.VIEW);
+                        personRow.classList.remove(self.css.view);
                         document.querySelectorAll(`#calendar > tbody > tr > td.${personRow.id}`).forEach(function (el) {
-                            el.classList.remove(`${personRow.id}-${CLASS.VIEW}`);
+                            el.classList.remove(`${personRow.id}-${self.css.view}`);
                         });
                     },
                 },
@@ -783,6 +835,7 @@ class Calendar extends DataWrapper {
     get eventId() { return this._eventId; }
     get monthNames() { return this._monthNames; }
     get intent() { return this._intent; }
+    get css() { return this._css; }
 
     /**
      * 
@@ -886,6 +939,8 @@ class Calendar extends DataWrapper {
 
         let self = this;
 
+        // TODO reset selection-group by id
+
         entries.forEach(guest => {
             setCellColor(guest);
             fillBook(guest);
@@ -893,7 +948,6 @@ class Calendar extends DataWrapper {
 
         function setCellColor(guest) {
 
-            const CLASS_LIST = GL.CONST.CSS.CALENDAR.CLASS;
             let begda = new Date(guest.Dbeg),
                 endda = new Date(guest.Dend),
                 curda = new Date(),
@@ -909,12 +963,12 @@ class Calendar extends DataWrapper {
                 while (cell.hasChildNodes()) cell.removeChild(cell.firstChild);
 
                 // добавляем класс
-                if (cell.classList.contains(CLASS_LIST.REDEEMED) || cell.classList.contains(CLASS_LIST.RESERVED)) {
-                    cell.classList.remove(CLASS_LIST.REDEEMED, CLASS_LIST.RESERVED);
-                    cell.classList.add(CLASS_LIST.ADJACENT);
+                if (cell.classList.contains(self.css.redeemed) || cell.classList.contains(self.css.reserved)) {
+                    cell.classList.remove(self.css.redeemed, CLASS_self.cssLIST.reserved);
+                    cell.classList.add(self.css.adjacent);
                 } else {
-                    cell.classList.remove(CLASS_LIST.SELECTED);
-                    (tmpda < curda) ? cell.classList.add(CLASS_LIST.REDEEMED) : cell.classList.add(CLASS_LIST.RESERVED);
+                    cell.classList.remove(self.css.selected);
+                    (tmpda < curda) ? cell.classList.add(self.css.redeemed) : cell.classList.add(self.css.reserved);
                 }
                 cell.classList.add(`N${guest.Unid}`);
 
@@ -1006,50 +1060,32 @@ class Calendar extends DataWrapper {
      */
     del(entries) {
 
-        // TODO  replace find all cell with classname = list[i].unid => remove view_fix/view ; replace class_list
+        const CURRENT_DATE = new Date();
+
         entries.forEach(guest => {
-            //test
 
-            let test = document.getElementsByClassName(`N${guest.Unid}`);
-            for (let el of test) {
-                
-            }
+            const id = `N${guest.Unid}`;
+            let self = this;
 
-
-
-            const CLASS_LIST = GL.CONST.CSS.CALENDAR.CLASS;
-            let room = guest.Room,
-                begda = new Date(guest.Dbeg),
-                endda = new Date(guest.Dend),
-                curda = new Date();
-
-            while (begda <= endda) {
-                let date = begda.format('yyyy-mm-dd'),
-                    td = document.querySelector(`#calendar tbody tr#R${room} td#R${room}D${date}`);
-                if (!td) {
-                    begda.setDate(begda.getDate() + 1);
-                    continue;
-                }
-                td.classList.remove(`N${guest.Unid}`);
-                td.classList.remove(`N${guest.Unid}_${CLASS_LIST.VIEW_FIX}`);
-                td.classList.remove(`N${guest.Unid}_${CLASS_LIST.VIEW}`);
-                if (td.classList.contains(CLASS_LIST.ADJACENT)) {
-                    td.classList.remove(CLASS_LIST.ADJACENT);
-                    if (begda < curda)  td.classList.add(CLASS_LIST.REDEEMED);
-                    else td.classList.add(CLASS_LIST.RESERVED);
+            const cells = document.getElementsByClassName(id);
+            for (let i = cells.length; i > 0; i--) {
+                let cell = cells[0];
+               
+                if (cell.classList.contains(self.css.adjacent)) {
+                    cell.classList.remove(self.css.adjacent);
+                    let date;
+                    date = self._getElementInfo(cell).id.date;
+                    (date < CURRENT_DATE) ? cell.classList.add(self.css.redeemed) : td.classList.add(self.css.reserved);
                 } else {
-                    td.classList.remove(CLASS_LIST.REDEEMED);
-                    td.classList.remove(CLASS_LIST.RESERVED);
+                    cell.classList.remove(self.css.redeemed);
+                    cell.classList.remove(self.css.reserved);
                 }
-                while (td.hasChildNodes()) td.removeChild(td.firstChild);
-                begda.setDate(begda.getDate() + 1);
-            }
+                cell.classList.remove(id);
+                cell.classList.remove(`${id}_${self.css.viewFix}`);
+                cell.classList.remove(`${id}_${self.css.view}`);
 
-            let tr = document.querySelector(`.book > tbody > tr#N${guest.Unid}`);
-            tr.parentNode.removeChild(tr);
-            if (Calendar._isEmptyBook(guest.Room)) {
-                tr = document.querySelector(`#calendar > tbody > tr#R${guest.Room}-book`);
-                tr.parentNode.removeChild(tr);
+                // FIX для смежных дней будет удалять подсказку даже с той записи, котоаря остается 
+                while (cell.hasChildNodes()) cell.removeChild(cell.firstChild);
             }
         });
     }
@@ -1169,6 +1205,48 @@ class Calendar extends DataWrapper {
                 tbody.appendChild(tr);
             }
         }
+    }
+
+    _getElementInfo(target) {
+        if (!UTILS.IS_DOM(target)) return;
+
+        const ID = target.id;
+        const CL = target.className;
+
+        let info = {
+            id: {
+                unid,
+                room,
+                date
+            },
+            class: {
+                unid: [],
+            },
+            attr: {
+                selGroup
+            }
+        };
+
+        let regExp = {
+            id: {
+                unid: /N\d+/,
+                room: /R\d+/,
+                date: /D\d{4}-\d{2}-\d{2}/
+            },
+            class: {
+                unid: /N\d+/g,
+            }
+        };
+
+        info.id.unid = regExp.id.unid.test(ID) ? ID.match(regExp.id.unid)[0].substring(1) : '';
+        info.id.room = regExp.id.room.test(ID) ? ID.match(regExp.id.room)[0].substring(1) : '';
+        info.id.date = regExp.id.date.test(ID) ? ID.match(regExp.id.date)[0].substring(1) : '';
+
+        info.class.unid = regExp.class.unid.test(CL) ? CL.match(regExp.class.unid).map(function (el) { return el.substring(1); } ) : [];
+
+        info.attr.selGroup = target.getAttribute('sg') || '';
+
+        return info;
     }
 
     /**
