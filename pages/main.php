@@ -1,5 +1,5 @@
 <?php    
-    require $_SERVER['DOCUMENT_ROOT'] . '/utils.php';
+    require $_SERVER['DOCUMENT_ROOT'] . '/php/utils.php';
     if (!isAuthorized()) {
         header('Location: ../pages/login.php');
         die();
@@ -12,6 +12,7 @@
         <meta charset="utf-8">
         <title>Hotel Manager</title>
         <link rel='icon' href='/res/icons/favicon.png' />
+        <link rel='stylesheet' href='/css/normalize.css' />
         <link rel='stylesheet' href='/css/vars.css' />
         <link rel='stylesheet' href='/css/buttons.css' />
         <link rel='stylesheet' href='/css/modal.css' />
@@ -132,7 +133,6 @@
         </div>
         
         <script type="text/javascript" src="/js/utils/date.format.js"></script>
-        <script type="text/javascript" src="/js/utils/jquery.min.js"></script>
         
         <script type='text/javascript' src='/js/utils/sandbox.js'></script>
         <script type="text/javascript" src="/js/utils/dom.tree.js"></script>

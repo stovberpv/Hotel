@@ -218,7 +218,7 @@ const LISTENERS = {
     }
 };
 
-(function (window, document, undefined) {
+(function (window, document) {
 
     document.addEventListener('DOMContentLoaded', LISTENERS.onLoad);
     document.addEventListener('mouseup', LISTENERS.mouseUp);

@@ -3,15 +3,6 @@
 /*jshint -W040 */
 /*jshint -W083 */
 
-/*
-     TODO 
-    1. ID гостя вынести из классов в атрибут data-*
-    2. переделать логику ПКМ
-    3. переделать класс VIEW & VIEW_FIX на атрибут data-vaie: fix/hov
-
-
-*/
-
 (function () { "use strict"; })();
 
 /**
@@ -28,50 +19,53 @@ class SelectionGroup {
     
     /**
      * Очистка ID текущего обрабатываемого класса
-     * @static
-     * @return {void}@memberof SelectionGroup
+     * 
+     * @memberof SelectionGroup
      */
-    static free() { this.unid = undefined; }
+    static free(target) { target.dataset.unid = undefined; }
 
     /**
      * Формирование ID нового класса
+     * 
      * @static
-     * @return {void}@memberof SelectionGroup
+     * @returns 
+     * @memberof SelectionGroup
      */
-    static gen() {
-        this.unid = Math.ceil(Math.random() * 100000);
-    }
+    static gen() { return Math.ceil(Math.random() * 100000); }
 
     /**
      * Добавление класса к объекту.
      * Если ID класса не сформирован то перед добавление будет вызван метод формирующий ID класса
+     * 
      * @static
-     * @param  {any} target 
-     * @return {void}@memberof SelectionGroup
+     * @param {DOM} target 
+     * @param {number} [selection=0] 
+     * @returns selection
+     * @memberof SelectionGroup
      */
-    static add(target) {
-
-        !this.unid && this.gen();
-        target.setAttribute(this.attr, this.unid);
-        this.enum(this.unid);
+    static add(target, selection = 0) {
+        let unid = selection ? selection : this.gen();
+        target.dataset.selection =  this.unid;
+        this.enum(unid);
+        return unid;
     }
 
     /**
      * Поиск ID класса присвоенного объекту с последующим удалением и пересчетом оставшихся элементов 
      * которым присвоей этот ID
-     * @static
-     * @param  {any} target 
-     * @return {void}@memberof SelectionGroup
+     * 
+     * @param {any} target 
+     * @memberof SelectionGroup
      */
     static del(target) {
-
-        let unid = target.target.getAttribute(this.attr);
-        let group = document.querySelectorAll(`[${this.attr}='${unid}']`);
+        let unid = target.dataset.selection;
+        let group = document.querySelectorAll(`[data-selection='${unid}']`);
         for (let i = group.length; i > 0; i--) {
             let el = group[0];
             while (el.hasChildNodes()) el.removeChild(el.firstChild);
-            // el.classList.remove(GL.CONST.CSS.CALENDAR.CLASS.SELECTED); // FIX перенести логику удаления выделения в календарь
-            el.removeAttribute(this.attr);
+             // FIX перенести логику удаления выделения в календарь
+            // el.classList.remove(GL.CONST.CSS.CALENDAR.CLASS.SELECTED);
+            el.datset.selection = undefined;
             if (el.id == target.id) break; 
         }
         this.enum(unid);
@@ -79,19 +73,26 @@ class SelectionGroup {
 
     /**
      * Пересчет кол-ва объектов класса по ID класса 
-     * @static
-     * @param  {any} unid 
-     * @return {void}@memberof SelectionGroup
+     * 
+     * @param {any} selection 
+     * @memberof SelectionGroup
      */
-    static enum(unid) {
-
+     
+    static enum(selection) {
         let i = 1;
-        let group = document.querySelectorAll(`[${this.attr}='${unid}']`);
+        let group = document.querySelectorAll(`[data-selection='${selection}']`);
         for (let j = group.length; j > 0; j--) {
             let el = group[0];
             while (el.hasChildNodes()) el.removeChild(el.firstChild);
             el.textContent = (i++);
         }
+    }
+
+    static getGroup(selection, post = 'F;L') {
+        let group = document.querySelectorAll(`[data-selection='${selection}']`);
+        if (pos === 'F') return group[0];
+        else if (pos === 'L') return group[group.length];
+        else return group;
     }
 }
 
@@ -100,8 +101,7 @@ class SelectionGroup {
  * @class IGuest
  */
 class IGuest {
-    constructor(entries) {
-        if (entries === undefined) return;
+    constructor(entries = {}) {
         this.intn = entries.intn || '';
         this.year = entries.year || '';
         this.mnth = entries.mnth || '';
@@ -192,29 +192,26 @@ class Calendar extends DataWrapper {
         this._guest = [];
         this._rooms = [];
         this._isSelected = false;
+        this._selectionGroup;
 
-        this._intent = { // TODO как-нибудь передлать это гавно
-            add: { key: 'add', txt: 'Добавить' },
-            upd: { key: 'upd', txt: 'Изменить' },
-            del: { key: 'del', txt: 'Удалить' },
-            ext: { key: 'ext', txt: '' },
+        // TODO как-нибудь передeлать
+        this._intent = { 
+            add: 'add',
+            upd: 'upd',
+            upd: 'upd',
             pickPeriod: 'pick-period'
         };
-
+        // TODO как-нибудь передeлать
         this._dataAttr = {
             view: {
-                name: 'data-view',
-                keys: {
-                    fixed: 'fixex',
-                    hovered: 'hovered'
-                }
+                fix: 'fix',
+                hov: 'hov'
             },
             status: {
-                name: 'data-day-status',
                 selected: "selected", // выделен
                 reserved: "reserved", // зарезервирован
                 adjacent: "adjacent", // смежный
-                redeemed: "redeemed", // выкупленный
+                redeemed: "redeemed", // выкупленный 
             }
         };
 
@@ -222,80 +219,60 @@ class Calendar extends DataWrapper {
 
             rcm: {
 
-                open: function RCMenuOpen(e) {
-
-                    if (!e.detail.EventBus) {
-                        UTILS.LOG(GL.CONST.LOG.LEVEL.ERROR, GL.CONST.LOG.ID.A000.TITLE, GL.CONST.LOG.ID.A000.GIST);
-                        return;
-                    }
-
-                    let rcmenu = new RCMenu(e.detail.data);
-                    rcmenu.bind();
-                    rcmenu.show();
+                add: function RCMItemAddGuest(e) {
+                    let guestCard = new GuestCard({
+                        intent: this.intent.add,
+                        title: GL.CONST.LOCALIZABLE.VAR003.ADD,
+                        isReadOnly: false,
+                        isStrict: true,
+                        month: this.month.num,
+                        year: this.year,
+                        rooms: this.rooms
+                    });
+                    guestCard.bind();
+                    guestCard.setVal(e.detail.data);
+                    guestCard.show();
                 },
+        
+                del: function RCMItemDelGuest(e) {
+                    let confirmDialog = new ConfirmDialog({
+                        intent: this.intent.del,
+                        title: GL.CONST.LOCALIZABLE.VAR003.DELETE,
+                        text: UTILS.FORMAT(GL.CONST.LOCALIZABLE.MSG001, { 1: e.detail.data.unid }),
+                        data: { guest: e.detail.data },
+                        cb: { ok: function (data) { EVENT_BUS.dispatch(GL.CONST.EVENTS.CALENDAR.DIALOG_SAVE, data); } }
+                    });
+                    confirmDialog.bind();
+                    confirmDialog.show();
+                },
+        
+                upd: function RCMItemUpdGuest(e) {
+                    let self = this;
 
-                items: {
+                    EVENT_BUS.register(`${GL.CONST.EVENTS.CALENDAR.DB.GL001.SELECT.SUCCESS}${this.intent.upd}`, showGuestCard, true);
+                    DB.GL001.SELECT({ unid: e.detail.data.unid }, this.intent.upd);
 
-                    add: function RCMItemAddGuest(e) {
-    
+                    function showGuestCard(e) {
+                        let guest;
+                        try {
+                            guest = new Guest(e.detail.data.guest[0]);
+                        } catch (err) {
+                            UTILS.LOG(GL.CONST.LOG.LEVEL.ERROR, GL.CONST.LOG.ID.B000, err.message);
+                            return;
+                        }
                         let guestCard = new GuestCard({
-                            intent: this.intent.add.key,
-                            title:this.intent.add.txt,
+                            intent: this.intent.upd,
+                            title: GL.CONST.LOCALIZABLE.VAR003.UPDATE,
                             isReadOnly: false,
                             isStrict: true,
-                            month: this.month.num,
-                            year: this.year,
-                            rooms: this.rooms
+                            month: self.month.num,
+                            year: self.year,
+                            rooms: self.rooms
                         });
                         guestCard.bind();
-                        guestCard.setVal(e.detail.data);
+                        guestCard.setVal(guest);
                         guestCard.show();
-                    },
-        
-                    del: function RCMItemDelGuest(e) {
-
-                        let confirmDialog = new ConfirmDialog({
-                            intent: this.intent.del.key,
-                            title: this.intent.del.txt,
-                            text: UTILS.FORMAT(GL.CONST.LOCALIZABLE.MSG001, { 1: e.detail.data.unid }),
-                            data: { guest: e.detail.data },
-                            cb: { ok: function (data) { EVENT_BUS.dispatch(GL.CONST.EVENTS.CALENDAR.DIALOG_SAVE, data); } }
-                        });
-                        confirmDialog.bind();
-                        confirmDialog.show();
-                    },
-        
-                    upd: function RCMItemUpdGuest(e) {
-        
-                        const I = this.intent.upd;
-                        const E = GL.CONST.EVENTS.CALENDAR.DB.GL001.SELECT.SUCCESS;
-                        let self = this;
-
-                        EVENT_BUS.register(`${E}${I.key}`, showGuestCard, true);
-                        DB.GL001.SELECT({ unid: e.detail.data.unid }, I.key);
-
-                        function showGuestCard(e) {
-                            let guest;
-                            try {
-                                guest = new Guest(e.detail.data.guest[0]);
-                            } catch (err) {
-                                UTILS.LOG(GL.CONST.LOG.LEVEL.ERROR, GL.CONST.LOG.ID.B000, err.message);
-                                return;
-                            }
-                            let guestCard = new GuestCard({
-                                intent: I.key,
-                                title: I.txt,
-                                isReadOnly: false,
-                                isStrict: true,
-                                month: self.month.num,
-                                year: self.year,
-                                rooms: self.rooms
-                            });
-                            guestCard.bind();
-                            guestCard.setVal(guest);
-                            guestCard.show();
-                        }
-                    },
+                    }
                 },
             },
 
@@ -307,9 +284,6 @@ class Calendar extends DataWrapper {
 
                         let self = this,
                             target = e.target;
-                        
-                        let guest = new Guest(),
-                            isAvailableButton;
 
                         switch (e.which) {
                             case 1: leftMouse(); return;
@@ -318,212 +292,145 @@ class Calendar extends DataWrapper {
                         }
 
                         function leftMouse() {
-                            toggleSelection();
-                            toggleView();
-                        }
-
-                        function toggleSelection() {
-                            GL.DATA.CORE.isMouseDown = true;
-                            (target.classList.length === 0 || target.classList.contains(self.css.selected)) && target.classList.toggle(self.css.selected);
-                            self.isSelected = target.classList.contains(self.css.selected);
-                            SelectionGroup.del(target);
-                            self.isSelected ? SelectionGroup.add(e.target) : SelectionGroup.free();
-                        }
-
-                        function toggleView() {
-                            let ids = self._getElementInfo(target).class.unid;
-                            for (let i = 0; i < ids.length; i++) {
-                                document.querySelectorAll(`#calendar > tbody > tr > td.${ids[i]}`).forEach(function (el) {
-                                    let view = el.getAttribute('data-view');
-                                    (view == 'hov') ? el.setAttribute('data-view', 'fix') : ;
-                                    el.hasAttribute() ? : ;
-                                    el.classList.toggle(`${ids[i]}-${self.css.viewFix}`);
-                                    el.classList.toggle(`${ids[i]}-${self.css.view}`);
-                                });
-
-                                let bookRow = document.querySelector(`.book > tbody > tr#${ids[i]}`);
-                                bookRow.classList.toggle(self.css.viewFix);
-                                bookRow.classList.toggle(self.css.view);
-                            }
-                        }
-
-                        /*
-                        //test begin
-                        function rightMouse() {
-                        yield
-                            1. get: id / selection-group
-                                if id && selgroup <> "" => error + close
-                                if id && selgroup == "" => error + error
-                                id || selgroup <> "" => ok
-                                    data1 = get room + day + month + year
-
-                            2. fetch db <= data1
-                                if result err => error + close
-                                if result ok => ok
-                                    if data2 == "" => data3 = add
-                                    if data2 <> "" => update calendar => data3 = del + upd
-
-                            3. show guest card / del popup <= (data1 | data2) + data3
-                                if close = > close
-                                if save => ok
-
-                            4. update db <= (data1 | data2)
-                                if result err => error + close
-                                if result ok => ok
-                                    if data4 == "" => error + close
-                                    if data4 <> "" => ok
-
-                            5. update calendar <= data4     
-                            6.close
-                        }
-                        //test end
-                        */
-
-                        function rightMouse() {
-                            if (!getCalendarEntry()) return;
-                            guest.Year = self.year;
-                            guest.Mnth = self.month.num;
-                            openRCMenu();
-                        }
-
-                        function getCalendarEntry() {
-
-                            let result;
                             
-                            if (target.classList.contains(self.css.selected)) {
-                                isAvailableButton = true;
-                                result = obtainNewEntryData();
-                            } else if (target.classList.contains(self.css.redeemed) || target.classList.contains(self.css.reserved)) {
-                                isAvailableButton = false;
-                                result = obtainExistingEntryData();
-                            } else {
-                                isAvailableButton = null;
-                                result = null;
-                                UTILS.LOG(GL.CONST.LOG.LEVEL.ERROR, GL.CONST.LOG.ID.A000.TITLE, GL.CONST.LOG.ID.A000.GIST);
-                            }
+                            (function toggleSelection() {
+                                GL.DATA.CORE.isMouseDown = true;
+                                if (target.dataset.status == self.dataAttr.status.selected) target.dataset.status = '';
+                                self.isSelected = !!target.dataset.status;
+                                SelectionGroup.del(target);
+                                self.isSelected ? (self.selectionGroup = SelectionGroup.add(e.target, self.selectionGroup)) : SelectionGroup.free();
+                            })();
 
-                            return result;
-                            
-                            function obtainNewEntryData() {
-                                let groupId, room;
-                                
-                                    groupId = self._getElementInfo(target).attr.selGroup;
-                                    room = selft._getElementInfo(target).id.room;
-                            
-                                let group = document.querySelectorAll(`#calendar > tbody > tr#R${room} > td.${groupId}`),
-                                    begda, endda;
-                                
-                                    begda = self._getElementInfo(group[0]).id.date;
-                                    endda = selft._getElementInfo(group[group.length - 1]).id.date;
+                            (function toggleView() {
+                                let ids = target.dataset.unid.split(',');
+                                for (let id of ids) {
+                                    document.querySelectorAll(`#calendar [data-unid='${id}']`).forEach(function (el) {
+                                        let ds = el.dataset;
+                                        ds.view = (ds.view == self.dataAttr.view.hov) ? self.dataAttr.view.fix : self.dataAttr.view.hov;
+                                    });
 
-                                guest.Intn = self.intent.add.key;
-                                guest.Unid = '-1';
-                                guest.Room = room;
-                                guest.Dbeg = begda;
-                                guest.Dend = endda;
-                                return true;
-                            }
-
-                            function obtainExistingEntryData() {
-                                let unid;
-                                    unid = self._getElementInfo(target).class.unid[0];
-                                
-                                guest.Unid = unid;
-                                return true;
-                            }
-
+                                    let bookRow = document.querySelector(`.book tr#N${id}`);
+                                    bookRow.dataset.view = (bookRow.dataset.view == self.dataAttr.view.hov) ? self.dataAttr.view.fix : self.dataAttr.view.hov;
+                                }
+                            })();
                         }
+                        
+                        /**
+                         * Для активной ячейки вытягиваем значение даты
+                         * Тут можно вытягивать дату первой выделенной ячейки
+                         * и последней и по ним првоерять гостя в БД
+                         * Я вытягиваю дату только одной чейки на покторой нажали ПКМ
+                         * Мне кажется так правильней
+                         * 
+                         * @returns boolean
+                         */
+                        async function rightMouse() {
+                            debugger;
+                            let year = self.year(),
+                                month = self.month.num(),
+                                room = target.dataset.room,
+                                begda = target.dataset.date,
+                                endda = new Date(target.dataset.date);
 
-                        function openRCMenu() {
-                            EVENT_BUS.dispatch(GL.CONST.EVENTS.CALENDAR.RC_MENU.RC_MENU_OPEN, {
-                                item: {
-                                    upd: !isAvailableButton,
-                                    del: !isAvailableButton,
-                                    add: isAvailableButton
-                                },
-                                x: e.pageX,
-                                y: e.pageY,
+                            endda = new Date(endda.setMonth(endda.getMonth() + 1));
+                            
+                            let data = await new Select('', {types: 'sss', param: [begda, endda, room]}).Select('*').From('gl001').Where(`dbeg <= ? AND dend >= ? AND room = ?`).fetch();
+                            data = data.data;
+
+                            let isAvailableButton, guest;
+
+                            switch (data.length) {
+                                case 0:
+                                    isAvailableButton = true;
+                                    guest = new Guest();
+                                    guest.Room = room;
+                                    guest.Dbeg = SelectionGroup.getGroup(target.dataset.selection, 'F').dataset.date;
+                                    guest.Dend = SelectionGroup.getGroup(target.dataset.selection, 'L').dataset.date;
+                                    break;
+
+                                case 1:
+                                    isAvailableButton = false;
+                                    guest = new Guest(data);
+                                    break;
+
+                                default:
+                                    return false;
+                                    break;
+                            }
+
+                            let rcmenu = new RCMenu({
+                                item: { upd: !isAvailableButton, del: !isAvailableButton, add: isAvailableButton },
+                                x: e.pageX, y: e.pageY,
                                 guest
                             });
+                            rcmenu.bind();
+                            rcmenu.show();
+
+                            return true;
                         }
                     },
         
                     mouseOver: function mouseover(e) {
         
-                        let target = e.target,
-                            self = this;
+                        let self = this,
+                            target = e.target;
                         
-                        toggleSelection();
-                        toggleView();
-
-                        function toggleSelection() {
-                            if (!GL.DATA.CORE.isMouseDown) return; 
-                            if (target.classList.length === 0 || target.classList.contains(self.css.selected)) {
-                                SelectionGroup.del(e.target);
-                                self.isSelected && SelectionGroup.add(e.target);
-                                target.classList.toggle(self.css.selected, self.isSelected);
+                        (function toggleSelection() {
+                            if (!GL.DATA.CORE.isMouseDown) return;
+                            let ds = target.dataset;
+                            if (ds.status === '' || ds.status == self.dataAttr.status.selected) {
+                                SelectionGroup.del(target);
+                                self.isSelected && (self.selectionGroup = SelectionGroup.add(target, self.selectionGroup));
+                                target.dataset.status = self.isSelected ? '' : self.dataAttr.status.selected;
                             } else {
                                 SelectionGroup.free();
                             }
-                        }
+                        })();
 
-                        function toggleView() {
-                            let idList = self._getElementInfo(target).class.unid;
+                        (function toggleView() {
+                            let idList = target.dataset.unid ? target.dataset.unid.split(',') : [];
                             for (let id of idList) {
 
-                                let cells = document.querySelectorAll(`#calendar > tbody > tr > td.${id}`),
-                                    bookRow = document.querySelector(`.book > tbody > tr#${id}`), 
-                                    viewfix = `${id}-${self.css.viewFix}`,
-                                    view = `${id}-${self.css.view}`;
+                                document.querySelectorAll(`#calendar [data-unid='${id}']`).forEach(el => {
+                                    if (Object.values(self.dataAttr.view).indexOf(el.dataset.view) > -1) return;
+                                    el.dataset.view = self.dataAttr.view.hov;
+                                });
                                 
-                                for (let cell of cells) {
-                                    if (cell.classList.contains(viewfix)) continue;
-                                    if (cell.classList.contains(view)) continue;
-                                    cell.classList.add(view);
-                                }
-                                if (bookRow.classList.contains(self.css.viewFix)) continue;
-                                if (bookRow.classList.contains(self.css.view)) continue;
-                                bookRow.classList.add(self.css.view);
+                                let bookRow = document.querySelector(`.book tr#N${id}`);
+                                if (Object.values(bookRow.dataAttr.view).indexOf(cell.dataset.view) > -1) continue;
+                                bookRow.dataset.view = self.dataAttr.view.hov;
                             }
 
-                            let date = self._getElementInfo(target).id.date;
+                            let date = target.dataset.date;
 
                             if (!date) {
-                                UTILS.LOG(GL.CONST.LOG.LEVEL.WARN, GL.CONST.LOG.ID.A002.TITLE, GL.CONST.LOG.ID.A002.GIST);
                                 return;
                             }
-
-                            document.querySelector(`#calendar > thead tr:nth-child(2) th#D${date}`).classList.add(self.css.view);
-                        }
+                            // NOTE подумать - оставить клссом или переделать на data-* 
+                            document.querySelector(`#calendar > thead tr:nth-child(2) th#D${date}`).classList.add(self.dataAttr.view.hov);
+                        })();
                     },
         
                     mouseOut: function mouseout(e) {
         
-                        let target = e.target,
-                            self = this;
+                        let self = this,
+                            target = e.target;
                         
-                        toggleView();
-
-                        function toggleView() {
-                            let idList = self._getElementInfo(target).class.unid;
+                        (function toggleView() {
+                            let idList = target.dataset.unid ? target.dataset.unid.split(',') : [];
                             for (let id of idList) {
-
-                                let cells = document.querySelectorAll(`#calendar > tbody > tr > td.${id}`),
-                                    view = `${id}-${self.css.view}`;
-                                
-                                for (let cell of cells) { cell.classList.remove(view); }
-                                document.querySelector(`.book > tbody > tr#${id}`).classList.remove(self.css.view);
+                                document.querySelectorAll(`#calendar [data-unid='${id}']`).forEach(el => { el.dataset.view = ''; });
+                                document.querySelector(`.book tr#N${id}`).dataset.view = '';
                             }
 
-                            let date = self._getElementInfo(target).id.date;
+                            let date = target.dataset.date;
 
                             if (!date) {
-                                UTILS.LOG(GL.CONST.LOG.LEVEL.WARN, GL.CONST.LOG.ID.A002.TITLE, GL.CONST.LOG.ID.A002.GIST);
                                 return;
                             }
-
+                            // NOTE 
                             document.querySelector(`#calendar > thead tr:nth-child(2) th#D${date}`).classList.remove(self.css.view);
-                        }
+                        })();
                     },
         
                     mouseUp: function mouseup(e) {
@@ -537,16 +444,13 @@ class Calendar extends DataWrapper {
 
                     mouseDown: function mousedown(e) {
 
-                        let target = e.target,
-                            self = this;
+                        let self = this,
+                            target = e.target;
     
-                        target.classList.toggle(self.css.viewFix);
+                        target.dataset.view = target.dataset.view == self.dataAttr.view.fix ? '' : self.dataAttr.fix;
                         let book = document.querySelector(`#${target.parentNode.id}-book`);
 
-                        if (!book) {
-                            UTILS.LOG(GL.CONST.LOG.LEVEL.WARN, GL.CONST.LOG.ID.A002.TITLE, target.parentNode.id);
-                            return;
-                        }
+                        if (!book) { return; }
 
                         let stDisplay = window.getComputedStyle(book).getPropertyValue('display');
                         if (book.style.display === 'none' || stDisplay === 'none') book.style.display = 'table-row';
@@ -557,11 +461,11 @@ class Calendar extends DataWrapper {
             },
 
             book: {
-
+                // TODO переделать по аналогии с календарем
                 tr: {
 
                     mouseDown: function mousedown(e) {
-
+                        /*
                         let target = e.target,
                             self = this,
                             book = target.closest('.book'),
@@ -580,7 +484,7 @@ class Calendar extends DataWrapper {
                                 id = personRow.id;
                             personRow.classList.toggle(self.css.viewFix);
                             personRow.classList.toggle(self.css.view);
-                            document.querySelectorAll(`#calendar > tbody > tr > td.${id}`).forEach(function (el) {
+                            document.querySelectorAll(`#calendar [data-unid='${id}']`).forEach(el => {
                                 el.classList.toggle(`${id}-${self.css.viewFix}`);
                                 el.classList.toggle(`${id}-${self.css.view}`);
                             });
@@ -626,10 +530,11 @@ class Calendar extends DataWrapper {
                                 guest
                             });
                         }
+                        */
                     },
         
                     mouseOver: function mouseover(e) {
-
+                        /*
                         let self = this;
 
                         let innerBook = e.target.closest('.book');
@@ -642,10 +547,11 @@ class Calendar extends DataWrapper {
                         document.querySelectorAll(`#calendar > tbody > tr > td.${personRow.id}`).forEach(function (el) {
                             el.classList.add(`${personRow.id}-${self.css.view}`);
                         });
+                        */
                     },
         
                     mouseOut: function mouseout(e) {
-
+                        /*
                         let self = this;
 
                         let innerBook = e.target.closest('.book');
@@ -658,6 +564,7 @@ class Calendar extends DataWrapper {
                         document.querySelectorAll(`#calendar > tbody > tr > td.${personRow.id}`).forEach(function (el) {
                             el.classList.remove(`${personRow.id}-${self.css.view}`);
                         });
+                        */
                     },
                 },
             },
@@ -668,33 +575,53 @@ class Calendar extends DataWrapper {
 
                     prev: function prevMonth(e) {
 
-                        let monthNum = this.month.num;
-                        monthNum > 1 ? monthNum-- : monthNum = 12;
+                        (() => {
+                            let date = new Date(self.year, self.month.num);
+                            date.setMonth(date.getMonth() - 1);
+                            self.year = date.getFullYear();
+                            self.month = date.getMonth() + 1;
+                        })();
 
-                        let data = {
-                            year: this.year,
-                            month: monthNum
-                        };
+                        (async () => { await self.updateConfig(this.year, self.month.num)})();
 
-                        DB.GL001.SELECT(data, this.eventId);
+                        (async () => {
+                            try {
+                                let guest = await self.fetchGuest();
+                                self.guest = guest.data;
+                                self.resetView();
+                                self.add(self.guest);
+                           } catch (e) {
+                           
+                           }
+                       })();
                     },
 
                     next: function nextMonth(e) {
 
-                        let monthNum = this.month.num;
-                        monthNum > 11 ? monthNum = 1 : monthNum++;
+                        (() => {
+                            let date = new Date(self.year, self.month.num);
+                            date.setMonth(date.getMonth() + 1);
+                            self.year = date.getFullYear();
+                            self.month = date.getMonth() + 1;
+                        })();
 
-                        let data = {
-                            year: this.year,
-                            month: monthNum
-                        };
+                        (async () => { await self.updateConfig(this.year, self.month.num)})();
 
-                        DB.GL001.SELECT(data, this.eventId);
+                        (async () => {
+                            try {
+                                let guest = await self.fetchGuest();
+                                self.guest = guest.data;
+                                self.resetView();
+                                self.add(self.guest);
+                           } catch (e) {
+                           
+                           }
+                       })();
                     }
                 },
 
                 pickPeriod: function pickPeriod(e) {
-
+                    // FIX promise
                     let dialog = new PickPeriod({
                         intent: this.intent.pickPeriod
                     });
@@ -708,77 +635,34 @@ class Calendar extends DataWrapper {
             },
 
             dialog: {
-
+                // FIX SQL
                 save: function (e) {
-
                     const E = this.intent;
-                    const GL001 = DB.GL001;
+
                     let that = this,
                         data = e.detail.data || this;
 
                     switch (data.intent) {
+                        /*
                         case E.add.key: GL001.INSERT(data.guest, this.eventId); break;
                         case E.upd.key: GL001.UPDATE(data.guest, this.eventId); break;
                         case E.del.key: GL001.DELETE(data.guest, this.eventId); break;
+                        */
                         case E.pickPeriod: pickPeriod(); break;
                         default: break;
                     }
-
-                    function pickPeriod() {
-                        if (data.year < 1900) return;
-                        GL001.SELECT(data, that.eventId);
-                        DB.CF001.UPDATE(data, that.eventId);
-                    }
                 }
             },
-
-            db: {
-                cf001: {
-                    select: {
-                        success: function (e) { UTILS.LOG(GL.CONST.LOG.LEVEL.INFO, GL.CONST.LOG.ID.B001.TITLE, e.detail.data.msg); },
-                        error: function (e) { UTILS.LOG(GL.CONST.LOG.LEVEL.ERROR, GL.CONST.LOG.ID.B002.TITLE, e.detail.data.xhr); }
-                    },
-                    update: {
-                        success: function (e) { UTILS.LOG(GL.CONST.LOG.LEVEL.INFO, GL.CONST.LOG.ID.B001.TITLE, e.detail.data.msg); },
-                        error: function (e) { UTILS.LOG(GL.CONST.LOG.LEVEL.ERROR, GL.CONST.LOG.ID.B002.TITLE, e.detail.data.xhr); }
-                    },
-                },
-                rm001: {
-                    select: {
-                        success: function (e) {
-                            UTILS.LOG(GL.CONST.LOG.LEVEL.INFO, GL.CONST.LOG.ID.B001.TITLE, e.detail.data.msg);
-                            const D = e.detail.data;
-                            D.status && (this.rooms = D.room);
-                        },
-                        error: function (e) { UTILS.LOG(GL.CONST.LOG.LEVEL.ERROR, GL.CONST.LOG.ID.B002.TITLE, e.detail.data.xhr); }
-                    },
-                },
+            /*
                 gl001: {
                     insert: {
-                        success: function (e) {
                             UTILS.LOG(GL.CONST.LOG.LEVEL.INFO, GL.CONST.LOG.ID.B001.TITLE, e.detail.data.msg);
                             const D = e.detail.data;
                             if (!D.status) return;
                             this.guest = D.guest;
                             this.add(this.guest);
-                        },
-                        error: function (e) { UTILS.LOG(GL.CONST.LOG.LEVEL.ERROR, GL.CONST.LOG.ID.B002.TITLE, e.detail.data.xhr); }
-                    },
-                    select: {
-                        success: function (e) {
-                            UTILS.LOG(GL.CONST.LOG.LEVEL.INFO, GL.CONST.LOG.ID.B001.TITLE, e.detail.data.msg);
-                            const D = e.detail.data;
-                            if (!D.status) return;
-                            this.year = D.year;
-                            this.month = D.month;
-                            this.guest = D.guest;
-                            this._resetView();
-                            this.add(this.guest);
-                        },
-                        error: function (e) { UTILS.LOG(GL.CONST.LOG.LEVEL.ERROR, GL.CONST.LOG.ID.B002.TITLE, e.detail.data.xhr); }
                     },
                     update: {
-                        success: function (e) {
                             const D = e.detail.data;
                             UTILS.LOG(GL.CONST.LOG.LEVEL.INFO, GL.CONST.LOG.ID.B001.TITLE, D.msg);
                             let oldEntries = [], newEntries = [];
@@ -790,27 +674,21 @@ class Calendar extends DataWrapper {
                                 return;
                             }
                             D.status && this.upd(oldEntries, newEntries);
-                        },
-                        error: function (e) { UTILS.LOG(GL.CONST.LOG.LEVEL.ERROR, GL.CONST.LOG.ID.B001.TITLE, e.detail.data.xhr); }
                     },
                     delete: {
-                        success: function (e) {
                             UTILS.LOG(GL.CONST.LOG.LEVEL.INFO, GL.CONST.LOG.ID.B001.TITLE, e.detail.data.msg);
                             const D = e.detail.data;
                             this.guest = D.guest;
                             D.status && this.del(this.guest);
-                        },
-                        error: function (e) { UTILS.LOG(GL.CONST.LOG.LEVEL.ERROR, GL.CONST.LOG.ID.B002.TITLE, e.detail.data.xhr); }
                     },
                 },
-            }
+            */
         };
     }
 
     set guest(entry) {
         let guests = [];
-        if (Array.isArray(entry)) entry.forEach(el => guests.push(new Guest(el)));
-        else guests.push(new Guest(entry));
+        (Array.isArray(entry)) ? entry.forEach(el => guests.push(new Guest(el))) : guests.push(new Guest(entry));
         this._guest = guests;
     }
     get guest() { return this._guest; }
@@ -818,7 +696,7 @@ class Calendar extends DataWrapper {
     set month(month) { this._month = month; }
     get month() {
         return {
-            name: new Date(1900, this._month - 1).toLocaleString(GL.CONST.LOCALE, { month: "long" }),
+            name: new Date(1900, this._month).toLocaleString(GL.CONST.LOCALE, { month: "long" }),
             num: UTILS.OVERLAY(this._month, '0', 2),
         };
     }
@@ -832,10 +710,13 @@ class Calendar extends DataWrapper {
     set isSelected(isSelected) { this._isSelected = isSelected; }
     get isSelected() { return this._isSelected; }
 
+    set selectionGroup(selectionGroup) { this._selectionGroup = selectionGroup; }
+    get selectionGroup() { return this._selectionGroup; }
+
     get eventId() { return this._eventId; }
     get monthNames() { return this._monthNames; }
     get intent() { return this._intent; }
-    get css() { return this._css; }
+    get dataAttr() { return this._dataAttr; }
 
     /**
      * 
@@ -885,30 +766,24 @@ class Calendar extends DataWrapper {
         let qsParent, qsChild, qsParentExcl;
 
         qsParent = '#calendar > tbody'; qsChild = 'td'; qsParentExcl = '.book-row';
-        this._setDelegate('mousedown', qsParent, qsChild, qsParentExcl, L.calendar.td.mouseDown.bind(this));
-        this._setDelegate('mouseover', qsParent, qsChild, qsParentExcl, L.calendar.td.mouseOver.bind(this));
-        this._setDelegate('mouseout', qsParent, qsChild, qsParentExcl, L.calendar.td.mouseOut.bind(this));
-        this._setDelegate('mouseup', qsParent, qsChild, qsParentExcl, L.calendar.td.mouseUp.bind(this));
+        this.setDelegate('mousedown', qsParent, qsChild, qsParentExcl, L.calendar.td.mouseDown.bind(this));
+        this.setDelegate('mouseover', qsParent, qsChild, qsParentExcl, L.calendar.td.mouseOver.bind(this));
+        this.setDelegate('mouseout', qsParent, qsChild, qsParentExcl, L.calendar.td.mouseOut.bind(this));
+        this.setDelegate('mouseup', qsParent, qsChild, qsParentExcl, L.calendar.td.mouseUp.bind(this));
 
         qsParent = '#calendar > tbody'; qsChild = 'tr > th'; qsParentExcl = '';
-        this._setDelegate('mousedown', qsParent, qsChild, qsParentExcl, L.calendar.th.mouseDown.bind(this));
+        this.setDelegate('mousedown', qsParent, qsChild, qsParentExcl, L.calendar.th.mouseDown.bind(this));
 
         qsParent = '#calendar > tbody'; qsChild = '.book'; qsParentExcl = '';
-        this._setDelegate('mousedown', qsParent, qsChild, qsParentExcl, L.book.tr.mouseDown.bind(this));
-        this._setDelegate('mouseover', qsParent, qsChild, qsParentExcl, L.book.tr.mouseOver.bind(this));
-        this._setDelegate('mouseout', qsParent, qsChild, qsParentExcl, L.book.tr.mouseOut.bind(this));
+        this.setDelegate('mousedown', qsParent, qsChild, qsParentExcl, L.book.tr.mouseDown.bind(this));
+        this.setDelegate('mouseover', qsParent, qsChild, qsParentExcl, L.book.tr.mouseOver.bind(this));
+        this.setDelegate('mouseout', qsParent, qsChild, qsParentExcl, L.book.tr.mouseOut.bind(this));
 
         const E = GL.CONST.EVENTS.CALENDAR;
         EVENT_BUS.register(E.DIALOG_SAVE, L.dialog.save.bind(this));
-        EVENT_BUS.register(E.RC_MENU.RC_MENU_OPEN, L.rcm.open);
         EVENT_BUS.register(E.RC_MENU.RCM_ITEM_ADD_GUEST, L.rcm.items.add.bind(this));
         EVENT_BUS.register(E.RC_MENU.RCM_ITEM_DEL_GUEST, L.rcm.items.del.bind(this));
         EVENT_BUS.register(E.RC_MENU.RCM_ITEM_UPD_GUEST, L.rcm.items.upd.bind(this));
-    
-        EVENT_BUS.register(E.DB.GL001.INSERT.SUCCESS + this.eventId, L.db.gl001.insert.success.bind(this));
-        EVENT_BUS.register(E.DB.GL001.SELECT.SUCCESS + this.eventId, L.db.gl001.select.success.bind(this));
-        EVENT_BUS.register(E.DB.GL001.UPDATE.SUCCESS + this.eventId, L.db.gl001.update.success.bind(this));
-        EVENT_BUS.register(E.DB.GL001.DELETE.SUCCESS + this.eventId, L.db.gl001.delete.success.bind(this));
     }
 
     /**
@@ -916,18 +791,26 @@ class Calendar extends DataWrapper {
      * @return {void}@memberof Calendar
      */
     init() {
+        // TODO waiting window
+        let self = this;
+        (async () => {
+            try {
+                let config = await self.fetchConfig();
+                self.year = config.data[0].year;
+                self.month = config.data[0].month;
 
-        $.ajax({ url: '../db/init.php', dataType: 'json',
-            success: function onSuccess(data) {
-                this.rooms = data.rooms;
-                this.year = data.year;
-                this.month = data.month;
-                this.guest = data.data;
-                this._resetView();
-                this.add(this.guest);
-            }.bind(this),
-            error: function onError(xhr, textStatus) { UTILS.LOG(GL.CONST.LOG.LEVEL.ERROR, GL.CONST.LOG.ID.B002.TITLE, textStatus); }
-        });
+                let rooms = await self.fetchRoom();
+                self.rooms = rooms.data;
+
+                let guest = await self.fetchGuest(self.year, (self.month.num - 1));
+                self.guest = guest.data;
+
+                self.resetView();
+                self.add(self.guest);
+            } catch (err) {
+                // TODO 
+            }
+        })();
     }
 
     /**
@@ -963,14 +846,21 @@ class Calendar extends DataWrapper {
                 while (cell.hasChildNodes()) cell.removeChild(cell.firstChild);
 
                 // добавляем класс
-                if (cell.classList.contains(self.css.redeemed) || cell.classList.contains(self.css.reserved)) {
-                    cell.classList.remove(self.css.redeemed, CLASS_self.cssLIST.reserved);
-                    cell.classList.add(self.css.adjacent);
-                } else {
-                    cell.classList.remove(self.css.selected);
-                    (tmpda < curda) ? cell.classList.add(self.css.redeemed) : cell.classList.add(self.css.reserved);
+                switch (cell.dataset.status) {
+                    case self.dataAttr.status.redeemed:
+                    case self.dataAttr.status.reserved:
+                        cell.dataset.status = self.dataAttr.status.adjacent;
+                        break;
+                
+                    default:
+                        cell.dataset.status = (tmpda < curda) ? self.dataAttr.status.redeemed : self.dataAttr.status.reserved;    
+                        break;
                 }
-                cell.classList.add(`N${guest.Unid}`);
+                let unid = cell.dataset.unid ? cell.dataset.unid.split(',') : [];
+                // не удается сократить, вместо строки айдишников возвращается длина массива
+                unid.push(guest.Unid)
+                unid = unid.toString();
+                cell.dataset.unid = unid;
 
                 // добавляем подсказку  
                 let div = cell.getElementsByTagName('div'),
@@ -991,13 +881,11 @@ class Calendar extends DataWrapper {
             }
         }
 
-        function isDateValid(d) {
-            return d.format('yyyy-mm') == (self.year + '-' + self.month.num);
-        }
+        function isDateValid(d) { return d.format('yyyy-mm') == (self.year + '-' + self.month.num); }
 
         function fillBook(guest) {
 
-            // FIX check empty field that using in uerSelection or Id. like room & days
+            // FIX check empty field
 
             let tree, days = new Date(self.year, self.month.num, 0).getDate();
             
@@ -1059,7 +947,7 @@ class Calendar extends DataWrapper {
      * @return {void}@memberof Calendar
      */
     del(entries) {
-
+        /*
         const CURRENT_DATE = new Date();
 
         entries.forEach(guest => {
@@ -1088,6 +976,7 @@ class Calendar extends DataWrapper {
                 while (cell.hasChildNodes()) cell.removeChild(cell.firstChild);
             }
         });
+        */
     }
 
     /**
@@ -1132,7 +1021,7 @@ class Calendar extends DataWrapper {
      * 
      * @return {void}@memberof Calendar
      */
-    _resetView() {
+    resetView() {
 
         let self = this;
         free ();
@@ -1197,6 +1086,7 @@ class Calendar extends DataWrapper {
                         let id = `R${room.room}D${self.year}-${self.month.num}-${UTILS.OVERLAY(day, '0', 2)}`;
                         node = document.createElement('td');
                         node.setAttribute('id', id);
+                        // TODO dataset room day
                         node.appendChild(document.createTextNode(''));
                     }
                     tr.appendChild(node);
@@ -1206,68 +1096,17 @@ class Calendar extends DataWrapper {
             }
         }
     }
-
-    _getElementInfo(target) {
-        if (!UTILS.IS_DOM(target)) return;
-
-        const ID = target.id;
-        const CL = target.className;
-
-        let info = {
-            id: {
-                unid,
-                room,
-                date
-            },
-            class: {
-                unid: [],
-            },
-            attr: {
-                selGroup
-            }
-        };
-
-        let regExp = {
-            id: {
-                unid: /N\d+/,
-                room: /R\d+/,
-                date: /D\d{4}-\d{2}-\d{2}/
-            },
-            class: {
-                unid: /N\d+/g,
-            }
-        };
-
-        info.id.unid = regExp.id.unid.test(ID) ? ID.match(regExp.id.unid)[0].substring(1) : '';
-        info.id.room = regExp.id.room.test(ID) ? ID.match(regExp.id.room)[0].substring(1) : '';
-        info.id.date = regExp.id.date.test(ID) ? ID.match(regExp.id.date)[0].substring(1) : '';
-
-        info.class.unid = regExp.class.unid.test(CL) ? CL.match(regExp.class.unid).map(function (el) { return el.substring(1); } ) : [];
-
-        info.attr.selGroup = target.getAttribute('sg') || '';
-
-        return info;
-    }
-
+    
     /**
      * 
-     * @static
-     * @param  {any} room 
-     * @return 
-     * @memberof Calendar
-     */
-    static _isEmptyBook(room) { return !document.querySelector(`#R${room}-book tbody`).childElementCount; }
-
-    /**
-     * 
-     * @param  {any} eventName 
-     * @param  {any} qsParent 
-     * @param  {any} qsChild 
-     * @param  {any} qsClosestExcl 
-     * @param  {any} callback 
+     * @param  {string} eventName 
+     * @param  {string} qsParent 
+     * @param  {string} qsChild 
+     * @param  {string} qsClosestExcl 
+     * @param  {function} callback 
      * @return {void}@memberof Calendar
      */
-    _setDelegate(eventName, qsParent, qsChild, qsClosestExcl, callback) {
+    setDelegate(eventName, qsParent, qsChild, qsClosestExcl, callback) {
 
         let parent = document.querySelector(qsParent),
             that = {
@@ -1285,5 +1124,31 @@ class Calendar extends DataWrapper {
             if (Array.from(childs).indexOf(target) !== -1) return this.callback.call(e, e);
             for (let child of childs) { if (child.contains(target)) return this.callback.call(e, e); }
         }.bind(that));
+    }
+
+    /**
+     * 
+     * @static
+     * @param  {string} room 
+     * @return 
+     * @memberof Calendar
+     */
+    static isEmptyBook(room) { return !document.querySelector(`#R${room}-book tbody`).childElementCount; }
+
+    static fetchConfig() {
+        return new Select().select('year, month').from('cf001').join('us001').on('us001.login = cf001.user').where('us001.login = ?').connect(1); 
+    }
+
+    static fetchRoom() { return new Select().select('*').from('rm001').connect(); }
+
+    static fetchGuest(year, month) {
+        let begda = new Date(year, month, '01'),
+            endda = new Date(year, month, '01');
+        endda.setMonth(endda.getMonth() + 1);
+        return new Select('', { types: 'ss', param: [endda.format('yyyy-mm-dd'), begda.format('yyyy-mm-dd')] }).select('*').from('gl001').where(`dbeg <= ? AND dend >= ?`).connect(); 
+    }
+
+    static updateConfig(year, month) {
+        return new Update('', { types: 'ss', param: [year, month] }).update('cf001').set('year = ?, month = ?').where('user = ?').connect(1);
     }
 }

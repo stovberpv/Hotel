@@ -1,5 +1,5 @@
 <?php
-    require $_SERVER['DOCUMENT_ROOT'] . '/utils.php';
+    require $_SERVER['DOCUMENT_ROOT'] . '/php/utils.php';
     if (isAuthorized()) {
         header('Location: ../pages/main.php');
         die();
@@ -11,6 +11,7 @@
         <meta charset="utf-8">
         <title>Hotel Manager</title>
         <link rel='icon' href='/res/icons/favicon.png'>
+        <link rel='stylesheet' href='/css/normalize.css' />
         <link rel='stylesheet' href='/css/login.css'>
     </head>
     <body>
@@ -25,7 +26,6 @@
                 <button id='submit' type="submit" value='submit'/>login</button>
             </div>
         </form>
-        <script type="text/javascript" src="/js/utils/jquery.min.js"></script>
         <script type="text/javascript" src="/js/core/login.js"></script>
     </body>
 </html>

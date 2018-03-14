@@ -5,6 +5,8 @@
 (function () {
     "use strict";
 })();
+/*
+ TODO without jquery
 $(document).ready(function () {
     var movementStrength = 25;
     var height = movementStrength / $(window).height();
@@ -17,3 +19,4 @@ $(document).ready(function () {
         $('body').css("background-position", newvalueX + "px     " + newvalueY + "px");
     });
 });
+*/

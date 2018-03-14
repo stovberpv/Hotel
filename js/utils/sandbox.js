@@ -93,8 +93,21 @@ const UTILS = {
         };
     },
 
-    IS_DOM(obj) {
+    IS_DOM: function(obj) {
         return !!(obj && obj.nodeType === 1);
+    },
+
+    GET_COOKIE: function(name = '') {
+        let result = {},
+            cookies = document.cookie.split(';');
+        for (let cookie of cookies) { 
+            let cookiePair = cookie.split('='),
+                key = cookiePair[0].trim();
+                val = cookiePair[1];
+            if (key === name) return val;
+            result[key] = val; 
+        }
+        return result;
     }
 };
 

@@ -25,62 +25,20 @@ const GL = {
             },
     
             CALENDAR: {
-    
+                /*
                 NEW_MONTH: {
                     SUCCESS: 'monthChangeSuccess'
                 },
-
+                */
                 DIALOG_SAVE: 'saveClick',
     
                 RC_MENU: {
 
-                    RC_MENU_OPEN: 'rcmClick',
+                    // RC_MENU_OPEN: 'rcmClick',
                     RCM_ITEM_ADD_GUEST: 'rcmItemAddClick',
                     RCM_ITEM_DEL_GUEST: 'rcmItemDelClick',
                     RCM_ITEM_UPD_GUEST: 'rcmItemUpdClick',
                 },
-
-                DB: {
-                    
-                    INITIALIZATION: {
-                        SUCCESS: 'dbInitializationSuccess'
-                    },
-
-                    CF001: {
-                        SELECT: {
-                            SUCCESS: 'dbCf001SelectSuccess',
-                            ERROR: 'dbCf001SelectError'
-                        },
-                        UPDATE: {
-                            SUCCESS: 'dbCf001SelectSuccess',
-                            ERROR: 'dbCf001SelectError'
-                        }
-                    },
-                    RM001: {
-                        SELECT: {
-                            SUCCESS: 'dbRm001SelectSuccess',
-                            ERROR: 'DBRm001SelectError'
-                        }
-                    },
-                    GL001: {
-                        INSERT: {
-                            SUCCESS: 'dbGl001InsertSuccess',
-                            ERROR: 'dbGl001InsertError'
-                        },
-                        SELECT: {
-                            SUCCESS: 'dbGl001SelectSuccess',
-                            ERROR: 'dbGl001SelectError'
-                        },
-                        UPDATE: {
-                            SUCCESS: 'dbGl001UpdateSuccess',
-                            ERROR: 'dbGl001UpdateError'
-                        },
-                        DELETE: {
-                            SUCCESS: 'dbGl001DeleteSuccess',
-                            ERROR: 'dbGl001DeleteError'
-                        },
-                    },
-                }
             },
         },
 

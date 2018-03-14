@@ -24,7 +24,7 @@
             #
             session_write_close();
             # create db connection
-            require $_SERVER['DOCUMENT_ROOT'] . '/db/conn.php';
+            require $_SERVER['DOCUMENT_ROOT'] . '/php/conn.php';
             # check is user was aurorized
             $query = "SELECT COUNT(*) AS isAuth FROM us001 WHERE sesid = ? AND active = 1";
             $stmt = $mysqli->prepare($query);
@@ -57,7 +57,7 @@
         #
         session_write_close();
         # create db connection
-        require $_SERVER['DOCUMENT_ROOT'] . '/db/conn.php';
+        require $_SERVER['DOCUMENT_ROOT'] . '/php/conn.php';
         # check is user was aurorized
         $query = "SELECT login FROM us001 WHERE sesid = ? AND active = 1";
         $stmt = $mysqli->prepare($query);

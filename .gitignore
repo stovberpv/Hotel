@@ -53,11 +53,17 @@ Temporary Items
 db/conn.php
 
 # Other files and folders
-part1.gif
-part2.gif
-presentation-1.JPG
-presentation-2.JPG
 *.xml
 
-#IDEA
+# IDEA
 .idea/*
+
+#
+node_modules
+
+#
+.eslintrc.js
+
+#
+package.json
+package-lock.json

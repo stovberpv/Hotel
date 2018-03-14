@@ -15,7 +15,7 @@
             if (isset($_POST["user"])) { $auth_name = $_POST["user"]; } else { break; }
             if (isset($_POST["pass"])) { $auth_pass = $_POST["pass"]; } else { break; }
             # create db connection
-            require $_SERVER['DOCUMENT_ROOT'] . '/db/conn.php';
+            require $_SERVER['DOCUMENT_ROOT'] . '/php/conn.php';
             # get user
             $query = "SELECT COUNT( * ) AS isExist FROM us001 WHERE login = ? AND pass = ? AND active = 1";
             if (!($stmt = $mysqli->prepare($query)))                echo "prepare error ("    . $mysqli->connect_errno . ") " . $mysqli->connect_error, die();
@@ -70,7 +70,7 @@
     #
     # the next one we check an active session
     #
-    require 'utils.php';
+    require '/php/utils.php';
     if (isAuthorized()) {
         header($mainPage);
         die();

@@ -74,13 +74,14 @@ class Contacts extends DataWrapper {
             console.log(textStatus);
             console.log(errorThrown);
         };
-
+        /*
         $.ajax({
             url: '../db/pb001/select.php',
             dataType: 'json',
             success: success.bind({ that: this }),
             error: error
         });
+        */
     }
 
     setData(data) {
