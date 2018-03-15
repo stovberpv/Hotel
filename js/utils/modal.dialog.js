@@ -84,7 +84,7 @@ class GuestCard extends Dialog {
         super(opts);
 
         this.cb.command.ok = function (e) {
-            EVENT_BUS.dispatch(GL.CONST.EVENTS.CALENDAR.DIALOG_SAVE, { intent: this.opts.intent, guest: this.getVal() } );
+            EVENT_BUS.dispatch(GL.CONST.EVENTS.JOURNAL.DIALOG_SAVE, { intent: this.opts.intent, guest: this.getVal() } );
             this.unbind();
         };
 
@@ -550,14 +550,20 @@ class PickPeriod extends Dialog {
             }
         };
 
+        this.promise = {
+            resolve: null,
+            reject: null
+        }
+
         this.cb.command.ok = function ok(e) {
-            let val = this.getVal();
             this.unbind();
-            EVENT_BUS.dispatch(GL.CONST.EVENTS.CALENDAR.DIALOG_SAVE, { intent: this.opts.intent, year: val.year, month: val.month.num });
+            this.promise.resolve(this.getVal());
+            // EVENT_BUS.dispatch(GL.CONST.EVENTS.JOURNAL.DIALOG_SAVE, { intent: this.opts.intent, year: val.year, month: val.month.num });
         };
                 
         this.cb.command.no = function no(e) {
             this.unbind();
+            this.promise.reject();
         };
     }
 
@@ -631,6 +637,11 @@ class PickPeriod extends Dialog {
         else console.log('tree is ' + tree);
     }
 
+    getPromise() {
+        var self = this;
+        return new Promise((resolve, reject) => { self.promise.resolve = resolve; self.promise.reject = reject; });
+    }
+
     setVal(val) {
         const P = GL.CONST.PREFIX.PICK_PERIOD;
         let year = document.getElementById(`${P}-${this.id}-input-year`) || {},
@@ -671,17 +682,17 @@ class RCMenu extends Dialog {
 
         this.cb.command.upd = function upd(e) {
             this.unbind();
-            EVENT_BUS.dispatch(GL.CONST.EVENTS.CALENDAR.RC_MENU.RCM_ITEM_UPD_GUEST, this.opts.guest);
+            EVENT_BUS.dispatch(GL.CONST.EVENTS.JOURNAL.RC_MENU.RCM_ITEM_UPD_GUEST, this.opts.guest);
         };
 
         this.cb.command.del = function del(e) {
             this.unbind();
-            EVENT_BUS.dispatch(GL.CONST.EVENTS.CALENDAR.RC_MENU.RCM_ITEM_DEL_GUEST, this.opts.guest);
+            EVENT_BUS.dispatch(GL.CONST.EVENTS.JOURNAL.RC_MENU.RCM_ITEM_DEL_GUEST, this.opts.guest);
         };
 
         this.cb.command.add = function add(e) {
             this.unbind();
-            EVENT_BUS.dispatch(GL.CONST.EVENTS.CALENDAR.RC_MENU.RCM_ITEM_ADD_GUEST, this.opts.guest);
+            EVENT_BUS.dispatch(GL.CONST.EVENTS.JOURNAL.RC_MENU.RCM_ITEM_ADD_GUEST, this.opts.guest);
         };
 
         this.cb.command.lmc = function lmc(e) {

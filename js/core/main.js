@@ -21,7 +21,7 @@ const WRAPPER = {
 
         const C = GL.CONST.VALUES.CORE.CHAINS;
         switch (dw) {
-            case C[0].DATA_WRAPPER: return new Calendar();
+            case C[0].DATA_WRAPPER: return new Journal();
             case C[1].DATA_WRAPPER: return new Contacts();
             case C[2].DATA_WRAPPER: return new Diagrams();
             case C[3].DATA_WRAPPER: return new Settings();

@@ -20,12 +20,12 @@ class DML {
 
         return new Promise((resolve, reject) => {
 
-            let types = self.queryData.type ? '&types=' + self.queryData.type : '',
+            let types = self.queryData.types ? '&types=' + self.queryData.types : '',
                 param = self.queryData.param ? '&param=' + self.queryData.param.toString() : '',
                 body = `sql=${self.build()}${types}${param}&auth=${auth}`;
 
             let xhr = new XMLHttpRequest();
-            xhr.open('POST', '../db/db.php', true);
+            xhr.open('POST', '../php/db.php', true);
             xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
             xhr.send(body);
             xhr.onreadystatechange = function () {
@@ -65,13 +65,13 @@ class Select extends DML {
     on(on)         { this.schema.ON     = on;     return this; }
     build()        { return super.build(); }
     /**
-     * Fetch data from DB
+     * =
      * 
      * @param {number} [auth={0,1}] Flag - using current user name
      * @returns new Promise
      * @memberof Select
      */
-    connect(auth = 0) { return super.fetch(auth); }
+    connect(auth = 0) { return super.connect(auth); }
 }
 class Insert extends DML {
     constructor(query = '', data = {}) { super(query, { INTO: '', VALUES: '', }, data); }

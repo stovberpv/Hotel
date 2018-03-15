@@ -17,7 +17,7 @@
         <link rel='stylesheet' href='/css/buttons.css' />
         <link rel='stylesheet' href='/css/modal.css' />
         <link rel='stylesheet' href='/css/rcmenu.css' />
-        <link rel='stylesheet' href='/css/calendar.css' />
+        <link rel='stylesheet' href='/css/journal.css' />
         <link rel='stylesheet' href='/css/contacts.css' />
         <link rel='stylesheet' href='/css/diagrams.css' />
         <link rel='stylesheet' href='/css/settings.css' />
@@ -140,7 +140,7 @@
         <script type="text/javascript" src="/js/utils/modal.dialog.js"></script>
         
         <script type='text/javascript' src='/js/modules/definition.js'></script>
-        <script type='text/javascript' src='/js/modules/calendar.js'></script>
+        <script type='text/javascript' src='/js/modules/journal.js'></script>
         <script type='text/javascript' src='/js/modules/contacts.js'></script>
         <script type='text/javascript' src='/js/modules/diagrams.js'></script>
         <script type='text/javascript' src='/js/modules/settings.js'></script>

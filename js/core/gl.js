@@ -24,7 +24,7 @@ const GL = {
                 LEFT_CLICK: 'leftClick',
             },
     
-            CALENDAR: {
+            JOURNAL: {
                 /*
                 NEW_MONTH: {
                     SUCCESS: 'monthChangeSuccess'

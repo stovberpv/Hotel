@@ -1,4 +1,4 @@
-#calendar {
+#journal {
     margin-left: auto;
     margin-right: auto;
     background: var(--c-tab-bck-bod-nor);
@@ -6,8 +6,8 @@
     border-spacing: 3px 8px;
 }
 
-#calendar>thead>tr>th,
-#calendar>tbody>tr>th {
+#journal>thead>tr>th,
+#journal>tbody>tr>th {
     border: 1px solid var(--c-tab-bor-bod-nor);
     font-weight: 200;
     text-align: center;
@@ -16,11 +16,11 @@
     border-radius: var(--r-bor-nor);
 }
 
-#calendar>tbody>tr>th {
+#journal>tbody>tr>th {
     cursor: pointer;
 }
 
-#calendar>tbody>tr>td {
+#journal>tbody>tr>td {
     border: 1px solid var(--c-tab-bor-bod-nor);
     text-align: center;
     cursor: pointer;
@@ -29,17 +29,17 @@
     border-radius: var(--r-bor-nor);
 }
 
-#calendar>tbody>tr:hover>th {
+#journal>tbody>tr:hover>th {
     animation: blink 5s infinite;
 }
 
-#calendar>tbody>.book-row>td {
+#journal>tbody>.records-row>td {
     border: none;
     cursor: default;
     padding: 18px 0px 18px 35px;
 }
 
-#calendar>tbody>tr:not(.book-row)>td:hover {
+#journal>tbody>tr:not(.records-row)>td:hover {
     background-color: var(--c-tab-bck-col-hov);
     border: 1px solid transparent;
     box-shadow: var(--s-nor);
@@ -48,7 +48,7 @@
     z-index: 1;
 }
 
-#calendar>tbody>tr:not(.book-row)>td:hover .hint-text {
+#journal>tbody>tr:not(.records-row)>td:hover .hint-text {
     visibility: visible;
     box-shadow: var(--s-hov);
     transition: all 0.3s;
@@ -60,7 +60,7 @@
     display: none;
 }
 
-.book {
+.records {
     cursor: pointer;
     text-align: center;
     border-spacing: 3px 8px;
@@ -71,7 +71,7 @@
     border-width: 0px;
 }
 
-.book:hover>tbody>tr:hover>td {
+.records:hover>tbody>tr:hover>td {
     border: 1px solid transparent;
     box-shadow: var(--s-nor);
     transition: all 0.3s;
@@ -79,51 +79,51 @@
     z-index: 1;
 }
 
-.book>tbody>tr>td {
+.records>tbody>tr>td {
     border: 1px solid var(--c-tab-bor-bod-nor);
 }
 
-.book>tbody>tr>td:first-child {
+.records>tbody>tr>td:first-child {
     width: 5%;
     border-top-left-radius: var(--r-bor-nor);
     border-bottom-left-radius: var(--r-bor-nor);
 }
 
-.book>tbody>tr>td:last-child {
+.records>tbody>tr>td:last-child {
     padding: 4px;
     width: 95%;
     border-top-right-radius: var(--r-bor-nor);
     border-bottom-right-radius: var(--r-bor-nor);
 }
 
-.book .selected {
+.records [data-status="selected"] {
     border: 1px solid transparent;
     animation: blink 5s infinite;
 }
 
-.inner-book {
+.record-detail {
     border-collapse: collapse;
     height: 100%;
     width: 100%;
 }
 
-.inner-book>tbody>tr>td {
+.record-detail>tbody>tr>td {
     border: none;
 }
 
-.inner-book>tbody>tr>td:first-child {
+.record-detail>tbody>tr>td:first-child {
     width: 80%;
 }
 
-.inner-book>tbody>tr>td:nth-child(2) {
+.record-detail>tbody>tr>td:nth-child(2) {
     width: 8%;
 }
 
-.inner-book>tbody>tr>td:nth-child(3) {
+.record-detail>tbody>tr>td:nth-child(3) {
     width: 5%;
 }
 
-.inner-book>tbody>tr>td:last-child {
+.record-detail>tbody>tr>td:last-child {
     width: 7%;
 }
 
@@ -204,19 +204,19 @@
     border: 1px solid transparent !important;
 }
 
-.selected {
+[data-status="selected"] {
     background-color: var(--c-tab-bck-col-sel);
 }
 
-.reserved {
+[data-status="reserved"] {
     background-color: var(--c-tab-bck-col-res);
 }
 
-.adjacent {
+[data-status="adjacent"] {
     background-color: var(--c-tab-bck-col-adj);
 }
 
-.redeemed {
+[data-status="redeemed"] {
     background-color: var(--c-tab-bck-col-red);
 }
 
@@ -224,21 +224,21 @@
 /*-----------------------------------------------------------------*/
 
 
-#calendar-row-buttons td {
+#journal-control-buttons td {
     text-align: center;
     padding: 0;
 }
 
-#calendar-row-buttons table {
+#journal-control-buttons table {
     width: 100%;
     border-collapse: collapse;
 }
 
-#calendar-row-buttons table td:nth-child(2) {
+#journal-control-buttons table td:nth-child(2) {
     width: 90%;
 }
 
-#calendar-button-month-prev {
+#journal-button-month-prev {
     border: none;
     border-bottom: 1px solid var(--c-tab-bor-bod-nor);
     border-left: 1px solid var(--c-tab-bor-bod-nor);
@@ -247,17 +247,17 @@
     border-bottom-left-radius: 2px;
 }
 
-#calendar-button-month-prev:hover {
+#journal-button-month-prev:hover {
     border-top: 1px solid transparent;
     border-left: 1px solid transparent;
     border-bottom: 1px solid transparent;
 }
 
-#calendar-button-month-prev:before {
+#journal-button-month-prev:before {
     content: url('data:image/svg+xml;utf8,<svg fill="#6a737b" height="10" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M15.41 16.09l-4.58-4.59 4.58-4.59L14 5.5l-6 6 6 6z"/></svg>');
 }
 
-#calendar-button-month-next {
+#journal-button-month-next {
     border: none;
     border-bottom: 1px solid var(--c-tab-bor-bod-nor);
     border-right: 1px solid var(--c-tab-bor-bod-nor);
@@ -266,17 +266,17 @@
     border-bottom-right-radius: 2px;
 }
 
-#calendar-button-month-next:hover {
+#journal-button-month-next:hover {
     border-top: 1px solid transparent;
     border-right: 1px solid transparent;
     border-bottom: 1px solid transparent;
 }
 
-#calendar-button-month-next:before {
+#journal-button-month-next:before {
     content: url('data:image/svg+xml;utf8,<svg fill="#6a737b" height="10" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M8.59 16.34l4.58-4.59-4.58-4.59L10 5.75l6 6-6 6z"/></svg>');
 }
 
-#calendar-row-buttons .button {
+#journal-control-buttons .button {
     display: block;
     outline: none;
     border: none;
@@ -288,7 +288,7 @@
     background-color: var(--c-btn-bck-nor-neu);
 }
 
-#calendar-row-buttons .button:hover {
+#journal-control-buttons .button:hover {
     animation: blink2 5s infinite;
 }
 
@@ -359,13 +359,11 @@
 /*-----------------------------------------------------------------*/
 
 
-.view,
-[class$='-view'] {
+[data-view="hov"] {
     animation: blink 5s infinite;
 }
 
-.view-fix,
-[class$='-view-fix'] {
+[data-view="fix"] {
     animation: blink 5s infinite;
 }
 
