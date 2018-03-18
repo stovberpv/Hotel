@@ -2,15 +2,10 @@
 /*jshint -W030 */
 /*jshint -W040 */
 /*jshint -W083 */
-(function () {
-    "use strict";
-})();
+(function () { "use strict"; })();
+
 class DataWrapper {
-
-    constructor(opts) {
-        this.Opts = opts;
-    }
-
+    constructor(opts) { this.Opts = opts; }
     bind(target) { }
     init() { }
 }

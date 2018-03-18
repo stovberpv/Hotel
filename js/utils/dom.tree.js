@@ -55,7 +55,7 @@ class DOMTree {
                         case 'style':
                             for (let attr in val) {
                                 const attrVal = val[attr];
-                                el.setAttribute('style', `${attr}:${attrVal}`); 
+                                el.setAttribute('style', `${attr}:${attrVal}`);
                             }
                             break;
                         case 'attr':

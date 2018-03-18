@@ -1,4 +1,4 @@
-<?php    
+<?php
     require $_SERVER['DOCUMENT_ROOT'] . '/php/utils.php';
     if (!isAuthorized()) {
         header('Location: ../pages/login.php');
@@ -131,14 +131,15 @@
             <div id='vc-dw-5' class='vc-data-wrapper'></div>
             <div id='vc-dw-6' class='vc-data-wrapper'></div>
         </div>
-        
+
         <script type="text/javascript" src="/js/utils/date.format.js"></script>
-        
+
         <script type='text/javascript' src='/js/utils/sandbox.js'></script>
         <script type="text/javascript" src="/js/utils/dom.tree.js"></script>
         <script type='text/javascript' src='/js/utils/event.bus.js'></script>
         <script type="text/javascript" src="/js/utils/modal.dialog.js"></script>
-        
+        <script type="text/javascript" src="/js/utils/modal.message.js"></script>
+
         <script type='text/javascript' src='/js/modules/definition.js'></script>
         <script type='text/javascript' src='/js/modules/journal.js'></script>
         <script type='text/javascript' src='/js/modules/contacts.js'></script>
@@ -146,7 +147,7 @@
         <script type='text/javascript' src='/js/modules/settings.js'></script>
         <script type='text/javascript' src='/js/modules/infopage.js'></script>
         <script type='text/javascript' src='/js/modules/signout.js'></script>
-        
+
         <script type='text/javascript' src='/js/core/gl.js'></script>
         <script type='text/javascript' src='/js/core/db.js'></script>
         <script type='text/javascript' src='/js/core/main.js'></script>

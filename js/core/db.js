@@ -2,7 +2,7 @@
 /*jshint -W030 */
 (function () { "use strict"; })();
 
-// TODO 
+// TODO
 class DML {
     constructor(query, schema, queryData) {
         this.query = query;
@@ -31,7 +31,7 @@ class DML {
             xhr.onreadystatechange = function () {
                 if (xhr.readyState === 4) {
                     if (xhr.status === 200) {
-                        UTILS.LOG(GL.CONST.LOG.LEVEL.INFO, GL.CONST.LOG.ID.B001.TITLE, GL.CONST.LOG.ID.B001.GIST);
+                        new MessageBox({ text: `${GL.CONST.LOG.ID.B001.TITLE}::${GL.CONST.LOG.ID.B001.GIST}`}).build().show();
                         let result = '';
                         try {
                             result = JSON.parse(xhr.responseText);
@@ -39,11 +39,11 @@ class DML {
                         }
                         resolve(result);
                     } else {
-                        UTILS.LOG(GL.CONST.LOG.LEVEL.ERROR, GL.CONST.LOG.ID.B002.TITLE, GL.CONST.LOG.ID.B002.GIST);
+                        new MessageBox({ text: `${GL.CONST.LOG.ID.B002.TITLE}::${GL.CONST.LOG.ID.B002.GIST}`}).build().show();
                         reject(xhr.status);
                     }
                 } else {
-                    console.log("xhr processing going on"); // TODO loading window
+                    UTILS.LOG(GL.CONST.LOG.LEVEL.INFO, GL.CONST.LOG.ID.B003.TITLE, GL.CONST.LOG.ID.B003.GIST);
                 }
             };
         });
@@ -66,7 +66,7 @@ class Select extends DML {
     build()        { return super.build(); }
     /**
      * =
-     * 
+     *
      * @param {number} [auth={0,1}] Flag - using current user name
      * @returns new Promise
      * @memberof Select

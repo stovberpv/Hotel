@@ -1,3 +1,6 @@
+/*-----------------------------------------------------------------*/
+
+
 #journal {
     margin-left: auto;
     margin-right: auto;
@@ -48,12 +51,9 @@
     z-index: 1;
 }
 
-#journal>tbody>tr:not(.records-row)>td:hover .hint-text {
-    visibility: visible;
-    box-shadow: var(--s-hov);
-    transition: all 0.3s;
-    transform: translateZ(10px);
-}
+
+/*-----------------------------------------------------------------*/
+
 
 .hidden {
     cursor: default;
@@ -187,22 +187,17 @@
     text-align: right;
 }
 
-#month {
-    font-family: 'Century Gothic', sans-serif;
-    cursor: pointer;
-    width: 100%;
-    height: 100%;
-    padding: 0;
-    margin: 0;
-}
 
-#year {
-    display: none;
-}
+/*-----------------------------------------------------------------*/
+
 
 .blank-cell {
     border: 1px solid transparent !important;
 }
+
+
+/*-----------------------------------------------------------------*/
+
 
 [data-status="selected"] {
     background-color: var(--c-tab-bck-col-sel);
@@ -223,6 +218,19 @@
 
 /*-----------------------------------------------------------------*/
 
+
+#month {
+    font-family: 'Century Gothic', sans-serif;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+#year {
+    display: none;
+}
 
 #journal-control-buttons td {
     text-align: center;
@@ -292,18 +300,6 @@
     animation: blink2 5s infinite;
 }
 
-@keyframes blink2 {
-    0% {
-        background-color: #42b3f4;
-    }
-    50% {
-        background-color: #9dea20;
-    }
-    100% {
-        background-color: #42b3f4;
-    }
-}
-
 #button-pick-period {
     display: block;
     border: 1px solid var(--c-tab-bor-bod-nor);
@@ -324,27 +320,28 @@
 
 /*-----------------------------------------------------------------*/
 
-.hint {
+.balloon-wrapper {
     position: relative;
 }
 
-.hint .hint-text {
+.balloon-wrapper .balloon {
     visibility: hidden;
-    width: 140px;
+    width: 200px;
     background-color: var(--c-tip-bck);
     opacity: 0.9;
-    color: var(--c-tip-txt);
-    text-align: center;
+    /* color: var(--c-tip-txt); */
     border-radius: var(--r-bor-nor);
     padding: 5px;
     position: absolute;
     z-index: 1;
     bottom: 28px;
-    left: 50%;
-    margin-left: -70px;
+    left: -450%;
+    display: block;
+    overflow: hidden;
+    text-align: initial;
 }
 
-.hint .hint-text::after {
+.balloon-wrapper .balloon::after {
     content: "";
     position: absolute;
     top: 100%;
@@ -353,6 +350,21 @@
     border-width: 5px;
     border-style: solid;
     border-color: var(--c-tip-bck) transparent transparent transparent;
+}
+
+.balloon-wrapper .balloon .hint span {
+    width: 100%;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#journal>tbody>tr:not(.records-row)>td:hover .balloon-wrapper .balloon {
+    visibility: visible;
+    box-shadow: var(--s-hov);
+    transition: all 0.3s;
+    transform: translateZ(10px);
 }
 
 
@@ -367,6 +379,10 @@
     animation: blink 5s infinite;
 }
 
+
+/*-----------------------------------------------------------------*/
+
+
 @keyframes blink {
     0% {
         background-color: var(--c-grad-1);
@@ -376,5 +392,17 @@
     }
     100% {
         background-color: var(--c-grad-3);
+    }
+}
+
+@keyframes blink2 {
+    0% {
+        background-color: #42b3f4;
+    }
+    50% {
+        background-color: #9dea20;
+    }
+    100% {
+        background-color: #42b3f4;
     }
 }

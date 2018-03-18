@@ -1,6 +1,7 @@
 /*jshint esversion: 6 */
 /*jshint -W030 */
 (function () { "use strict"; })();
+
 class Dialog {
 
     constructor(opts) {
@@ -10,14 +11,30 @@ class Dialog {
         this.cb = {
             control: {},
             command: {
-                ok: function () { },
-                no: function () { }
+                ok: function () {
+                    let val = this.getVal();
+                    this.unbind();
+                    this.promise.resolve(val);
+                },
+                no: function () {
+                    this.unbind();
+                    this.promise.reject();
+                }
             }
+        };
+
+        this.promise = {
+            resolve: null,
+            reject: null
         };
     }
 
     bind() {}
     setVal() {}
+    getPromise() {
+        var self = this;
+        return new Promise((resolve, reject) => { self.promise.resolve = resolve; self.promise.reject = reject; });
+    }
     show() {}
     getVal() {}
     unbind() {}
@@ -25,18 +42,7 @@ class Dialog {
 
 class ConfirmDialog extends Dialog {
 
-    constructor(opts) {
-        super(opts);
-    
-        this.cb.command.ok = function (e) {
-            this.unbind();
-            this.opts.cb.ok({ intent: this.opts.intent, guest: this.opts.data.guest });
-        };
-                
-        this.cb.command.no = function (e) {
-            this.unbind();
-        };
-    }
+    constructor(opts) { super(opts); }
 
     bind() {
 
@@ -47,7 +53,7 @@ class ConfirmDialog extends Dialog {
             [{ tag: 'div', id: `${P}-${this.id}`, class: `${P} modal modal-wrapper` },
                 [{ tag: 'div', class: `${P} modal-content` },
                     [{ tag: 'div', class: `${P} modal-header intent-${O.intent}` },
-                        { tag: 'label', textNode: O.title }    
+                        { tag: 'label', textNode: O.title }
                     ],
                     [{ tag: 'div', class: `${P} modal-body` },
                         { tag: 'label', textNode: O.text }
@@ -64,11 +70,17 @@ class ConfirmDialog extends Dialog {
         else console.log('tree is ' + tree);
     }
 
+    setVal() {  }
+
+    getPromise() { return super.getPromise(); }
+
     show() {
         const P = GL.CONST.PREFIX.CONFIRM_DIALOG;
         let dialog = document.getElementById(`${P}-${this.id}`);
         dialog.style.display = 'block';
     }
+
+    getVal() { return true; }
 
     unbind() {
         const P = GL.CONST.PREFIX.CONFIRM_DIALOG;
@@ -83,16 +95,7 @@ class GuestCard extends Dialog {
     constructor(opts) {
         super(opts);
 
-        this.cb.command.ok = function (e) {
-            EVENT_BUS.dispatch(GL.CONST.EVENTS.JOURNAL.DIALOG_SAVE, { intent: this.opts.intent, guest: this.getVal() } );
-            this.unbind();
-        };
-
-        this.cb.command.no = function (e) {
-            this.unbind();
-        };
-
-        this.utils = { //new function () { }();
+        this.utils = {
             checkDate: function (value, key) {
 
                 let allowedChars = '0123456789.',
@@ -100,7 +103,7 @@ class GuestCard extends Dialog {
                     strlen = value.length,
                     dotIndex = value.indexOf('.'),
                     newValue = value.toString().concat(key);
-    
+
                 // только цифры и точка
                 if (allowedChars.indexOf(key) === -1) return false;
                 // точка не должна быть первой
@@ -124,7 +127,7 @@ class GuestCard extends Dialog {
                     if (date > 12) return false;
                 }
                 // корректная дата по календарю
-    
+
                 //
                 return true;
             },
@@ -135,18 +138,19 @@ class GuestCard extends Dialog {
                 const P = GL.CONST.PREFIX.GUEST_CARD;
 
                 let dialog = document.getElementById(`${P}-${self.id}`),
-                    dbeg = dialog.querySelector(`#${P}-el-${IGuest.Dbeg} input`),
-                    dend = dialog.querySelector(`#${P}-el-${IGuest.Dend} input`),
-                    days = dialog.querySelector(`#${P}-el-${IGuest.Days} input`),
-                    room = dialog.querySelector(`#${P}-el-${IGuest.Room} input`),
-                    base = dialog.querySelector(`#${P}-el-${IGuest.Base} input`),
-                    adjs = dialog.querySelector(`#${P}-el-${IGuest.Adjs} input`),
-                    cost = dialog.querySelector(`#${P}-el-${IGuest.Cost} input`);
+                    dbeg = dialog.querySelector(`#${P}-el-${IGuest.dbeg} input`),
+                    dend = dialog.querySelector(`#${P}-el-${IGuest.dend} input`),
+                    days = dialog.querySelector(`#${P}-el-${IGuest.days} input`),
+                    room = dialog.querySelector(`#${P}-el-${IGuest.room} input`),
+                    base = dialog.querySelector(`#${P}-el-${IGuest.base} input`),
+                    adjs = dialog.querySelector(`#${P}-el-${IGuest.adjs} input`),
+                    cost = dialog.querySelector(`#${P}-el-${IGuest.cost} input`);
 
-                let begda = dbeg.value.split('.'),
-                    endda = dend.value.split('.');
-                begda = new Date(''.concat(O.year, '.', (begda[1] ? begda[1] : O.month), '.', begda[0]));
-                endda = new Date(''.concat(O.year, '.', (endda[1] ? endda[1] : O.month), '.', endda[0]));
+                function d(d, m, y) { return new Date((y || O.year), (m ? (m - 1) : O.month), d); }
+
+                let begda = d(...dbeg.value.split('.')),
+                    endda = d(...dend.value.split('.'));
+
                 let totalDays = (endda - begda) / GL.CONST.VALUES.UTILS.ONE_DAY;
 
                 let rooms = O.rooms.filter(function (el) { return el.room == room.value; });
@@ -154,7 +158,7 @@ class GuestCard extends Dialog {
 
                 let price = (parseInt(base.value) || 0) + (parseInt(adjs.value) || 0),
                     mustBePaid = price * totalDays;
-    
+
                 days.value = totalDays;
                 cost.value = mustBePaid;
                 cost.dispatchEvent(new Event('change'));
@@ -162,27 +166,27 @@ class GuestCard extends Dialog {
         };
 
         this.cb.control = {
-    
-            dbeg: { 
-                keypress: function (e) { !this.utils.checkDate(e.target.value, e.key) && e.preventDefault(); }, 
-                paste: function(e) { e.preventDefault(); }, 
+
+            dbeg: {
+                keypress: function (e) { !this.utils.checkDate(e.target.value, e.key) && e.preventDefault(); },
+                paste: function(e) { e.preventDefault(); },
                 change: function(e) { this.utils.calcFields(this); }
             },
-            dend: { 
-                keypress: function(e) { !this.checkDate(e.target.value, e.key) && e.preventDefault(); }, 
-                paste: function(e) { e.preventDefault(); }, 
+            dend: {
+                keypress: function(e) { !this.checkDate(e.target.value, e.key) && e.preventDefault(); },
+                paste: function(e) { e.preventDefault(); },
                 change: function(e) { this.utils.calcFields(this); }
             },
-            days: { 
-                keypress: function (e) { e.preventDefault(); }, 
+            days: {
+                keypress: function (e) { e.preventDefault(); },
                 paste: function (e) { e.preventDefault(); },
                 change: function (e) {
                     const P = GL.CONST.PREFIX.GUEST_CARD;
 
                     let dialog = document.getElementById(`${P}-${this.id}`),
-                        dbeg = dialog.querySelector(`#${P}-el-${IGuest.Dbeg} input`),
-                        dend = dialog.querySelector(`#${P}-el-${IGuest.Dend} input`);
-                    
+                        dbeg = dialog.querySelector(`#${P}-el-${IGuest.dbeg} input`),
+                        dend = dialog.querySelector(`#${P}-el-${IGuest.dend} input`);
+
                     if (!dbeg) {
                         UTILS.LOG(GL.CONST.LOG.LEVEL.ERROR, GL.CONST.LOG.ID.A001.TITLE, GL.CONST.LOG.ID.A001.GIST);
                         return;
@@ -196,8 +200,8 @@ class GuestCard extends Dialog {
                     let firstDay = buildDate(this.opts.year, dbeg.value).getTime(),
                         lastDay = buildDate(this.opts.year, dend.value).getTime(),
                         oneDay = GL.CONST.VALUES.UTILS.ONE_DAY;
-                    dialog.querySelector(`#${P}-el-${IGuest.Days} input`).value = ((lastDay - firstDay) / oneDay) + 1;
-                    
+                    dialog.querySelector(`#${P}-el-${IGuest.days} input`).value = ((lastDay - firstDay) / oneDay) + 1;
+
                     e.preventDefault();
 
                     function buildDate(year, ddmm) {
@@ -206,27 +210,27 @@ class GuestCard extends Dialog {
                     }
                 }
             },
-            room: { 
-                keypress: function(e) { e.preventDefault(); }, 
-                click: function(e) { e.target.parentNode.querySelector('#rooms-drop-down-list').style.display = 'block'; }, 
-                paste: function(e) { e.preventDefault(); }, 
+            room: {
+                keypress: function(e) { e.preventDefault(); },
+                click: function(e) { e.target.parentNode.querySelector('#rooms-drop-down-list').style.display = 'block'; },
+                paste: function(e) { e.preventDefault(); },
                 change: function (e) {
                     const P = GL.CONST.PREFIX.GUEST_CARD;
 
                     let dialog = document.getElementById(`${P}-${this.id}`),
                         room = this.opts.rooms.filter(function (el) { return el.room == e.target.value; }),
-                        baseline = dialog.querySelector(`#${P}-el-${IGuest.Base} input`);
-                    
+                        baseline = dialog.querySelector(`#${P}-el-${IGuest.base} input`);
+
                     baseline.value = room.length !== 0 ? room[0].price : 0;
                     baseline.dispatchEvent(new Event('change'));
                 }
             },
-            base: { 
-                keypress: function(e) { e.preventDefault(); }, 
-                paste: function(e) { e.preventDefault(); }, 
+            base: {
+                keypress: function(e) { e.preventDefault(); },
+                paste: function(e) { e.preventDefault(); },
                 change: function(e) { this.utils.calcFields(this); }
             },
-            adjs: { 
+            adjs: {
                 keypress: function(e) {
                     let allowedChars = '-0123456789',
                         strlen = e.target.value.length;
@@ -236,26 +240,26 @@ class GuestCard extends Dialog {
                     }
                     if (allowedChars.indexOf(e.key) === -1) { e.preventDefault(); return; }
                     if (strlen > 5) { e.preventDefault(); }
-                }, 
-                paste: function(e) { e.preventDefault(); }, 
+                },
+                paste: function(e) { e.preventDefault(); },
                 change: function(e) { this.utils.calcFields(this); }
             },
-            cost: { 
-                keypress: function(e) { e.preventDefault(); }, 
-                paste: function(e) { e.preventDefault(); }, 
+            cost: {
+                keypress: function(e) { e.preventDefault(); },
+                paste: function(e) { e.preventDefault(); },
                 change: function(e) { UTILS.LOG(GL.CONST.LOG.LEVEL.INFO, GL.CONST.LOG.ID.A003.TITLE, GL.CONST.LOG.ID.A003.GIST); }
             },
-            paid: { 
+            paid: {
                 keypress: function(e) {
                     let allowedChars = '0123456789',
                         strlen = e.target.value.length;
 
                     if (allowedChars.indexOf(e.key) === -1) { e.preventDefault(); return; }
                     if (strlen > 4) { e.preventDefault(); }
-                }, 
+                },
                 paste: function(e) { e.preventDefault(); }
             },
-            teln: { 
+            teln: {
                 keypress: function(e) {
                     let allowedChars = '+-() 0123456789',
                     strlen = e.target.value.length;
@@ -268,8 +272,8 @@ class GuestCard extends Dialog {
                         e.preventDefault();
 
                     }
-                }, 
-                paste: function(e) { e.preventDefault(); }, 
+                },
+                paste: function(e) { e.preventDefault(); },
             },
             rddl: {
                 click: function (e) {
@@ -300,11 +304,11 @@ class GuestCard extends Dialog {
                             { tag: 'input', type: 'text', readonly: true },
                             { tag: 'label', textNode: `${O.intent}` }
                         ],
-                        [{ tag: 'div', id: `${P}-el-${IGuest.Unid}`, class: `${P}-el output`, style: { display: 'none;' } },
+                        [{ tag: 'div', id: `${P}-el-${IGuest.unid}`, class: `${P}-el output`, style: { display: 'none;' } },
                             { tag: 'input', type: 'text', readonly: true },
                             { tag: 'label', textNode: `${T.UNID}` }
                         ],
-                        [{ tag: 'div', id: `${P}-el-${IGuest.Dbeg}`, class: `${P}-el input` },
+                        [{ tag: 'div', id: `${P}-el-${IGuest.dbeg}`, class: `${P}-el input` },
                             {
                                 tag: 'input', type: 'text', readonly: O.isReadOnly, required: O.isStrict ,
                                 events: [
@@ -315,7 +319,7 @@ class GuestCard extends Dialog {
                             },
                             { tag: 'label', textNode: `${T.DBEG}` }
                         ],
-                        [{ tag: 'div', id: `${P}-el-${IGuest.Dend}`, class: `${P}-el input` },
+                        [{ tag: 'div', id: `${P}-el-${IGuest.dend}`, class: `${P}-el input` },
                             {
                                 tag: 'input', type: 'text', readonly: O.isReadOnly, required: O.isStrict,
                                 events: [
@@ -326,7 +330,7 @@ class GuestCard extends Dialog {
                             },
                             { tag: 'label', textNode: `${T.DEND}` }
                         ],
-                        [{ tag: 'div', id: `${P}-el-${IGuest.Days}`, class: `${P}-el output` },
+                        [{ tag: 'div', id: `${P}-el-${IGuest.days}`, class: `${P}-el output` },
                             {
                                 tag: 'input', type: 'text',
                                 events: [
@@ -337,7 +341,7 @@ class GuestCard extends Dialog {
                             },
                             { tag: 'label', textNode: `${T.DAYS}` }
                         ],
-                        [{ tag: 'div', id: `${P}-el-${IGuest.Room}`, class: `${P}-el output` },
+                        [{ tag: 'div', id: `${P}-el-${IGuest.room}`, class: `${P}-el output` },
                             {
                                 tag: 'input', type: 'text',
                                 events: [
@@ -350,7 +354,7 @@ class GuestCard extends Dialog {
                             { tag: 'label', textNode: `${T.ROOM}` },
                             { tag: 'div', id: 'rooms-drop-down-list', events: [{ name: 'click', fn: this.cb.control.rddl.click }] }
                         ],
-                        [{ tag: 'div', id: `${P}-el-${IGuest.Base}`, class: `${P}-el output` },
+                        [{ tag: 'div', id: `${P}-el-${IGuest.base}`, class: `${P}-el output` },
                             {
                                 tag: 'input', type: 'text',
                                 events: [
@@ -361,7 +365,7 @@ class GuestCard extends Dialog {
                             },
                             { tag: 'label', textNode: `${T.BASE}` }
                         ],
-                        [{ tag: 'div', id: `${P}-el-${IGuest.Adjs}`, class: `${P}-el input` },
+                        [{ tag: 'div', id: `${P}-el-${IGuest.adjs}`, class: `${P}-el input` },
                             {
                                 tag: 'input', type: 'text', readonly: O.isReadOnly,
                                 events: [
@@ -372,7 +376,7 @@ class GuestCard extends Dialog {
                             },
                             { tag: 'label', textNode: `${T.ADJS}` }
                         ],
-                        [{ tag: 'div', id: `${P}-el-${IGuest.Cost}`, class: `${P}-el output` },
+                        [{ tag: 'div', id: `${P}-el-${IGuest.cost}`, class: `${P}-el output` },
                             {
                                 tag: 'input', type: 'text',
                                 events: [
@@ -383,7 +387,7 @@ class GuestCard extends Dialog {
                             },
                             { tag: 'label', textNode: `${T.COST}` }
                         ],
-                        [{ tag: 'div', id: `${P}-el-${IGuest.Paid}`, class: `${P}-el input` },
+                        [{ tag: 'div', id: `${P}-el-${IGuest.paid}`, class: `${P}-el input` },
                             {
                                 tag: 'input', type: 'text', readonly: O.isReadOnly, required: O.isStrict,
                                 events: [
@@ -393,15 +397,15 @@ class GuestCard extends Dialog {
                             },
                             { tag: 'label', textNode: `${T.PAID}` }
                         ],
-                        [{ tag: 'div', id: `${P}-el-${IGuest.Name}`, class: `${P}-el input` },
+                        [{ tag: 'div', id: `${P}-el-${IGuest.name}`, class: `${P}-el input` },
                             { tag: 'input', type: 'text', readonly: O.isReadOnly, required: O.isStrict },
                             { tag: 'label', textNode: `${T.NAME}` }
                         ],
-                        [{ tag: 'div', id: `${P}-el-${IGuest.City}`, class: `${P}-el input` },
+                        [{ tag: 'div', id: `${P}-el-${IGuest.city}`, class: `${P}-el input` },
                             { tag: 'input', type: 'text', readonly: O.isReadOnly, required: O.isStrict },
                             { tag: 'label', textNode: `${T.CITY}` }
                         ],
-                        [{ tag: 'div', id: `${P}-el-${IGuest.Teln}`, class: `${P}-el input` },
+                        [{ tag: 'div', id: `${P}-el-${IGuest.teln}`, class: `${P}-el input` },
                             {
                                 tag: 'input', type: 'text', readonly: O.isReadOnly,
                                 events: [
@@ -411,7 +415,7 @@ class GuestCard extends Dialog {
                             },
                             { tag: 'label', textNode: `${T.TELN}` }
                         ],
-                        [{ tag: 'div', id: `${P}-el-${IGuest.Fnot}`, class: `${P}-el input` },
+                        [{ tag: 'div', id: `${P}-el-${IGuest.fnot}`, class: `${P}-el input` },
                             { tag: 'input', type: 'text', readonly: O.isReadOnly },
                             { tag: 'label', textNode: `${T.FNOT}` }
                         ],
@@ -422,7 +426,7 @@ class GuestCard extends Dialog {
                     ],
                 ]
             ];
-        
+
         tree = new DOMTree(tree).cultivate();
         if (!tree) {
             UTILS.LOG(GL.CONST.LOG.LEVEL.ERROR, GL.CONST.LOG.ID.B000.TITLE, GL.CONST.LOG.ID.B000.GIST);
@@ -437,17 +441,6 @@ class GuestCard extends Dialog {
         document.body.appendChild(tree);
     }
 
-    show() {
-        let dialog = document.getElementById(`${GL.CONST.PREFIX.GUEST_CARD}-${this.id}`);
-        dialog.style.display = 'block';
-    }
-
-    unbind() {
-        let dialog = document.getElementById(`${GL.CONST.PREFIX.GUEST_CARD}-${this.id}`);
-        dialog.style.display = 'none';
-        dialog.parentNode.removeChild(dialog);
-    }
-
     setVal(guest) {
         if (guest === undefined) {
             UTILS.LOG(GL.CONST.LOG.LEVEL.ERROR, GL.CONST.LOG.ID.A000.TITLE, GL.CONST.LOG.ID.A000.GIST);
@@ -455,56 +448,65 @@ class GuestCard extends Dialog {
         }
         const P = GL.CONST.PREFIX.GUEST_CARD;
         let dialog = document.getElementById(`${P}-${this.id}`);
-        dialog.querySelector(`#${P}-el-intent input`).value = this.opts.intent;
-        dialog.querySelector(`#${P}-el-${IGuest.Unid} input`).value = guest.Unid;
-        dialog.querySelector(`#${P}-el-${IGuest.Dbeg} input`).value = new Date(guest.Dbeg).format('dd.mm');
-        dialog.querySelector(`#${P}-el-${IGuest.Dend} input`).value = new Date(guest.Dend).format('dd.mm');
-        dialog.querySelector(`#${P}-el-${IGuest.Room} input`).value = guest.Room;
-        dialog.querySelector(`#${P}-el-${IGuest.Base} input`).value = guest.Base;
-        dialog.querySelector(`#${P}-el-${IGuest.Adjs} input`).value = guest.Adjs;
-        dialog.querySelector(`#${P}-el-${IGuest.Cost} input`).value = guest.Cost;
-        dialog.querySelector(`#${P}-el-${IGuest.Paid} input`).value = guest.Paid;
-        dialog.querySelector(`#${P}-el-${IGuest.Name} input`).value = guest.Name;
-        dialog.querySelector(`#${P}-el-${IGuest.City} input`).value = guest.City;
-        dialog.querySelector(`#${P}-el-${IGuest.Teln} input`).value = guest.Teln;
-        dialog.querySelector(`#${P}-el-${IGuest.Fnot} input`).value = guest.Fnot;
+        dialog.querySelector(`#${P}-el-${IGuest.unid} input`).value = guest.unid;
+        dialog.querySelector(`#${P}-el-${IGuest.dbeg} input`).value = new Date(guest.dbeg.toString()).format('dd.mm.yyyy');
+        dialog.querySelector(`#${P}-el-${IGuest.dend} input`).value = new Date(guest.dend.toString()).format('dd.mm.yyyy');
+        dialog.querySelector(`#${P}-el-${IGuest.room} input`).value = guest.room;
+        dialog.querySelector(`#${P}-el-${IGuest.base} input`).value = guest.base;
+        dialog.querySelector(`#${P}-el-${IGuest.adjs} input`).value = guest.adjs;
+        dialog.querySelector(`#${P}-el-${IGuest.cost} input`).value = guest.cost;
+        dialog.querySelector(`#${P}-el-${IGuest.paid} input`).value = guest.paid;
+        dialog.querySelector(`#${P}-el-${IGuest.name} input`).value = guest.name;
+        dialog.querySelector(`#${P}-el-${IGuest.city} input`).value = guest.city;
+        dialog.querySelector(`#${P}-el-${IGuest.teln} input`).value = guest.teln;
+        dialog.querySelector(`#${P}-el-${IGuest.fnot} input`).value = guest.fnot;
 
-        document.querySelector(`#${P}-el-${IGuest.Dbeg} input`).dispatchEvent(new Event('change'));
-        document.querySelector(`#${P}-el-${IGuest.Days} input`).dispatchEvent(new Event('change'));
-        document.querySelector(`#${P}-el-${IGuest.Room} input`).dispatchEvent(new Event('change'));
+        document.querySelector(`#${P}-el-${IGuest.dbeg} input`).dispatchEvent(new Event('change'));
+        document.querySelector(`#${P}-el-${IGuest.days} input`).dispatchEvent(new Event('change'));
+        document.querySelector(`#${P}-el-${IGuest.room} input`).dispatchEvent(new Event('change'));
+    }
+
+    getPromise() { return super.getPromise(); }
+
+    show() {
+        let dialog = document.getElementById(`${GL.CONST.PREFIX.GUEST_CARD}-${this.id}`);
+        dialog.style.display = 'block';
     }
 
     getVal() {
         const P = GL.CONST.PREFIX.GUEST_CARD;
         let dialog = document.getElementById(`${GL.CONST.PREFIX.GUEST_CARD}-${this.id}`);
         let guest = new Guest();
-        guest.Year = this.opts.year;
-        guest.Mnth = this.opts.month;
-        guest.Intn = this.opts.intent;
-        guest.Unid = dialog.querySelector(`#${P}-el-${IGuest.Unid} input`).value;
-        guest.Dbeg = dialog.querySelector(`#${P}-el-${IGuest.Dbeg} input`).value;
-        guest.Dend = dialog.querySelector(`#${P}-el-${IGuest.Dend} input`).value;
-        guest.Days = dialog.querySelector(`#${P}-el-${IGuest.Days} input`).value;
-        guest.Room = dialog.querySelector(`#${P}-el-${IGuest.Room} input`).value;
-        guest.Base = dialog.querySelector(`#${P}-el-${IGuest.Base} input`).value;
-        guest.Adjs = dialog.querySelector(`#${P}-el-${IGuest.Adjs} input`).value;
-        guest.Cost = dialog.querySelector(`#${P}-el-${IGuest.Cost} input`).value;
-        guest.Paid = dialog.querySelector(`#${P}-el-${IGuest.Paid} input`).value;
-        guest.Name = dialog.querySelector(`#${P}-el-${IGuest.Name} input`).value;
-        guest.City = dialog.querySelector(`#${P}-el-${IGuest.City} input`).value;
-        guest.Teln = dialog.querySelector(`#${P}-el-${IGuest.Teln} input`).value;
-        guest.Fnot = dialog.querySelector(`#${P}-el-${IGuest.Fnot} input`).value;
+        guest.unid = dialog.querySelector(`#${P}-el-${IGuest.unid} input`).value;
+        guest.dbeg = dialog.querySelector(`#${P}-el-${IGuest.dbeg} input`).value;
+        guest.dend = dialog.querySelector(`#${P}-el-${IGuest.dend} input`).value;
+        guest.days = dialog.querySelector(`#${P}-el-${IGuest.days} input`).value;
+        guest.room = dialog.querySelector(`#${P}-el-${IGuest.room} input`).value;
+        guest.base = dialog.querySelector(`#${P}-el-${IGuest.base} input`).value;
+        guest.adjs = dialog.querySelector(`#${P}-el-${IGuest.adjs} input`).value;
+        guest.cost = dialog.querySelector(`#${P}-el-${IGuest.cost} input`).value;
+        guest.paid = dialog.querySelector(`#${P}-el-${IGuest.paid} input`).value;
+        guest.name = dialog.querySelector(`#${P}-el-${IGuest.name} input`).value;
+        guest.city = dialog.querySelector(`#${P}-el-${IGuest.city} input`).value;
+        guest.teln = dialog.querySelector(`#${P}-el-${IGuest.teln} input`).value;
+        guest.fnot = dialog.querySelector(`#${P}-el-${IGuest.fnot} input`).value;
         return guest;
+    }
+
+    unbind() {
+        let dialog = document.getElementById(`${GL.CONST.PREFIX.GUEST_CARD}-${this.id}`);
+        dialog.style.display = 'none';
+        dialog.parentNode.removeChild(dialog);
     }
 }
 
 class PickPeriod extends Dialog {
-    
+
     constructor(opts) {
         super(opts);
 
         this.cb.control.year = {
-                    
+
             keyDown: function (e) {
                 if (isNaN(e.key)) e.preventDefault();
                 else this.value.length >= 4 && e.preventDefault();
@@ -514,7 +516,7 @@ class PickPeriod extends Dialog {
                 let val = this.value;
                 val.length === 0 && (this.value = 1900);
             },
-        
+
             prev: function prevYear(e) {
                 let id = `${GL.CONST.PREFIX.PICK_PERIOD}-${this.id}-input-year`,
                     year = document.getElementById(id) || 0;
@@ -525,7 +527,7 @@ class PickPeriod extends Dialog {
                 let val = parseInt(year.value);
                 val > 1900 && val <= 9999 && (val--, year.value = val);
             },
-                    
+
             next: function nextYear(e) {
                 let id = `${GL.CONST.PREFIX.PICK_PERIOD}-${this.id}-input-year`,
                     year = document.getElementById(id) || 0;
@@ -537,9 +539,9 @@ class PickPeriod extends Dialog {
                 val >= 0 && val < 9999 && (val++ , year.value = val);
             }
         };
-                
+
         this.cb.control.month = {
-                    
+
             sel: function monthSel(e) {
                 let className = `${GL.CONST.PREFIX.PICK_PERIOD}-month-sel`,
                     sel = document.getElementsByClassName(className);
@@ -548,22 +550,6 @@ class PickPeriod extends Dialog {
                 }
                 e.target.setAttribute('class', className);
             }
-        };
-
-        this.promise = {
-            resolve: null,
-            reject: null
-        }
-
-        this.cb.command.ok = function ok(e) {
-            this.unbind();
-            this.promise.resolve(this.getVal());
-            // EVENT_BUS.dispatch(GL.CONST.EVENTS.JOURNAL.DIALOG_SAVE, { intent: this.opts.intent, year: val.year, month: val.month.num });
-        };
-                
-        this.cb.command.no = function no(e) {
-            this.unbind();
-            this.promise.reject();
         };
     }
 
@@ -610,7 +596,7 @@ class PickPeriod extends Dialog {
                                 [{ tag: 'tr' },
                                     { tag: 'td', id: `04-month-${P}-${this.id}`, class: `${P}-month`, textNode: 'Апрель' },
                                     { tag: 'td', id: `05-month-${P}-${this.id}`, class: `${P}-month`, textNode: 'Май' },
-                                    { tag: 'td', id: `06-month-${P}-${this.id}`, class: `${P}-month`, textNode: 'Июнь' },  
+                                    { tag: 'td', id: `06-month-${P}-${this.id}`, class: `${P}-month`, textNode: 'Июнь' },
                                 ],
                                 [{ tag: 'tr' },
                                     { tag: 'td', id: `07-month-${P}-${this.id}`, class: `${P}-month`, textNode: 'Июль' },
@@ -631,15 +617,10 @@ class PickPeriod extends Dialog {
                     ]
                 ]
             ];
-        
+
         tree = new DOMTree(tree).cultivate();
         if (tree) document.body.appendChild(tree);
         else console.log('tree is ' + tree);
-    }
-
-    getPromise() {
-        var self = this;
-        return new Promise((resolve, reject) => { self.promise.resolve = resolve; self.promise.reject = reject; });
     }
 
     setVal(val) {
@@ -649,6 +630,8 @@ class PickPeriod extends Dialog {
         year.value = val.year;
         (month.classList) && month.classList.add(`${P}-month-sel`);
     }
+
+    getPromise() { return super.getPromise(); }
 
     show() {
         const P = GL.CONST.PREFIX.PICK_PERIOD;
@@ -682,17 +665,17 @@ class RCMenu extends Dialog {
 
         this.cb.command.upd = function upd(e) {
             this.unbind();
-            EVENT_BUS.dispatch(GL.CONST.EVENTS.JOURNAL.RC_MENU.RCM_ITEM_UPD_GUEST, this.opts.guest);
+            EVENT_BUS.dispatch(GL.CONST.EVENTS.JOURNAL.RC_MENU.UPD, this.opts.guest);
         };
 
         this.cb.command.del = function del(e) {
             this.unbind();
-            EVENT_BUS.dispatch(GL.CONST.EVENTS.JOURNAL.RC_MENU.RCM_ITEM_DEL_GUEST, this.opts.guest);
+            EVENT_BUS.dispatch(GL.CONST.EVENTS.JOURNAL.RC_MENU.DEL, this.opts.guest);
         };
 
         this.cb.command.add = function add(e) {
             this.unbind();
-            EVENT_BUS.dispatch(GL.CONST.EVENTS.JOURNAL.RC_MENU.RCM_ITEM_ADD_GUEST, this.opts.guest);
+            EVENT_BUS.dispatch(GL.CONST.EVENTS.JOURNAL.RC_MENU.ADD, this.opts.guest);
         };
 
         this.cb.command.lmc = function lmc(e) {
@@ -701,7 +684,7 @@ class RCMenu extends Dialog {
     }
 
     bind() {
-        
+
         const T = GL.CONST.LOCALIZABLE.VAR003;
         let div, ul, li;
 
@@ -742,6 +725,8 @@ class RCMenu extends Dialog {
     }
 
     setVal () {}
+
+    getPromise() { return super.getPromise(); }
 
     show () {
         let rcmenu = document.getElementById('rcmenu');
