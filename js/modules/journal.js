@@ -23,7 +23,8 @@ class CellSelection {
         let selection = target.dataset.selection;
         if (!selection) return;
         Array.prototype.slice.call(document.querySelectorAll(`[data-selection='${selection}']`)).some(el => {
-            while (el.hasChildNodes()) el.removeChild(el.firstChild);
+            // while (el.hasChildNodes()) el.removeChild(el.firstChild);
+            el.innerText = '';
             el.removeAttribute('data-selection');
             el.removeAttribute('data-status');
             return (el.id === target.id);
@@ -35,7 +36,8 @@ class CellSelection {
         let i = 1;
         document.querySelectorAll(`[data-selection='${selection}']`).forEach(el => {
             while (el.hasChildNodes()) el.removeChild(el.firstChild);
-            el.textContent = (i++);
+            el.innerText = (i++);
+            // el.textContent = (i++);
         });;
     }
 
@@ -280,6 +282,7 @@ class Journal extends DataWrapper {
                                 room = target.dataset.room,
                                 date = target.dataset.date,
                                 select;
+
                             try {
                                 select = await new Select('', {types: 'sss', param: [date, date, room]}).select('*').from('gl001').where(`dbeg <= ? AND dend >= ? AND room = ?`).connect();
                             } catch (error) { return; }
@@ -292,8 +295,11 @@ class Journal extends DataWrapper {
                                     isAvailableButton = true;
                                     guest = new Guest();
                                     guest.room = room;
-                                    guest.dbeg = CellSelection.getGroup(target.dataset.selection, 'F').dataset.date;
-                                    guest.dend = CellSelection.getGroup(target.dataset.selection, 'L').dataset.date;
+                                    (() => {
+                                        if (!target.dataset.selection) return;
+                                        guest.dbeg = CellSelection.getGroup(target.dataset.selection, 'F').dataset.date;
+                                        guest.dend = CellSelection.getGroup(target.dataset.selection, 'L').dataset.date;
+                                    })();
                                     break;
 
                                 case 1:
@@ -473,6 +479,7 @@ class Journal extends DataWrapper {
                 month: {
 
                     prev: function prevMonth(e) {
+                        let self = this;
 
                         (() => {
                             let date = new Date(self.year, self.month.JSnum, '01');
@@ -481,19 +488,20 @@ class Journal extends DataWrapper {
                             self.month = date.getMonth() + 1;
                         })();
 
-                        (async () => { await Journal.updateUserConfig(this.year, self.month.num)})();
+                        (async () => { await Journal.updateUserConfig(self.year, self.month.num); })();
 
                         (async () => {
                             try {
                                 let guest = await Journal.initializeGuestList(self.year, self.month.JSnum);
                                 self.guest = guest.data;
-                                self.resetView();
+                                self.build();
                                 self.add(self.guest);
                            } catch (e) { return; }
                        })();
                     },
 
                     next: function nextMonth(e) {
+                        let self = this;
 
                         (() => {
                             let date = new Date(self.year, self.month.JSnum, '01');
@@ -502,13 +510,13 @@ class Journal extends DataWrapper {
                             self.month = date.getMonth() + 1;
                         })();
 
-                        (async () => { await Journal.updateUserConfig(this.year, self.month.num)})();
+                        (async () => { await Journal.updateUserConfig(self.year, self.month.num); })();
 
                         (async () => {
                             try {
                                 let guest = await Journal.initializeGuestList(self.year, self.month.JSnum);
                                 self.guest = guest.data;
-                                self.resetView();
+                                self.build();
                                 self.add(self.guest);
                            } catch (e) { return; }
                        })();
@@ -526,10 +534,12 @@ class Journal extends DataWrapper {
                         var result = await dialog.getPromise();
                         self.year = result.year;
                         self.month = result.month.num;
-                        new Update('', { types: 'ss', param: [self.year, self.month.num] }).update('cf001').set('year = ?, month = ?').where('user = ?').connect(1);
-                        let select = Journal.initializeGuestList(self.year, self.month.JSnum);
+                        let update = await new Update('', { types: 'ss', param: [self.year, self.month.num] }).update('cf001').set('year = ?, month = ?').where('user = ?').connect(1);
+                        if (!update.status) return;
+                        let select = await Journal.initializeGuestList(self.year, self.month.JSnum);
+                        if (!select.status) return;
                         self.guest = select.data;
-                        self.resetView();
+                        self.build();
                         self.add(self.guest);
                     } catch (error) { return; }
                 }
@@ -576,7 +586,7 @@ class Journal extends DataWrapper {
                                             { tag: 'span', id: 'journal-button-month-prev', class: 'button', events: [{ name: 'click', fn: this.cb.control.month.prev, bind: this }] },
                                         ],
                                         [{ tag: 'td' },
-                                            [{ tag: 'span', id: 'journal-button-pick-period', events: [{ name: 'click', fn: this.cb.control.pickPeriod, bind: this }] },
+                                            [{ tag: 'span', id: 'journal-button-pick-period', class: 'button', events: [{ name: 'click', fn: this.cb.control.pickPeriod, bind: this }] },
                                                 { tag: 'label', id: 'month' },
                                                 { tag: 'label', id: 'year' },
                                             ],
@@ -639,7 +649,7 @@ class Journal extends DataWrapper {
                 let guest = await Journal.initializeGuestList(self.year, self.month.JSnum);
                 self.guest = guest.data;
 
-                self.resetView();
+                self.build();
                 self.add(self.guest);
             } catch (err) {
                 // TODO error
@@ -658,25 +668,25 @@ class Journal extends DataWrapper {
         }
 
         entries.forEach(guest => {
-            setJournal(guest);
-            setRecords(guest);
+            fillJournal(guest);
+            fillRecords(guest);
         });
 
-        function setJournal(guest) {
+        function fillJournal(guest) {
 
             let begda = new Date(guest.dbeg.toString()),
-                endda = new Date(guest.dend.toString()),
-                curda = new Date(),
-                tmpda = begda;
+                endda = new Date(guest.dend.toString());
 
-            while (tmpda <= endda) {
-                if (!isDateValid(tmpda)) {
-                    tmpda.setDate(tmpda.getDate() + 1);
-                    continue;
-                }
+            const CURRENT_DATE = new Date();
+            const PERIOD = `${self.year}-${self.month.num}`;
 
-                let cell = document.querySelector(`#journal #R${guest.room} #R${guest.room}D${tmpda.format('yyyy-mm-dd')}`);
-                while (cell.hasChildNodes()) cell.removeChild(cell.firstChild);
+            for (let tmpda = begda; tmpda <= endda; tmpda.setDate(tmpda.getDate() + 1)) {
+
+                if (!(tmpda.format('yyyy-mm') == PERIOD)) continue;
+
+                let cell = document.querySelector(`#journal #R${guest.room}D${tmpda.format('yyyy-mm-dd')}`);
+
+                (() => { CellSelection.del(cell); })();
 
                 (() => {
                     const STATUS = GL.CONST.DATA_ATTR.JOURNAL.STATUS;
@@ -687,7 +697,7 @@ class Journal extends DataWrapper {
                             break;
 
                         default:
-                            cell.dataset.status = (tmpda < curda) ? STATUS.REDEEMED : STATUS.RESERVED;
+                            cell.dataset.status = (tmpda < CURRENT_DATE) ? STATUS.REDEEMED : STATUS.RESERVED;
                             break;
                     }
                     let unid = cell.dataset.unid ? cell.dataset.unid.split(',') : [];
@@ -697,36 +707,32 @@ class Journal extends DataWrapper {
                 })();
 
                 (() => {
-                    let balloon = cell.querySelector('.balloon-wrapper');
+                    let balloon = cell.querySelector('.balloon-wrapper .balloon-content');
                     if (!balloon) {
-                        (balloon = document.createElement('div')).setAttribute('class', 'balloon-wrapper');
+                        (balloon = document.createElement('div')).classList.add('balloon-wrapper');
                         let b = document.createElement('div');
-                        b.setAttribute('class', 'balloon');
+                        b.classList.add('balloon-content');
                         balloon.appendChild(b);
                         cell.appendChild(balloon);
-                        balloon = cell.querySelector('.balloon-wrapper .balloon');
+                        balloon = cell.querySelector('.balloon-wrapper .balloon-content');
                     }
 
                     let tree =
-                        [{ tag: 'div', class: 'hint', attr: { 'data-balloon-unid': guest.unid } },
-                            { tag: 'span', class: 'balloon-person-name', textNode: guest.name },
-                            { tag: 'span', class: 'balloon-person-teln', textNode: guest.teln },
-                            { tag: 'span', class: 'balloon-person-fnot', textNode: guest.fnot },
-                            { tag: 'span', class: 'balloon-person-city', textNode: guest.city },
-                            { tag: 'span', class: 'balloon-person-unid', textNode: guest.unid }
+                        [{ tag: 'div', class: 'balloon', attr: { 'data-balloon-unid': guest.unid } },
+                            { tag: 'span', class: 'balloon-el balloon-el-name', textNode: guest.name },
+                            { tag: 'span', class: 'balloon-el balloon-el-teln', textNode: guest.teln },
+                            { tag: 'span', class: 'balloon-el balloon-el-fnot', textNode: guest.fnot },
+                            { tag: 'span', class: 'balloon-el balloon-el-city', textNode: guest.city },
+                            { tag: 'span', class: 'balloon-el balloon-el-unid', textNode: guest.unid }
                         ];
 
                     tree = new DOMTree(tree).cultivate();
                     balloon.appendChild(tree);
                 })();
-
-                tmpda.setDate(tmpda.getDate() + 1);
             }
         }
 
-        function isDateValid(d) { return d.format('yyyy-mm') == (self.year + '-' + self.month.num); }
-
-        function setRecords(guest) {
+        function fillRecords(guest) {
 
             let tree, days = new Date(self.year, self.month.JSnum, 0).getDate();
 
@@ -793,15 +799,16 @@ class Journal extends DataWrapper {
         })();
 
         (() => {
-            document.querySelectorAll(`[data-unid='${unid}']`).forEach((el) => {
+            document.querySelectorAll(`[data-unid*='${unid}']`).forEach(el => {
                 const STATUS = GL.CONST.DATA_ATTR.JOURNAL.STATUS;
+                el.removeAttribute('data-view');
                 if (el.dataset.status === STATUS.ADJACENT) {
                     el.dataset.status = (new Date(el.dataset.date) < CURRENT_DATE) ? STATUS.REDEEMED : STATUS.RESERVED;
                     let unids = el.dataset.unid.split(',');
                     unids.splice(unids.indexOf(unid), 1);
                     el.dataset.unid = unids.toString();
-                    let hint = el.querySelector(`[data-baloon-unid='${unid}']`);
-                    (!hint) && hint.parentNode.removeChild(hint);
+                    let balloon = el.querySelector(`[data-balloon-unid='${unid}']`);
+                    (balloon) && balloon.parentNode.removeChild(balloon);
                 } else {
                     el.removeAttribute('data-status');
                     el.removeAttribute('data-unid');
@@ -856,14 +863,11 @@ class Journal extends DataWrapper {
         }
     }
 
-    resetView() {
+    build() {
 
         let self = this;
-        free ();
-        build ();
 
-        function free() {
-
+        (() => {
             let journal   = document.getElementById('journal'),
                 labelYear  = journal.querySelector('#year'),
                 labelMonth = journal.querySelector('#month'),
@@ -875,63 +879,61 @@ class Journal extends DataWrapper {
 
             while (labelYear.firstChild) labelYear.removeChild(labelYear.firstChild);
             while (labelMonth.firstChild) labelMonth.removeChild(labelMonth.firstChild);
-        }
+        })();
 
-        function build() {
-
+        (() => {
             const DAYS = new Date(self.year, self.month.JSnum, 0).getDate().toString();
 
-            document.getElementById('journal-control-buttons').getElementsByTagName('td')[0].setAttribute('colspan', DAYS);
+            (() => {
+                document.getElementById('journal-control-buttons').getElementsByTagName('td')[0].setAttribute('colspan', DAYS + 1);
 
-            let journal   = document.getElementById('journal'),
-                labelYear  = journal.querySelector('#year'),
-                labelMonth = journal.querySelector('#month');
+                let journal    = document.getElementById('journal'),
+                    labelYear  = journal.querySelector('#year'),
+                    labelMonth = journal.querySelector('#month');
 
-            labelYear.appendChild(document.createTextNode(self.year));
-            labelMonth.appendChild(document.createTextNode(self.month.name));
+                labelYear.appendChild(document.createTextNode(self.year));
+                labelMonth.appendChild(document.createTextNode(self.month.name));
+            })();
 
-            let daysRow = document.getElementById('journal-calendar-days');
-
-            let day = 0;
-            while (day <= DAYS) {
-                let th = document.createElement('th');
-                if (day === 0) {
-                    th.classList.add('blank-cell');
-                } else {
-                    let id = `D${self.year}-${self.month.num}-${UTILS.OVERLAY(day, '0', 2)}`;
-                    th.setAttribute('id', id);
-                    th.appendChild(document.createTextNode(day.toString()));
-                }
-                daysRow.appendChild(th);
-                day++;
-            }
-
-            let tbody = document.getElementById('journal-tbody');
-            for (let room of self.rooms) {
-                let id = `R${room.room}`,
-                    tr = document.createElement('tr');
-                tr.setAttribute('id', id);
-                day = 0;
-                while (day <= DAYS) {
-                    let node;
-                    if (0 === day) {
-                        node = document.createElement('th');
-                        node.appendChild(document.createTextNode(room.room));
+            (() => {
+                let daysRow = document.getElementById('journal-calendar-days');
+                for (let day = 0; day <= DAYS; day++) {
+                    let th = document.createElement('th');
+                    if (day === 0) {
+                        th.classList.add('blank-cell');
                     } else {
-                        let date = new Date(self.year, self.month.JSnum, day).format('yyyy-mm-dd');
-                            id = `R${room.room}D${date}`;
-                        node = document.createElement('td');
-                        node.setAttribute('id', id);
-                        node.dataset.room = room.room;
-                        node.dataset.date = date;
-                        node.appendChild(document.createTextNode(''));
+                        th.id = `D${self.year}-${self.month.num}-${UTILS.OVERLAY(day, '0', 2)}`;
+                        th.appendChild(document.createTextNode(day.toString()));
                     }
-                    tr.appendChild(node);
-                    day++;
+                    daysRow.appendChild(th);
                 }
-                tbody.appendChild(tr);
-            }
-        }
+            })();
+
+            (() => {
+                let tbody = document.getElementById('journal-tbody');
+                for (let room of self.rooms) {
+                    let tr = document.createElement('tr');
+                    tr.id = `R${room.room}`;
+                    for (let day = 0; day <= DAYS; day++) {
+                        let node;
+                        if (day === 0) {
+                            node = document.createElement('th');
+                            node.appendChild(document.createTextNode(room.room));
+                        } else {
+                            let date = new Date(self.year, self.month.JSnum, day).format('yyyy-mm-dd');
+                            node = document.createElement('td');
+                            node.id = `R${room.room}D${date}`;
+                            node.dataset.room = room.room;
+                            node.dataset.date = date;
+                            node.appendChild(document.createTextNode(''));
+                        }
+                        tr.appendChild(node);
+                    }
+                    tbody.appendChild(tr);
+                }
+            })();
+
+        })();
     }
 
     setDelegate(eventName, qsParent, qsChild, qsClosestExcl, callback) {

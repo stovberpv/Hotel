@@ -58,8 +58,8 @@
     /* table-background-columns: -selected -reserver -adjacent -redeemed -hovered*/
     --c-tab-bck-col-sel: #c1d82f7c;    /* #c1d82f #9DEA20 #BADA55 */
     --c-tab-bck-col-res: #00a4e47c;    /* #42b3f4 */
-    --c-tab-bck-col-adj: #F4425F;      /* #ff0000 */
-    --c-tab-bck-col-red: #6a737b;      /* #696969 #6a737b*/
+    --c-tab-bck-col-adj: #F4425F;
+    --c-tab-bck-col-red: #6a737b;
     --c-tab-bck-col-hov: #ffdd00;      /* #D5D5D5 */
     /* table-inner-text-comment */
     --c-tab-inr-txt-cmt: #6a737bcc;
@@ -91,19 +91,14 @@
     --c-mod-bck-cnt: #f1f1f1;
     /* modal-back-top: -negative -positive -neutral -extend */
     --c-mod-bck-top-neg: #F4425F;
-    --c-mod-bck-top-pos: #00a4e4;
-    --c-mod-bck-top-neu: #6a737b;
+    --c-mod-bck-top-pos: #06D85F;
+    --c-mod-bck-top-neu: #00a4e4;
     --c-mod-bck-top-ext: #ffdd00E5;
     /* modal-text-top: -negative -positive -neutral -extend */
     --c-mod-txt-top-neg: #f1f1f1;
     --c-mod-txt-top-pos: #f1f1f1;
     --c-mod-txt-top-neu: #ffffff;
     --c-mod-txt-top-ext: #ffffff;
-    /* modal-text-href-normal */
-    --c-mod-txt-hrf-nor: #ffffff;
-    --c-mod-bor-hrf-nor: #06D85F;
-    --c-mod-bck-hrf-nor: #2d2d2d;
-    --c-mod-bck-hrf-hov: #06D85F;
     /* ---------------------------- CUSTOM ----------------------------- */
     --c-custom-1: #F06E58;
     --c-custom-2: #FEA45D;

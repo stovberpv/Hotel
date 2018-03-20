@@ -31,19 +31,20 @@ class DML {
             xhr.onreadystatechange = function () {
                 if (xhr.readyState === 4) {
                     if (xhr.status === 200) {
-                        new MessageBox({ text: `${GL.CONST.LOG.ID.B001.TITLE}::${GL.CONST.LOG.ID.B001.GIST}`}).build().show();
+                        new MessageBox({ text: `${GL.CONST.LOG.ID.B001.TITLE}::${GL.CONST.LOG.ID.B001.GIST}`, level: 'success' }).stay();
                         let result = '';
                         try {
                             result = JSON.parse(xhr.responseText);
                         } catch (error) {
+                            new MessageBox({ text: `${GL.CONST.LOG.ID.A001.TITLE}::${xhr.responseText}`, level: 'error' }).stay();
                         }
                         resolve(result);
                     } else {
-                        new MessageBox({ text: `${GL.CONST.LOG.ID.B002.TITLE}::${GL.CONST.LOG.ID.B002.GIST}`}).build().show();
+                        new MessageBox({ text: `${GL.CONST.LOG.ID.B002.TITLE}::${GL.CONST.LOG.ID.B002.GIST}`, level: 'error' }).stay();
                         reject(xhr.status);
                     }
                 } else {
-                    UTILS.LOG(GL.CONST.LOG.LEVEL.INFO, GL.CONST.LOG.ID.B003.TITLE, GL.CONST.LOG.ID.B003.GIST);
+                    new MessageBox({ text: `${GL.CONST.LOG.ID.B003.TITLE}::${GL.CONST.LOG.ID.B003.GIST}`, level: 'info' }).stay(1000);
                 }
             };
         });

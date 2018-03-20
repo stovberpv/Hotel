@@ -96,40 +96,19 @@ class GuestCard extends Dialog {
         super(opts);
 
         this.utils = {
-            checkDate: function (value, key) {
+            checkDate: function (e) {
+                let value = e.target.value.split(''),
+                    key = e.key,
+                    selEnd = e.srcElement.selectionEnd,
+                    selStart = e.srcElement.selectionStart,
+                    regexp = [/^\d{1,2}$/, /^\d{1,2}\.\d{1,2}$/, /^\d{1,2}\.\d{1,2}\.\d{4}$/];
 
-                let allowedChars = '0123456789.',
-                    dot = '.',
-                    strlen = value.length,
-                    dotIndex = value.indexOf('.'),
-                    newValue = value.toString().concat(key);
+                (selEnd === selStart) ? value.splice(selStart, 0, key) : value[selStart] = key;
+                value = value.join('');
 
-                // только цифры и точка
-                if (allowedChars.indexOf(key) === -1) return false;
-                // точка не должна быть первой
-                // не более двух точек
-                // точка не может быть на 3 позиции
-                if (key === dot) {
-                    if (strlen === 0) return false;
-                    if (strlen > 2) return false;
-                    if (dotIndex !== -1) return false;
-                    if (value === 0) return false;
-                }
-                // не более 5 символов (dd.mm)
-                if (strlen > 4) return false;
-                // не более 2 цифр подряд
-                if (strlen > 1 && (key !== dot && dotIndex === -1)) return false;
-                // день не больше 31 числа
-                if (strlen === 1 && parseInt(newValue) > 31) return false;
-                // месяц на старше 12
-                if (dotIndex !== -1) {
-                    let date = newValue.substring(dotIndex + 1);
-                    if (date > 12) return false;
-                }
-                // корректная дата по календарю
-
-                //
-                return true;
+                let result = 0;
+                regexp.forEach(reg => { result += reg.test(value); });
+                return !!result;
             },
 
             calcFields: function (self) {
@@ -151,7 +130,7 @@ class GuestCard extends Dialog {
                 let begda = d(...dbeg.value.split('.')),
                     endda = d(...dend.value.split('.'));
 
-                let totalDays = (endda - begda) / GL.CONST.VALUES.UTILS.ONE_DAY;
+                let totalDays = ((endda - begda) / GL.CONST.VALUES.UTILS.ONE_DAY) + 1;
 
                 let rooms = O.rooms.filter(function (el) { return el.room == room.value; });
                 (base.value === 0) && (base.value = rooms[0].price);
@@ -168,17 +147,18 @@ class GuestCard extends Dialog {
         this.cb.control = {
 
             dbeg: {
-                keypress: function (e) { !this.utils.checkDate(e.target.value, e.key) && e.preventDefault(); },
+                keypress: function (e) { !this.utils.checkDate(e) && e.preventDefault(); },
                 paste: function(e) { e.preventDefault(); },
                 change: function(e) { this.utils.calcFields(this); }
             },
             dend: {
-                keypress: function(e) { !this.checkDate(e.target.value, e.key) && e.preventDefault(); },
+                keypress: function(e) { !this.utils.checkDate(e) && e.preventDefault(); },
                 paste: function(e) { e.preventDefault(); },
                 change: function(e) { this.utils.calcFields(this); }
             },
             days: {
                 keypress: function (e) { e.preventDefault(); },
+                keydown: function(e) { e.preventDefault(); },
                 paste: function (e) { e.preventDefault(); },
                 change: function (e) {
                     const P = GL.CONST.PREFIX.GUEST_CARD;
@@ -212,7 +192,8 @@ class GuestCard extends Dialog {
             },
             room: {
                 keypress: function(e) { e.preventDefault(); },
-                click: function(e) { e.target.parentNode.querySelector('#rooms-drop-down-list').style.display = 'block'; },
+                keydown: function(e) { e.preventDefault(); },
+                click: function(e) { e.target.parentNode.querySelector('#rooms-drop-down-list').classList.toggle('rooms-drop-down-list-visible'); },
                 paste: function(e) { e.preventDefault(); },
                 change: function (e) {
                     const P = GL.CONST.PREFIX.GUEST_CARD;
@@ -227,6 +208,7 @@ class GuestCard extends Dialog {
             },
             base: {
                 keypress: function(e) { e.preventDefault(); },
+                keydown: function(e) { e.preventDefault(); },
                 paste: function(e) { e.preventDefault(); },
                 change: function(e) { this.utils.calcFields(this); }
             },
@@ -246,6 +228,7 @@ class GuestCard extends Dialog {
             },
             cost: {
                 keypress: function(e) { e.preventDefault(); },
+                keydown: function(e) { e.preventDefault(); },
                 paste: function(e) { e.preventDefault(); },
                 change: function(e) { UTILS.LOG(GL.CONST.LOG.LEVEL.INFO, GL.CONST.LOG.ID.A003.TITLE, GL.CONST.LOG.ID.A003.GIST); }
             },
@@ -281,14 +264,14 @@ class GuestCard extends Dialog {
                     roomInput.value = e.target.textContent;
                     roomInput.dispatchEvent(new Event('change'));
 
-                    e.target.parentNode.style.display = 'none';
+                    e.target.parentNode.classList.remove('rooms-drop-down-list-visible');
                 }
             }
         };
     }
 
     bind() {
-
+        // NOTE когда дойду до isString то добавить атрибут placeholder=" " для input что бы нормально отображался label
         const T = GL.CONST.LOCALIZABLE.VAR001;
         const B = GL.CONST.LOCALIZABLE.VAR002;
         const O = this.opts;
@@ -300,124 +283,136 @@ class GuestCard extends Dialog {
                         { tag: 'label', textNode: `${O.title}` }
                     ],
                     [{ tag: 'div', class: `${P} modal-body` },
-                        [{ tag: 'div', id: `${P}-el-intent`, class: `${P}-el output`, style: { display: 'none;' } },
-                            { tag: 'input', type: 'text', readonly: true },
-                            { tag: 'label', textNode: `${O.intent}` }
+                        [{ tag: 'div', class: 'row' },
+                            [{ tag: 'div', id: `${P}-el-${IGuest.unid}`, class: `${P}-el output`, style: { display: 'none;' } },
+                                { tag: 'input', type: 'text', readonly: true },
+                                { tag: 'label', textNode: `${T.UNID}` }
+                            ],
+                            [{ tag: 'div', id: `${P}-el-${IGuest.dbeg}`, class: `${P}-el input` },
+                                {
+                                    tag: 'input', type: 'text', readonly: O.isReadOnly, required: O.isStrict ,
+                                    events: [
+                                    { name: 'keypress', fn: this.cb.control.dbeg.keypress.bind(this) },
+                                    { name: 'paste', fn: this.cb.control.dbeg.paste },
+                                    { name: 'change', fn: this.cb.control.dbeg.change.bind(this) }
+                                    ]
+                                },
+                                { tag: 'label', textNode: `${T.DBEG}` }
+                            ],
+                            [{ tag: 'div', id: `${P}-el-${IGuest.dend}`, class: `${P}-el input` },
+                                {
+                                    tag: 'input', type: 'text', readonly: O.isReadOnly, required: O.isStrict,
+                                    events: [
+                                        { name: 'keypress', fn: this.cb.control.dend.keypress.bind(this) },
+                                        { name: 'paste', fn: this.cb.control.dend.paste },
+                                        { name: 'change', fn: this.cb.control.dend.change.bind(this) }
+                                    ]
+                                },
+                                { tag: 'label', textNode: `${T.DEND}` }
+                            ],
+                            [{ tag: 'div', id: `${P}-el-${IGuest.days}`, class: `${P}-el output` },
+                                {
+                                    tag: 'input', type: 'text',
+                                    events: [
+                                        { name: 'keypress', fn: this.cb.control.days.keypress },
+                                        { name: 'keydown', fn: this.cb.control.days.keydown },
+                                        { name: 'paste', fn: this.cb.control.days.paste },
+                                        { name: 'change', fn: this.cb.control.days.change.bind(this) }
+                                    ]
+                                },
+                                { tag: 'label', textNode: `${T.DAYS}` }
+                            ],
                         ],
-                        [{ tag: 'div', id: `${P}-el-${IGuest.unid}`, class: `${P}-el output`, style: { display: 'none;' } },
-                            { tag: 'input', type: 'text', readonly: true },
-                            { tag: 'label', textNode: `${T.UNID}` }
+                        [{ tag: 'div', class: 'row' },
+                            [{ tag: 'div', id: `${P}-el-${IGuest.room}`, class: `${P}-el output` },
+                                {
+                                    tag: 'input', type: 'text', required: O.isStrict,
+                                    events: [
+                                        { name: 'keypress', fn: this.cb.control.room.keypress },
+                                        { name: 'keydown', fn: this.cb.control.days.keydown },
+                                        { name: 'paste', fn: this.cb.control.room.paste },
+                                        { name: 'change', fn: this.cb.control.room.change.bind(this) },
+                                        { name: 'click', fn: this.cb.control.room.click }
+                                    ]
+                                },
+                                { tag: 'label', textNode: `${T.ROOM}` },
+                                { tag: 'div', id: 'rooms-drop-down-list', class: 'rooms-drop-down-list', events: [{ name: 'click', fn: this.cb.control.rddl.click }] }
+                            ],
+                            [{ tag: 'div', id: `${P}-el-${IGuest.base}`, class: `${P}-el output` },
+                                {
+                                    tag: 'input', type: 'text', required: O.isStrict,
+                                    events: [
+                                        { name: 'keypress', fn: this.cb.control.base.keypress },
+                                        { name: 'keydown', fn: this.cb.control.days.keydown },
+                                        { name: 'paste', fn: this.cb.control.base.paste },
+                                        { name: 'change', fn: this.cb.control.base.change.bind(this) }
+                                    ]
+                                },
+                                { tag: 'label', textNode: `${T.BASE}` }
+                            ],
+                            [{ tag: 'div', id: `${P}-el-${IGuest.adjs}`, class: `${P}-el input` },
+                                {
+                                    tag: 'input', type: 'text', readonly: O.isReadOnly, required: O.isStrict,
+                                    events: [
+                                        { name: 'keypress', fn: this.cb.control.adjs.keypress },
+                                        { name: 'paste', fn: this.cb.control.adjs.paste },
+                                        { name: 'change', fn: this.cb.control.adjs.change.bind(this) }
+                                    ]
+                                },
+                                { tag: 'label', textNode: `${T.ADJS}` }
+                            ],
+                            [{ tag: 'div', id: `${P}-el-${IGuest.cost}`, class: `${P}-el output` },
+                                {
+                                    tag: 'input', type: 'text', required: O.isStrict,
+                                    events: [
+                                        { name: 'keypress', fn: this.cb.control.cost.keypress },
+                                        { name: 'keydown', fn: this.cb.control.days.keydown },
+                                        { name: 'paste', fn: this.cb.control.cost.paste },
+                                        { name: 'change', fn: this.cb.control.cost.change.bind(this) }
+                                    ]
+                                },
+                                { tag: 'label', textNode: `${T.COST}` }
+                            ],
+                            [{ tag: 'div', id: `${P}-el-${IGuest.paid}`, class: `${P}-el input` },
+                                {
+                                    tag: 'input', type: 'text', readonly: O.isReadOnly, required: O.isStrict,
+                                    events: [
+                                        { name: 'keypress', fn: this.cb.control.paid.keypress },
+                                        { name: 'paste', fn: this.cb.control.paid.paste }
+                                    ]
+                                },
+                                { tag: 'label', textNode: `${T.PAID}` }
+                            ],
                         ],
-                        [{ tag: 'div', id: `${P}-el-${IGuest.dbeg}`, class: `${P}-el input` },
-                            {
-                                tag: 'input', type: 'text', readonly: O.isReadOnly, required: O.isStrict ,
-                                events: [
-                                   { name: 'keypress', fn: this.cb.control.dbeg.keypress.bind(this) },
-                                   { name: 'paste', fn: this.cb.control.dbeg.paste },
-                                   { name: 'change', fn: this.cb.control.dbeg.change.bind(this) }
-                                ]
-                            },
-                            { tag: 'label', textNode: `${T.DBEG}` }
+                        [{ tag: 'div', class: 'row' },
+                            [{ tag: 'div', id: `${P}-el-${IGuest.name}`, class: `${P}-el input` },
+                                { tag: 'input', type: 'text', readonly: O.isReadOnly, required: O.isStrict },
+                                { tag: 'label', textNode: `${T.NAME}` }
+                            ],
                         ],
-                        [{ tag: 'div', id: `${P}-el-${IGuest.dend}`, class: `${P}-el input` },
-                            {
-                                tag: 'input', type: 'text', readonly: O.isReadOnly, required: O.isStrict,
-                                events: [
-                                    { name: 'keypress', fn: this.cb.control.dend.keypress.bind(this) },
-                                    { name: 'paste', fn: this.cb.control.dend.paste },
-                                    { name: 'change', fn: this.cb.control.dend.change.bind(this) }
-                                ]
-                            },
-                            { tag: 'label', textNode: `${T.DEND}` }
+                        [{ tag: 'div', class: 'row' },
+                            [{ tag: 'div', id: `${P}-el-${IGuest.city}`, class: `${P}-el input` },
+                                { tag: 'input', type: 'text', readonly: O.isReadOnly, required: O.isStrict },
+                                { tag: 'label', textNode: `${T.CITY}` }
+                            ],
                         ],
-                        [{ tag: 'div', id: `${P}-el-${IGuest.days}`, class: `${P}-el output` },
-                            {
-                                tag: 'input', type: 'text',
-                                events: [
-                                    { name: 'keypress', fn: this.cb.control.days.keypress },
-                                    { name: 'paste', fn: this.cb.control.days.paste },
-                                    { name: 'change', fn: this.cb.control.days.change.bind(this) }
-                                ]
-                            },
-                            { tag: 'label', textNode: `${T.DAYS}` }
+                        [{ tag: 'div', class: 'row' },
+                            [{ tag: 'div', id: `${P}-el-${IGuest.teln}`, class: `${P}-el input` },
+                                {
+                                    tag: 'input', type: 'text', readonly: O.isReadOnly, required: O.isStrict,
+                                    events: [
+                                        { name: 'keypress', fn: this.cb.control.teln.keypress },
+                                        { name: 'paste', fn: this.cb.control.teln.paste }
+                                    ]
+                                },
+                                { tag: 'label', textNode: `${T.TELN}` }
+                            ],
                         ],
-                        [{ tag: 'div', id: `${P}-el-${IGuest.room}`, class: `${P}-el output` },
-                            {
-                                tag: 'input', type: 'text',
-                                events: [
-                                    { name: 'keypress', fn: this.cb.control.room.keypress },
-                                    { name: 'paste', fn: this.cb.control.room.paste },
-                                    { name: 'change', fn: this.cb.control.room.change.bind(this) },
-                                    { name: 'click', fn: this.cb.control.room.click }
-                                ]
-                            },
-                            { tag: 'label', textNode: `${T.ROOM}` },
-                            { tag: 'div', id: 'rooms-drop-down-list', events: [{ name: 'click', fn: this.cb.control.rddl.click }] }
-                        ],
-                        [{ tag: 'div', id: `${P}-el-${IGuest.base}`, class: `${P}-el output` },
-                            {
-                                tag: 'input', type: 'text',
-                                events: [
-                                    { name: 'keypress', fn: this.cb.control.base.keypress },
-                                    { name: 'paste', fn: this.cb.control.base.paste },
-                                    { name: 'change', fn: this.cb.control.base.change.bind(this) }
-                                ]
-                            },
-                            { tag: 'label', textNode: `${T.BASE}` }
-                        ],
-                        [{ tag: 'div', id: `${P}-el-${IGuest.adjs}`, class: `${P}-el input` },
-                            {
-                                tag: 'input', type: 'text', readonly: O.isReadOnly,
-                                events: [
-                                    { name: 'keypress', fn: this.cb.control.adjs.keypress },
-                                    { name: 'paste', fn: this.cb.control.adjs.paste },
-                                    { name: 'change', fn: this.cb.control.adjs.change.bind(this) }
-                                ]
-                            },
-                            { tag: 'label', textNode: `${T.ADJS}` }
-                        ],
-                        [{ tag: 'div', id: `${P}-el-${IGuest.cost}`, class: `${P}-el output` },
-                            {
-                                tag: 'input', type: 'text',
-                                events: [
-                                    { name: 'keypress', fn: this.cb.control.cost.keypress },
-                                    { name: 'paste', fn: this.cb.control.cost.paste },
-                                    { name: 'change', fn: this.cb.control.cost.change.bind(this) }
-                                ]
-                            },
-                            { tag: 'label', textNode: `${T.COST}` }
-                        ],
-                        [{ tag: 'div', id: `${P}-el-${IGuest.paid}`, class: `${P}-el input` },
-                            {
-                                tag: 'input', type: 'text', readonly: O.isReadOnly, required: O.isStrict,
-                                events: [
-                                    { name: 'keypress', fn: this.cb.control.paid.keypress },
-                                    { name: 'paste', fn: this.cb.control.paid.paste }
-                                ]
-                            },
-                            { tag: 'label', textNode: `${T.PAID}` }
-                        ],
-                        [{ tag: 'div', id: `${P}-el-${IGuest.name}`, class: `${P}-el input` },
-                            { tag: 'input', type: 'text', readonly: O.isReadOnly, required: O.isStrict },
-                            { tag: 'label', textNode: `${T.NAME}` }
-                        ],
-                        [{ tag: 'div', id: `${P}-el-${IGuest.city}`, class: `${P}-el input` },
-                            { tag: 'input', type: 'text', readonly: O.isReadOnly, required: O.isStrict },
-                            { tag: 'label', textNode: `${T.CITY}` }
-                        ],
-                        [{ tag: 'div', id: `${P}-el-${IGuest.teln}`, class: `${P}-el input` },
-                            {
-                                tag: 'input', type: 'text', readonly: O.isReadOnly,
-                                events: [
-                                    { name: 'keypress', fn: this.cb.control.teln.keypress },
-                                    { name: 'paste', fn: this.cb.control.teln.paste }
-                                ]
-                            },
-                            { tag: 'label', textNode: `${T.TELN}` }
-                        ],
-                        [{ tag: 'div', id: `${P}-el-${IGuest.fnot}`, class: `${P}-el input` },
-                            { tag: 'input', type: 'text', readonly: O.isReadOnly },
-                            { tag: 'label', textNode: `${T.FNOT}` }
+                        [{ tag: 'div', class: 'row' },
+                            [{ tag: 'div', id: `${P}-el-${IGuest.fnot}`, class: `${P}-el input` },
+                                { tag: 'input', type: 'text', readonly: O.isReadOnly, required: O.isStrict, },
+                                { tag: 'label', textNode: `${T.FNOT}` }
+                            ],
                         ],
                     ],
                     [{ tag: 'div', class: `${P} modal-footer` },
@@ -429,7 +424,7 @@ class GuestCard extends Dialog {
 
         tree = new DOMTree(tree).cultivate();
         if (!tree) {
-            UTILS.LOG(GL.CONST.LOG.LEVEL.ERROR, GL.CONST.LOG.ID.B000.TITLE, GL.CONST.LOG.ID.B000.GIST);
+            UTILS.LOG(GL.CONST.LOG.LEVEL.ERROR, GL.CONST.LOG.ID.A001.TITLE, GL.CONST.LOG.ID.A001.GIST);
             return;
         }
         let rddl = tree.querySelector('#rooms-drop-down-list');
@@ -470,7 +465,7 @@ class GuestCard extends Dialog {
 
     show() {
         let dialog = document.getElementById(`${GL.CONST.PREFIX.GUEST_CARD}-${this.id}`);
-        dialog.style.display = 'block';
+        dialog.classList.add('modal-wrapper-visible');
     }
 
     getVal() {

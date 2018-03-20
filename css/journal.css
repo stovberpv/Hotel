@@ -227,67 +227,44 @@
     padding: 0;
     margin: 0;
 }
-
 #year {
     display: none;
 }
-
 #journal-control-buttons td {
     text-align: center;
     padding: 0;
 }
-
 #journal-control-buttons table {
     width: 100%;
     border-collapse: collapse;
 }
-
 #journal-control-buttons table td:nth-child(2) {
     width: 90%;
 }
-
-#journal-button-month-prev {
-    border: none;
-    border-bottom: 1px solid var(--c-tab-bor-bod-nor);
-    border-left: 1px solid var(--c-tab-bor-bod-nor);
-    border-top: 1px solid var(--c-tab-bor-bod-nor);
-    border-top-left-radius: 2px;
-    border-bottom-left-radius: 2px;
-}
-
 #journal-button-month-prev:hover {
     border-top: 1px solid transparent;
     border-left: 1px solid transparent;
     border-bottom: 1px solid transparent;
 }
-
 #journal-button-month-prev:before {
     content: url('data:image/svg+xml;utf8,<svg fill="#6a737b" height="10" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M15.41 16.09l-4.58-4.59 4.58-4.59L14 5.5l-6 6 6 6z"/></svg>');
 }
-
-#journal-button-month-next {
-    border: none;
-    border-bottom: 1px solid var(--c-tab-bor-bod-nor);
-    border-right: 1px solid var(--c-tab-bor-bod-nor);
-    border-top: 1px solid var(--c-tab-bor-bod-nor);
-    border-top-right-radius: 2px;
-    border-bottom-right-radius: 2px;
-}
-
 #journal-button-month-next:hover {
     border-top: 1px solid transparent;
     border-right: 1px solid transparent;
     border-bottom: 1px solid transparent;
 }
-
 #journal-button-month-next:before {
     content: url('data:image/svg+xml;utf8,<svg fill="#6a737b" height="10" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M8.59 16.34l4.58-4.59-4.58-4.59L10 5.75l6 6-6 6z"/></svg>');
 }
-
+#journal-control-buttons table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 5px;
+}
 #journal-control-buttons .button {
     display: block;
     outline: none;
-    border: none;
     cursor: pointer;
     width: 100%;
     height: 100%;
@@ -295,11 +272,12 @@
     margin: 0;
     background-color: var(--c-btn-bck-nor-neu);
 }
-
 #journal-control-buttons .button:hover {
     animation: blink2 5s infinite;
+    box-shadow: none;
+    transition: none;
+    transform: none;
 }
-
 #button-pick-period {
     display: block;
     border: 1px solid var(--c-tab-bor-bod-nor);
@@ -310,7 +288,6 @@
     padding: 0;
     margin: 0;
 }
-
 #button-pick-period:hover {
     color: var(--c-btn-txt-hov-pos);
     animation: blink2 5s infinite;
@@ -320,47 +297,47 @@
 
 /*-----------------------------------------------------------------*/
 
-.balloon-wrapper {
-    position: relative;
-}
 
-.balloon-wrapper .balloon {
+.balloon-wrapper {
+    position: absolute;
+}
+.balloon-wrapper .balloon-content {
     visibility: hidden;
     width: 200px;
-    background-color: var(--c-tip-bck);
-    opacity: 0.9;
-    /* color: var(--c-tip-txt); */
+    background-color: rgba(255,255,255, .7);
     border-radius: var(--r-bor-nor);
-    padding: 5px;
+    padding: 4px;
     position: absolute;
     z-index: 1;
-    bottom: 28px;
-    left: -450%;
     display: block;
-    overflow: hidden;
     text-align: initial;
+    top: 25px;
+    left: -95px;
+    /* overflow: hidden; */
 }
-
-.balloon-wrapper .balloon::after {
-    content: "";
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    margin-left: -5px;
-    border-width: 5px;
-    border-style: solid;
-    border-color: var(--c-tip-bck) transparent transparent transparent;
+.balloon-wrapper .balloon {
+    border-radius: 3px;
 }
-
-.balloon-wrapper .balloon .hint span {
-    width: 100%;
+.balloon-wrapper .balloon-el {
+    /* width: 100%; */
+    padding: 4px 4px 4px 4px;
+    border-radius: 3px;
     display: block;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+.balloon-wrapper .balloon-el-name {
+    background-color: cornflowerblue;
+    color: white;
+}
+.balloon-wrapper .balloon-el-unid { display: none; }
+.balloon-wrapper .balloon-el-teln:before {content: '☎';}
+.balloon-wrapper .balloon-el-fnot:before {content: '✎';}
+.balloon-wrapper .balloon-el-city:before {content: '✈';}
+.balloon-wrapper .balloon-el-unid:before {content: '№';}
 
-#journal>tbody>tr:not(.records-row)>td:hover .balloon-wrapper .balloon {
+#journal>tbody>tr:not(.records-row)>td:hover .balloon-wrapper .balloon-content {
     visibility: visible;
     box-shadow: var(--s-hov);
     transition: all 0.3s;

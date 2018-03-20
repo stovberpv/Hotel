@@ -12,17 +12,6 @@ const UTILS = {
         return overlayedVal;
     },
 
-    /**
-     * @return {string}
-     */
-    GET_MONTH_NAME: function (id) {
-        return GL.CONST.VALUES.CALENDAR.MONTH_NAMES[parseInt(id)];
-    },
-
-    GET_MONTH_ID: function (month) {
-        return this.overlay(gl.monthNames.indexOf(month), '0', 2);
-    },
-    
     GET_DAYS_IN_MONTH: function (m, y) {
         m--;
         let isLeap = ((y % 4) == 0 && ((y % 100) != 0 || (y % 400) == 0));
@@ -40,14 +29,6 @@ const UTILS = {
             }
         });
         return map;
-    },
-
-    CLONE(source) {
-        let obj = {};
-        for (let key in source) {
-            obj[key.toLowerCase()] = '';
-        }
-        return obj;
     },
 
     DEEP_FREEZE: function deepFreeze(obj) {
@@ -93,19 +74,17 @@ const UTILS = {
         };
     },
 
-    IS_DOM: function(obj) {
-        return !!(obj && obj.nodeType === 1);
-    },
+    IS_DOM: function(obj) { return !!(obj && obj.nodeType === 1); },
 
     GET_COOKIE: function(name = '') {
         let result = {},
             cookies = document.cookie.split(';');
-        for (let cookie of cookies) { 
+        for (let cookie of cookies) {
             let cookiePair = cookie.split('='),
                 key = cookiePair[0].trim();
                 val = cookiePair[1];
             if (key === name) return val;
-            result[key] = val; 
+            result[key] = val;
         }
         return result;
     }

@@ -2,9 +2,17 @@
 /*jshint -W030 */
 /*jshint -W040 */
 /*jshint -W083 */
-(function () {
-    "use strict";
-})();
+(function () { "use strict"; })();
+
+class Person {
+    constructor(opts) {
+        this.name = opts.name;
+        this.teln = opts.teln;
+        this.city = opts.city;
+        this.info = opts.info;
+    }
+}
+
 class Contacts extends DataWrapper {
 
     bind(target) {

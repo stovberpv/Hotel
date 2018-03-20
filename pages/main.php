@@ -14,7 +14,7 @@
         <link rel='icon' href='/res/icons/favicon.png' />
         <link rel='stylesheet' href='/css/normalize.css' />
         <link rel='stylesheet' href='/css/vars.css' />
-        <link rel='stylesheet' href='/css/buttons.css' />
+        <link rel='stylesheet' href='/css/main.css' />
         <link rel='stylesheet' href='/css/modal.css' />
         <link rel='stylesheet' href='/css/rcmenu.css' />
         <link rel='stylesheet' href='/css/journal.css' />
@@ -23,7 +23,6 @@
         <link rel='stylesheet' href='/css/settings.css' />
         <link rel='stylesheet' href='/css/infopage.css' />
         <link rel='stylesheet' href='/css/signout.css' />
-        <link rel='stylesheet' href='/css/main.css' />
     </head>
 
     <body>

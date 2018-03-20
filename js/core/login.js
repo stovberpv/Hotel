@@ -2,9 +2,7 @@
 /*jshint -W030 */
 /*jshint -W040 */
 /*jshint -W083 */
-(function () {
-    "use strict";
-})();
+(function () { "use strict"; })();
 /*
  TODO without jquery
 $(document).ready(function () {

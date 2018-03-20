@@ -1,6 +1,8 @@
 /*
+-----------------------------------------------------------------------------------------------
     DIALOG
 */
+
 
 .modal-wrapper {
     font-family: 'Century Gothic', sans-serif;
@@ -18,28 +20,16 @@
     text-align: center;
 }
 
+.modal-wrapper-visible {
+    display: block;
+}
+
 .modal-content {
     background-color: var(--c-mod-bck-cnt);
     display: inline-block;
     border-radius: var(--r-bor-nor);
     animation: MDShow 0.4s;
 }
-
-/* .modal-content .button {
-    color: var(--c-btn-txt-nor-neu);
-} */
-
-/* .modal-input {
-    width: auto;
-} */
-
-/* .modal-inout {
-    width: auto;
-} */
-
-/* .modal-confirm {
-    width: 420px;
-} */
 
 .modal-header {
     border-radius: 3px 3px 0px 0px;
@@ -86,272 +76,344 @@
     color: var(--c-mod-txt-top-ext);
     background-color: var(--c-mod-bck-top-ext);
 }
-/* 
-.modal-dialog-href {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    left: 0;
-    top: 0;
-    padding-top: 10%;
-    background-color: var(--c-mod-bck-hrf-nor);
-}
-
-.modal-content-href {
-    margin-left: auto;
-    margin-right: auto;
-    border: 2px solid var(--c-mod-bor-hrf-nor);
-    border-radius: 20px/50px;
-    transition: all .5s;
-    box-shadow: 0 0 10px 5px rgba(255, 255, 255, .1);
-    width: 500px;
-    height: 70px;
-}
-
-.modal-content-href:hover {
-    box-shadow: 0 0 15px 5px rgba(255, 255, 255, .2);
-    background-color: var(--c-mod-bck-hrf-hov);
-    transition: all .5s;
-    transform: translateZ(10px);
-}
-
-.modal-body-href {
-    width: 100%;
-    height: 100%;
-} */
-
-@keyframes MDShow {
-    from { opacity: 0 }
-    to { opacity: 1 }
-}
-
-/*
-    CONFIRM-DIALOG
-*/
 
 
 /*
+-----------------------------------------------------------------------------------------------
     GUEST-CARD
 */
 
-/* .popup-input-output {
-    display: none;
-    position: fixed;
+
+.guest-card.modal-wrapper {
+    text-align: left;
+}
+.guest-card.modal-wrapper .modal-content {
+    display: block;
+    border-radius: 0px;
+    top: 10%;
+    width: 450px;
+    height: auto;
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+    background-color: var(--c-mod-bck-cnt); /* TODO vars rgba(255,255,255, 0.9);*/
+    border-radius: var(--r-bor-nor);
+    box-shadow: 0 0 10px 5px rgba(0, 0, 0, .1); /* TODO vars */
+}
+
+/*-----------------------------------------------*/
+
+.guest-card.modal-wrapper .modal-header {
+    padding: 0px;
+    border-radius: 0px;
+    border-top-left-radius: 3px; /* TODO vars */
+    border-top-right-radius: 3px; /* TODO vars */
     width: 100%;
-    height: 100%;
-    font-size: 10px;
-} */
-
-.guest-card .modal-content {
-    position: relative;
-    width: 400px;
-    height: 350px;
-    /* margin: 50px auto; */
-    /* padding: 20px 20px 50px 20px; */
-    box-shadow: 0 0 10px 5px rgba(0, 0, 0, .1);
-    background-color: rgba(255, 255, 255, .99);
-    font-size: 10px;
-    border-radius: 5px; /* !hide artifact of header background! */
-    border-bottom-right-radius: 0px;
-    border-bottom-left-radius: 0px;
-}
-
-.guest-card .modal-header {
-    position: relative;
-    /* width: 100%; */
+    height: 30px;
     text-align: center;
-    vertical-align: middle;
-    font-size: 1.5em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.guest-card .modal-body {
+/*-----------------------------------------------*/
+
+.guest-card.modal-wrapper .modal-body {
+    padding: 4px; /* TODO vars */
+}
+.guest-card.modal-wrapper .modal-body .row {
+    width: 100%;
+    padding: 25px 0px 0px 0px;
+}
+.guest-card.modal-wrapper .modal-body .row .guest-card-el {
+    padding: 0 2% 0 0;
+    display: inline-block;
     position: relative;
-    padding: 0;
-    padding-top: 8px;
-    margin: 0px 20px 20px 20px;
-    /* width: 100%; */
-    height: 85%;
-    font-size: 1.2em;
 }
-
-.guest-card .modal-footer {
-    position: relative;
-    /* width: 100%; */
-    font-size: 1.2em;
-    text-align: center;
-    padding: 0;
-    /* background-color: beige; */
-    border-bottom-left-radius: 3px;
-    border-bottom-right-radius: 3px;
-}
-
-.guest-card .modal-footer button {
-    width: 50%;
-    margin: 0;
-    border: none;
-}
-/* TODO  сдвигать цвет при перемещении мышкой. при смене фокуса с одной кнопки на другую менять направление цветов с задержкой */
-.guest-card .modal-footer button .negative {
-    color: var(--c-btn-txt-hov-neg);
-    /* background: var(--c-btn-bck-hov-neg); */
-    border-top-right-radius: 0px;
-    border-bottom-right-radius: 0px;
-    background: linear-gradient(to left, var(--c-btn-bck-hov-neg), var(--c-btn-bck-hov-pos));
-}
-
-.guest-card .modal-footer button .positive {
-    color: var(--c-btn-txt-hov-pos);
-    /* background: var(--c-btn-bck-hov-pos); */
-    border-top-left-radius: 0px;
-    border-bottom-left-radius: 0px;
-    background: linear-gradient(to right, var(--c-btn-bck-hov-neg), var(--c-btn-bck-hov-pos));
-}
-
-.guest-card .guest-card-el {
+.guest-card.modal-wrapper .modal-body .guest-card-el label {
+    font-size: 0.9em;
     position: absolute;
-    border-bottom: 1px solid #929292;
-}
-
-.guest-card .guest-card-el input {
-    color: #2d2d2d;
-    outline: none;
-    margin: 30px 0px 0px 0px;
-    padding: 5px 0px 5px 5px;
-    border: none;
-    width: 90%;
-    background-color: transparent;
-}
-
-.guest-card .guest-card-el label {
-    position: absolute;
-    color: #929292;
-    top: 35px;
-    left: 5px;
+    top: 0px;
+    left: 0px;
     pointer-events: none;
     transition: 0.3s ease all;
 }
-
-.guest-card input:focus~label,
-.guest-card input:valid~label {
-    top: 15px;
-    left: 0;
-    font-size: 1em;
+.guest-card.modal-wrapper .modal-body .guest-card-el input {
+    outline: none;
+    border: none;
+    color: #2d2d2d;    /* TODO vars */
+    background-color: transparent;    /* TODO vars */
+    border-bottom: 1px solid #929292;    /* TODO vars */
+    width: 100%;
 }
+.guest-card.modal-wrapper .modal-body .guest-card-el input:focus {
+    border-bottom: 1px solid cornflowerblue; /* TODO vars */
+}
+.guest-card.modal-wrapper .modal-body .guest-card-el input:focus~label,
+.guest-card.modal-wrapper .modal-body .guest-card-el input:valid~label
+/* NOTE нужно будет когда дойду до isStrict что бы нормально отрабатывал селектор
+.guest-card.modal-wrapper .modal-body .guest-card-el input:not(:placeholder-shown)*/ {
+    top: -20px;
+    left: 0px;
+    font-size: 0.8em;
+}
+.guest-card.modal-wrapper .modal-body .guest-card-el input:focus~label {
+    color: cornflowerblue;    /* TODO vars */
+}
+.guest-card.modal-wrapper .modal-body #guest-card-el-unid { display: none; }
+.guest-card.modal-wrapper .modal-body #guest-card-el-dbeg { width: 20%; }
+.guest-card.modal-wrapper .modal-body #guest-card-el-dend { width: 20%; }
+.guest-card.modal-wrapper .modal-body #guest-card-el-days { width: 20%; padding: 0; }
+.guest-card.modal-wrapper .modal-body #guest-card-el-room { width: 12%; }
+.guest-card.modal-wrapper .modal-body #guest-card-el-base { width: 20%; }
+.guest-card.modal-wrapper .modal-body #guest-card-el-adjs { width: 20%; }
+.guest-card.modal-wrapper .modal-body #guest-card-el-cost { width: 20%; }
+.guest-card.modal-wrapper .modal-body #guest-card-el-paid { width: 20%; padding: 0; }
+.guest-card.modal-wrapper .modal-body #guest-card-el-name { width: 100%; padding: 0; }
+.guest-card.modal-wrapper .modal-body #guest-card-el-city { width: 100%; padding: 0; }
+.guest-card.modal-wrapper .modal-body #guest-card-el-teln { width: 100%; padding: 0; }
+.guest-card.modal-wrapper .modal-body #guest-card-el-fnot { width: 100%; padding: 0; }
 
-.guest-card-el input:focus~label { color: cornflowerblue; }
+.guest-card.modal-wrapper .modal-body #guest-card-el-dbeg input { text-align: center; }
+.guest-card.modal-wrapper .modal-body #guest-card-el-dend input { text-align: center; }
+.guest-card.modal-wrapper .modal-body #guest-card-el-days input { text-align: center; }
+.guest-card.modal-wrapper .modal-body #guest-card-el-room input { text-align: center; }
+.guest-card.modal-wrapper .modal-body #guest-card-el-base input { text-align: center; }
+.guest-card.modal-wrapper .modal-body #guest-card-el-adjs input { text-align: center; }
+.guest-card.modal-wrapper .modal-body #guest-card-el-cost input { text-align: center; }
+.guest-card.modal-wrapper .modal-body #guest-card-el-paid input { text-align: center; }
 
-#guest-card-el-dbeg { width: 20%;  top: 0px;   left: 0px;}
-#guest-card-el-dend { width: 20%;  top: 0px;   left: 25%;}
-#guest-card-el-days { width: 20%;  top: 0px;   left: 50%;}
-#guest-card-el-room { width: 20%;  top: 0px;   left: 75%;}
-#guest-card-el-base { width: 20%;  top: 60px;  left: 0px;}
-#guest-card-el-adjs { width: 20%;  top: 60px;  left: 25%;}
-#guest-card-el-cost { width: 20%;  top: 60px;  left: 50%;}
-#guest-card-el-paid { width: 20%;  top: 60px;  left: 75%;}
-#guest-card-el-name { width: 100%; top: 120px; left: 0px;}
-#guest-card-el-city { width: 60%;  top: 180px; left: 0px;}
-#guest-card-el-teln { width: 35%;  top: 180px; left: 65%;}
-#guest-card-el-fnot { width: 100%; top: 240px; left: 0px;}
+/*-----------------------------------------------*/
 
-#rooms-drop-down-list {
+.guest-card.modal-wrapper .modal-body .rooms-drop-down-list {
     display: none;
     position: absolute;
-    top: 60px;
-    background-color: white;
-    width: 90%;
-    z-index: 1;
-    border-radius: 3px;
+    background-color: white;    /* TODO vars */
+    width: 85%;
+    z-index: 2;
+    border-radius: 3px; /* TODO vars */
     box-shadow: 0px 0px 10px 5px rgba(0, 0, 0, .1);
     overflow-y: auto;
+    text-align: center;
 }
-
-#rooms-drop-down-list a {
+.guest-card.modal-wrapper .modal-body .rooms-drop-down-list-visible {
+    display: block;
+}
+.guest-card.modal-wrapper .modal-body #rooms-drop-down-list a {
     padding: 2px;
     z-index: 2;
     display: block;
     position: initial;
     text-decoration: none;
 }
-
-#rooms-drop-down-list a:hover {
-    background-color: cornflowerblue;
-    color: white;
+.guest-card.modal-wrapper .modal-body #rooms-drop-down-list a:hover {
+    background-color: cornflowerblue;    /* TODO vars */
+    color: white;    /* TODO vars */
 }
 
+/*-----------------------------------------------*/
+
+.guest-card.modal-wrapper .modal-footer {
+    padding: 0px;
+    width: 100%;
+}
+.guest-card.modal-wrapper .modal-footer .button {
+    padding: 0px;
+    margin: 0px;
+    height: 30px;
+    width: 50%;
+    border: none;
+    border-radius: 0px;
+}
+.guest-card.modal-wrapper .modal-footer .button:hover {
+    box-shadow: none;
+    transform: none;
+}
+.guest-card.modal-wrapper .modal-footer .button.negative {
+    border-bottom-left-radius: 3px; /* TODO vars */
+}
+.guest-card.modal-wrapper .modal-footer .button.positive {
+    border-bottom-right-radius: 3px; /* TODO vars */
+}
 
 
 /*
+-----------------------------------------------------------------------------------------------
     PICK-PERIOD
 */
 
-#pick-period.modal-content {
+
+.pick-period.modal-content {
     user-select: none;
     display: inline-block;
     width: auto;
-    background-color: white;
-    border: 1px solid transparent;
+    background-color: white; /* TODO vars */
     border-radius: var(--r-bor-nor);
-    padding: 4px;
     text-align: center;
     animation: pcShow 0.4s;
 }
-
-#pick-period.modal-content td {
-    padding: 8px;
-    cursor: pointer;
-    border: 1px solid transparent;
-    border-radius: var(--r-bor-nor);
-}
-
-#pick-period.modal-content thead td { cursor: default; }
-
-#pick-period.modal-content tbody td:hover {
-    border: 1px solid #00a4e4; /* FIX  use global color*/
-}
-
-#pick-period.modal-footer {
-    padding-top: 4px;
-}
-
-.pick-period-input-year {
-    width: 100%;
-    font-family: 'Century Gothic', sans-serif;
-    outline: none;
+.pick-period.modal-header {
+    padding: 0px;
     border: none;
-    text-align: center;
 }
 
-.pick-period-input-year::-webkit-outer-spin-button,
-.pick-period-input-year::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
+/*---------------------------------------------------*/
 
-.pick-period-month-sel {
-    border: 1px solid #ffdd00; /* FIX  use global color*/
+.modal-wrapper.pick-period .modal-body {
+    padding: 4px; /* TODO vars */
 }
-
-.pick-period-button-year-prev,
-.pick-period-button-year-next {
-    cursor: pointer;
+.modal-wrapper.pick-period .modal-body table {
+    border-spacing: 6px;
+}
+.modal-wrapper.pick-period .modal-body td {
+    padding: 0px;
+}
+.modal-wrapper.pick-period .modal-body .pick-period-input-year {
     outline: none;
     width: 100%;
     height: 100%;
     border: none;
     background-color: transparent;
+    text-align: center;
+    padding: 0px;
+}
+.modal-wrapper.pick-period .modal-body input[type=number].pick-period-input-year::-webkit-inner-spin-button,
+.modal-wrapper.pick-period .modal-body input[type=number].pick-period-input-year::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    margin: 0;
+}
+.modal-wrapper.pick-period .modal-body .button {
+    outline: none;
+    cursor: pointer;
+    padding: 0px;
+    border: none;
+    background-color: transparent; /* TODO vars */
+    width: 100%;
+    height: 100%;
+}
+.modal-wrapper.pick-period .modal-body .button:hover {
+    border: none;
+    box-shadow: none;
+    transform: none;
+}
+.modal-wrapper.pick-period .modal-body table thead #pick-period-button-year-prev:before {
+    content: url('data:image/svg+xml;utf8,<svg fill="#000000" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M15.41 16.09l-4.58-4.59 4.58-4.59L14 5.5l-6 6 6 6z"/></svg>');
+}
+.modal-wrapper.pick-period .modal-body table thead #pick-period-button-year-next:before {
+    content: url('data:image/svg+xml;utf8,<svg fill="#000000" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M8.59 16.34l4.58-4.59-4.58-4.59L10 5.75l6 6-6 6z"/></svg>');
+}
+.modal-wrapper.pick-period .modal-body table thead #pick-period-button-year-prev:hover:before {
+    content: url('data:image/svg+xml;utf8,<svg fill="#00a4e4" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M15.41 16.09l-4.58-4.59 4.58-4.59L14 5.5l-6 6 6 6z"/></svg>');
+}
+.modal-wrapper.pick-period .modal-body table thead #pick-period-button-year-next:hover:before {
+    content: url('data:image/svg+xml;utf8,<svg fill="#00a4e4" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M8.59 16.34l4.58-4.59-4.58-4.59L10 5.75l6 6-6 6z"/></svg>');
+}
+.modal-wrapper.pick-period .modal-body table td {
+    padding: 4px;
+    border-radius: 3px; /* TODO vars */
+    border: 1px solid transparent;
+}
+.modal-wrapper.pick-period .modal-body table td.pick-period-month-sel {
+    border: 1px solid #ffdd00;
+}
+.modal-wrapper.pick-period .modal-body .pick-period-month {
+    cursor: pointer;
+}
+/*---------------------------------------------------*/
+.modal-wrapper.pick-period .modal-footer {
+    padding: 0px;
+    width: 100%;
+}
+.modal-wrapper.pick-period .modal-footer .button {
+    cursor: pointer;
+    padding: 0px;
+    margin: 0px;
+    height: 30px;
+    width: 50%;
+    border: none;
+    border-radius: 0px;
+}
+.modal-wrapper.pick-period .modal-footer .button:hover {
+    border: none;
+    box-shadow: none;
+    transform: none;
+}
+.modal-wrapper.pick-period .modal-footer .button.negative {
+    border-bottom-left-radius: 3px; /* TODO vars */
+}
+.modal-wrapper.pick-period .modal-footer .button.positive {
+    border-bottom-right-radius: 3px; /* TODO vars */
+}
+.modal-wrapper.pick-period .modal-footer .button:hover {
+    box-shadow: none;
+    transform: none;
 }
 
-.pick-period-button-year-prev:before { content: url('data:image/svg+xml;utf8,<svg fill="#000000" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M15.41 16.09l-4.58-4.59 4.58-4.59L14 5.5l-6 6 6 6z"/></svg>');}
-.pick-period-button-year-next:before { content: url('data:image/svg+xml;utf8,<svg fill="#000000" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M8.59 16.34l4.58-4.59-4.58-4.59L10 5.75l6 6-6 6z"/></svg>');}
-.pick-period-button-year-prev:hover:before { content: url('data:image/svg+xml;utf8,<svg fill="#00a4e4" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M15.41 16.09l-4.58-4.59 4.58-4.59L14 5.5l-6 6 6 6z"/></svg>');}
-.pick-period-button-year-next:hover:before { content: url('data:image/svg+xml;utf8,<svg fill="#00a4e4" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M8.59 16.34l4.58-4.59-4.58-4.59L10 5.75l6 6-6 6z"/></svg>');}
+
+/*
+-----------------------------------------------------------------------------------------------
+    MESSAGE BOX
+*/
+
+
+#msg-box-wrapper {
+    border-radius: 3px; /* TODO vars */
+    width: auto;
+    height: auto;
+    bottom: 20px;
+    right: 20px;
+    display: block;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    background-color: rgba(255, 255, 255, 0.3); /* TODO vars */
+}
+#msg-box-wrapper .msg-box {
+    margin: 4px; /* TODO vars */
+    padding: 4px; /* TODO vars */
+    border-radius: 3px; /* TODO vars */
+    animation: msgShow 0.5s;
+}
+#msg-box-wrapper .msg-box-error {
+    background-color: rgba(255, 0, 0, .5); /* TODO vars */
+    color: white; /* TODO vars */
+}
+#msg-box-wrapper .msg-box-info {
+    background-color: rgba(255, 255, 255, 1); /* TODO vars */
+    color: black; /* TODO vars */
+}
+#msg-box-wrapper .msg-box-warn {
+    background-color: rgba(255, 255, 0, .5); /* TODO vars */
+    color: black; /* TODO vars */
+}
+#msg-box-wrapper .msg-box-debug {
+    background-color: rgba(0, 0, 0, .5); /* TODO vars */
+    color: white; /* TODO vars */
+}
+#msg-box-wrapper .msg-box-success {
+    background-color: rgba(0, 255, 0, .5); /* TODO vars */
+    color: white; /* TODO vars */
+}
+
+
+/*
+-----------------------------------------------------------------------------------------------
+*/
+
 
 @keyframes pcShow {
     0% { opacity: 0; }
     100% { opacity: 1; }
 }
 
+@keyframes MDShow {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
 
-/*
-    RIGHT-CLICK-MENU
-*/
+@keyframes msgShow {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
