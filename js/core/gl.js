@@ -1,7 +1,7 @@
 /*jshint esversion: 6 */
 /*jshint -W030 */
 
-(function () { "use strict"; })();
+(function () { 'use strict'; })();
 
 const GL = {
     CONST: {
@@ -9,12 +9,14 @@ const GL = {
         DATA_ATTR: {
             JOURNAL: {
                 VIEW: { FIX: 'fix', HOV: 'hov' },
-                STATUS: { SELECTED: "selected", /*выделен*/ RESERVED: "reserved", /*зарезервирован*/ ADJACENT: "adjacent", /*смежный*/ REDEEMED: "redeemed", /*выкуплен*/ }
-            }
+                STATUS: { SELECTED: 'selected', /*выделен*/ RESERVED: 'reserved', /*зарезервирован*/ ADJACENT: 'adjacent', /*смежный*/ REDEEMED: 'redeemed', /*выкуплен*/ }
+            },
+            CONTACT: { STATUS: { INITIAL: 'initial', EDITED: 'edited' } }
         },
         EVENTS: {
             CORE: { LEFT_CLICK: 'leftClick', },
             JOURNAL: { RC_MENU: { ADD: 'rcmItemAddClick', DEL: 'rcmItemDelClick', UPD: 'rcmItemUpdClick', }, },
+            CONTACT: { NEW: 'contactSaved' }
         },
         VALUES: {
             CORE: {
@@ -37,15 +39,15 @@ const GL = {
             PERSON: { CELL: 'person-cell', FIELD: 'person-field' }
         },
         LOG: {
-            LEVEL: { DEBUG: "debug", ERROR: "error", INFO: "info", WARN: "warn" },
+            LEVEL: { DEBUG: 'debug', ERROR: 'error', INFO: 'info', WARN: 'warn' },
             ID: {
-                A000: { TITLE: 'Операция не может быть выполнена', GIST: 'Некорректный вызов функции' },
-                A001: { TITLE: 'Операция не может быть выполнена', GIST: 'Критическая ошибка' },
-                A003: { TITLE: 'Операция произведена', GIST: 'Поля ввода обновлены' },
-                B000: { TITLE: 'Операция запущена', GIST: 'Запрашиваем данные' },
-                B001: { TITLE: 'Опрос БД', GIST: 'Успешно' },
-                B002: { TITLE: 'Опрос БД', GIST: 'Ошибка' },
-                B003: { TITLE: 'Опрос БД', GIST: 'Операция еще выполняется' },
+                A000: { TITLE: 'Ошибка вызова функции', GIST: 'Отсутствуют входные данные' },
+                A001: { TITLE: 'Ошибка работы функции', GIST: 'Данные не консистентны' },
+                A003: { TITLE: 'Операция завершена', GIST: 'Данные обработаны' },
+                A004: { TITLE: 'Операция запущена', GIST: 'Запрашиваем данные' },
+                B000: { TITLE: 'Ответ БД', GIST: 'Запрос обрабатывается' },
+                B001: { TITLE: 'Ответ БД', GIST: 'Запрос выполнен успешно' },
+                B002: { TITLE: 'Ответ БД', GIST: 'Запрос отклонен' },
                 C000: { TITLE: '', GIST: '' },
                 C001: { TITLE: '', GIST: '' },
                 D000: { TITLE: '', GIST: '' },
@@ -53,30 +55,30 @@ const GL = {
             }
         },
         LOCALIZABLE: {
-            MSG000: "",
-            MSG001: "Вы действительно хотите удалить запись под номером {1}?\nДействие нельзя будет отменить!",
-            VAR000: "",
+            MSG000: '',
+            MSG001: 'Вы действительно хотите удалить запись под номером {1}?\nДействие нельзя будет отменить!',
+            VAR000: '',
             VAR001: {
-                YEAR: "Год",
-                MNTH: "Месяц",
-                UNID: "Идентиф",
-                DBEG: "Дата заезда",
-                DEND: "Дат выезда",
-                DAYS: "Дней отдыха",
-                ROOM: "Комната",
-                BASE: "Цена",
-                ADJS: "Коррекция",
-                COST: "Стоимость",
-                PAID: "Оплачено",
-                NAME: "ФИО",
-                TELN: "Телефон",
-                FNOT: "Примечание",
-                CITY: "Город"
+                YEAR: 'Год',
+                MNTH: 'Месяц',
+                UNID: 'Идентиф',
+                DBEG: 'Дата заезда',
+                DEND: 'Дат выезда',
+                DAYS: 'Дней отдыха',
+                ROOM: 'Комната',
+                BASE: 'Цена',
+                ADJS: 'Коррекция',
+                COST: 'Стоимость',
+                PAID: 'Оплачено',
+                NAME: 'ФИО',
+                TELN: 'Телефон',
+                FNOT: 'Примечание',
+                CITY: 'Город'
             },
-            VAR002: { OK: "Подтвердить", NO: "Отменить" },
-            VAR003: { DELETE: "Удалить", UPDATE: "Изменить", ADD: "Добавить" }
+            VAR002: { OK: 'Подтвердить', NO: 'Отменить' },
+            VAR003: { DELETE: 'Удалить', UPDATE: 'Изменить', ADD: 'Добавить' }
         },
-        LOCALE: "ru-Ru"
+        LOCALE: 'ru-Ru'
     },
     DATA: { CORE: { isMouseDown: false, } }
 };

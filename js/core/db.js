@@ -44,7 +44,7 @@ class DML {
                         reject(xhr.status);
                     }
                 } else {
-                    new MessageBox({ text: `${GL.CONST.LOG.ID.B003.TITLE}::${GL.CONST.LOG.ID.B003.GIST}`, level: 'info' }).stay(1000);
+                    new MessageBox({ text: `${GL.CONST.LOG.ID.B000.TITLE}::${GL.CONST.LOG.ID.B000.GIST}`, level: 'info' }).stay(1000);
                 }
             };
         });

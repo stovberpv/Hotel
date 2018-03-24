@@ -97,18 +97,7 @@ class GuestCard extends Dialog {
 
         this.utils = {
             checkDate: function (e) {
-                let value = e.target.value.split(''),
-                    key = e.key,
-                    selEnd = e.srcElement.selectionEnd,
-                    selStart = e.srcElement.selectionStart,
-                    regexp = [/^\d{1,2}$/, /^\d{1,2}\.\d{1,2}$/, /^\d{1,2}\.\d{1,2}\.\d{4}$/];
-
-                (selEnd === selStart) ? value.splice(selStart, 0, key) : value[selStart] = key;
-                value = value.join('');
-
-                let result = 0;
-                regexp.forEach(reg => { result += reg.test(value); });
-                return !!result;
+                return !!this.check([/^\d{1,2}$/, /^\d{1,2}\.\d{1,2}$/, /^\d{1,2}\.\d{1,2}\.\d{4}$/], e);
             },
 
             calcFields: function (self) {
@@ -141,6 +130,20 @@ class GuestCard extends Dialog {
                 days.value = totalDays;
                 cost.value = mustBePaid;
                 cost.dispatchEvent(new Event('change'));
+            },
+
+            check(regexArr, e) {
+                let value = e.target.value.split(''),
+                    key = e.key,
+                    selEnd = e.srcElement.selectionEnd,
+                    selStart = e.srcElement.selectionStart;
+
+                (selEnd === selStart) ? value.splice(selStart, 0, key) : value[selStart] = key;
+                value = value.join('');
+
+                let result = 0;
+                regexArr.forEach(reg => { result += reg.test(value); });
+                return !!result;
             }
         };
 
@@ -213,16 +216,7 @@ class GuestCard extends Dialog {
                 change: function(e) { this.utils.calcFields(this); }
             },
             adjs: {
-                keypress: function(e) {
-                    let allowedChars = '-0123456789',
-                        strlen = e.target.value.length;
-                    if (e.key == '-') {
-                        if (e.target.value.indexOf('-') !== -1) { e.preventDefault(); return; }
-                        if (e.target.value.length !== 0) { e.preventDefault(); return; }
-                    }
-                    if (allowedChars.indexOf(e.key) === -1) { e.preventDefault(); return; }
-                    if (strlen > 5) { e.preventDefault(); }
-                },
+                keypress: function(e) { !this.utils.check([/^\-{0,1}\d+\.{0,1}\d*$/], e) && e.preventDefault(); },
                 paste: function(e) { e.preventDefault(); },
                 change: function(e) { this.utils.calcFields(this); }
             },
@@ -233,29 +227,11 @@ class GuestCard extends Dialog {
                 change: function(e) { UTILS.LOG(GL.CONST.LOG.LEVEL.INFO, GL.CONST.LOG.ID.A003.TITLE, GL.CONST.LOG.ID.A003.GIST); }
             },
             paid: {
-                keypress: function(e) {
-                    let allowedChars = '0123456789',
-                        strlen = e.target.value.length;
-
-                    if (allowedChars.indexOf(e.key) === -1) { e.preventDefault(); return; }
-                    if (strlen > 4) { e.preventDefault(); }
-                },
+                keypress: function(e) { !this.utils.check([/^\d+\.{0,1}\d*$/], e) && e.preventDefault(); },
                 paste: function(e) { e.preventDefault(); }
             },
             teln: {
-                keypress: function(e) {
-                    let allowedChars = '+-() 0123456789',
-                    strlen = e.target.value.length;
-
-                    if (allowedChars.indexOf(e.key) === -1) {
-                        e.preventDefault();
-                        return;
-                    }
-                    if (strlen > 16) {
-                        e.preventDefault();
-
-                    }
-                },
+                keypress: function(e) { !this.utils.check([/^\+{0,1}\d+\({0,1}\d+\){0,1}[\d\-]*$/], e) && e.preventDefault(); },
                 paste: function(e) { e.preventDefault(); },
             },
             rddl: {
@@ -354,7 +330,7 @@ class GuestCard extends Dialog {
                                 {
                                     tag: 'input', type: 'text', readonly: O.isReadOnly, required: O.isStrict,
                                     events: [
-                                        { name: 'keypress', fn: this.cb.control.adjs.keypress },
+                                        { name: 'keypress', fn: this.cb.control.adjs.keypress.bind(this) },
                                         { name: 'paste', fn: this.cb.control.adjs.paste },
                                         { name: 'change', fn: this.cb.control.adjs.change.bind(this) }
                                     ]
@@ -377,7 +353,7 @@ class GuestCard extends Dialog {
                                 {
                                     tag: 'input', type: 'text', readonly: O.isReadOnly, required: O.isStrict,
                                     events: [
-                                        { name: 'keypress', fn: this.cb.control.paid.keypress },
+                                        { name: 'keypress', fn: this.cb.control.paid.keypress.bind(this) },
                                         { name: 'paste', fn: this.cb.control.paid.paste }
                                     ]
                                 },
@@ -401,7 +377,7 @@ class GuestCard extends Dialog {
                                 {
                                     tag: 'input', type: 'text', readonly: O.isReadOnly, required: O.isStrict,
                                     events: [
-                                        { name: 'keypress', fn: this.cb.control.teln.keypress },
+                                        { name: 'keypress', fn: this.cb.control.teln.keypress.bind(this) },
                                         { name: 'paste', fn: this.cb.control.teln.paste }
                                     ]
                                 },

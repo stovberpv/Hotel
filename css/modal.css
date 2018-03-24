@@ -15,7 +15,7 @@
     height: 100%;
     left: 0;
     top: 0;
-    padding-top: 10%;
+    padding-top: 10vh;
     color: var(--c-mod-txt);
     text-align: center;
 }

@@ -3,6 +3,26 @@
 (function () { "use strict"; })();
 const UTILS = {
 
+    SET_DELEGATE: function (eventName, qsParent, qsChild, qsClosestExcl, callback) {
+
+        let parent = document.querySelector(qsParent),
+            that = {
+                parent: parent,
+                qsParent: qsParent,
+                qsChild: qsChild,
+                qsClosestExcl: qsClosestExcl,
+                callback: callback
+            };
+
+        parent.addEventListener(eventName, function delegateListener(e) {
+            let target = e.target;
+            if (this.qsClosestExcl) if (target.closest(this.qsClosestExcl)) return;
+            let childs = this.parent.querySelectorAll(this.qsChild);
+            if (Array.from(childs).indexOf(target) !== -1) return this.callback.call(e, e);
+            for (let child of childs) { if (child.contains(target)) return this.callback.call(e, e); }
+        }.bind(that));
+    },
+
     /**
      * @return {string}
      */
@@ -18,9 +38,9 @@ const UTILS = {
         return [31, (isLeap ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][m];
     },
 
-    GROUP_BY: function (list, keyGetter) {
+    GROUP_BY: function (arr, keyGetter) {
         const map = new Map();
-        list.forEach((item) => {
+        arr.forEach((item) => {
             const key = keyGetter(item);
             if (!map.has(key)) {
                 map.set(key, [item]);

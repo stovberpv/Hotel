@@ -35,6 +35,23 @@
 -------------------------------------------------------------------*/
 
 :root {
+    /* TODO NEW */
+    --border: '#6a737b7f';
+    --border-accent: transparent;
+    --text: '#f1f1f1',
+    --text-accent: '#6a737b';
+    --background: rgba(255, 255, 255, .5);
+    --background-accent: rgba(0, 0, 0, .5);
+    --negative: '#F4425F';
+    --positive: '#06D85F';
+    --neutral: '#00a4e4';
+    --extend: '#ffdd00E5';
+    --cell-sel: #c1d82f7c;
+    --cell-res: #00a4e47c;
+    --cell-adj: #F4425F;
+    --cell-red: #6a737b;
+    --cell-hov: #ffdd00;
+
     /* ---------------------------- BORDER ---------------------------- */
     /* radius-border-normal */
     --r-bor-nor: 3px;
