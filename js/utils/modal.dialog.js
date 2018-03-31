@@ -231,7 +231,7 @@ class GuestCard extends Dialog {
                 paste: function(e) { e.preventDefault(); }
             },
             teln: {
-                keypress: function(e) { !this.utils.check([/^\+{0,1}\d+\({0,1}\d+\){0,1}[\d\-]*$/], e) && e.preventDefault(); },
+                keypress: function(e) { !this.utils.check([/^\+{0,1}\d+{0,1}\({0,1}\d+\){0,1}[\d\-]*$/], e) && e.preventDefault(); },
                 paste: function(e) { e.preventDefault(); },
             },
             rddl: {
@@ -247,7 +247,7 @@ class GuestCard extends Dialog {
     }
 
     bind() {
-        // NOTE когда дойду до isString то добавить атрибут placeholder=" " для input что бы нормально отображался label
+        // NOTE когда дойду до isStrict то добавить атрибут placeholder=" " для input что бы нормально отображался label
         const T = GL.CONST.LOCALIZABLE.VAR001;
         const B = GL.CONST.LOCALIZABLE.VAR002;
         const O = this.opts;
@@ -656,6 +656,7 @@ class RCMenu extends Dialog {
 
     bind() {
 
+        // TODO переделать на динамическое создание меню по входным параметрам
         const T = GL.CONST.LOCALIZABLE.VAR003;
         let div, ul, li;
 

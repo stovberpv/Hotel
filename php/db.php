@@ -23,38 +23,29 @@
     #
     #---------------------------------------------------------------------------------
     $params = [];
-    // echo '0 params is: '. json_encode($params) . ' ';
     #---------------------------------------------------------------------------------
     #
     #---------------------------------------------------------------------------------
     $query = isset($_POST['sql']) ? $_POST['sql'] : '';
     $types = isset($_POST['types']) ? $_POST['types'] : '';
-    $param = isset($_POST['param']) ? explode(',', $_POST['param']) : [];
+    $param = isset($_POST['param']) ? json_decode($_POST['param']) : [];
     $wauth = isset($_POST['auth']) ? $_POST['auth'] : 0;
-    #
-    // echo '0 param is: '. json_encode($param) . ' ';
-    // echo '1 auth is: '. $wauth . ' ';
     #---------------------------------------------------------------------------------
     #
     #---------------------------------------------------------------------------------
     if ($wauth) { $types .= 's'; }
-    // echo '2 types is: '. $types . ' ';
     #---------------------------------------------------------------------------------
     # with call_user_func_array, array params must be passed by reference
     #---------------------------------------------------------------------------------
     if ($types) { $params[] = & $types; }
-    // echo '3 params is: '. json_encode($params) . ' ';
     #---------------------------------------------------------------------------------
     # with call_user_func_array, array params must be passed by reference
     #---------------------------------------------------------------------------------
     $n = count($param);
-    // echo '1 n count is: '. $n . ' ';
     for($i = 0; $i < $n; $i++) { $params[] = & $param[$i]; }
-    // foreach($param as $value) { $params[] = & $value; }
     #
     $uname = getAuthUserName();
     if ($wauth == true) { $params[] = & $uname; }
-    // echo '4 params is: '. json_encode($params) . ' ';
     #---------------------------------------------------------------------------------
     #
     #---------------------------------------------------------------------------------

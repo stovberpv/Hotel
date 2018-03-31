@@ -2,9 +2,9 @@
 /*jshint -W030 */
 /*jshint -W040 */
 /*jshint -W083 */
-(function () {
-    "use strict";
-})();
+
+(function () { "use strict"; })();
+
 /**
  * Группа обработки оберток данных, которые отображаются в
  * контейнере данных.
@@ -24,8 +24,8 @@ const WRAPPER = {
             case C[0].DATA_WRAPPER: return new Journal();
             case C[1].DATA_WRAPPER: return new Contacts();
             case C[2].DATA_WRAPPER: return new Diagrams();
-            case C[3].DATA_WRAPPER: return new Settings();
-            case C[4].DATA_WRAPPER: return new InfoPage();
+            case C[3].DATA_WRAPPER: return new ToDoList();
+            case C[4].DATA_WRAPPER: return new Settings();
             case C[5].DATA_WRAPPER: return new SignOut();
             default: break;
         }
@@ -123,7 +123,7 @@ const CONTAINER = {
      */
     show: function () {
 
-        document.getElementById('view-container').style.display = 'initial';
+        document.getElementById('view-container').style.display = 'flex';
     }
 
 };
@@ -225,6 +225,10 @@ const LISTENERS = {
     window.addEventListener('contextmenu', LISTENERS.ctmClick, false);
     window.addEventListener('click', LISTENERS.windowClick, false);
 
-    EVENT_BUS.init();
+    (() => {
+        EVENT_BUS.init();
+        new MessageBox().init();
+        new Tasker().run();
+    })();
 
 })(window, document);

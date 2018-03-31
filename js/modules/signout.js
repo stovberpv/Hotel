@@ -7,6 +7,13 @@ class SignOut extends DataWrapper {
     constructor() {
         super();
     }
-    bind(target) { }
-    init() { }
+    bind(target) {
+        super.bind(target);
+    }
+    init() {
+        super.init();
+    }
+
+    beginDataLoad() { super.beginDataLoad(); }
+    finishDataLoad() { super.finishDataLoad(); }
 }

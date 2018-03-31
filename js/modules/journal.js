@@ -21,6 +21,11 @@
         new Date('2017-00-01') == Invalid Date
         new Date('2017-11-01') == Nov 01 2017
         new Date('2017-12-01') == Dec 01 2017
+
+        new Date(1930, 00).toLocaleString('ru-RU, { month: 'long' })
+        в некоторых системах(?) приводит к тоум, что месяца формируются не правильно
+        3 и 4 месяц = это оба становятся мартами, а октябрь вообще пропадает.
+        год обязательно должен быть после 1930 г исключительно.
 */
 
 (() => { "use strict"; })();
@@ -514,6 +519,7 @@ class Journal extends DataWrapper {
                             date.setMonth(date.getMonth() - 1);
                             self.year = date.getFullYear();
                             self.month = date.getMonth() + 1;
+                            EVENT_BUS.dispatch(GL.CONST.EVENTS.DIAGRAM.UPD, {});
                         })();
 
                         (async () => { await Journal.updateUserConfig(self.year, self.month.num); })();
@@ -537,6 +543,7 @@ class Journal extends DataWrapper {
                             date.setMonth(date.getMonth() + 1);
                             self.year = date.getFullYear();
                             self.month = date.getMonth() + 1;
+                            EVENT_BUS.dispatch(GL.CONST.EVENTS.DIAGRAM.UPD, {});
                         })();
 
                         (async () => { await Journal.updateUserConfig(self.year, self.month.num); })();
@@ -572,6 +579,7 @@ class Journal extends DataWrapper {
                         select.data.forEach(g => { guests.push(new Guest(g)); });
                         self.build();
                         self.add(guests);
+                        EVENT_BUS.dispatch(GL.CONST.EVENTS.DIAGRAM.UPD, {});
                     } catch (error) { return; }
                 }
             }
@@ -597,6 +605,7 @@ class Journal extends DataWrapper {
     get selection() { return this._selection; }
 
     bind (target) {
+        super.bind(target);
 
         let tree =
             [{ tag: 'table', id: 'journal' },
@@ -659,7 +668,8 @@ class Journal extends DataWrapper {
     }
 
     init() {
-        // TODO waiting window
+        super.init();
+
         let self = this;
         (async () => {
             try {
@@ -675,11 +685,20 @@ class Journal extends DataWrapper {
                 guest.data.forEach(g => { guests.push(new Guest(g)); });
                 self.build();
                 self.add(guests);
+
+                this.finishDataLoad();
+
             } catch (err) {
+
+                this.finishDataLoad();
+
                 // TODO error
             }
         })();
     }
+
+    beginDataLoad() { super.beginDataLoad(); }
+    finishDataLoad() { super.finishDataLoad(); }
 
     add(entries) {
 
@@ -843,7 +862,11 @@ class Journal extends DataWrapper {
     }
 
     upd(guest) {
-        // FIX криво работает. после исправления перетирает статус смежного дня и добавляет лишние balloon
+        /*
+             FIX иногда криво работает.
+            После исправления перетирает статус смежного дня и добавляет лишние balloon.
+            Возможно связанно с аттрибутами data-*...
+        */
         this.del(guest.unid);
         this.add(guest);
 

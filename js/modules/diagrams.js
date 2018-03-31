@@ -21,13 +21,14 @@ class CanvasChart {
 
 class SVGChart {
 
-    constructor(data, config = {}, opts = {}) {
+    constructor(data, config, opts = {}) {
         this._id = Math.floor(Math.random() * 100000);
         this._viewBox = {
             width: 1000,
             height: 1000
         };
         this._data = data;
+        this._title = config.title;
         this._style = {
             size: {
                 width: 1000,
@@ -73,6 +74,7 @@ class SVGChart {
     get id() { return this._id;}
     get viewBox() { return this._viewBox;}
     get data() { return this._data; }
+    get title() { return this._title; }
     get style() { return this._style; }
     get config() { return this._config; }
     get step() { return this._step; }
@@ -92,9 +94,9 @@ class SVGChart {
                     height="100%"
                     viewBox='0 0 ${self.viewBox.width} ${self.viewBox.height}'
                     preserveAspectRatio='${self.config.aspectRatio}'>
-                    <g class='axis' stroke-width='3' stroke='#f1f1f1' fill='transparent'>
+                    <g class='axis' stroke-width='3' stroke='#f1f1f1' fill='transparent' font-size='30'>
                         <g class='x-axis' stroke-dasharray="5, 5">
-                            <line class="0%" x1='0' y1='100%' x2='100%' y2='100%'  stroke='transparent'></line>
+                            <line class="0%" x1='0' y1='100%' x2='100%' y2='100%' stroke='transparent'></line>
                             <line class="75%" x1="0" y1="0250" x2="100%" y2="0250"></line>
                             <line class="50%" x1="0" y1="0500" x2="100%" y2="0500"></line>
                             <line class="25%" x1="0" y1="0750" x2="100%" y2="0750"></line>
@@ -114,20 +116,18 @@ class SVGChart {
                 path: { M: '', L: '' },
                 xAxis: [],
                 yAxis: [],
+                title: [],
                 dots: [],
-                balloon: [],
+                popup: [],
                 animation: []
             }
-
-            let xAxis = target.querySelector('.x-axis');
-            let yAxis = target.querySelector('.y-axis');
 
             self.data.forEach(entry => {
 
                 let point;
 
                 (()=>{ // формирую точку
-                    point = { x: self.step.x(entry.x), y: self.invertY(self.step.y(entry.y)), v: entry.v, id: entry.id, l: entry.l };
+                    point = { x: self.step.x(entry.x), y: self.invertY(self.step.y(entry.y)), value: entry.value, id: entry.id, label: entry.label };
                 })();
 
                 (()=>{ //сохраняю точку для формирования пути
@@ -136,29 +136,33 @@ class SVGChart {
 
                 (() => { // вертикальная пунктирная линия
                     queue.yAxis.push(self.lineY(point));
-                    queue.yAxis.push(self.text((point.x + 10), 30, point.l));
+                    let text = self.text((point.x + 10), 95, point.label.x);
+                    text.setAttributeNS(null, 'fill', '#6a737b');
+                    text.setAttributeNS(null, 'stroke', 'transparent');
+                    text.setAttributeNS(null, 'stroke-width', '2');
+                    queue.yAxis.push(text);
                 })();
 
                 (() => { // тексты к точкам
                     let balloon = document.createElementNS(null, 'g');
-                    balloon.setAttributeNS(null, 'id', `popup${entry.id}`);
+                    balloon.setAttributeNS(null, 'id', `chart${self.id}popup${entry.id}`);
                     balloon.setAttributeNS(null, 'opacity', `0`);
                     balloon.setAttributeNS(null, 'class', `popup`);
-                    // нужно для транфформации из css, трансформация в прцоентах внутри SVG не работает
-                    balloon.appendChild(self.text(point.x, (point.y - 10), point.v));
-                    queue.balloon.push(balloon);
+                    // нужно для транфформации из css, трансформация в процентах внутри SVG не работает
+                    balloon.appendChild(self.text(point.x, (point.y - 20), point.value));
+                    queue.popup.push(balloon);
                 })();
 
                 (() => { // точки вершин
                     let circle = self.circle(point, '1%');
-                    circle.setAttributeNS(null, 'id', `point${entry.id}`);
+                    circle.setAttributeNS(null, 'id', `chart${self.id}point${entry.id}`);
                     circle.setAttributeNS(null, 'class', `point`);
                     queue.dots.push(circle);
                 })();
 
                 (() => { // анимация
                     let g = document.createElementNS(null, 'g');
-                    g.setAttributeNS(null, 'id', `animation${entry.id}`);
+                    g.setAttributeNS(null, 'id', `chart${self.id}animation${entry.id}`);
                     g.appendChild(self.animation(`popup${entry.id}`, `point${entry.id}`, 'mouseover', 0, 1));
                     g.appendChild(self.animation(`popup${entry.id}`, `point${entry.id}`, 'mouseout', 1, 0));
                     queue.animation.push(g);
@@ -166,51 +170,118 @@ class SVGChart {
 
             });
 
-            (() => { // путь
-                path = document.createElementNS(self.ns, 'path');
-                circle.setAttributeNS(null, 'stroke-linejoin','round');
-                circle.setAttributeNS(null, 'fill', 'transparent');
-                circle.setAttributeNS(null, 'stroke', '#00a4e4');
-                circle.setAttributeNS(null, 'stroke-width', '3');
-                circle.setAttributeNS(null, 'd', `${queue.path.M} ${queue.path.L}`);
-                queue.path = path;
+            let chartData = target.querySelector('.chart-data');
+
+            (() => { // 1. путь
+                let path = document.createElementNS(self.ns, 'path');
+                path.setAttributeNS(null, 'd', `${queue.path.M} ${queue.path.L}`);
+                let g = document.createElementNS(null, 'g');
+                g.setAttributeNS(null, 'class', 'path-group');
+                g.setAttributeNS(null, 'stroke-linejoin','round');
+                g.setAttributeNS(null, 'fill', 'transparent');
+                g.setAttributeNS(null, 'stroke', '#00a4e4'); // FIX :
+                g.setAttributeNS(null, 'stroke-width', '3');
+                g.appendChild(path);
+                chartData.appendChild(g);
             })();
 
-            (() => { // оси X Y
+            (() => { // 2. оси X Y
+                (() => { // тексты к оси x
+                    let text;
+                    text = self.text(0, 740, Math.round(self.config.scale.y * 0.25));
+                    text.setAttributeNS(null, 'fill', '#6a737b'); // FIX :
+                    text.setAttributeNS(null, 'stroke', 'transparent');
+                    text.setAttributeNS(null, 'stroke-width', '2');
+                    queue.xAxis.push(text);
 
+                    text = self.text(0, 490,  Math.round(self.config.scale.y * 0.50));
+                    text.setAttributeNS(null, 'fill', '#6a737b'); // FIX :
+                    text.setAttributeNS(null, 'stroke', 'transparent');
+                    text.setAttributeNS(null, 'stroke-width', '2');
+                    queue.xAxis.push(text);
+
+                    text = self.text(0, 240,  Math.round(self.config.scale.y * 0.75));
+                    text.setAttributeNS(null, 'fill', '#6a737b'); // FIX :
+                    text.setAttributeNS(null, 'stroke', 'transparent');
+                    text.setAttributeNS(null, 'stroke-width', '2');
+                    queue.xAxis.push(text);
+                })();
+
+                let xAxis = target.querySelector('.x-axis');
+                let yAxis = target.querySelector('.y-axis');
+                queue.xAxis.forEach(axis => { xAxis.appendChild(axis); });
+                queue.yAxis.forEach(axis => { yAxis.appendChild(axis); });
+            })();
+
+            (() => { // заголовок
+                let g = document.createElementNS(null, 'g');
+                g.setAttributeNS(null, 'class', 'title-group');
+
+                let path = document.createElementNS(null, 'path');
+                path.setAttributeNS(null, 'fill', '#06D85F7F'); // FIX :
+                path.setAttributeNS(null, 'stroke', 'none');
+                path.setAttributeNS(null, 'd', 'M 0,5 H 1000 V 60 H 0 Z');
+                g.appendChild(path);
+
+                let text = document.createElementNS(null, 'text');
+                text.setAttributeNS(null, 'x', '50%');
+                text.setAttributeNS(null, 'y', '45');
+                text.setAttributeNS(null, 'fill', '#f1f1f1'); // FIX :
+                text.setAttributeNS(null, 'stroke', 'none');
+                text.setAttributeNS(null, 'font-size', '40');
+                text.setAttributeNS(null, 'text-anchor', 'middle');
+                text.innerHTML = self.title;
+                g.appendChild(text);
+
+                queue.title.push(g);
+
+                queue.title.forEach(el => { chartData.appendChild(el); });
             })();
 
             (() => { // точки
-
+                let g = document.createElementNS(null, 'g');
+                g.setAttributeNS(null, 'class', 'point-group');
+                g.setAttributeNS(null, 'fill', 'white'); // FIX :
+                g.setAttributeNS(null, 'stroke', 'orange'); // FIX :
+                queue.dots.forEach(dot => { g.appendChild(dot); });
+                chartData.appendChild(g);
             })();
 
             (() => { // текст точки
-
+                let g = document.createElementNS(null, 'g');
+                g.setAttributeNS(null, 'class', 'popup-group');
+                g.setAttributeNS(null, 'stroke', 'transparent');
+                g.setAttributeNS(null, 'fill', '#6a737b'); // FIX :
+                g.setAttributeNS(null, 'stroke-width', '2');
+                g.setAttributeNS(null, 'font-size', '30');
+                g.setAttributeNS(null, 'text-anchor', 'middle');
+                queue.popup.forEach(popup => { g.appendChild(popup); });
+                chartData.appendChild(g);
             })();
 
             (() => { // анимация
-
-            })();
-            /*
-            (() => {
-                let cd = target.querySelector('.chart-data');
-                cd.appendChild(path);
-                g.forEach(g => { cd.appendChild(g); });
-                cd.innerHTML += '<g></g>';
+                let g = document.createElementNS(null, 'g');
+                g.setAttributeNS(null, 'class', 'animation-group');
+                queue.animation.forEach(animation => { g.appendChild(animation); });
+                chartData.appendChild(g);
             })();
 
-            (() => {
-                xAxis.appendChild(self.text(0, 240, (self.config.scale.y * 0.75))); //75%
-                xAxis.appendChild(self.text(0, 490, (self.config.scale.y * 0.50))); //50%
-                xAxis.appendChild(self.text(0, 740, (self.config.scale.y * 0.25))); //25%
+            (()=>{
+                /*
+                    На сколько я понимаю есть какая-то особенность в создании svg,
+                    о которой я не знаю, из-за чего SVG не отрисовыается полностью.
+                    эта строчка, видимо, заставляет движок заново построить SVG
+                    и добавить недостающие теги(?) к дереву.
+                    В результате график формирует как надо.
+                */
+                chartData.innerHTML += '<g></g>';
             })();
-            */
+
         })();
     }
 
     polyline(pre, cur) {
         let polyline = document.createElementNS(this.ns, 'polyline');
-        polyline.setAttributeNS(this.ns, 'id', cur.id);
         polyline.setAttributeNS(this.ns, 'data-cid', cur.id);
         polyline.setAttributeNS(this.ns, 'data-pid', pre.id);
         polyline.setAttributeNS(this.ns, 'points', `${pre.x},${pre.y} ${cur.x},${cur.y}`);
@@ -221,10 +292,6 @@ class SVGChart {
         let text = document.createElementNS(this.ns, 'text');
         text.setAttributeNS(null, 'x', x);
         text.setAttributeNS(null, 'y', y);
-        text.setAttributeNS(null, 'stroke', 'transparent');
-        text.setAttributeNS(null, 'fill', '#6a737b');
-        text.setAttributeNS(null, 'stroke-width', '2');
-        text.setAttributeNS(null, 'font-size', '30');
         text.innerHTML = v;
         return text;
     }
@@ -234,19 +301,17 @@ class SVGChart {
         circle.setAttributeNS(null, 'cx', p.x);
         circle.setAttributeNS(null, 'cy', p.y);
         circle.setAttributeNS(null, 'r', r);
-        circle.setAttributeNS(null, 'fill', 'white');
-        circle.setAttributeNS(null, 'stroke', 'orange');
         return circle;
     }
 
     animation(targetId, sourceId, trigger, start, end) {
         let animation = document.createElementNS(null, 'animate');
-        animation.setAttributeNS(null, 'href', `#${targetId}`);
+        animation.setAttributeNS(null, 'href', `#chart${this.id}${targetId}`);
         animation.setAttributeNS(null, 'attributeName', 'opacity');
         animation.setAttributeNS(null, 'from', start);
         animation.setAttributeNS(null, 'to', end);
         animation.setAttributeNS(null, 'dur', '0.5s');
-        animation.setAttributeNS(null, 'begin', `${sourceId}.${trigger}`);
+        animation.setAttributeNS(null, 'begin', `chart${this.id}${sourceId}.${trigger}`);
         animation.setAttributeNS(null, 'fill', 'freeze');
         animation.setAttributeNS(null, 'repeatCount', '1');
         return animation;
@@ -270,12 +335,6 @@ class SVGChart {
         return line;
     }
 
-    block(p) {
-        // let path = document.createElementNS(this.ns, 'path');
-        // this.attr(p, 'd', `M ${p.x},${p.y} L ${cur.x},${cur.y}`);
-        // return path;
-    }
-
     attr(target, attr, val) { target.setAttributeNS(this.ns, attr, val); }
     invertY(y) { return this.viewBox.height - y; }
 }
@@ -285,8 +344,10 @@ class Diagrams extends DataWrapper {
     constructor() { super(); }
 
     bind(target) {
+        super.bind(target);
+
         let tree =
-            [{ tag: 'div', id: 'chart-wrapper' },
+            [{ tag: 'div', id: 'chart' },
                 [{ tag: 'div', class: 'chart-container-1' },
                     { tag: 'div', class: 'chart-1' }
                 ],
@@ -307,7 +368,20 @@ class Diagrams extends DataWrapper {
     }
 
     init() {
+        // super.init();
+
+        this.create();
+        EVENT_BUS.register(GL.CONST.EVENTS.DIAGRAM.UPD, this.create.bind(this));
+    }
+
+    beginDataLoad() { super.beginDataLoad(); }
+    finishDataLoad() { super.finishDataLoad(); }
+
+    create() {
         let self = this;
+
+        self.beginDataLoad();
+
         (async () => {
             try {
                 let config = await new Select().select('year').from('cf001').join('us001').on('us001.login = cf001.user').where('us001.login = ?').connect(1);
@@ -318,202 +392,138 @@ class Diagrams extends DataWrapper {
                 let select = await new Select('', { types: 'ss', param: [dend,dbeg] }).select('*').from('gl001').where('dbeg <= ? and dend >= ?').connect();
                 if (!select.affectedRows) return;
 
-                //
-                let data = ((data) => {
-                    let obj = {'1':0,'2':0,'3':0,'4':0,'5':0,'6':0,'7':0,'8':0,'9':0,'10':0,'11':0,'12':0};
-                    data.forEach(el => {
-                        let month = new Date(el.dbeg).format('m');
-                        obj[month] += parseFloat(el.paid);
-                    });
-                    let parsed = [];
-                    for (let el in obj) {
-                        let month = new Date(1900, el).toLocaleString(GL.CONST.LOCALE, { month: 'long' });
-                        parsed.push({ x: el, y: obj[el], v: `${month}: ${obj[el]}`, id: el, l: el });
-                    }
-                    return parsed;
-                })(select.data);
+                (() => { // chart-1 доход помесячно
+                    let data = ((data) => {
+                        let result = [];
+                        let y = {};
 
-                let chart = new SVGChart(data).bind(document.querySelector('#chart-wrapper .chart-1'));
+                        (() => {
+                            data.sort((a,b)=>{
+                                let d1 = new Date(a.dbeg), d2 = new Date(b.dbeg);
+                                return (d1 < d2) ? -1 : (d1 > d2) ? 1 : 0;
+                            });
+                        })();
+
+                        (() => {
+                            data.forEach(el => {
+                                let m = new Date(el.dbeg).format('m'), paid = parseFloat(el.paid);
+                                y[m] =  y[m] ? y[m] += paid : paid;
+                            });
+                        })();
+
+                        (() => {
+                            Object.keys(y).forEach((k, i) => {
+                                let text = new Date(2000, (k - 1)).toLocaleString(GL.CONST.LOCALE, { month: 'long' });
+                                result.push({ x: (i + 1), y: y[k], value: `${text}: ${y[k]} ₽`, id: k, label: { x: k, y: '' } });
+                            });
+                        })();
+
+                        return result;
+
+                    })(select.data);
+                    new SVGChart(data, { title: 'Доход помесячно' }).bind(document.querySelector('#chart .chart-1'));
+                })();
+
+                (() => { // chart-2 доход по номерам
+                    let data = ((data) => {
+                        let result = [];
+                        let y = {};
+
+                        (() => {
+                            data.sort((a, b)=>{
+                                let r1 = a.room, r2 = a.room;
+                                return (r1 < r2) ? -1 : (r1 > r2) ? 1 : 0;
+                            });
+                        })();
+
+                        (() => {
+                            data.forEach(el => {
+                                let r = el.room, paid = parseFloat(el.paid);
+                                y[r] =  y[r] ? y[r] += paid : paid;
+                            });
+                        })();
+
+                        (() => {
+                            Object.keys(y).forEach((k, i) => {
+                                result.push({ x: (i + 1), y: y[k], value: `комната ${k}: ${y[k]} ₽`, id: k, label: { x: k, y: '' } });
+                            });
+                        })();
+
+                        return result;
+
+                    })(select.data);
+                    new SVGChart(data, { title: 'Доход на номер за год' }).bind(document.querySelector('#chart .chart-2'));
+                })();
+
+                (() => { // chart-3 загруженность помесячно
+                    let data = ((data) => {
+                        let result = [];
+                        let y = {};
+
+                        (() => {
+                            data.sort((a,b)=>{
+                                let d1 = new Date(a.dbeg), d2 = new Date(b.dbeg);
+                                return (d1 < d2) ? -1 : (d1 > d2) ? 1 : 0;
+                            });
+                        })();
+
+                        (() => {
+                            data.forEach(el => {
+                                let m = new Date(el.dbeg).format('m');
+                                y[m] =  y[m] ? y[m] += 1 : 1;
+                            });
+                        })();
+
+                        (() => {
+                            Object.keys(y).forEach((k, i) => {
+                                let text = new Date(2000, (k - 1)).toLocaleString(GL.CONST.LOCALE, { month: 'long' });
+                                result.push({ x: (i + 1), y: y[k], value: `${text}: ${y[k]} гостя(ей)`, id: k, label: { x: k, y: '' } });
+                            });
+                        })();
+
+                        return result;
+
+                    })(select.data);
+                    new SVGChart(data, { title: 'Загруженность помесячно' }).bind(document.querySelector('#chart .chart-3'));
+                })();
+
+                (() => { // chart-4 загруженность по номерам
+                    let data = ((data) => {
+                        let result = [];
+                        let y = {};
+
+                        (() => {
+                            data.sort((a, b)=>{
+                                let r1 = a.room, r2 = a.room;
+                                return (r1 < r2) ? -1 : (r1 > r2) ? 1 : 0;
+                            });
+                        })();
+
+                        (() => {
+                            data.forEach(el => {
+                                let r = el.room;
+                                y[r] =  y[r] ? y[r] += 1 : 1;
+                            });
+                        })();
+
+                        (() => {
+                            Object.keys(y).forEach((k, i) => {
+                                result.push({ x: (i + 1), y: y[k], value: `комната ${k}: ${y[k]} гостя(ей)`, id: k, label: { x: k, y: '' } });
+                            });
+                        })();
+
+                        return result;
+
+                    })(select.data);
+                    new SVGChart(data, { title: 'Загруженность номеров за год' }).bind(document.querySelector('#chart .chart-4'));
+                })();
+
+                this.finishDataLoad();
 
             } catch (error) {
-
+                this.finishDataLoad();
+                // TODO error
             }
         })();
     }
 }
-
-/*
- NOTE вполне рабочий вариант.
-    Заморочился с расчетом позиций, по этому не стоит удалять.
-    Лучше оставить, возможно однажды пригодится.
-
-let chart = new Chart(data).create();
-document.querySelector('#chart-wrapper .chart-wrapper-1').appendChild(chart);
-class SVGChart {
-    constructor(data, config = {}, opts = {}) {
-        this._id = Math.floor(Math.random() * 100000);
-        this._viewBox = {
-            width: 1000,
-            height: 1000
-        };
-        this._data = data;
-        this._style = {
-            size: {
-                width: opts.size ? opts.size.width : 1000,
-                height: opts.size ? opts.size.height : 1000
-            },
-            color: {
-                x: opts.color ? opts.color.x : '#6a737b', //x axis
-                y: opts.color ? opts.color.y : '#6a737b', //y axis
-                l: opts.color ? opts.color.l : '#00a4e4', //label
-                v: opts.color ? opts.color.v : '#06D85F', //value
-                d: opts.color ? opts.color.v : '#ffdd00', //dot point
-            }
-        };
-        this._config = {
-            scale: {
-                x: config.scale ? config.scale.x : this.data.map((e) => { return e.x; }).filter((e,i,a) => { return i === a.indexOf(e); }).length + 1,
-                y: config.scale ? config.scale.y : Math.max.apply(Math, this.data.map((o) => { return o.y; }))
-            },
-            aspectRatio: config.aspectRatio ? config.aspectRatio : 'xMinYMin meet', //none
-        };
-        this._step = {
-            x: (x) => { return Math.round(x * (this.viewBox.width / this.config.scale.x)); },
-            y: (y) => { return y !== 0 ? Math.round((y / this.config.scale.y) * this.viewBox.height) : 0; }
-        };
-        this._ns = 'http://www.w3.org/2000/svg';
-
-        return this;
-    }
-    get id() { return this._id;}
-    get viewBox() { return this._viewBox;}
-    get data() { return this._data; }
-    get style() { return this._style; }
-    get config() { return this._config; }
-    get step() { return this._step; }
-    get ns() {return this._ns; }
-
-    create() {
-        let self = this,
-            container,
-            points = [];
-
-        (() => {
-            container = document.createElement('div');
-            container.classList.add('chart-container');
-            container.innerHTML =
-                `<svg
-                    version='1.2'
-                    xmlns='${self.ns}'
-                    xmlns:xlink='http://www.w3.org/1999/xlink'
-                    id='svg-graph-${self.id}'
-                    class='graph'
-                    viewBox='0 0 ${self.viewBox.width} ${self.viewBox.height}'
-                    preserveAspectRatio='${self.config.aspectRatio}'
-                    >
-                    <g class='axis' stroke-width='5'>
-                        <g class='x-axis' stroke='${self.style.color.x}'> <line x1='0' y1='1000' x2='1000' y2='1000'></line> </g>
-                        <g class='y-axis' stroke='${self.style.color.y}'> <line x1='0' y1='0000' x2='0000' y2='1000'></line> </g>
-                    </g>
-                    <g class='chart-points' stroke='${self.style.color.l}' stroke-width='3'>
-                    </g>
-                </svg>`;
-        })();
-
-       (() => {
-        let pre = { x: 0, y: 1000, id: '' };
-        self.data.forEach(entry => {
-                let cur = { x: self.step.x(entry.x), y: self.inv(self.step.y(entry.y)), v: entry.v, id: entry.id };
-                (cur.x !== 0 && cur.y !== 1000) && points.push(self.NSg(pre, cur));
-                pre = cur;
-            });
-        })();
-
-        (() => { points.forEach(p => { container.querySelector('.chart-points').appendChild(p); });})();
-
-        return container;
-    }
-
-    NSg(pre, cur) {
-        let g = document.createElementNS(this.ns, 'g');
-        g.appendChild(this.NSpath(pre, cur));
-        g.appendChild(this.NSlineX(cur));
-        g.appendChild(this.NSlineY(cur));
-        g.innerHTML += '<g></g>';
-        return g;
-    }
-
-    NSpolylines(pre, cur) {
-        let polyline = document.createElementNS(this.ns, 'polyline');
-        polyline.setAttributeNS(this.ns, 'id', cur.id);
-        polyline.setAttributeNS(this.ns, 'data-cid', cur.id);
-        polyline.setAttributeNS(this.ns, 'data-pid', pre.id);
-        polyline.setAttributeNS(this.ns, 'points', `${pre.x},${pre.y} ${cur.x},${cur.y}`);
-        return polyline;
-    }
-
-    NSlineX(p) {
-        let line = document.createElementNS(this.ns, 'line');
-        line.setAttributeNS(this.ns, 'x1', '0');
-        line.setAttributeNS(this.ns, 'y1', p.y);
-        line.setAttributeNS(this.ns, 'x2', this.viewBox.width);
-        line.setAttributeNS(this.ns, 'y2', p.y);
-        line.setAttributeNS(this.ns, 'stroke', '#6a737b');
-        line.setAttributeNS(this.ns, 'stroke-width', '1');
-        return line;
-    }
-
-    NSlineY(p) {
-        let line = document.createElementNS(this.ns, 'line');
-        line.setAttributeNS(this.ns, 'x1', p.x);
-        line.setAttributeNS(this.ns, 'y1', '0');
-        line.setAttributeNS(this.ns, 'x2', p.x);
-        line.setAttributeNS(this.ns, 'y2', this.viewBox.height);
-        line.setAttributeNS(this.ns, 'stroke', '#6a737b');
-        line.setAttributeNS(this.ns, 'stroke-width', '1');
-        return line;
-    }
-
-    NStext(p) {
-        let text = document.createElementNS(this.ns, 'text');
-        text.setAttributeNS(this.ns, 'x', (p.x - 30));
-        text.setAttributeNS(this.ns, 'y', this.viewBox.height);
-        text.setAttributeNS(this.ns, 'stroke', this.style.color.v);
-        text.setAttributeNS(this.ns, 'stroke-width', '1');
-        text.setAttributeNS(this.ns, 'font-size', '25');
-        return text;
-    }
-
-    NScircle(p) {
-        let circle = document.createElementNS(this.ns, 'circle');
-        circle.setAttributeNS(this.ns, 'cx', p.x);
-        circle.setAttributeNS(this.ns, 'cy', p.y);
-        circle.setAttributeNS(this.ns, 'r', '5');
-        circle.setAttributeNS(this.ns, 'fill', this.style.color.d);
-        circle.setAttributeNS(this.ns, 'stroke', this.style.color.d);
-        return circle;
-    }
-
-    NSpath(pre, cur) {
-        let path = document.createElementNS(this.ns, 'path');
-        path.setAttributeNS(this.ns, 'd', `M ${pre.x},${pre.y} L ${cur.x},${cur.y}`);
-        path.setAttributeNS(this.ns, 'fill', 'transparent');
-        path.setAttributeNS(this.ns, 'stroke', this.style.color.l);
-        return path;
-    }
-
-    inv(y) { return this.viewBox.height - y; }
-    add() {}
-    upd() {}
-    del() {}
-}
-    role='img'
-    width=${self.style.size.width}
-    height=${self.style.size.height}
-    vector-effect='non-scaling-stroke'
-    y-axis
-    <line x1='0' y1='250' x2='10' y2='250'></line>
-    <line x1='0' y1='500' x2='15' y2='500'></line>
-    <line x1='0' y1='750' x2='10' y2='750'></line>
-    <polyline id='1' data-cid='1' data-pid=' ' points='0000,0000 0000,0100 0000,0100 0100,0100'/>
-*/

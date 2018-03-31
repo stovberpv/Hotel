@@ -1,0 +1,169 @@
+#todo {
+    width: 100%;
+    height: 100%;
+    display: -webkit-inline-box;
+}
+#todo .todo-container {
+    width: 50%;
+    height: 100%;
+    padding: 4px;
+    box-sizing: border-box;
+    overflow-y: scroll;
+}
+#todo table {
+    width: 100%;
+    table-layout: fixed;
+}
+#todo table thead {
+    text-align: center;
+}
+#todo table thead td {
+    padding: 0;
+}
+#todo table thead td label {
+    width: auto;
+    height: 100%;
+    display: block;
+    line-height: 40px;
+    border-radius: 3px;
+}
+#todo table tbody {
+    overflow: auto;
+    display: block;
+    max-height: 850px;
+}
+#todo table tbody tr[data-status='finished'] {
+    text-decoration: line-through;
+}
+#todo table tr[data-status="finished"]:hover {
+    text-decoration: none;
+}
+#todo table tbody td {
+    width: 100%;
+    height: 35px;
+    border: 1px solid var(--border-regular);
+    border-radius: 3px;
+}
+#todo table tbody tr:hover td {
+    border: 1px solid transparent;
+    color: var(--text-light)
+}
+#todo table td {
+    padding: 10px;
+    outline: none;
+    transition: all .5s;
+}
+#todo table tfoot td {
+    padding: 0;
+}
+#todo table tfoot button {
+    width: 100%;
+    height: 100%;
+    border: none;
+    outline: none;
+    padding: 0;
+    margin: 0;
+    color: var(--text-accent);
+    line-height: 40px;
+    border: 1px solid var(--border-regular);
+}
+#todo table tfoot .button:hover {
+    border: 1px solid transparent;
+    box-shadow: none;
+    transform: none;
+    color: var(--text-light);
+}
+
+
+#todo-notes table thead td label {
+    background-color: var(--neutral);
+    color: var(--text-light);
+}
+#todo-notes table tfoot .button:hover {
+    background-color: var(--neutral);
+}
+#todo #todo-notes table tbody td:not(.td-zero-size):hover {
+    background-color: var(--neutral);
+}
+
+
+#todo-tasks table thead td label {
+    background-color: var(--negative);
+    color: var(--text-light);
+}
+#todo-tasks table tfoot .button:hover {
+    background-color: var(--negative);
+}
+#todo #todo-tasks table tbody tr:hover {
+    background-color: var(--negative);
+}
+#todo-tasks table tbody tr td.text-data-cell {
+    width: 90%;
+}
+#todo-tasks table tbody tr td.date-data-cell {
+    cursor: pointer;
+}
+#todo #todo-tasks table tbody td.date-data-cell:not(:focus):empty:before {
+    content: 'Выбрать время';
+    /*float: left;
+    margin-left: 2px;
+    color: #b3b3b3;*/
+}
+
+/*
+-----------------------------------------------------------------------------------------------
+    CONTROL
+*/
+
+
+#todo table tbody tr:hover td .control-container {
+    display: inline-block;
+}
+#todo table tbody tr td.td-zero-size {
+    vertical-align: top;
+    outline: none;
+}
+#todo table tbody tr td .control-wrapper .control-container .control-el.action-1 {
+    background-color: var(--background-regular);
+    color: var(--text-light);
+    opacity: .5;
+}
+#todo table tbody tr[data-status="edited"] td .control-wrapper .control-container .control-el.action-1 {
+    background-color: rgba(255,255,255, 1);
+    color: var(--text-accent);
+    opacity: 1;
+}
+#todo table tbody tr[data-status="edited"] td .control-wrapper .control-container .control-el.action-1:hover {
+    background-color: var(--positive);
+    color: var(--text-light);
+}
+#todo table tbody tr td .control-wrapper .control-container .control-el.action-2:hover {
+    background-color: var(--neutral);
+    color: var(--text-light);
+}
+#todo table tbody tr td .control-wrapper .control-container .control-el.action-3:hover {
+    background-color: var(--negative);
+    color: var(--text-light);
+}
+
+
+#todo #todo-tasks table tbody tr td .control-wrapper .control-container {
+    left: -195px;
+}
+
+
+#todo #todo-notes table tbody tr td .control-wrapper .control-container {
+    left: -100px;
+}
+#todo table tbody tr td .control-wrapper .control-container .control-el.action-1:before {
+    content: '  ✓  ';
+}
+#todo table tbody tr:not([data-status="finished"]) td .control-wrapper .control-container .control-el.action-2:before {
+    content: '  ⚑  ';
+}
+#todo table tbody tr[data-status="finished"] td .control-wrapper .control-container .control-el.action-2:before {
+    content: '  ⚐  ';
+}
+#todo table tbody tr td .control-wrapper .control-container .control-el.action-3:before {
+    content: '  ✗  ';
+}

@@ -122,17 +122,17 @@ class Contacts extends DataWrapper {
                     try {
                         let update = await new Update('', { types: 'ssssi', param: [p.name,p.teln,p.city,p.info,tr.dataset.unid] }).update('pb001').set('name=?,teln=?,city=?,info=?').where('unid=?').connect();
                         if (!update.affectedRows) {
-                            new MessageBox({ text: `${GL.CONST.LOG.ID.B002.TITLE}::${GL.CONST.LOG.ID.B002.GIST}`, level: 'error' }).stay();
+                            new MessageBox({ text: `${GL.CONST.LOG.ID.B002.TITLE}::${GL.CONST.LOG.ID.B002.GIST}`, level: 'error' }).add().stay();
                             return;
                         }
                         let select = await new Select('', { types: 'i', param: [tr.dataset.unid] }).select('*').from('pb001').where('unid=?').connect();
                         if (!select.status) {
-                            new MessageBox({ text: `${GL.CONST.LOG.ID.B002.TITLE}::${GL.CONST.LOG.ID.B002.GIST}`, level: 'error' }).stay();
+                            new MessageBox({ text: `${GL.CONST.LOG.ID.B002.TITLE}::${GL.CONST.LOG.ID.B002.GIST}`, level: 'error' }).add().stay();
                             return;
                         }
                         self.upd(new Person(select.data[0]));
                     } catch (error) {
-                        new MessageBox({ text: `${GL.CONST.LOG.ID.B002.TITLE}::${GL.CONST.LOG.ID.B002.GIST}`, level: 'error' }).stay();
+                        new MessageBox({ text: `${GL.CONST.LOG.ID.B002.TITLE}::${GL.CONST.LOG.ID.B002.GIST}`, level: 'error' }).add().stay();
                     }
                 })();
             },
@@ -144,12 +144,12 @@ class Contacts extends DataWrapper {
                     try {
                         let select = await new Select('', { types: 'i', param: [ds.unid] }).select('*').from('pb001').where('unid=?').connect();
                         if (!select.status) {
-                            new MessageBox({ text: `${GL.CONST.LOG.ID.B002.TITLE}::${GL.CONST.LOG.ID.B002.GIST}`, level: 'error' }).stay();
+                            new MessageBox({ text: `${GL.CONST.LOG.ID.B002.TITLE}::${GL.CONST.LOG.ID.B002.GIST}`, level: 'error' }).add().stay();
                             return;
                         }
                         self.upd(new Person(select.data[0]));
                     } catch (error) {
-                        new MessageBox({ text: `${GL.CONST.LOG.ID.B002.TITLE}::${GL.CONST.LOG.ID.B002.GIST}`, level: 'error' }).stay();
+                        new MessageBox({ text: `${GL.CONST.LOG.ID.B002.TITLE}::${GL.CONST.LOG.ID.B002.GIST}`, level: 'error' }).add().stay();
                     }
                 })();
             },
@@ -161,12 +161,12 @@ class Contacts extends DataWrapper {
                     try {
                         let del = await new Delete('', { types: 'i', param: [ds.unid] }).from('pb001').where('unid=?').connect();
                         if (!del.affectedRows) {
-                            new MessageBox({ text: `${GL.CONST.LOG.ID.B002.TITLE}::${GL.CONST.LOG.ID.B002.GIST}`, level: 'error' }).stay();
+                            new MessageBox({ text: `${GL.CONST.LOG.ID.B002.TITLE}::${GL.CONST.LOG.ID.B002.GIST}`, level: 'error' }).add().stay();
                             return;
                         }
                         self.del(ds.unid);
                     } catch (error) {
-                        new MessageBox({ text: `${GL.CONST.LOG.ID.B002.TITLE}::${GL.CONST.LOG.ID.B002.GIST}`, level: 'error' }).stay();
+                        new MessageBox({ text: `${GL.CONST.LOG.ID.B002.TITLE}::${GL.CONST.LOG.ID.B002.GIST}`, level: 'error' }).add().stay();
                     }
                 })();
             }
@@ -174,6 +174,7 @@ class Contacts extends DataWrapper {
     }
 
     bind(target) {
+        super.bind(target);
 
         let tree =
             [{ tag: 'table', id: 'contact' },
@@ -194,13 +195,13 @@ class Contacts extends DataWrapper {
 
         let qsParent, qsChild, qsParentExcl;
 
-        qsParent = '#contact > tbody'; qsChild = 'tr .control-el.save'; qsParentExcl = `[data-status='${GL.CONST.DATA_ATTR.CONTACT.STATUS.INITIAL}']`;
+        qsParent = '#contact > tbody'; qsChild = 'tr .control-el.action-1'; qsParentExcl = `[data-status='${GL.CONST.DATA_ATTR.CONTACT.STATUS.INITIAL}']`;
         UTILS.SET_DELEGATE('mousedown', qsParent, qsChild, qsParentExcl, this.cb.save.bind(this));
 
-        qsParent = '#contact > tbody'; qsChild = 'tr .control-el.reset'; qsParentExcl = `[data-status='${GL.CONST.DATA_ATTR.CONTACT.STATUS.INITIAL}']`;
+        qsParent = '#contact > tbody'; qsChild = 'tr .control-el.action-2'; qsParentExcl = `[data-status='${GL.CONST.DATA_ATTR.CONTACT.STATUS.INITIAL}']`;
         UTILS.SET_DELEGATE('mousedown', qsParent, qsChild, qsParentExcl, this.cb.reset.bind(this));
 
-        qsParent = '#contact > tbody'; qsChild = `tr .control-el.delete`; qsParentExcl = '';
+        qsParent = '#contact > tbody'; qsChild = `tr .control-el.action-3`; qsParentExcl = '';
         UTILS.SET_DELEGATE('mousedown', qsParent, qsChild, qsParentExcl, this.cb.delete.bind(this));
 
         qsParent = '#contact > tbody'; qsChild = `tr td`; qsParentExcl = `[data-status='${GL.CONST.DATA_ATTR.CONTACT.STATUS.EDITED}']`;
@@ -208,7 +209,7 @@ class Contacts extends DataWrapper {
     }
 
     init() {
-
+        super.init();
         let self = this;
 
         EVENT_BUS.register(GL.CONST.EVENTS.CONTACT.NEW, this.event.new.bind(this));
@@ -218,11 +219,17 @@ class Contacts extends DataWrapper {
                 let select = await new Select().select('*').from('pb001').connect();
                 if (!select.status) return;
                 self.add(select.data);
+                this.finishDataLoad();
             } catch (error) {
+                this.finishDataLoad();
+                // TODO :error
                 return;
             }
         })();
     }
+
+    beginDataLoad() { super.beginDataLoad(); }
+    finishDataLoad() { super.finishDataLoad(); }
 
     add(data) {
         var tbody = document.getElementById('contact-tbody');
@@ -238,11 +245,13 @@ class Contacts extends DataWrapper {
                     { tag: 'td', class: 'contact-person-el contact-person-teln', textNode: person.teln, attr: { 'contenteditable': 'true' } },
                     { tag: 'td', class: 'contact-person-el contact-person-city', textNode: person.city, attr: { 'contenteditable': 'true' } },
                     { tag: 'td', class: 'contact-person-el contact-person-info', textNode: person.info, attr: { 'contenteditable': 'true' } },
-                    [{ tag: 'div', class: 'control-wrapper' },
-                        [{ tag: 'div', class: 'control-container' },
-                            { tag: 'span', class: 'control-el save', textNode: '' },
-                            { tag: 'span', class: 'control-el reset', textNode: '' },
-                            { tag: 'span', class: 'control-el delete', textNode: '' }
+                    [ { tag: 'td', class: 'td-zero-size' },
+                        [{ tag: 'div', class: 'control-wrapper' },
+                            [{ tag: 'div', class: 'control-container' },
+                                { tag: 'span', class: 'control-el action-1', textNode: '' },
+                                { tag: 'span', class: 'control-el action-2', textNode: '' },
+                                { tag: 'span', class: 'control-el action-3', textNode: '' }
+                            ]
                         ]
                     ]
                 ];
@@ -256,7 +265,7 @@ class Contacts extends DataWrapper {
     upd(person) {
         let contact = document.querySelector(`#contact [data-unid='${person.unid}']`);
         if (!contact) {
-            new MessageBox({ text: `${GL.CONST.LOG.ID.A001.TITLE}::${GL.CONST.LOG.ID.A001.GIST}`, level: 'error' }).stay();
+            new MessageBox({ text: `${GL.CONST.LOG.ID.A001.TITLE}::${GL.CONST.LOG.ID.A001.GIST}`, level: 'error' }).add().stay();
             return;
         }
         contact.dataset.status = GL.CONST.DATA_ATTR.CONTACT.STATUS.INITIAL;
@@ -268,16 +277,16 @@ class Contacts extends DataWrapper {
         contact.querySelector('.contact-person-teln').innerText = person.teln;
         contact.querySelector('.contact-person-city').innerText = person.city;
         contact.querySelector('.contact-person-info').innerText = person.info;
-        new MessageBox({ text: `${GL.CONST.LOG.ID.A003.TITLE}::${GL.CONST.LOG.ID.A003.GIST}`, level: 'success' }).stay();
+        new MessageBox({ text: `${GL.CONST.LOG.ID.A003.TITLE}::${GL.CONST.LOG.ID.A003.GIST}`, level: 'success' }).add().stay();
     }
 
     del(unid) {
         let contact = document.querySelector(`#contact [data-unid='${unid}']`);
         if (!contact) {
-            new MessageBox({ text: `${GL.CONST.LOG.ID.A001.TITLE}::${GL.CONST.LOG.ID.A001.GIST}`, level: 'error' }).stay();
+            new MessageBox({ text: `${GL.CONST.LOG.ID.A001.TITLE}::${GL.CONST.LOG.ID.A001.GIST}`, level: 'error' }).add().stay();
             return;
         }
         contact.parentNode.removeChild(contact);
-        new MessageBox({ text: `${GL.CONST.LOG.ID.A003.TITLE}::${GL.CONST.LOG.ID.A003.GIST}`, level: 'success' }).stay();
+        new MessageBox({ text: `${GL.CONST.LOG.ID.A003.TITLE}::${GL.CONST.LOG.ID.A003.GIST}`, level: 'success' }).add().stay();
     }
 }

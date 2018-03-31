@@ -11,8 +11,8 @@
         <meta charset="utf-8">
         <title>Hotel Manager</title>
         <link rel='icon' href='/res/icons/favicon.png'>
-        <link rel='stylesheet' href='/css/normalize.css' />
-        <link rel='stylesheet' href='/css/login.css'>
+        <link rel='stylesheet' href='/css/utils/normalize.css' />
+        <link rel='stylesheet' href='/css/core/login.css'>
     </head>
     <body>
         <form id='login-form' action='../index.php' method='post'>

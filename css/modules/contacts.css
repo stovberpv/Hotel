@@ -1,0 +1,111 @@
+/*
+    TODO : vars
+*/
+
+
+/*-----------------------------------------------*/
+#contact {
+    user-select: none;
+    width: 100%;
+    height: auto;
+    letter-spacing: .3px;
+    font-family: 'Century Gothic', sans-serif;
+    border: none;
+    /* border-collapse: collapse; */
+    border-spacing: 4px;
+}
+/*-----------------------------------------------*/
+#contact td {
+    padding: 10px;
+}
+/*-----------------------------------------------*/
+#contact-thead {
+    color: var(--text-accent);
+}
+#contact-thead tr {
+    border-bottom: 1px solid var(--border-regular);
+}
+/*-----------------------------------------------*/
+#contact-tbody::-webkit-scrollbar-thumb {
+    background-color: var(--background-regular);
+}
+#contact-tbody::-webkit-scrollbar {
+    width: 1px;
+}
+#contact-tbody tr {
+    position: relative;
+    /* border: 1px solid var(--border-regular); */
+}/*
+#contact-tbody tr:hover {
+    box-shadow: 0px 10px 5px 1px rgba(0,0,0, .3);
+}*/
+#contact-tbody tr:nth-child(even) {
+    background-color: var(--background-light);
+}
+#contact-tbody tr:hover td {
+    transition: all .5s;
+    color: var(--text-light);
+    background-color: var(--neutral);
+}
+#contact-tbody tr:last-child:hover td:first-child {
+    border-bottom-left-radius: 3px;
+}
+#contact-tbody tr:last-child:hover td:last-child {
+    border-bottom-right-radius: 3px;
+}
+#contact-tbody td {
+    color: var(--text-accent);
+    /* border: none; */
+    outline-color: var(--negative);
+    border: 1px solid var(--border-regular);
+    border-radius: 3px;
+}
+
+
+/*
+-----------------------------------------------------------------------------------------------
+    CONTROL
+*/
+
+table#contact tbody tr td .control-wrapper .control-container {
+    width: auto;
+    left: -100px;
+}
+table#contact tbody tr:hover td .control-container {
+    display: inline-block;
+}
+table#contact tbody tr td.td-zero-size {
+    vertical-align: top;
+}
+table#contact tbody tr:not([data-status="initial"]) td .control-wrapper .control-container .control-el.action-1:hover {
+    background-color: var(--positive);
+    color: var(--text-light);
+}
+table#contact tbody tr:not([data-status="initial"]) td .control-wrapper .control-container .control-el.action-2:hover {
+    background-color: var(--extend);
+    color: var(--text-light);
+}
+table#contact tbody tr .control-wrapper .control-el.action-3:hover {
+    background-color: var(--negative);
+    color: var(--text-light);
+}
+table#contact tbody tr[data-status="initial"] td .control-wrapper .control-container .control-el.action-1 {
+    background-color: var(--background-regular);
+    color: var(--text-light);
+    opacity: .5;
+}
+table#contact tbody tr[data-status="initial"] td .control-wrapper .control-container .control-el.action-2 {
+    background-color: var(--background-regular);
+    color: var(--text-light);
+    opacity: .5;
+}
+
+table#contact tbody tr .control-wrapper .control-container .control-el.action-1:before {
+    content: '  ✓  ';
+}
+table#contact tbody tr .control-wrapper .control-container .control-el.action-2:before {
+    content: '  ⟲  ';
+}
+table#contact tbody tr .control-wrapper .control-container .control-el.action-3:before {
+    content: '  ✗  ';
+}

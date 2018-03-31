@@ -1,7 +1,8 @@
-/*
------------------------------------------------------------------------------------------------
-    DIALOG
-*/
+
+
+/*---------------------------------------------------------------------
+    DIALOG DEFAULT STYLE BEGIN
+---------------------------------------------------------------------*/
 
 
 .modal-wrapper {
@@ -78,10 +79,14 @@
 }
 
 
-/*
------------------------------------------------------------------------------------------------
-    GUEST-CARD
-*/
+/*---------------------------------------------------------------------
+    DIALOG DEFAULT STYLE END
+---------------------------------------------------------------------*/
+
+
+/*---------------------------------------------------------------------
+    GUEST-CARD BEGIN
+---------------------------------------------------------------------*/
 
 
 .guest-card.modal-wrapper {
@@ -119,7 +124,7 @@
 /*-----------------------------------------------*/
 
 .guest-card.modal-wrapper .modal-body {
-    padding: 4px; /* TODO vars */
+    padding: 4px;
 }
 .guest-card.modal-wrapper .modal-body .row {
     width: 100%;
@@ -147,7 +152,7 @@
     width: 100%;
 }
 .guest-card.modal-wrapper .modal-body .guest-card-el input:focus {
-    border-bottom: 1px solid cornflowerblue; /* TODO vars */
+    border-bottom: 1px solid var(--neutral);
 }
 .guest-card.modal-wrapper .modal-body .guest-card-el input:focus~label,
 .guest-card.modal-wrapper .modal-body .guest-card-el input:valid~label
@@ -158,7 +163,7 @@
     font-size: 0.8em;
 }
 .guest-card.modal-wrapper .modal-body .guest-card-el input:focus~label {
-    color: cornflowerblue;    /* TODO vars */
+    color: var(--neutral);
 }
 .guest-card.modal-wrapper .modal-body #guest-card-el-unid { display: none; }
 .guest-card.modal-wrapper .modal-body #guest-card-el-dbeg { width: 20%; }
@@ -188,7 +193,7 @@
 .guest-card.modal-wrapper .modal-body .rooms-drop-down-list {
     display: none;
     position: absolute;
-    background-color: white;    /* TODO vars */
+    background-color: var(--text-light);
     width: 85%;
     z-index: 2;
     border-radius: 3px; /* TODO vars */
@@ -207,8 +212,8 @@
     text-decoration: none;
 }
 .guest-card.modal-wrapper .modal-body #rooms-drop-down-list a:hover {
-    background-color: cornflowerblue;    /* TODO vars */
-    color: white;    /* TODO vars */
+    background-color: var(--neutral);
+    color: var(--text-light);
 }
 
 /*-----------------------------------------------*/
@@ -237,17 +242,21 @@
 }
 
 
-/*
------------------------------------------------------------------------------------------------
-    PICK-PERIOD
-*/
+/*---------------------------------------------------------------------
+    GUEST-CARD END
+---------------------------------------------------------------------*/
+
+
+/*---------------------------------------------------------------------
+    PICK-PERIOD BEGIN
+---------------------------------------------------------------------*/
 
 
 .pick-period.modal-content {
     user-select: none;
     display: inline-block;
     width: auto;
-    background-color: white; /* TODO vars */
+    background-color: var(--text-light);
     border-radius: var(--r-bor-nor);
     text-align: center;
     animation: pcShow 0.4s;
@@ -260,7 +269,7 @@
 /*---------------------------------------------------*/
 
 .modal-wrapper.pick-period .modal-body {
-    padding: 4px; /* TODO vars */
+    padding: 4px;
 }
 .modal-wrapper.pick-period .modal-body table {
     border-spacing: 6px;
@@ -316,7 +325,7 @@
     border: 1px solid transparent;
 }
 .modal-wrapper.pick-period .modal-body table td.pick-period-month-sel {
-    border: 1px solid #ffdd00;
+    border: 1px solid var(--extend);
 }
 .modal-wrapper.pick-period .modal-body .pick-period-month {
     cursor: pointer;
@@ -352,10 +361,14 @@
 }
 
 
-/*
------------------------------------------------------------------------------------------------
-    MESSAGE BOX
-*/
+/*---------------------------------------------------------------------
+    PICK-PERIOD END
+---------------------------------------------------------------------*/
+
+
+/*---------------------------------------------------------------------
+    MESSAGE BOX BEGIN
+---------------------------------------------------------------------*/
 
 
 #msg-box-wrapper {
@@ -368,39 +381,176 @@
     align-items: center;
     justify-content: center;
     position: absolute;
-    background-color: rgba(255, 255, 255, 0.3); /* TODO vars */
+    background-color: var(--background-light);
 }
 #msg-box-wrapper .msg-box {
-    margin: 4px; /* TODO vars */
-    padding: 4px; /* TODO vars */
+    margin: 4px;
+    padding: 4px;
+    height: 30px;
     border-radius: 3px; /* TODO vars */
     animation: msgShow 0.5s;
+    position: relative;
 }
 #msg-box-wrapper .msg-box-error {
-    background-color: rgba(255, 0, 0, .5); /* TODO vars */
-    color: white; /* TODO vars */
+    background-color: var(--negative);
+    color: var(--text-light);
 }
 #msg-box-wrapper .msg-box-info {
-    background-color: rgba(255, 255, 255, 1); /* TODO vars */
-    color: black; /* TODO vars */
+    background-color: var(--neutral);
+    color: var(--text-light);
 }
 #msg-box-wrapper .msg-box-warn {
-    background-color: rgba(255, 255, 0, .5); /* TODO vars */
-    color: black; /* TODO vars */
+    background-color: var(--extend);
+    color: var(--text-light);
 }
 #msg-box-wrapper .msg-box-debug {
-    background-color: rgba(0, 0, 0, .5); /* TODO vars */
-    color: white; /* TODO vars */
+    background-color: var(--background-regular);
+    color: var(--text-light);
 }
 #msg-box-wrapper .msg-box-success {
-    background-color: rgba(0, 255, 0, .5); /* TODO vars */
-    color: white; /* TODO vars */
+    background-color: var(--positive);
+    color: var(--text-light);
+}
+#msg-box-wrapper .msg-box {
+    line-height: 30px;
+}
+
+#msg-box-wrapper .msg-box:hover .control-wrapper .control-container {
+    display: inline-block;
+}
+#msg-box-wrapper .msg-box .control-wrapper .control-container {
+    width: auto;
+    top: -4px;
+    right: 0;
+}
+#msg-box-wrapper .msg-box .control-wrapper .control-container .control-el.action-1:before {
+    content: '  ✓  ';
+}
+#msg-box-wrapper .msg-box .control-wrapper .control-container .control-el.action-2:before {
+    content: '  ✎  ';
+}
+#msg-box-wrapper .msg-box .control-wrapper .control-container .control-el.action-3:before {
+    content: '  ✗  ';
 }
 
 
-/*
------------------------------------------------------------------------------------------------
-*/
+/*---------------------------------------------------------------------
+    MESSAGE BOX END
+---------------------------------------------------------------------*/
+
+
+/*---------------------------------------------------------------------
+    CONTROL DEFAULT STYLE BEGIN
+---------------------------------------------------------------------*/
+
+
+.control-wrapper {
+    position: relative;
+}
+.control-wrapper .control-container {
+    position: absolute;
+    display: none;
+    height: 25px;
+    width: auto;
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+    background-color: rgba(255,255,255, 1);
+    animation: control-animate .7s;
+    box-shadow: 0px 3px 3px 1px rgba(0, 0, 0, .5);
+    overflow: hidden;
+}
+.control-wrapper .control-container .control-el {
+    height: 100%;
+    overflow: auto;
+    transition: all .5s;
+    display: inline-block;
+    line-height: 25px;
+    color: var(--text-accent);
+    cursor: pointer;
+}
+.control-wrapper .control-container .control-el.action-1:before {
+    content: '  ✓  ';
+}
+.control-wrapper .control-container .control-el.action-2:before {
+    content: '  ⟲  ';
+}
+.control-wrapper .control-container .control-el.action-3:before {
+    content: '  ✗  ';
+}
+/* :hover .control-container {
+    display: inline-block;
+} */
+
+
+/*---------------------------------------------------------------------
+    CONTROL DEFAULT STYLE END
+---------------------------------------------------------------------*/
+
+
+/*---------------------------------------------------------------------
+    RIGHT CLICK MENU BEGIN
+---------------------------------------------------------------------*/
+
+
+#rcmenu {
+    position: absolute;
+    display: none;
+    width: auto;
+    border-radius: var(--r-bor-nor);
+    box-shadow: var(--s-nor);
+    transition: all 0.3s;
+    transform: translateZ(10px);
+    z-index: 2;
+}
+
+#rcmenu:hover {
+    box-shadow: var(--s-hov);
+}
+
+#rcmenu-list {
+    background-color: var(--c-tip-bck);
+    opacity: 0.9;
+    border-radius: var(--r-bor-nor);
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+
+#rcmenu-list li {
+    padding: 8px;
+    border-radius: var(--r-bor-nor);
+}
+
+.rcmenu-item:hover {
+    border-radius: var(--r-bor-nor);
+    background-color: transparent;
+    cursor: pointer;
+}
+
+#rcmenu #addGuest:hover {
+    color: var(--c-btn-txt-hov-pos);
+    background-color: var(--c-btn-bck-hov-pos);
+}
+
+#rcmenu #editGuest:hover {
+    color: var(--c-btn-txt-hov-ext);
+    background-color: var(--c-btn-bck-hov-ext);
+}
+
+#rcmenu #delGuest:hover {
+    color: var(--c-btn-txt-hov-neg);
+    background-color: var(--c-btn-bck-hov-neg);
+}
+
+
+/*---------------------------------------------------------------------
+    RIGHT CLICK MENU END
+---------------------------------------------------------------------*/
+
+
+/*---------------------------------------------------------------------
+    ANIMATION BEGIN
+---------------------------------------------------------------------*/
 
 
 @keyframes pcShow {
@@ -417,3 +567,13 @@
     from { opacity: 0; }
     to { opacity: 1; }
 }
+
+@keyframes control-animate {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+
+/*---------------------------------------------------------------------
+    ANIMATION END
+---------------------------------------------------------------------*/

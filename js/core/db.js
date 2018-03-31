@@ -10,7 +10,7 @@ class DML {
         this.queryData = queryData;
     }
     build() {
-        if (this.query) return query;
+        if (this.query) return this.query;
         for (let op in this.schema) { (this.schema[op] !== '') && (this.query += ` ${op} ${this.schema[op]} `); }
         this.query = this.query.replace(/\s{2,}/g, ' ').trim();
         return this.query;
@@ -21,7 +21,7 @@ class DML {
         return new Promise((resolve, reject) => {
 
             let types = self.queryData.types ? '&types=' + self.queryData.types : '',
-                param = self.queryData.param ? '&param=' + self.queryData.param.toString() : '',
+                param = self.queryData.param ? '&param=' + JSON.stringify(self.queryData.param) : '',
                 body = `sql=${self.build()}${types}${param}&auth=${auth}`;
 
             let xhr = new XMLHttpRequest();
@@ -31,20 +31,20 @@ class DML {
             xhr.onreadystatechange = function () {
                 if (xhr.readyState === 4) {
                     if (xhr.status === 200) {
-                        new MessageBox({ text: `${GL.CONST.LOG.ID.B001.TITLE}::${GL.CONST.LOG.ID.B001.GIST}`, level: 'success' }).stay();
+                        // new MessageBox({ text: `${GL.CONST.LOG.ID.B001.TITLE}::${GL.CONST.LOG.ID.B001.GIST}`, level: 'success' }).add().stay();
                         let result = '';
                         try {
                             result = JSON.parse(xhr.responseText);
                         } catch (error) {
-                            new MessageBox({ text: `${GL.CONST.LOG.ID.A001.TITLE}::${xhr.responseText}`, level: 'error' }).stay();
+                            new MessageBox({ text: `${GL.CONST.LOG.ID.A001.TITLE}::${xhr.responseText}`, level: 'error' }).add().stay();
                         }
                         resolve(result);
                     } else {
-                        new MessageBox({ text: `${GL.CONST.LOG.ID.B002.TITLE}::${GL.CONST.LOG.ID.B002.GIST}`, level: 'error' }).stay();
+                        new MessageBox({ text: `${GL.CONST.LOG.ID.B002.TITLE}::${GL.CONST.LOG.ID.B002.GIST}`, level: 'error' }).add().stay();
                         reject(xhr.status);
                     }
                 } else {
-                    new MessageBox({ text: `${GL.CONST.LOG.ID.B000.TITLE}::${GL.CONST.LOG.ID.B000.GIST}`, level: 'info' }).stay(1000);
+                    // new MessageBox({ text: `${GL.CONST.LOG.ID.B000.TITLE}::${GL.CONST.LOG.ID.B000.GIST}`, level: 'info' }).add().stay(1000);
                 }
             };
         });

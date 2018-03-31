@@ -36,18 +36,21 @@
 
 :root {
     /* TODO NEW */
-    --border: '#6a737b7f';
-    --border-accent: transparent;
-    --text: '#f1f1f1',
-    --text-accent: '#6a737b';
-    --background: rgba(255, 255, 255, .5);
+    --border-light: transparent;
+    --border-regular: #6a737b7f;
+    --border-accent: #2d2d2d;
+    --text-light: #f1f1f1;
+    --text-accent: #6a737b; /* #6a737bcc */
+    --text-regular: #2d2d2d;
+    --background-light: rgba(255, 255, 255, .5);
     --background-accent: rgba(0, 0, 0, .5);
-    --negative: '#F4425F';
-    --positive: '#06D85F';
-    --neutral: '#00a4e4';
-    --extend: '#ffdd00E5';
-    --cell-sel: #c1d82f7c;
-    --cell-res: #00a4e47c;
+    --background-regular: #6a737b;
+    --negative: #F4425F;
+    --positive: #06D85F;
+    --neutral: #00a4e4;
+    --extend: #ffdd00;
+    --cell-sel: #c1d82f7c; /* #c1d82f #9DEA20 #BADA55 */
+    --cell-res: #00a4e47c; /* #42b3f4 */
     --cell-adj: #F4425F;
     --cell-red: #6a737b;
     --cell-hov: #ffdd00;
@@ -73,8 +76,8 @@
     /* table-background-body: -normal -hovered */
     --c-tab-bck-bod-nor: transparent;
     /* table-background-columns: -selected -reserver -adjacent -redeemed -hovered*/
-    --c-tab-bck-col-sel: #c1d82f7c;    /* #c1d82f #9DEA20 #BADA55 */
-    --c-tab-bck-col-res: #00a4e47c;    /* #42b3f4 */
+    --c-tab-bck-col-sel: #c1d82f7c;
+    --c-tab-bck-col-res: #00a4e47c;
     --c-tab-bck-col-adj: #F4425F;
     --c-tab-bck-col-red: #6a737b;
     --c-tab-bck-col-hov: #ffdd00;      /* #D5D5D5 */

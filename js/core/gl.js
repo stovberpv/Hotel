@@ -11,22 +11,25 @@ const GL = {
                 VIEW: { FIX: 'fix', HOV: 'hov' },
                 STATUS: { SELECTED: 'selected', /*выделен*/ RESERVED: 'reserved', /*зарезервирован*/ ADJACENT: 'adjacent', /*смежный*/ REDEEMED: 'redeemed', /*выкуплен*/ }
             },
-            CONTACT: { STATUS: { INITIAL: 'initial', EDITED: 'edited' } }
+            CONTACT: { STATUS: { INITIAL: 'initial', EDITED: 'edited' } },
+            TODOLIST: { STATUS: { INITIAL: 'initial', EDITED: 'edited', FINISHED: 'finished' } }
         },
         EVENTS: {
             CORE: { LEFT_CLICK: 'leftClick', },
             JOURNAL: { RC_MENU: { ADD: 'rcmItemAddClick', DEL: 'rcmItemDelClick', UPD: 'rcmItemUpdClick', }, },
-            CONTACT: { NEW: 'contactSaved' }
+            CONTACT: { NEW: 'contactSaved' },
+            DIAGRAM: { UPD: 'updateDiagram' },
+            TODOLIST: { FINISH: 'finish', 'DELAY': 'delay', 'DELETE': 'delete' }
         },
         VALUES: {
             CORE: {
-                NAV_El: [ 'nav-el-calendar', 'nav-el-contacts', 'nav-el-diagrams', 'nav-el-settings', 'nav-el-infopage', 'nav-el-signout' ],
+                NAV_El: [ 'nav-el-calendar', 'nav-el-contacts', 'nav-el-diagrams', 'nav-el-todolist', 'nav-el-settings', 'nav-el-signout' ], //nav-el-infopage'
                 CHAINS: [
                     { DATA_WRAPPER: 'vc-dw-1', NAV_EL: 'nav-el-calendar' },
                     { DATA_WRAPPER: 'vc-dw-2', NAV_EL: 'nav-el-contacts' },
                     { DATA_WRAPPER: 'vc-dw-3', NAV_EL: 'nav-el-diagrams' },
-                    { DATA_WRAPPER: 'vc-dw-4', NAV_EL: 'nav-el-settings' },
-                    { DATA_WRAPPER: 'vc-dw-5', NAV_EL: 'nav-el-infopage' },
+                    { DATA_WRAPPER: 'vc-dw-4', NAV_EL: 'nav-el-todolist' },
+                    { DATA_WRAPPER: 'vc-dw-5', NAV_EL: 'nav-el-settings' },
                     { DATA_WRAPPER: 'vc-dw-6', NAV_EL: 'nav-el-signout' }
                 ],
             },
@@ -81,6 +84,7 @@ const GL = {
         LOCALE: 'ru-Ru'
     },
     DATA: { CORE: { isMouseDown: false, } }
+    // NOTE taskerId ?
 };
 
 // UTILS.DEEPF_REEZE(GL.CONST);

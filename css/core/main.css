@@ -22,7 +22,7 @@ body {
 body:before {
     content: "";
     position: absolute;
-    background: url(../res/background/background.jpg);
+    background: url(../../res/background/background.jpg);
     background-size: cover;
     z-index: -1;
     height: 20%;
@@ -37,7 +37,7 @@ body:before {
     top: 0;
     bottom: 0;
     left: 0;
-    width: 75px;
+    width: 50px;
     background-color: rgba(45, 45, 45, .6);
     box-shadow: 2px 0px 20px 0px white;
 }
@@ -72,7 +72,7 @@ body:before {
     top: 15px;
     right: 15px;
     bottom: 15px;
-    left: 90px;
+    left: 65px;
     border-radius: 3px;
     box-shadow: 0 0 5px 1px rgba(0, 0, 0, .5);
     background-color: rgba(255, 255, 255, .5);
@@ -94,10 +94,11 @@ body:before {
     padding: 0;
     border: none;
     display: none;
+    position: relative;
 }
 
 .vc-data-wrapper-show {
-    display: initial;
+    display: flex;
 }
 
 .nav-el-sel {
@@ -160,4 +161,18 @@ button.neutral:hover {
 button.extend:hover {
     color: var(--c-btn-txt-hov-ext);
     background: var(--c-btn-bck-hov-ext);
+}
+
+
+/*
+-----------------------------------------------------------------------------------------------
+
+*/
+
+
+table td.td-zero-size {
+    padding: 0 !important;
+    /* display: none !important; */
+    border: none !important;
+    margin: 0;
 }
