@@ -1,51 +1,45 @@
 /*-----------------------------------------------------------------*/
 
 
-#journal {
+table#journal {
     margin-left: auto;
     margin-right: auto;
-    background: var(--c-tab-bck-bod-nor);
+    background: transparent;
     table-layout: fixed;
     border-spacing: 3px 8px;
 }
-
-#journal>thead>tr>th,
-#journal>tbody>tr>th {
-    border: 1px solid var(--c-tab-bor-bod-nor);
+table#journal>thead>tr>th,
+table#journal>tbody>tr>th {
+    border: 1px solid rgba(var(--nevada), .5);
     font-weight: 200;
     text-align: center;
     width: 21px;
     padding: 4px;
-    border-radius: var(--r-bor-nor);
+    border-radius: 3px;
 }
-
-#journal>tbody>tr>th {
+table#journal>tbody>tr>th {
     cursor: pointer;
 }
-
-#journal>tbody>tr>td {
-    border: 1px solid var(--c-tab-bor-bod-nor);
+table#journal>tbody>tr>td {
+    border: 1px solid rgba(var(--nevada), .5);
     text-align: center;
     cursor: pointer;
     width: 21px;
     padding: 4px;
-    border-radius: var(--r-bor-nor);
+    border-radius: 3px;
 }
-
-#journal>tbody>tr:hover>th {
-    animation: blink 5s infinite;
+table#journal>tbody>tr:hover>th {
+    animation: view 5s infinite;
 }
-
-#journal>tbody>.records-row>td {
+table#journal>tbody>.records-row>td {
     border: none;
     cursor: default;
     padding: 18px 0px 18px 35px;
 }
-
-#journal>tbody>tr:not(.records-row)>td:hover {
-    background-color: var(--c-tab-bck-col-hov);
+table#journal>tbody>tr:not(.records-row)>td:hover {
+    background-color: rgba(var(--school-bus-yellow), 1);
     border: 1px solid transparent;
-    box-shadow: var(--s-nor);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
     transition: all 0.3s;
     transform: translateZ(10px);
     z-index: 1;
@@ -55,171 +49,111 @@
 /*-----------------------------------------------------------------*/
 
 
-.hidden {
+table#journal>tbody#journal-tbody>tr.hidden {
     cursor: default;
     display: none;
 }
 
-.records {
+table#journal>tbody#journal-tbody>tr.records-row>td>table.records {
     cursor: pointer;
     text-align: center;
     border-spacing: 3px 8px;
     width: 100%;
     padding: 0;
-    border-radius: var(--r-bor-nor);
+    border-radius: 3px;
     border-style: solid;
     border-width: 0px;
 }
-
-.records:hover>tbody>tr:hover>td {
+table#journal>tbody#journal-tbody>tr.records-row>td>table.records:hover>tbody>tr:hover>td {
     border: 1px solid transparent;
-    box-shadow: var(--s-nor);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
     transition: all 0.3s;
     transform: translateZ(10px);
     z-index: 1;
 }
-
-.records>tbody>tr>td {
-    border: 1px solid var(--c-tab-bor-bod-nor);
+table#journal>tbody#journal-tbody>tr.records-row>td>table.records>tbody>tr>td {
+    border: 1px solid rgba(var(--nevada), .5);
 }
-
-.records>tbody>tr>td:first-child {
+table#journal>tbody#journal-tbody>tr.records-row>td>table.records>tbody>tr>td:first-child {
     width: 5%;
-    border-top-left-radius: var(--r-bor-nor);
-    border-bottom-left-radius: var(--r-bor-nor);
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
 }
-
-.records>tbody>tr>td:last-child {
+table#journal>tbody#journal-tbody>tr.records-row>td>table.records>tbody>tr>td:last-child {
     padding: 4px;
     width: 95%;
-    border-top-right-radius: var(--r-bor-nor);
-    border-bottom-right-radius: var(--r-bor-nor);
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
 }
-
-.records [data-status="selected"] {
+table#journal>tbody#journal-tbody>tr.records-row>td>table.records [data-status="selected"] {
     border: 1px solid transparent;
-    animation: blink 5s infinite;
+    animation: view 5s infinite;
 }
-
-.record-detail {
+table#journal>tbody#journal-tbody>tr.records-row>td>table.records>tbody>tr>td>table.record-detail {
     border-collapse: collapse;
     height: 100%;
     width: 100%;
 }
-
-.record-detail>tbody>tr>td {
-    border: none;
-}
-
-.record-detail>tbody>tr>td:first-child {
-    width: 80%;
-}
-
-.record-detail>tbody>tr>td:nth-child(2) {
-    width: 8%;
-}
-
-.record-detail>tbody>tr>td:nth-child(3) {
-    width: 5%;
-}
-
-.record-detail>tbody>tr>td:last-child {
-    width: 7%;
-}
-
-.person-fields {
-    padding: 0;
-}
-
-.person-base-info {
-    text-align: left;
-}
-
-.person-cell-name {
-    font-weight: bold;
-}
-
-.person-cell-name:after {
-    content: " ";
-}
-
-.person-cell-teln-number:before {
+table#journal>tbody#journal-tbody>tr.records-row>td>table.records>tbody>tr>td>table.record-detail>tbody>tr>td { border: none; }
+table#journal>tbody#journal-tbody>tr.records-row>td>table.records>tbody>tr>td>table.record-detail>tbody>tr>td:first-child { width: 80%; }
+table#journal>tbody#journal-tbody>tr.records-row>td>table.records>tbody>tr>td>table.record-detail>tbody>tr>td:nth-child(2) { width: 8%; }
+table#journal>tbody#journal-tbody>tr.records-row>td>table.records>tbody>tr>td>table.record-detail>tbody>tr>td:nth-child(3) { width: 5%; }
+table#journal>tbody#journal-tbody>tr.records-row>td>table.records>tbody>tr>td>table.record-detail>tbody>tr>td:last-child { width: 7%; }
+table#journal>tbody#journal-tbody>tr.records-row>td>table.records>tbody>tr .person-fields { padding: 0; }
+table#journal>tbody#journal-tbody>tr.records-row>td>table.records>tbody>tr .person-base-info { text-align: left; }
+table#journal>tbody#journal-tbody>tr.records-row>td>table.records>tbody>tr .person-cell-name { font-weight: bold; }
+table#journal>tbody#journal-tbody>tr.records-row>td>table.records>tbody>tr .person-cell-name:after { content: " "; }
+table#journal>tbody#journal-tbody>tr.records-row>td>table.records>tbody>tr .person-cell-teln-number:before {
     vertical-align: middle;
     content: url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" preserveAspectRatio="xMidYMid slice" height="15" width="15" fill="#00a4e4" xmlns="http://www.w3.org/2000/svg"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>');
 }
-
-.person-cell-teln-number {
+table#journal .person-cell-teln-number {
     font-size: 14px;
-    color: var(--c-tab-inr-txt-cmt);
+    color: rgba(var(--nevada), .8);
 }
-
-.person-additional-info {
+table#journal .person-additional-info {
     text-align: left;
 }
-
-.person-cell-city,
-.person-cell-fnot {
+table#journal .person-cell-city,
+table#journal .person-cell-fnot {
     font-size: 14px;
-    color: var(--c-tab-inr-txt-cmt);
+    color: rgba(var(--nevada), .8);
     text-align: left;
     font-style: italic;
 }
-
-.person-cell-city:after {
-    content: " ";
-}
-
-.person-cell-room {
-    color: var(--c-tab-bck-col-res);
-}
-
-.person-cell-room:before {
+table#journal .person-cell-city:after { content: " "; }
+table#journal .person-cell-room { color: rgba(var(--cerulean), .5); }
+table#journal .person-cell-room:before {
     display: block;
     content: url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" preserveAspectRatio="xMidYMid slice" height="15" width="15" fill="#00a4e4" xmlns="http://www.w3.org/2000/svg"><path d="M7 13c1.66 0 3-1.34 3-3S8.66 7 7 7s-3 1.34-3 3 1.34 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.21-1.79-4-4-4z"/></svg>');
 }
-
-.person-dates {
-    text-align: right;
-}
-
-.person-cell-cost,
-.person-cell-paid {
-    text-align: right;
-}
+table#journal .person-dates { text-align: right; }
+table#journal .person-cell-cost,
+table#journal .person-cell-paid { text-align: right; }
 
 
 /*-----------------------------------------------------------------*/
 
 
-.blank-cell {
-    border: 1px solid transparent !important;
-}
+table#journal .blank-cell { border: 1px solid transparent !important; }
 
 
 /*-----------------------------------------------------------------*/
 
 
-[data-status="selected"] {
-    background-color: var(--c-tab-bck-col-sel);
+table#journal > tbody#journal-tbody > tr > td[data-status="selected"] { background-color: rgba(var(--malachite), 1); }
+table#journal > tbody#journal-tbody > tr > td[data-status="reserved"] { background-color: rgba(var(--cerulean), 1); }
+table#journal > tbody#journal-tbody > tr > td[data-status="adjacent"] { background-color: rgba(var(--carnation), 1); }
+table#journal > tbody#journal-tbody > tr > td[data-status="redeemed"] { background-color: rgba(var(--nevada), 1); }
+table#journal > tbody#journal-tbody > tr > td[data-status] {
+    border: 1px solid transparent;
+    color: rgba(var(--white), 1);
 }
-
-[data-status="reserved"] {
-    background-color: var(--c-tab-bck-col-res);
-}
-
-[data-status="adjacent"] {
-    background-color: var(--c-tab-bck-col-adj);
-}
-
-[data-status="redeemed"] {
-    background-color: var(--c-tab-bck-col-red);
-}
-
 
 /*-----------------------------------------------------------------*/
 
 
-#month {
+table#journal #journal-control-buttons #month {
     font-family: 'Century Gothic', sans-serif;
     cursor: pointer;
     width: 100%;
@@ -227,42 +161,38 @@
     padding: 0;
     margin: 0;
 }
-#year {
-    display: none;
-}
-#journal-control-buttons td {
+table#journal #journal-control-buttons #year { display: none; }
+table#journal #journal-control-buttons td {
     text-align: center;
     padding: 0;
 }
-#journal-control-buttons table {
+table#journal #journal-control-buttons table {
     width: 100%;
     border-collapse: collapse;
 }
-#journal-control-buttons table td:nth-child(2) {
-    width: 90%;
-}
-#journal-button-month-prev:hover {
+table#journal #journal-control-buttons table td:nth-child(2) { width: 90%; }
+table#journal #journal-control-buttons #journal-button-month-prev:hover {
     border-top: 1px solid transparent;
     border-left: 1px solid transparent;
     border-bottom: 1px solid transparent;
 }
-#journal-button-month-prev:before {
-    content: url('data:image/svg+xml;utf8,<svg fill="#6a737b" height="10" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M15.41 16.09l-4.58-4.59 4.58-4.59L14 5.5l-6 6 6 6z"/></svg>');
+table#journal #journal-control-buttons #journal-button-month-prev:before {
+    content: '⮘'; /*⮘⮜*/
 }
-#journal-button-month-next:hover {
+table#journal #journal-control-buttons #journal-button-month-next:hover {
     border-top: 1px solid transparent;
     border-right: 1px solid transparent;
     border-bottom: 1px solid transparent;
 }
-#journal-button-month-next:before {
-    content: url('data:image/svg+xml;utf8,<svg fill="#6a737b" height="10" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M8.59 16.34l4.58-4.59-4.58-4.59L10 5.75l6 6-6 6z"/></svg>');
+table#journal #journal-control-buttons #journal-button-month-next:before {
+    content: '⮚'; /*➠⮚⮞*/
 }
-#journal-control-buttons table {
+table#journal #journal-control-buttons table {
     width: 100%;
     border-collapse: separate;
     border-spacing: 5px;
 }
-#journal-control-buttons .button {
+table#journal #journal-control-buttons .button {
     display: block;
     outline: none;
     cursor: pointer;
@@ -270,27 +200,14 @@
     height: 100%;
     padding: 0;
     margin: 0;
-    background-color: var(--c-btn-bck-nor-neu);
+    background-color: transparent;
 }
-#journal-control-buttons .button:hover {
-    animation: blink2 5s infinite;
+table#journal #journal-control-buttons .button:hover {
     box-shadow: none;
     transition: none;
     transform: none;
-}
-#button-pick-period {
-    display: block;
-    border: 1px solid var(--c-tab-bor-bod-nor);
-    outline: none;
-    cursor: pointer;
-    width: auto;
-    height: 100%;
-    padding: 0;
-    margin: 0;
-}
-#button-pick-period:hover {
-    color: var(--c-btn-txt-hov-pos);
-    animation: blink2 5s infinite;
+    background-color: rgba(var(--school-bus-yellow), 1);
+    color: rgba(var(--nevada), 1);
     border: 1px solid transparent;
 }
 
@@ -298,14 +215,12 @@
 /*-----------------------------------------------------------------*/
 
 
-.balloon-wrapper {
-    position: absolute;
-}
-.balloon-wrapper .balloon-content {
+table#journal tbody#journal-tbody tr td .balloon-wrapper { position: absolute; }
+table#journal tbody#journal-tbody tr td .balloon-wrapper .balloon-content {
     visibility: hidden;
     width: 200px;
     background-color: rgba(255,255,255, .7);
-    border-radius: var(--r-bor-nor);
+    border-radius: 3px;
     padding: 4px;
     position: absolute;
     z-index: 1;
@@ -313,33 +228,32 @@
     text-align: initial;
     top: 25px;
     left: -95px;
-    /* overflow: hidden; */
 }
-.balloon-wrapper .balloon {
+table#journal tbody#journal-tbody tr td .balloon-wrapper .balloon {
     border-radius: 3px;
 }
-.balloon-wrapper .balloon-el {
-    /* width: 100%; */
+table#journal tbody#journal-tbody tr td .balloon-wrapper .balloon-el {
     padding: 4px 4px 4px 4px;
     border-radius: 3px;
     display: block;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    color: rgba(var(--nevada), 1);
 }
-.balloon-wrapper .balloon-el-name {
-    background-color: cornflowerblue;
-    color: white;
+table#journal tbody#journal-tbody tr td .balloon-wrapper .balloon-el-name {
+    background-color: rgba(var(--cerulean), 1);
+    color: rgba(var(--white), 1);
 }
-.balloon-wrapper .balloon-el-unid { display: none; }
-.balloon-wrapper .balloon-el-teln:before {content: '☎';}
-.balloon-wrapper .balloon-el-fnot:before {content: '✎';}
-.balloon-wrapper .balloon-el-city:before {content: '✈';}
-.balloon-wrapper .balloon-el-unid:before {content: '№';}
+table#journal tbody#journal-tbody tr td .balloon-wrapper .balloon-el-unid { display: none; }
+table#journal tbody#journal-tbody tr td .balloon-wrapper .balloon-el-teln:before {content: '☎';}
+table#journal tbody#journal-tbody tr td .balloon-wrapper .balloon-el-fnot:before {content: '✎';}
+table#journal tbody#journal-tbody tr td .balloon-wrapper .balloon-el-city:before {content: '✈';}
+table#journal tbody#journal-tbody tr td .balloon-wrapper .balloon-el-unid:before {content: '№';}
 
-#journal>tbody>tr:not(.records-row)>td:hover .balloon-wrapper .balloon-content {
+table#journal tbody#journal-tbody tr:not(.records-row) td:hover .balloon-wrapper .balloon-content {
     visibility: visible;
-    box-shadow: var(--s-hov);
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
     transition: all 0.3s;
     transform: translateZ(10px);
 }
@@ -348,38 +262,15 @@
 /*-----------------------------------------------------------------*/
 
 
-[data-view="hov"] {
-    animation: blink 5s infinite;
-}
-
-[data-view="fix"] {
-    animation: blink 5s infinite;
-}
+table#journal tbody [data-view="hov"] { animation: view 5s infinite; }
+table#journal tbody [data-view="fix"] { animation: view 5s infinite; }
 
 
 /*-----------------------------------------------------------------*/
 
 
-@keyframes blink {
-    0% {
-        background-color: var(--c-grad-1);
-    }
-    50% {
-        background-color: var(--c-grad-2);
-    }
-    100% {
-        background-color: var(--c-grad-3);
-    }
-}
-
-@keyframes blink2 {
-    0% {
-        background-color: #42b3f4;
-    }
-    50% {
-        background-color: #9dea20;
-    }
-    100% {
-        background-color: #42b3f4;
-    }
+@keyframes view {
+    0% { background-color: rgba(var(--school-bus-yellow), .6); }
+    50% { background-color: rgba(var(--school-bus-yellow), .3); }
+    100% { background-color: rgba(var(--school-bus-yellow), .6); }
 }

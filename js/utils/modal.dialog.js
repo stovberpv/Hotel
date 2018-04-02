@@ -42,7 +42,11 @@ class Dialog {
 
 class ConfirmDialog extends Dialog {
 
-    constructor(opts) { super(opts); }
+    constructor(opts) {
+        super(opts);
+
+        return this;
+    }
 
     bind() {
 
@@ -68,6 +72,8 @@ class ConfirmDialog extends Dialog {
         tree = new DOMTree(tree).cultivate();
         if (tree) document.body.appendChild(tree);
         else console.log('tree is ' + tree);
+
+        return this;
     }
 
     setVal() {  }
@@ -78,6 +84,8 @@ class ConfirmDialog extends Dialog {
         const P = GL.CONST.PREFIX.CONFIRM_DIALOG;
         let dialog = document.getElementById(`${P}-${this.id}`);
         dialog.style.display = 'block';
+
+        return this;
     }
 
     getVal() { return true; }
@@ -652,6 +660,12 @@ class RCMenu extends Dialog {
         this.cb.command.lmc = function lmc(e) {
             this.unbind();
         };
+
+        (() => {
+            let rcmenu = document.getElementById('rcmenu');
+            if (!rcmenu) return;
+            rcmenu.parentNode.removeChild(rcmenu);
+        })();
     }
 
     bind() {

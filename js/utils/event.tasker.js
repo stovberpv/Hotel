@@ -158,18 +158,21 @@ class Tasker {
                             if (document.getElementById('msg-box-wrapper').querySelector(`div.msg-box[data-id='${task.id}']`)) return false;
                             new MessageBox({
                                 text: `${task.text} ${new Date(task.planned).format('dd-mm-yyyy HH:MM')}`,
-                                withControl: true,
                                 level : 'error',
+                                hideOnClick: true,
                                 dataset: {
                                     id: task.id,
                                     status: task.status,
                                     planned: task.planned,
                                     user: task.user
                                 },
-                                cb: {
-                                    el1: self.preDef.callback.finish,
-                                    el2: self.preDef.callback.delay,
-                                    el3: self.preDef.callback.cancel
+                                control: {
+                                    withControl: true,
+                                    cb: {
+                                        el1: self.preDef.callback.finish,
+                                        el2: self.preDef.callback.delay,
+                                        el3: self.preDef.callback.cancel
+                                    }
                                 }
                             }).add();
                         });

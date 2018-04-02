@@ -1,3 +1,8 @@
+/*---------------------------------------------------------------------
+     BEGIN
+---------------------------------------------------------------------*/
+
+
 html {
     font-family: 'Century Gothic', sans-serif;
     font-size: 15px;
@@ -9,7 +14,7 @@ html {
 
 body {
     user-select: none !important;
-    color: #6a737b;
+    color: rgba(var(--nevada), 1);
     position: absolute;
     top: 0;
     left: 0;
@@ -32,40 +37,78 @@ body:before {
     filter: blur(2px);
 }
 
-#nav-container {
+/*---------------------------------------------------------------------
+     END
+---------------------------------------------------------------------*/
+
+
+/*---------------------------------------------------------------------
+     BEGIN
+---------------------------------------------------------------------*/
+
+
+div#nav-container {
     position: fixed;
     top: 0;
     bottom: 0;
     left: 0;
     width: 50px;
-    background-color: rgba(45, 45, 45, .6);
-    box-shadow: 2px 0px 20px 0px white;
 }
-
-#nav-menu {
+div#nav-container ul#nav-menu {
     margin: 0;
     padding: 0;
     list-style: none;
+    position: relative;
+    display: block;
+    text-align: right;
 }
-
-#nav-menu li {
+div#nav-container ul#nav-menu li {
     margin-top: 30px;
     transition: all .3s;
-    opacity: .5;
-    text-align: center;
+    width: 35px;
+    height: 25px;
+    left: -10px;
+    position: relative;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+    border-left: none;
+    padding: 10px;
+    background-color: rgba(var(--white), .1);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
 }
-
-#nav-menu:hover li {
-    opacity: 1;
-    text-align: center;
+div#nav-container ul#nav-menu li:hover {
+    transform: translatex(10px);
 }
-
-#nav-menu li:hover svg {
-    transition: all .3s;
-    fill: #ffffff;
+div#nav-container ul#nav-menu li svg {
+    width: 25px;
+    height: 25px;
+    fill: rgba(var(--white), 1);
 }
+div#nav-container ul#nav-menu li:hover svg {
+    transform: rotate(360deg);
+    transition: all 1s;
+}
+div#nav-container ul#nav-menu li.nav-el-sel {
+    fill: rgba(var(--white), 1);
+    transform: translatex(10px);
+}
+div#nav-container ul#nav-menu li#nav-el-calendar.nav-el-sel { background-color: rgba(var(--cerulean), 1); }
+div#nav-container ul#nav-menu li#nav-el-contacts.nav-el-sel { background-color: rgba(var(--malachite), 1); }
+div#nav-container ul#nav-menu li#nav-el-diagrams.nav-el-sel { background-color: rgba(var(--carnation), 1); }
+div#nav-container ul#nav-menu li#nav-el-todolist.nav-el-sel { background-color: rgba(var(--school-bus-yellow), 1); }
+div#nav-container ul#nav-menu li#nav-el-settings.nav-el-sel { background-color: rgba(var(--nevada), 1); }
 
-#view-container {
+/*---------------------------------------------------------------------
+     END
+---------------------------------------------------------------------*/
+
+
+/*---------------------------------------------------------------------
+     BEGIN
+---------------------------------------------------------------------*/
+
+
+div#view-container {
     display: none;
     padding: 10px;
     position: fixed;
@@ -76,48 +119,51 @@ body:before {
     border-radius: 3px;
     box-shadow: 0 0 5px 1px rgba(0, 0, 0, .5);
     background-color: rgba(255, 255, 255, .5);
-    /* background-color: rgba(0, 0, 0, .5); */
     overflow: auto;
+    animation: vc-show .2s;
 }
-
-#view-container::-webkit-scrollbar-thumb {
+div#view-container.visible {
+    display: flex;
+}
+div#view-container::-webkit-scrollbar-thumb {
     background-color: rgba(45, 45, 45, .6);
 }
-
-#view-container::-webkit-scrollbar {
+div#view-container::-webkit-scrollbar {
     width: 1px;
 }
-
-.vc-data-wrapper {
+div#view-container div.vc-data-wrapper {
+    display: none;
     width: 100%;
     height: 100%;
     padding: 0;
     border: none;
-    display: none;
     position: relative;
+    border-radius: 3px;
+    animation: dw-show .5s;
 }
-
-.vc-data-wrapper-show {
+div#view-container div.vc-data-wrapper.visible {
     display: flex;
 }
 
-.nav-el-sel {
-    transition: all .3s;
-    fill: #06D85F !important;
-}
+
+/*---------------------------------------------------------------------
+     END
+---------------------------------------------------------------------*/
 
 
-/*-----------------------------------------------------------------*/
+/*---------------------------------------------------------------------
+     BEGIN
+---------------------------------------------------------------------*/
 
 
 .button {
-    color: var(--c-btn-txt-nor-neu);
-    font-size: var(--f-doc-ext);
+    color: rgba(var(--nevada), 1);
+    font-size: 15px;
     font-family: 'Century Gothic', sans-serif;
     text-align: center;
-    background-color: var(--c-btn-bck-nor-neu);
-    border: 1px solid var(--c-tab-bor-bod-nor);
-    border-radius: var(--r-bor-nor);
+    background-color: transparent;
+    border: 1px solid rgba(var(--nevada), .5);
+    border-radius: 3px;
     box-shadow: none;
     transition: all 0.3s;
     vertical-align: middle;
@@ -127,52 +173,82 @@ body:before {
     width: auto;
     height: auto;
 }
-
 .button:focus {
     outline: none;
 }
-
 .button:active {
     outline: none;
 }
-
 .button:hover {
     border: 1px solid transparent;
-    box-shadow: var(--s-hov);
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
     transition: all 0.3s;
     transform: translateZ(10px);
 }
-
-button.positive:hover {
-    color: var(--c-btn-txt-hov-pos);
-    background: var(--c-btn-bck-hov-pos);
+.button.positive:hover {
+    color: rgba(var(--seashell), 1);
+    background: rgba(var(--malachite), 1);
 }
-
-button.negative:hover {
-    color: var(--c-btn-txt-hov-neg);
-    background: var(--c-btn-bck-hov-neg);
+.button.negative:hover {
+    color: rgba(var(--seashell), 1);
+    background: rgba(var(--carnation), 1);
 }
-
-button.neutral:hover {
-    color: var(--c-btn-txt-hov-neu);
-    background: var(--c-btn-bck-hov-neu);
+.button.neutral:hover {
+    color: rgba(var(--seashell), 1);
+    background: rgba(var(--cerulean), 1);
 }
-
-button.extend:hover {
-    color: var(--c-btn-txt-hov-ext);
-    background: var(--c-btn-bck-hov-ext);
+.button.extend:hover {
+    color: rgba(var(--seashell), 1);
+    background:rgba(var(--school-bus-yellow), 1);
 }
 
 
-/*
------------------------------------------------------------------------------------------------
+/*---------------------------------------------------------------------
+     END
+---------------------------------------------------------------------*/
 
-*/
+
+/*---------------------------------------------------------------------
+     BEGIN
+---------------------------------------------------------------------*/
 
 
 table td.td-zero-size {
     padding: 0 !important;
-    /* display: none !important; */
     border: none !important;
-    margin: 0;
+    margin: 0 !important;
 }
+
+
+/*---------------------------------------------------------------------
+     END
+---------------------------------------------------------------------*/
+
+
+/*---------------------------------------------------------------------
+     BEGIN
+---------------------------------------------------------------------*/
+
+@keyframes vc-show {
+    from {
+        transform: translateX(-15px);
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+        width: 100%;
+        height: 100%;
+    }
+}
+
+@keyframes dw-show {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/*---------------------------------------------------------------------
+     END
+---------------------------------------------------------------------*/

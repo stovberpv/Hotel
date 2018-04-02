@@ -5,7 +5,7 @@
 
 const GL = {
     CONST: {
-        CSS: { CORE: { CLASS: { NAV_EL_SEL: 'nav-el-sel', VC_DW_SHOW: 'vc-data-wrapper-show', } } },
+        CSS: { CORE: { CLASS: { NAV_EL_SEL: 'nav-el-sel', VC_DW_SHOW: 'visible', } } },
         DATA_ATTR: {
             JOURNAL: {
                 VIEW: { FIX: 'fix', HOV: 'hov' },
@@ -25,12 +25,12 @@ const GL = {
             CORE: {
                 NAV_El: [ 'nav-el-calendar', 'nav-el-contacts', 'nav-el-diagrams', 'nav-el-todolist', 'nav-el-settings', 'nav-el-signout' ], //nav-el-infopage'
                 CHAINS: [
-                    { DATA_WRAPPER: 'vc-dw-1', NAV_EL: 'nav-el-calendar' },
-                    { DATA_WRAPPER: 'vc-dw-2', NAV_EL: 'nav-el-contacts' },
-                    { DATA_WRAPPER: 'vc-dw-3', NAV_EL: 'nav-el-diagrams' },
-                    { DATA_WRAPPER: 'vc-dw-4', NAV_EL: 'nav-el-todolist' },
-                    { DATA_WRAPPER: 'vc-dw-5', NAV_EL: 'nav-el-settings' },
-                    { DATA_WRAPPER: 'vc-dw-6', NAV_EL: 'nav-el-signout' }
+                    { DATA_WRAPPER: 'vc-dw-1', NAV_EL: 'nav-el-calendar', HAVE_VIEW: true },
+                    { DATA_WRAPPER: 'vc-dw-2', NAV_EL: 'nav-el-contacts', HAVE_VIEW: true },
+                    { DATA_WRAPPER: 'vc-dw-3', NAV_EL: 'nav-el-diagrams', HAVE_VIEW: true },
+                    { DATA_WRAPPER: 'vc-dw-4', NAV_EL: 'nav-el-todolist', HAVE_VIEW: true },
+                    { DATA_WRAPPER: 'vc-dw-5', NAV_EL: 'nav-el-settings', HAVE_VIEW: true },
+                    { DATA_WRAPPER: 'vc-dw-6', NAV_EL: 'nav-el-signout', HAVE_VIEW: false }
                 ],
             },
             UTILS: { ONE_DAY: 86400000 }
@@ -58,25 +58,25 @@ const GL = {
             }
         },
         LOCALIZABLE: {
-            MSG000: '',
-            MSG001: 'Вы действительно хотите удалить запись под номером {1}?\nДействие нельзя будет отменить!',
+            MSG000: 'Выйти из системы?\r\nВсе не сохраненные данные будут утеряны',
+            MSG001: 'Вы действительно хотите удалить запись под номером {1}?\r\nДействие нельзя будет отменить!',
             VAR000: '',
             VAR001: {
                 YEAR: 'Год',
                 MNTH: 'Месяц',
                 UNID: 'Идентиф',
-                DBEG: 'Дата заезда',
-                DEND: 'Дат выезда',
-                DAYS: 'Дней отдыха',
-                ROOM: 'Комната',
-                BASE: 'Цена',
-                ADJS: 'Коррекция',
-                COST: 'Стоимость',
-                PAID: 'Оплачено',
+                DBEG: 'ДАТА ЗАЕЗДА',
+                DEND: 'ДАТА ВЫЕЗДА',
+                DAYS: 'ДНЕЙ ОТДЫХА',
+                ROOM: 'НОМЕР',
+                BASE: 'ЦЕНА',
+                ADJS: 'КОРРЕКЦИЯ',
+                COST: 'СТОИМОСТЬ',
+                PAID: 'ОПЛАЧЕНО',
                 NAME: 'ФИО',
-                TELN: 'Телефон',
-                FNOT: 'Примечание',
-                CITY: 'Город'
+                TELN: 'ТЕЛЕФОН',
+                FNOT: 'ПРИМЕЧАНИЕ',
+                CITY: 'ГОРОД'
             },
             VAR002: { OK: 'Подтвердить', NO: 'Отменить' },
             VAR003: { DELETE: 'Удалить', UPDATE: 'Изменить', ADD: 'Добавить' }

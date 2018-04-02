@@ -12,8 +12,6 @@
     width: 50%;
     height: 50%;
     display: flex;
-    /* justify-content: center; */
-    /* align-items: center; */
 }
 
 #chart .chart-1,
@@ -22,7 +20,7 @@
 #chart .chart-4 {
     width: 95%;
     height: 95%;
-    border: 1px solid var(--border-regular);
+    border: 1px solid rgba(var(--nevada), .5);
     border-radius: 3px;
     margin: auto;
 }

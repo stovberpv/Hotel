@@ -14,8 +14,8 @@
         #
         session_start();
         if (isset($_SESSION['user_sesid'])) {
-            # some security check 
-            if ($_SESSION['user_agent'] != $_SERVER['HTTP_USER_AGENT']) { 
+            # some security check
+            if ($_SESSION['user_agent'] != $_SERVER['HTTP_USER_AGENT']) {
                 session_write_close();
                 return false;
             }
@@ -34,7 +34,7 @@
             $row = $result->fetch_assoc();
             $stmt->free_result();
             $stmt->close();
-            $mysqli->close();   
+            $mysqli->close();
             #
             if ($row['isAuth']) {
                 return true;
@@ -67,13 +67,13 @@
         $row = $result->fetch_assoc();
         $stmt->free_result();
         $stmt->close();
-        $mysqli->close();   
+        $mysqli->close();
         #
         return $row['login'];
     }
     #---------------------------------------------------------------------------------
     # error to echo
-    #--------------------------------------------------------------------------------- 
+    #---------------------------------------------------------------------------------
     function err2echo($id, $text, $conn) {
         switch ($id) {
             case 10: echo2json($text . "Ошибка подготовки: (" . $conn->errno . ") " . $conn->error); break;

@@ -1,5 +1,3 @@
-
-
 /*---------------------------------------------------------------------
     DIALOG DEFAULT STYLE BEGIN
 ---------------------------------------------------------------------*/
@@ -9,7 +7,7 @@
     font-family: 'Century Gothic', sans-serif;
     display: none;
     z-index: 1;
-    background-color: var(--c-mod-bck);
+    background-color: rgba(0, 0, 0, .3);
     background-image: repeating-linear-gradient( -45deg, rgba(180, 180, 180, .3), rgba(180, 180, 180, .3) 6.5px, rgba(150, 150, 150, .3) 6.5px, rgba(150, 150, 150, .3) 13px);
     position: fixed;
     width: 100%;
@@ -17,21 +15,19 @@
     left: 0;
     top: 0;
     padding-top: 10vh;
-    color: var(--c-mod-txt);
+    color: rgba(var(--nevada), 1);
     text-align: center;
 }
-
 .modal-wrapper-visible {
     display: block;
 }
-
 .modal-content {
-    background-color: var(--c-mod-bck-cnt);
-    display: inline-block;
-    border-radius: var(--r-bor-nor);
+    /* display: inline-block; */
+    margin: auto;
+    background-color: rgba(255, 255, 255, 1);
+    border-radius: 3px;
     animation: MDShow 0.4s;
 }
-
 .modal-header {
     border-radius: 3px 3px 0px 0px;
     padding-top: 8px;
@@ -39,48 +35,82 @@
     padding-right: 4px;
     padding-bottom: 8px;
 }
-
 .modal-body {
     padding-top: 8px;
     padding-left: 4px;
     padding-right: 4px;
     padding-bottom: 0px;
 }
-
 .modal-footer {
     padding-top: 4px;
     padding-left: 4px;
     padding-right: 4px;
     padding-bottom: 4px;
 }
-
 .modal-body table {
     width: 100%;
 }
 
 .intent-del {
-    color: var(--c-mod-txt-top-neg);
-    background-color: var(--c-mod-bck-top-neg);
+    color: rgba(var(--white), 1);
+    background-color: rgba(var(--carnation), 1);
 }
-
 .intent-add {
-    color: var(--c-mod-txt-top-pos);
-    background-color: var(--c-mod-bck-top-pos);
+    color: rgba(var(--white), 1);
+    background-color: rgba(var(--malachite), 1);
 }
-
 .intent-upd {
-    color: var(--c-mod-txt-top-neu);
-    background-color: var(--c-mod-bck-top-neu);
+    color: rgba(var(--white), 1);
+    background-color: rgba(var(--cerulean), 1);
 }
-
 .intent-ext {
-    color: var(--c-mod-txt-top-ext);
-    background-color: var(--c-mod-bck-top-ext);
+    color: rgba(var(--white), 1);
+    background-color: rgba(var(--school-bus-yellow), 1);
 }
 
 
 /*---------------------------------------------------------------------
     DIALOG DEFAULT STYLE END
+---------------------------------------------------------------------*/
+
+
+/*---------------------------------------------------------------------
+    CONFIRM DIALOG BEGIN
+---------------------------------------------------------------------*/
+
+.confirm-dialog .modal-content {
+    overflow: hidden;
+    width: 500px;
+}
+.confirm-dialog .modal-header {
+    padding: 0;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.confirm-dialog .modal-body {
+    padding: 10px;
+}
+.confirm-dialog .modal-footer {
+    padding: 0;
+}
+.confirm-dialog .modal-footer .button {
+    width: 50%;
+    border: none;
+    padding: 0;
+    margin: 0;
+    border-radius: 0;
+    height: 30px;
+}
+.confirm-dialog .modal-footer .button:hover {
+    box-shadow: none;
+    transform: none;
+}
+
+
+/*---------------------------------------------------------------------
+    CONFIRM DIALOG END
 ---------------------------------------------------------------------*/
 
 
@@ -101,9 +131,9 @@
     margin-left: auto;
     margin-right: auto;
     position: relative;
-    background-color: var(--c-mod-bck-cnt); /* TODO vars rgba(255,255,255, 0.9);*/
-    border-radius: var(--r-bor-nor);
-    box-shadow: 0 0 10px 5px rgba(0, 0, 0, .1); /* TODO vars */
+    background-color: rgba(255, 255, 255, 1);
+    border-radius: 3px;
+    box-shadow: 0 0 10px 5px rgba(0, 0, 0, .1);
 }
 
 /*-----------------------------------------------*/
@@ -111,8 +141,8 @@
 .guest-card.modal-wrapper .modal-header {
     padding: 0px;
     border-radius: 0px;
-    border-top-left-radius: 3px; /* TODO vars */
-    border-top-right-radius: 3px; /* TODO vars */
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
     width: 100%;
     height: 30px;
     text-align: center;
@@ -124,60 +154,77 @@
 /*-----------------------------------------------*/
 
 .guest-card.modal-wrapper .modal-body {
-    padding: 4px;
+    padding: 10px;
 }
 .guest-card.modal-wrapper .modal-body .row {
     width: 100%;
-    padding: 25px 0px 0px 0px;
+    padding: 15px 0px 0px 0px;
 }
 .guest-card.modal-wrapper .modal-body .row .guest-card-el {
-    padding: 0 2% 0 0;
     display: inline-block;
     position: relative;
+    border: 1px solid rgba(var(--nevada), .5);
+    border-radius: 3px;
+    margin: 3px;
+    padding: 4px;
+}
+.guest-card .modal-body div.row .guest-card-el {
+    border: 1px solid rgba(var(--nevada), .5);
+    border-radius: 3px;
+    margin: 3px;
+    padding: 4px;
 }
 .guest-card.modal-wrapper .modal-body .guest-card-el label {
     font-size: 0.9em;
     position: absolute;
-    top: 0px;
-    left: 0px;
+    top: 6px;
+    left: 2px;
     pointer-events: none;
-    transition: 0.3s ease all;
+    transition: 0.1s all;
+    text-transform: lowercase;
 }
 .guest-card.modal-wrapper .modal-body .guest-card-el input {
     outline: none;
     border: none;
-    color: #2d2d2d;    /* TODO vars */
-    background-color: transparent;    /* TODO vars */
-    border-bottom: 1px solid #929292;    /* TODO vars */
+    color: rgba(var(--nevada), 1);
     width: 100%;
+    border-radius: 3px;
+    transition: all .3s;
+}
+.guest-card.modal-wrapper .modal-body .guest-card-el input::selection {
+    background-color: rgba(0, 0, 0, 1);
+    color: rgba(255, 255, 255, 1);
+    border-radius: 3px;
 }
 .guest-card.modal-wrapper .modal-body .guest-card-el input:focus {
-    border-bottom: 1px solid var(--neutral);
+    background-color: rgba(var(--school-bus-yellow), .5);
 }
 .guest-card.modal-wrapper .modal-body .guest-card-el input:focus~label,
 .guest-card.modal-wrapper .modal-body .guest-card-el input:valid~label
 /* NOTE нужно будет когда дойду до isStrict что бы нормально отрабатывал селектор
 .guest-card.modal-wrapper .modal-body .guest-card-el input:not(:placeholder-shown)*/ {
-    top: -20px;
-    left: 0px;
-    font-size: 0.8em;
+    top: -8px;
+    left: 2px;
+    font-size: 0.7em;
+    background-color: rgba(255, 255, 255, 1);
+    text-transform: uppercase;
 }
 .guest-card.modal-wrapper .modal-body .guest-card-el input:focus~label {
-    color: var(--neutral);
+    color: rgba(var(--cerulean), 1);
 }
 .guest-card.modal-wrapper .modal-body #guest-card-el-unid { display: none; }
 .guest-card.modal-wrapper .modal-body #guest-card-el-dbeg { width: 20%; }
 .guest-card.modal-wrapper .modal-body #guest-card-el-dend { width: 20%; }
-.guest-card.modal-wrapper .modal-body #guest-card-el-days { width: 20%; padding: 0; }
-.guest-card.modal-wrapper .modal-body #guest-card-el-room { width: 12%; }
-.guest-card.modal-wrapper .modal-body #guest-card-el-base { width: 20%; }
-.guest-card.modal-wrapper .modal-body #guest-card-el-adjs { width: 20%; }
-.guest-card.modal-wrapper .modal-body #guest-card-el-cost { width: 20%; }
-.guest-card.modal-wrapper .modal-body #guest-card-el-paid { width: 20%; padding: 0; }
-.guest-card.modal-wrapper .modal-body #guest-card-el-name { width: 100%; padding: 0; }
-.guest-card.modal-wrapper .modal-body #guest-card-el-city { width: 100%; padding: 0; }
-.guest-card.modal-wrapper .modal-body #guest-card-el-teln { width: 100%; padding: 0; }
-.guest-card.modal-wrapper .modal-body #guest-card-el-fnot { width: 100%; padding: 0; }
+.guest-card.modal-wrapper .modal-body #guest-card-el-days { width: 20%; }
+.guest-card.modal-wrapper .modal-body #guest-card-el-room { width: 50px; }
+.guest-card.modal-wrapper .modal-body #guest-card-el-base { width: 75px; }
+.guest-card.modal-wrapper .modal-body #guest-card-el-adjs { width: 75px; }
+.guest-card.modal-wrapper .modal-body #guest-card-el-cost { width: 75px; }
+.guest-card.modal-wrapper .modal-body #guest-card-el-paid { width: 75px; }
+.guest-card.modal-wrapper .modal-body #guest-card-el-name { width: 414px; }
+.guest-card.modal-wrapper .modal-body #guest-card-el-city { width: 414px; }
+.guest-card.modal-wrapper .modal-body #guest-card-el-teln { width: 414px; }
+.guest-card.modal-wrapper .modal-body #guest-card-el-fnot { width: 414px; }
 
 .guest-card.modal-wrapper .modal-body #guest-card-el-dbeg input { text-align: center; }
 .guest-card.modal-wrapper .modal-body #guest-card-el-dend input { text-align: center; }
@@ -193,13 +240,16 @@
 .guest-card.modal-wrapper .modal-body .rooms-drop-down-list {
     display: none;
     position: absolute;
-    background-color: var(--text-light);
+    background-color: rgba(255, 255, 255, 1);
     width: 85%;
     z-index: 2;
-    border-radius: 3px; /* TODO vars */
+    border-radius: 3px;
     box-shadow: 0px 0px 10px 5px rgba(0, 0, 0, .1);
     overflow-y: auto;
     text-align: center;
+    padding: 4px;
+    left: .4px;
+    top: 30px;
 }
 .guest-card.modal-wrapper .modal-body .rooms-drop-down-list-visible {
     display: block;
@@ -210,10 +260,12 @@
     display: block;
     position: initial;
     text-decoration: none;
+    border-radius: 3px;
+    border: 1px solid transparent;
+    transition: all .3s;
 }
 .guest-card.modal-wrapper .modal-body #rooms-drop-down-list a:hover {
-    background-color: var(--neutral);
-    color: var(--text-light);
+    border: 1px solid rgba(var(--nevada), .5);
 }
 
 /*-----------------------------------------------*/
@@ -235,10 +287,10 @@
     transform: none;
 }
 .guest-card.modal-wrapper .modal-footer .button.negative {
-    border-bottom-left-radius: 3px; /* TODO vars */
+    border-bottom-left-radius: 3px;
 }
 .guest-card.modal-wrapper .modal-footer .button.positive {
-    border-bottom-right-radius: 3px; /* TODO vars */
+    border-bottom-right-radius: 3px;
 }
 
 
@@ -256,8 +308,8 @@
     user-select: none;
     display: inline-block;
     width: auto;
-    background-color: var(--text-light);
-    border-radius: var(--r-bor-nor);
+    background-color: rgba(255, 255, 255, 1);
+    border-radius: 3px;
     text-align: center;
     animation: pcShow 0.4s;
 }
@@ -285,6 +337,7 @@
     background-color: transparent;
     text-align: center;
     padding: 0px;
+    color: rgba(var(--nevada), 1);
 }
 .modal-wrapper.pick-period .modal-body input[type=number].pick-period-input-year::-webkit-inner-spin-button,
 .modal-wrapper.pick-period .modal-body input[type=number].pick-period-input-year::-webkit-outer-spin-button {
@@ -298,7 +351,7 @@
     cursor: pointer;
     padding: 0px;
     border: none;
-    background-color: transparent; /* TODO vars */
+    background-color: transparent;
     width: 100%;
     height: 100%;
 }
@@ -308,27 +361,29 @@
     transform: none;
 }
 .modal-wrapper.pick-period .modal-body table thead #pick-period-button-year-prev:before {
-    content: url('data:image/svg+xml;utf8,<svg fill="#000000" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M15.41 16.09l-4.58-4.59 4.58-4.59L14 5.5l-6 6 6 6z"/></svg>');
+    content: '⮜';
 }
 .modal-wrapper.pick-period .modal-body table thead #pick-period-button-year-next:before {
-    content: url('data:image/svg+xml;utf8,<svg fill="#000000" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M8.59 16.34l4.58-4.59-4.58-4.59L10 5.75l6 6-6 6z"/></svg>');
+    content: '⮞';
 }
 .modal-wrapper.pick-period .modal-body table thead #pick-period-button-year-prev:hover:before {
-    content: url('data:image/svg+xml;utf8,<svg fill="#00a4e4" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M15.41 16.09l-4.58-4.59 4.58-4.59L14 5.5l-6 6 6 6z"/></svg>');
+    color: rgba(var(--cerulean), 1);
 }
 .modal-wrapper.pick-period .modal-body table thead #pick-period-button-year-next:hover:before {
-    content: url('data:image/svg+xml;utf8,<svg fill="#00a4e4" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M8.59 16.34l4.58-4.59-4.58-4.59L10 5.75l6 6-6 6z"/></svg>');
+    color: rgba(var(--cerulean), 1);
 }
 .modal-wrapper.pick-period .modal-body table td {
     padding: 4px;
-    border-radius: 3px; /* TODO vars */
+    border-radius: 3px;
     border: 1px solid transparent;
+    transition: all .3s;
+    cursor: pointer;
+}
+.modal-wrapper.pick-period .modal-body table tbody tr td:hover {
+    border: 1px dashed rgba(var(--cerulean), 1);
 }
 .modal-wrapper.pick-period .modal-body table td.pick-period-month-sel {
-    border: 1px solid var(--extend);
-}
-.modal-wrapper.pick-period .modal-body .pick-period-month {
-    cursor: pointer;
+    border: 1px solid rgba(var(--school-bus-yellow), 1);
 }
 /*---------------------------------------------------*/
 .modal-wrapper.pick-period .modal-footer {
@@ -350,10 +405,10 @@
     transform: none;
 }
 .modal-wrapper.pick-period .modal-footer .button.negative {
-    border-bottom-left-radius: 3px; /* TODO vars */
+    border-bottom-left-radius: 3px;
 }
 .modal-wrapper.pick-period .modal-footer .button.positive {
-    border-bottom-right-radius: 3px; /* TODO vars */
+    border-bottom-right-radius: 3px;
 }
 .modal-wrapper.pick-period .modal-footer .button:hover {
     box-shadow: none;
@@ -372,7 +427,7 @@
 
 
 #msg-box-wrapper {
-    border-radius: 3px; /* TODO vars */
+    border-radius: 3px;
     width: auto;
     height: auto;
     bottom: 20px;
@@ -381,35 +436,35 @@
     align-items: center;
     justify-content: center;
     position: absolute;
-    background-color: var(--background-light);
+    /* background-color: rgba(255, 255, 255, .5); */
 }
 #msg-box-wrapper .msg-box {
     margin: 4px;
     padding: 4px;
     height: 30px;
-    border-radius: 3px; /* TODO vars */
+    border-radius: 3px;
     animation: msgShow 0.5s;
     position: relative;
 }
 #msg-box-wrapper .msg-box-error {
-    background-color: var(--negative);
-    color: var(--text-light);
+    background-color: rgba(var(--carnation), 1);
+    color: rgba(var(--seashell), 1);
 }
 #msg-box-wrapper .msg-box-info {
-    background-color: var(--neutral);
-    color: var(--text-light);
+    background-color: rgba(var(--cerulean), 1);
+    color: rgba(var(--seashell), 1);
 }
 #msg-box-wrapper .msg-box-warn {
-    background-color: var(--extend);
-    color: var(--text-light);
+    background-color: rgba(var(--school-bus-yellow), 1);
+    color: rgba(var(--seashell), 1);
 }
 #msg-box-wrapper .msg-box-debug {
-    background-color: var(--background-regular);
-    color: var(--text-light);
+    background-color: rgba(var(--nevada), 1);
+    color: rgba(var(--seashell), 1);
 }
 #msg-box-wrapper .msg-box-success {
-    background-color: var(--positive);
-    color: var(--text-light);
+    background-color: rgba(var(--malachite), 1);
+    color: rgba(var(--seashell), 1);
 }
 #msg-box-wrapper .msg-box {
     line-height: 30px;
@@ -422,6 +477,9 @@
     width: auto;
     top: -4px;
     right: 0;
+}
+#msg-box-wrapper .msg-box .control-wrapper .control-container .control-el:hover {
+    transform: rotate(360deg);
 }
 #msg-box-wrapper .msg-box .control-wrapper .control-container .control-el.action-1:before {
     content: '  ✓  ';
@@ -465,7 +523,7 @@
     transition: all .5s;
     display: inline-block;
     line-height: 25px;
-    color: var(--text-accent);
+    color: rgba(var(--nevada), 1);
     cursor: pointer;
 }
 .control-wrapper .control-container .control-el.action-1:before {
@@ -477,9 +535,6 @@
 .control-wrapper .control-container .control-el.action-3:before {
     content: '  ✗  ';
 }
-/* :hover .control-container {
-    display: inline-block;
-} */
 
 
 /*---------------------------------------------------------------------
@@ -496,55 +551,66 @@
     position: absolute;
     display: none;
     width: auto;
-    border-radius: var(--r-bor-nor);
-    box-shadow: var(--s-nor);
+    border-radius: 3px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
     transition: all 0.3s;
     transform: translateZ(10px);
     z-index: 2;
 }
-
 #rcmenu:hover {
-    box-shadow: var(--s-hov);
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
 }
-
 #rcmenu-list {
-    background-color: var(--c-tip-bck);
+    background-color: rgba(255, 255, 255, 1);
     opacity: 0.9;
-    border-radius: var(--r-bor-nor);
+    border-radius: 3px;
     margin: 0;
     padding: 0;
     list-style-type: none;
 }
-
 #rcmenu-list li {
     padding: 8px;
-    border-radius: var(--r-bor-nor);
+    border-radius: 3px;
 }
-
-.rcmenu-item:hover {
-    border-radius: var(--r-bor-nor);
+#rcmenu .rcmenu-item:hover {
+    border-radius: 3px;
     background-color: transparent;
     cursor: pointer;
 }
 
+/*-----------------------------------------------------------------*/
+
 #rcmenu #addGuest:hover {
-    color: var(--c-btn-txt-hov-pos);
-    background-color: var(--c-btn-bck-hov-pos);
+    color: rgba(var(--seashell), 1);
+    background-color: rgba(var(--malachite), 1);
 }
-
 #rcmenu #editGuest:hover {
-    color: var(--c-btn-txt-hov-ext);
-    background-color: var(--c-btn-bck-hov-ext);
+    background-color: rgba(var(--school-bus-yellow), 1);
 }
-
 #rcmenu #delGuest:hover {
-    color: var(--c-btn-txt-hov-neg);
-    background-color: var(--c-btn-bck-hov-neg);
+    color: rgba(var(--seashell), 1);
+    background-color: rgba(var(--carnation), 1);
 }
 
 
 /*---------------------------------------------------------------------
     RIGHT CLICK MENU END
+---------------------------------------------------------------------*/
+
+
+
+/*---------------------------------------------------------------------
+     BEGIN
+---------------------------------------------------------------------*/
+
+
+.hide-bounce-to-right {
+    animation: hide-bounce-to-right .5s;
+}
+
+
+/*---------------------------------------------------------------------
+     END
 ---------------------------------------------------------------------*/
 
 
@@ -573,7 +639,13 @@
     to { opacity: 1; }
 }
 
-
+@keyframes hide-bounce-to-right {
+    0% {}
+    25% {}
+    50% {}
+    75% {}
+    100% {}
+}
 /*---------------------------------------------------------------------
     ANIMATION END
 ---------------------------------------------------------------------*/

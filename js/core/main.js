@@ -40,7 +40,19 @@ const WRAPPER = {
         const C = GL.CONST.VALUES.CORE.CHAINS;
         for (let i in C) {
             const CHAIN = C[i];
-            if (CHAIN.NAV_EL == navEl) return CHAIN.DATA_WRAPPER;
+            if (CHAIN.NAV_EL === navEl) return CHAIN.DATA_WRAPPER;
+        }
+    },
+
+    /**
+     * 
+     */
+    haveView: function (navEl) {
+
+        const C = GL.CONST.VALUES.CORE.CHAINS;
+        for (let i in C) {
+            const CHAIN = C[i];
+            if (CHAIN.NAV_EL === navEl) return CHAIN.HAVE_VIEW;
         }
     },
 
@@ -50,6 +62,7 @@ const WRAPPER = {
      * Для первого вызова обертка будет пустой
      */
     isEmpty: function (wrapper) {
+
         return document.getElementById(wrapper).childElementCount ? false : true;
     },
 
@@ -98,16 +111,16 @@ const CONTAINER = {
      * Выводит на экран обертку данных контейнера.
      * Выводит на экран уже сформированный контейнер.
      */
-    toggle: function (el, isSelf) {
+    toggle: function (navEl, isSelf) {
 
         this.hide();
         WRAPPER.hide();
-        if (!isSelf) {
-            const ITEM_ID = el.id;
-            WRAPPER.fill(ITEM_ID);
-            WRAPPER.show(ITEM_ID);
-            this.show();
-        }
+
+        if (isSelf) return;
+
+        WRAPPER.fill(navEl);
+        WRAPPER.show(navEl);
+        this.show();
     },
 
     /**
@@ -115,7 +128,7 @@ const CONTAINER = {
      */
     hide: function () {
 
-        document.getElementById('view-container').style.display = 'none';
+        document.getElementById('view-container').classList.remove('visible');
     },
 
     /**
@@ -123,7 +136,7 @@ const CONTAINER = {
      */
     show: function () {
 
-        document.getElementById('view-container').style.display = 'flex';
+        document.getElementById('view-container').classList.add('visible');
     }
 
 };
@@ -210,10 +223,17 @@ const LISTENERS = {
     navElClick: function (e) {
 
         const C = GL.CONST.CSS.CORE.CLASS.NAV_EL_SEL;
-        var target = e.currentTarget;
-        document.querySelectorAll(`#nav-menu .${C}`).forEach(el => { (el.id != target.id) && el.classList.remove(C); });
-        var isSelf = !target.classList.toggle(C);
-        CONTAINER.toggle(target, isSelf);
+
+        let target = e.currentTarget,
+            itemId = target.id;
+
+        if (WRAPPER.haveView(itemId)) {
+            document.querySelectorAll(`#nav-menu .${C}`).forEach(el => { (el.id !== itemId) && el.classList.remove(C); });
+            let isSelf = !target.classList.toggle(C);
+            CONTAINER.toggle(itemId, isSelf);
+        } else {
+            WRAPPER.fill(itemId);
+        }
     }
 };
 
