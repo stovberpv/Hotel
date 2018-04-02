@@ -16,6 +16,7 @@
         <link rel='stylesheet' href='/css/utils/normalize.css' />
 
         <link rel='stylesheet' href='/css/core/vars.css' />
+        <link rel='stylesheet' href='/css/core/animation.css' />
         <link rel='stylesheet' href='/css/core/main.css' />
         <link rel='stylesheet' href='/css/utils/loadingform.css' />
         <link rel='stylesheet' href='/css/utils/modal.css' />

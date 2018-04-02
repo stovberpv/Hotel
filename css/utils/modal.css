@@ -26,7 +26,7 @@
     margin: auto;
     background-color: rgba(255, 255, 255, 1);
     border-radius: 3px;
-    animation: MDShow 0.4s;
+    animation: simple-show 0.4s;
 }
 .modal-header {
     border-radius: 3px 3px 0px 0px;
@@ -311,7 +311,7 @@
     background-color: rgba(255, 255, 255, 1);
     border-radius: 3px;
     text-align: center;
-    animation: pcShow 0.4s;
+    animation: simple-show 0.4s;
 }
 .pick-period.modal-header {
     padding: 0px;
@@ -439,12 +439,17 @@
     /* background-color: rgba(255, 255, 255, .5); */
 }
 #msg-box-wrapper .msg-box {
+    line-height: 30px;
     margin: 4px;
     padding: 4px;
     height: 30px;
     border-radius: 3px;
-    animation: msgShow 0.5s;
+    animation: task-show 0.5s;
     position: relative;
+}
+
+#msg-box-wrapper .msg-box:hover {
+    transform: scale(1.1)
 }
 #msg-box-wrapper .msg-box-error {
     background-color: rgba(var(--carnation), 1);
@@ -466,9 +471,6 @@
     background-color: rgba(var(--malachite), 1);
     color: rgba(var(--seashell), 1);
 }
-#msg-box-wrapper .msg-box {
-    line-height: 30px;
-}
 
 #msg-box-wrapper .msg-box:hover .control-wrapper .control-container {
     display: inline-block;
@@ -489,6 +491,10 @@
 }
 #msg-box-wrapper .msg-box .control-wrapper .control-container .control-el.action-3:before {
     content: '  ✗  ';
+}
+
+#msg-box-wrapper .msg-box.animation-hide {
+    animation: hide-to-right 1.5s;
 }
 
 
@@ -513,7 +519,7 @@
     border-bottom-left-radius: 3px;
     border-bottom-right-radius: 3px;
     background-color: rgba(255,255,255, 1);
-    animation: control-animate .7s;
+    animation: simple-show .7s;
     box-shadow: 0px 3px 3px 1px rgba(0, 0, 0, .5);
     overflow: hidden;
 }
@@ -604,48 +610,9 @@
 ---------------------------------------------------------------------*/
 
 
-.hide-bounce-to-right {
-    animation: hide-bounce-to-right .5s;
-}
+
 
 
 /*---------------------------------------------------------------------
      END
----------------------------------------------------------------------*/
-
-
-/*---------------------------------------------------------------------
-    ANIMATION BEGIN
----------------------------------------------------------------------*/
-
-
-@keyframes pcShow {
-    0% { opacity: 0; }
-    100% { opacity: 1; }
-}
-
-@keyframes MDShow {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-@keyframes msgShow {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-@keyframes control-animate {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-@keyframes hide-bounce-to-right {
-    0% {}
-    25% {}
-    50% {}
-    75% {}
-    100% {}
-}
-/*---------------------------------------------------------------------
-    ANIMATION END
 ---------------------------------------------------------------------*/

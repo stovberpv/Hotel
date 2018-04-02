@@ -120,7 +120,7 @@ div#view-container {
     box-shadow: 0 0 5px 1px rgba(0, 0, 0, .5);
     background-color: rgba(255, 255, 255, .5);
     overflow: auto;
-    animation: vc-show .2s;
+    animation: view-container-show .2s;
 }
 div#view-container.visible {
     display: flex;
@@ -139,7 +139,7 @@ div#view-container div.vc-data-wrapper {
     border: none;
     position: relative;
     border-radius: 3px;
-    animation: dw-show .5s;
+    animation: data-wrapper-show .5s;
 }
 div#view-container div.vc-data-wrapper.visible {
     display: flex;
@@ -219,35 +219,6 @@ table td.td-zero-size {
     margin: 0 !important;
 }
 
-
-/*---------------------------------------------------------------------
-     END
----------------------------------------------------------------------*/
-
-
-/*---------------------------------------------------------------------
-     BEGIN
----------------------------------------------------------------------*/
-
-@keyframes vc-show {
-    from {
-        transform: translateX(-15px);
-        opacity: 0;
-        width: 0;
-        height: 0;
-    }
-    to {
-        transform: translateX(0);
-        opacity: 1;
-        width: 100%;
-        height: 100%;
-    }
-}
-
-@keyframes dw-show {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
 
 /*---------------------------------------------------------------------
      END

@@ -31,14 +31,14 @@ class MessageBox {
 
         if (this.hideOnClick) {
             msgBox.addEventListener('click', function(e) {
-                e.target.classList.add('.hide-bounce-to-right');
-                setTimeout(function() { this.parentNode.removeChild(this); }.bind(e.target.closest('.msg-box')), 1);
+                e.target.closest('.msg-box').classList.add('animation-hide');
+                setTimeout(function() { this.parentNode.removeChild(this); }.bind(e.target.closest('.msg-box')), 1400);
             });
         }
 
         for(let data in this.ds) { msgBox.dataset[data] = this.ds[data]; }
 
-        this.withControl && msgBox.appendChild(new ControlContainer(this.cb));
+        this.control.withControl && msgBox.appendChild(new ControlContainer(this.cb));
 
         let span = document.createElement('span');
         span.classList.add('msg-box-text');

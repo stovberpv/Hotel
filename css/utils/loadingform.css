@@ -13,7 +13,7 @@
     width: 150px;
     height: 150px;
     overflow: hidden;
-    animation: loading-rotate 15s infinite;
+    animation: loading-form-rotate 15s infinite;
     border-radius: 10px;
 }
 
@@ -23,7 +23,7 @@
     background: transparent;
     display: block;
     float: left;
-    animation: loading-blink 5s infinite, loading-change-color 3s infinite;
+    animation: loading-form-blink 5s infinite, loading-form-change-color 3s infinite;
 }
 
 .loading-form-el-block:nth-child(1) { animation-delay: .4s; }
@@ -35,23 +35,3 @@
 .loading-form-el-block:nth-child(7) { animation-delay: 0s; }
 .loading-form-el-block:nth-child(8) { animation-delay: .2s; }
 .loading-form-el-block:nth-child(9) { animation-delay: .4s; }
-
-@keyframes loading-change-color {
-    0% { background-color: rgba(var(--malachite), 1); }
-    25% { background-color: rgba(var(--carnation), 1); }
-    50% { background-color: rgba(var(--school-bus-yellow), 1); }
-    75% { background-color: rgba(var(--cerulean), 1); }
-    100% { background-color: rgba(var(--malachite), 1); }
-}
-
-@keyframes loading-blink {
-    0% { transform: scale(1); }
-    25% { transform: scale(0); }
-    50% { transform: scale(0); }
-    75% { transform: scale(1); }
-    100% { transform: scale(1); }
-}
-
-@keyframes loading-rotate {
-    0% { transform: rotate3d(1, 1, 1, 360deg); }
-}

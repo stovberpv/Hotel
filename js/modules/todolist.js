@@ -246,14 +246,7 @@ class ToDoList extends DataWrapper {
                         opts = { types: 'i', param: [parseInt(row.dataset.id)] };
                         try {
                             select = await new Select('', opts).select('*').from('tasks').where(`id=?`).connect();
-                        } catch (e) {
-                            // TODO error
-                            return;
-                        }
-                        if (!select.affectedRows) {
-                            // TODO error
-                            return;
-                        }
+                        } catch (e) {}
                         data = select.data.length ? select.data[0] : { id: '', status: row.dataset.status || '' };
                         if (data.status === S.FINISHED) return;
                         try {

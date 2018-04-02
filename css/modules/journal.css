@@ -29,7 +29,7 @@ table#journal>tbody>tr>td {
     border-radius: 3px;
 }
 table#journal>tbody>tr:hover>th {
-    animation: view 5s infinite;
+    animation: journal-record-view 5s infinite;
 }
 table#journal>tbody>.records-row>td {
     border: none;
@@ -87,7 +87,7 @@ table#journal>tbody#journal-tbody>tr.records-row>td>table.records>tbody>tr>td:la
 }
 table#journal>tbody#journal-tbody>tr.records-row>td>table.records [data-status="selected"] {
     border: 1px solid transparent;
-    animation: view 5s infinite;
+    animation: journal-record-view 5s infinite;
 }
 table#journal>tbody#journal-tbody>tr.records-row>td>table.records>tbody>tr>td>table.record-detail {
     border-collapse: collapse;
@@ -262,15 +262,8 @@ table#journal tbody#journal-tbody tr:not(.records-row) td:hover .balloon-wrapper
 /*-----------------------------------------------------------------*/
 
 
-table#journal tbody [data-view="hov"] { animation: view 5s infinite; }
-table#journal tbody [data-view="fix"] { animation: view 5s infinite; }
+table#journal tbody [data-journal-record-view="hov"] { animation: journal-record-view 5s infinite; }
+table#journal tbody [data-journal-record-view="fix"] { animation: journal-record-view 5s infinite; }
 
 
 /*-----------------------------------------------------------------*/
-
-
-@keyframes view {
-    0% { background-color: rgba(var(--school-bus-yellow), .6); }
-    50% { background-color: rgba(var(--school-bus-yellow), .3); }
-    100% { background-color: rgba(var(--school-bus-yellow), .6); }
-}
