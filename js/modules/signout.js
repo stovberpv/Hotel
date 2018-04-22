@@ -3,9 +3,9 @@
 /*jshint -W040 */
 /*jshint -W083 */
 
-(function () { 'use strict'; })();
+'use strict';
 
-class SignOut extends DataWrapper {
+class SignOut extends RootModule {
     constructor() {
         super();
     }
@@ -15,18 +15,8 @@ class SignOut extends DataWrapper {
 
         (async () => {
             let result, del;
-            try {
-                result = await new ConfirmDialog({
-                    intent: 'del',
-                    title: 'Завершение сеанса',
-                    text: GL.CONST.LOCALIZABLE.MSG000
-                }).bind().show().getPromise();
-            } catch (e) { return; }
-            if (!result) return;
-            try {
-                let opts = { types: 's', param: ['']};
-                del = await new Update('', opts).update('us001').set(`sesid=?`).where('login=?').connect(1);
-            } catch (e) { return; }
+            try { await new ConfirmDialog({ intent: 'del', title: 'Завершение сеанса', text: GL.CONST.LOCALIZABLE.MSG000 }).bind().show().promise(); } catch (e) { return; }
+            try { del = await new Update('', { types: 's', param: ['']}).update('us001').set(`seid=?`).where('user=?').connect(1); } catch (e) { return; } // FIX :
             if (!del.affectedRows) return;
             window.location.href = '../../index.php';
         })();

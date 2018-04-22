@@ -10,17 +10,20 @@
 
     <head>
         <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="language" content="russian" />
+        <meta name="author" content="Stovber Pavel" />
         <title>Hotel Manager</title>
         <link rel='icon' href='/res/icons/favicon.png' />
 
-        <link rel='stylesheet' href='/css/utils/normalize.css' />
+        <link rel='stylesheet' href='/css/components/normalize.css' />
 
-        <link rel='stylesheet' href='/css/core/vars.css' />
-        <link rel='stylesheet' href='/css/core/animation.css' />
-        <link rel='stylesheet' href='/css/core/main.css' />
-        <link rel='stylesheet' href='/css/utils/loadingform.css' />
-        <link rel='stylesheet' href='/css/utils/modal.css' />
-        <link rel='stylesheet' href='/css/utils/date.picker.css' />
+        <link rel='stylesheet' href='/css/main/vars.css' />
+        <link rel='stylesheet' href='/css/main/animation.css' />
+        <link rel='stylesheet' href='/css/main/main.css' />
+        <link rel='stylesheet' href='/css/components/loadingform.css' />
+        <link rel='stylesheet' href='/css/components/modal.css' />
+        <link rel='stylesheet' href='/css/components/date.picker.css' />
         <link rel='stylesheet' href='/css/modules/journal.css' />
         <link rel='stylesheet' href='/css/modules/contacts.css' />
         <link rel='stylesheet' href='/css/modules/diagrams.css' />
@@ -159,22 +162,28 @@
             <div id='vc-dw-6' class='vc-data-wrapper'></div>
         </div>
 
-        <script type='text/javascript' src='/js/core/gl.js'></script>
-        <script type='text/javascript' src='/js/core/db.js'></script>
+        <script type='text/javascript' src='/js/main/globals.js'></script>
 
-        <script type="text/javascript" src="/js/utils/date.format.js"></script>
-        <script type="text/javascript" src="/js/utils/date.picker.js"></script>
+        <script type="text/javascript" src="/js/tools/date.format.js"></script>
+        <script type='text/javascript' src='/js/tools/sandbox.js'></script>
+        <script type="text/javascript" src="/js/tools/domtree.js"></script>
 
-        <script type='text/javascript' src='/js/utils/sandbox.js'></script>
-        <script type="text/javascript" src="/js/utils/dom.tree.js"></script>
-        <script type='text/javascript' src='/js/utils/event.bus.js'></script>
-        <script type='text/javascript' src='/js/utils/loading.form.js'></script>
-        <script type="text/javascript" src="/js/utils/modal.control.js"></script>
-        <script type="text/javascript" src="/js/utils/modal.dialog.js"></script>
-        <script type="text/javascript" src="/js/utils/modal.message.js"></script>
-        <script type='text/javascript' src='/js/utils/event.tasker.js'></script>
+        <script type='text/javascript' src='/js/components/eventbus.js'></script>
+        <script type='text/javascript' src='/js/components/loading.form.js'></script>
 
-        <script type='text/javascript' src='/js/modules/datawrapper.js'></script>
+        <script type="text/javascript" src="/js/components/modal/control.js"></script>
+        <script type="text/javascript" src="/js/components/modal/dialog.js"></script>
+        <script type="text/javascript" src="/js/components/modal/message.js"></script>
+        <script type="text/javascript" src="/js/components/date.picker.js"></script>
+        <script type='text/javascript' src='/js/components/tasker.js'></script>
+        <script type='text/javascript' src='/js/components/chart.js'></script>
+
+        <script type='text/javascript' src='/js/database/query.js'></script>
+        <script type='text/javascript' src='/js/database/entity.js'></script>
+        <script type='text/javascript' src='/js/database/schema.js'></script>
+
+        <script type='text/javascript' src='/js/modules/navigation.js'></script>
+        <script type='text/javascript' src='/js/modules/root.js'></script>
         <script type='text/javascript' src='/js/modules/journal.js'></script>
         <script type='text/javascript' src='/js/modules/contacts.js'></script>
         <script type='text/javascript' src='/js/modules/diagrams.js'></script>
@@ -182,7 +191,7 @@
         <script type='text/javascript' src='/js/modules/todolist.js'></script>
         <script type='text/javascript' src='/js/modules/signout.js'></script>
 
-        <script type='text/javascript' src='/js/core/main.js'></script>
+        <script type='text/javascript' src='/js/main/main.js'></script>
     </body>
 
 </html>

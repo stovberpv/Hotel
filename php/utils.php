@@ -26,7 +26,7 @@
             # create db connection
             require $_SERVER['DOCUMENT_ROOT'] . '/php/conn.php';
             # check is user was aurorized
-            $query = "SELECT COUNT(*) AS isAuth FROM us001 WHERE sesid = ? AND active = 1";
+            $query = "SELECT COUNT(*) AS isAuth FROM us001 WHERE seid = ? AND actv = 1";
             $stmt = $mysqli->prepare($query);
             $stmt->bind_param('s', $sessid) ;
             $stmt->execute()                ;
@@ -59,7 +59,7 @@
         # create db connection
         require $_SERVER['DOCUMENT_ROOT'] . '/php/conn.php';
         # check is user was aurorized
-        $query = "SELECT login FROM us001 WHERE sesid = ? AND active = 1";
+        $query = "SELECT user FROM us001 WHERE seid = ? AND actv = 1";
         $stmt = $mysqli->prepare($query);
         $stmt->bind_param('s', $sessid) ;
         $stmt->execute()                ;
@@ -69,7 +69,7 @@
         $stmt->close();
         $mysqli->close();
         #
-        return $row['login'];
+        return $row['user'];
     }
     #---------------------------------------------------------------------------------
     # error to echo
@@ -85,7 +85,7 @@
             case 20: echo2json($text . "Начальная дата не может быть больше конечной"); break;
             case 21: echo2json($text . "Не удалось вычислить день и месяц выезда"); break;
             case 22: echo2json($text . "Не удалось вычислить день и месяц въезда"); break;
-            case 23: echo2json($text . "Неавторизованный пользовтаель. В доступе отказано."); break;
+            case 23: echo2json($text . "Неавторизованный пользователь. В доступе отказано."); break;
             case 24: echo2json($text . "Не удалось определить год"); break;
             case 25: echo2json($text . "Не удалось определить месяц"); break;
             case 26: echo2json($text . "Начальная дата не может быть больше конечной"); break;

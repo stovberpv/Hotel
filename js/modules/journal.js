@@ -3,606 +3,339 @@
 /*jshint -W040 */
 /*jshint -W083 */
 
-/*
-    NOTE :
-    JS Date:
-        new Date(2017,00,01) == Jan 01 2017
-        new Date(2017,11,01) == Dec 01 2017
-        new Date(2017,12,01) == Jan 01 2018
+'use strict';
 
-        new Date(2017,00,00) == Dec 31 2016
-        new Date(2017,11,00) == Nov 30 2017
-        new Date(2017,12,00) == Dec 31 2017
-
-        new Date('2017-00-00') == Invalid Date
-        new Date('2017-11-00') == Invalid Date
-        new Date('2017-12-00') == Invalid Date
-
-        new Date('2017-00-01') == Invalid Date
-        new Date('2017-11-01') == Nov 01 2017
-        new Date('2017-12-01') == Dec 01 2017
-
-        new Date(1930, 00).toLocaleString('ru', { month: 'long' })
-        в некоторых системах(?) приводит к тому, что месяца формируются не правильно
-        3 и 4 месяц = это оба становятся мартами, а октябрь вообще пропадает.
-        год обязательно должен быть после 1930 г исключительно.
-*/
-
-(() => { "use strict"; })();
-
-class CellSelection {
-
-    constructor() { }
-
-    static gen() { return Math.ceil(Math.random() * 100000); }
-
-    static add(target, selection = 0) {
-        selection = selection ? selection : CellSelection.gen();
-        target.dataset.selection = selection;
-        target.dataset.status = 'selected';
-        CellSelection.enum(selection);
-        return selection;
-    }
-
-    static del(target) {
-        let selection = target.dataset.selection;
-        if (!selection) return;
-        Array.prototype.slice.call(document.querySelectorAll(`[data-selection='${selection}']`)).some(el => {
-            el.innerText = '';
-            el.removeAttribute('data-selection');
-            el.removeAttribute('data-status');
-            return (el.id === target.id);
-        });;
-        CellSelection.enum(selection);
-    }
-
-    static enum(selection) {
-        let i = 1;
-        document.querySelectorAll(`[data-selection='${selection}']`).forEach(el => {
-            while (el.hasChildNodes()) el.removeChild(el.firstChild);
-            el.innerText = (i++);
-        });;
-    }
-
-    static getGroup(selection, pos = 'F;L') {
-        let group = document.querySelectorAll(`[data-selection='${selection}']`);
-        if (pos === 'F') return group[0];
-        else if (pos === 'L') return group[group.length - 1];
-        else return group;
-    }
-}
-
-class IGuest {
-    constructor() { }
-    static get unid() { return 'unid'; }
-    static get dbeg() { return 'dbeg'; }
-    static get dend() { return 'dend'; }
-    static get days() { return 'days'; }
-    static get room() { return 'room'; }
-    static get base() { return 'base'; }
-    static get adjs() { return 'adjs'; }
-    static get cost() { return 'cost'; }
-    static get paid() { return 'paid'; }
-    static get name() { return 'name'; }
-    static get teln() { return 'teln'; }
-    static get fnot() { return 'fnot'; }
-    static get city() { return 'city'; }
-}
-
-class Guest extends IGuest {
-
-    constructor(o = {}) {
-        super();
-        this.d = o.dbeg ? new Date(o.dbeg) : new Date();
-        this.b = { d: this.d.getDate(), m: this.d.getMonth() + 1, y: this.d.getFullYear() };
-        this.d = o.dend ? new Date(o.dend) : new Date();
-        this.e = { d: this.d.getDate(), m: this.d.getMonth() + 1, y: this.d.getFullYear() };
-
-        this.id = Math.floor(Math.random() * 100000);
-        this._unid = o.unid || '';
-        this._dbeg = { d: this.b.d, m: this.b.m, y: this.b.y, toString: function() { return new Date(`${this.y}-${this.m}-${this.d}`).format('yyyy-mm-dd'); } }
-        this._dend = { d: this.e.d, m: this.e.m, y: this.e.y, toString: function() { return new Date(`${this.y}-${this.m}-${this.d}`).format('yyyy-mm-dd'); } }
-        this._days = o.days || '';
-        this._room = o.room || '';
-        this._base = o.base || '';
-        this._adjs = o.adjs || '';
-        this._cost = o.cost || '';
-        this._paid = o.paid || '';
-        this._name = o.name || '';
-        this._teln = o.teln || '';
-        this._fnot = o.fnot || '';
-        this._city = o.city || '';
-    }
-    set unid(val) { this._unid = val || ''; } get unid() { return this._unid; }
-    set dbeg(val) { let d = this.dateParse(val); (d.d) && (this._dbeg.d = d.d); (d.m) && (this._dbeg.m = d.m); (d.y) && (this._dbeg.y = d.y); }
-    get dbeg() { return this._dbeg; }
-    set dend(val) { let d = this.dateParse(val); (d.d) && (this._dend.d = d.d); (d.m) && (this._dend.m = d.m); (d.y) && (this._dend.y = d.y); }
-    get dend() { return this._dend; }
-    set days(val) { this._days = val || ''; } get days() { return this._days; }
-    set room(val) { this._room = val || ''; } get room() { return this._room; }
-    set base(val) { this._base = val || ''; } get base() { return this._base; }
-    set adjs(val) { this._adjs = val || ''; } get adjs() { return this._adjs; }
-    set cost(val) { this._cost = val || ''; } get cost() { return this._cost; }
-    set paid(val) { this._paid = val || ''; } get paid() { return this._paid; }
-    set name(val) { this._name = val || ''; } get name() { return this._name; }
-    set teln(val) { this._teln = val || ''; } get teln() { return this._teln; }
-    set fnot(val) { this._fnot = val || ''; } get fnot() { return this._fnot; }
-    set city(val) { this._city = val || ''; } get city() { return this._city; }
-
-    dateParse(val) {
-        let result = { d: '', m: '', y: '' };
-        let regexp = {
-            s: { r: /^(\d{1,2})$/, d: { d: 1 } },
-            m: { r: /^(\d{1,2}).(\d{1,2})$/, d: { d: 1, m: 2 } },
-            e: { r: /^(\d{4}).(\d{2}).(\d{2})$/, d: { d: 3, m: 2, y: 1 } },
-            r: { r: /^(\d{2}).(\d{2}).(\d{4})$/, d: { d: 1, m: 2, y: 3 } },
-        };
-        for (let o in regexp) {
-            let reg = regexp[o].r, rul = regexp[o].d, arr = val.match(reg);
-            if (reg.test(val)) for (let i in rul) { result[i] = arr[rul[i]]; }
-        }
-        return result;
-    }
-}
-
-class Journal extends DataWrapper {
+class Journal extends RootModule {
 
     constructor() {
         super();
 
-        this._year = new Date().getFullYear();
-        this._month = new Date().getMonth() + 1;
-        this._rooms = []; // TODO подумать как можно это убрать
-        this._selection;
+        this.selection;
+
+        this.dataAttr = {
+            view: { fix: 'fix', hov: 'hov' },
+            status: { selected: 'selected', /*выделен*/ reserved: 'reserved', /*зарезервирован*/ adjacent: 'adjacent', /*смежный*/ redeemed: 'redeemed', /*выкуплен*/ }
+        };
 
         this.cb = {
 
             rcm: {
 
-                add: function (e) {
-                    let self = this;
-                    let guestCard = new GuestCard({
-                        intent: 'add',
-                        title: GL.CONST.LOCALIZABLE.VAR003.ADD,
-                        isReadOnly: false,
-                        isStrict: true,
-                        month: this.month.JSnum,
-                        year: this.year,
-                        rooms: this.rooms
-                    });
-                    guestCard.bind();
-                    guestCard.setVal(e.detail.data);
-                    guestCard.show();
+                actA: async function (a, e) {
+                    let self = this,
+                        rooms = [],
+                        year = document.getElementById('journal').dataset.year,
+                        month = document.getElementById('journal').dataset.month,
+                        gl001 = new GL001(),
+                        pb001 = new PB001(),
+                        title, guestCard, result, rm001, guest, opts;
+
+                    try { rm001 = await new RM001().load(); } catch (e) { return; }
+                    rm001.forEach(el => { rooms.push(new Room(el)); });
+
+                    title = (a === 0) ? GL.CONST.LOCALIZABLE.VAR003.ADD : GL.CONST.LOCALIZABLE.VAR003.UPDATE;
+
+                    opts = { intent:'add', title:title, isReadOnly:false, isStrict:true, month:month, year:year, rooms:rooms };
+                    guestCard = new GuestCard(opts).bind().setVal(new Guest(e.detail.data)).show();
+                    try { result = await guestCard.promise(); } catch (e) { return; }
+                    guest = new Guest(result);
+                    gl001.entity = guest;
+
+                    if (a === 0) {
+                        try { await gl001.save(); } catch (e) { return; }
+                        self.mapping(guest);
+                    } else {
+                        try { await gl001.update(); } catch (e) { return; }
+                        self.change(guest);
+                    }
+
                     (async () => {
-                        try {
-                            let g = await guestCard.getPromise();
-                            let insert = await new Insert('', {
-                                    types: 'ssiiddddssss',
-                                    param: [g.dbeg.toString(), g.dend.toString(), g.days, g.room, g.base, g.adjs, g.cost, g.paid, g.name, g.teln, g.fnot, g.city]
-                                }).into('gl001 (dbeg, dend, days, room , base, adjs, cost, paid, name, teln, fnot, city, user)').values('(?,?,?,?,?,?,?,?,?,?,?,?,?)').connect(1);
-                            if (!insert.insertId) return;
-                            let select = await new Select('', { types: 'i', param: [insert.insertId] }).select('*').from('gl001').where('unid = ?').connect();
-                            if (!select.status) return;
-                            let guest = new Guest(select.data[0]);
-                            self.add(guest);
-
-                            (async () => {
-                                try {
-                                    let person = new Person().parse(guest);
-                                    let result = await person.check();
-                                    if (result) return;
-                                    person.save();
-                                } catch (error) {
-                                    return;
-                                }
-                            })();
-
-                        } catch (error) { return; }
+                        if (a !== 0) return;
+                        pb001.entity = new Person(guest);
+                        try { result = await pb001.check(); } catch (e) { return; }
+                        if (result) return;
+                        pb001.save();
+                        EVENT_BUS.dispatch(GL.CONST.EVENTS.CONTACT.NEW, pb001.entity);
                     })();
                 },
 
-                del: function (e) {
-                    let self = this;
-                    let confirmDialog = new ConfirmDialog({
-                        intent: 'del',
-                        title: GL.CONST.LOCALIZABLE.VAR003.DELETE,
-                        text: UTILS.FORMAT(GL.CONST.LOCALIZABLE.MSG001, { 1: e.detail.data.unid }),
-                    });
-                    confirmDialog.bind();
-                    confirmDialog.show();
-                    (async () => {
-                        try {
-                            let result = await confirmDialog.getPromise();
-                            if (!result) return;
-                            let del = await new Delete('', { types: 'i', param: [e.detail.data.unid] }).from('gl001').where('unid = ?').connect();
-                            if (!del.affectedRows) return;
-                            self.del(e.detail.data.unid);
-                        } catch (error) { return; }
-                    })();
-                },
+                actB: function (e) {
+                    let self = this,
+                    gl001 = new GL001(),
+                    guest = new Guest({ unid: e.detail.data.unid }),
+                    confirmDialog, result, opts;
 
-                upd: function (e) {
-                    let self = this;
-                    let guestCard = new GuestCard({
-                        intent: 'upd',
-                        title: GL.CONST.LOCALIZABLE.VAR003.UPDATE,
-                        isReadOnly: false,
-                        isStrict: true,
-                        month: this.month.JSnum,
-                        year: this.year,
-                        rooms: this.rooms
-                    });
-                    guestCard.bind();
-                    guestCard.setVal(e.detail.data);
-                    guestCard.show();
+                    opts = { intent: 'del', title: GL.CONST.LOCALIZABLE.VAR003.DELETE, text: UTILS.FORMAT(GL.CONST.LOCALIZABLE.MSG001, { 1: guest.unid }), };
+                    confirmDialog = new ConfirmDialog(opts).bind().show();
+
                     (async () => {
-                        try {
-                            let g = await guestCard.getPromise();
-                            let update = await new Update('', {
-                                    types: 'ssiiddddssssi',
-                                    param: [g.dbeg.toString(), g.dend.toString(), g.days, g.room, g.base, g.adjs, g.cost, g.paid, g.name, g.teln, g.fnot, g.city, g.unid]
-                                }).update('gl001').set('dbeg = ?, dend = ?, days = ?, room = ?, base = ?, adjs = ?, cost = ?, paid = ?, name = ?, teln = ?, fnot = ?, city = ?').where('unid = ?').connect();
-                            if (!update.affectedRows) return;
-                            let select = await new Select('', { types: 'i', param: [g.unid] }).select('*').from('gl001').where('unid = ?').connect();
-                            if (!select.status) return;
-                            self.upd(new Guest(select.data[0]));
-                        } catch (error) { return; }
+                        try { await confirmDialog.promise(); } catch (e) { return; }
+                        gl001.entity = guest;
+                        try { await gl001.delete(); } catch (e) { return; }
+                        self.remove(guest.unid);
                     })();
-                },
+                }
             },
 
-            journal: {
+            cell: {
 
-                td: {
+                mouseDown: function mousedown(e) {
 
-                    mouseDown: function mousedown(e) {
+                    let self = this,
+                        target = e.target;
 
-                        let self = this,
-                            target = e.target;
+                    switch (e.which) {
+                        case 1: leftMouse(); return;
+                        case 3: rightMouse(); return;
+                        default: return;
+                    }
 
-                        switch (e.which) {
-                            case 1: leftMouse(); return;
-                            case 3: rightMouse(); return;
-                            default: return;
-                        }
+                    function leftMouse() {
 
-                        function leftMouse() {
+                        GL.DATA.CORE.isMouseDown = true;
 
-                            GL.DATA.CORE.isMouseDown = true;
+                        const ATTR = this.dataAttr;
 
-                            const DATA_ATTR = GL.CONST.DATA_ATTR.JOURNAL;
-
-                            (function toggleSelection() {
-                                switch (target.dataset.status) {
-                                    case undefined:
-                                        self.selection = CellSelection.add(target);
-                                        break;
-
-                                    case DATA_ATTR.STATUS.SELECTED:
-                                        CellSelection.del(target);
-                                        self.selection = '';
-                                        break;
-
-                                    default:
-                                        self.selection = '';
-                                        return;
-                                        break;
-                                }
-                            })();
-
-                            (function toggleView() {
-                                let ids = target.dataset.unid ? target.dataset.unid.split(',') : [];
-                                for (let id of ids) {
-                                    document.querySelectorAll(`#journal [data-unid='${id}']`).forEach(el => {
-                                        el.dataset.view = (el.dataset.view === DATA_ATTR.VIEW.HOV) ? DATA_ATTR.VIEW.FIX : DATA_ATTR.VIEW.HOV;
-                                    });
-                                }
-                            })();
-                        }
-
-                        /**
-                         * Для активной ячейки вытягиваем значение даты
-                         * Тут можно вытягивать дату первой выделенной ячейки
-                         * и последней и по ним првоерять гостя в БД
-                         * Я вытягиваю дату только одной чейки на покторой нажали ПКМ
-                         * Мне кажется так правильней
-                         *
-                         * @returns boolean
-                         */
-                        async function rightMouse() {
-                            let year = self.year,
-                                month = self.month.num,
-                                room = target.dataset.room,
-                                date = target.dataset.date,
-                                select;
-
-                            try {
-                                select = await new Select('', {types: 'sss', param: [date, date, room]}).select('*').from('gl001').where(`dbeg <= ? AND dend >= ? AND room = ?`).connect();
-                            } catch (error) { return; }
-                            select = select.data;
-
-                            let isAvailableButton, guest;
-
-                            switch (select.length) {
-                                case 0:
-                                    isAvailableButton = true;
-                                    guest = new Guest();
-                                    guest.room = room;
-                                    (() => {
-                                        if (!target.dataset.selection) return;
-                                        guest.dbeg = CellSelection.getGroup(target.dataset.selection, 'F').dataset.date;
-                                        guest.dend = CellSelection.getGroup(target.dataset.selection, 'L').dataset.date;
-                                    })();
+                        (function toggleSelection() {
+                            switch (target.dataset.status) {
+                                case undefined:
+                                    self.selection = CellSelection.add(target);
                                     break;
 
-                                case 1:
-                                    isAvailableButton = false;
-                                    guest = new Guest(select[0]);
+                                case ATTR.status.selected:
+                                    CellSelection.del(target);
+                                    self.selection = '';
                                     break;
 
                                 default:
+                                    self.selection = '';
                                     return;
                                     break;
                             }
-
-                            let rcmenu = new RCMenu({
-                                item: { upd: !isAvailableButton, del: !isAvailableButton, add: isAvailableButton },
-                                x: e.pageX, y: e.pageY,
-                                guest
-                            });
-                            rcmenu.bind();
-                            rcmenu.show();
-                        }
-                    },
-
-                    mouseOver: function mouseover(e) {
-
-                        let self = this,
-                            target = e.target;
-
-                        const DATA_ATR = GL.CONST.DATA_ATTR.JOURNAL;
-
-                        (function toggleSelection() {
-                            if (!GL.DATA.CORE.isMouseDown) return;
-                            if (target.dataset.status !== DATA_ATR.STATUS.SELECTED && target.dataset.status !== undefined) return;
-                            self.selection ? CellSelection.add(target, self.selection) : CellSelection.del(target);
                         })();
 
                         (function toggleView() {
                             let ids = target.dataset.unid ? target.dataset.unid.split(',') : [];
                             for (let id of ids) {
-                                document.querySelectorAll(`#journal [data-unid='${id}']`).forEach(el => {
-                                    if (el.dataset.view === DATA_ATR.VIEW.FIX) return;
-                                    el.dataset.view = DATA_ATR.VIEW.HOV;
+                                document.querySelectorAll(`#journal #journal-tbody [data-unid='${id}']`).forEach(el => {
+                                    el.dataset.view = (el.dataset.view === ATTR.view.hov) ? ATTR.view.fix : ATTR.view.hov;
                                 });
                             }
-
-                            let date = target.dataset.date;
-                            if (!date) { return; }
-                            document.querySelector(`#journal > thead tr:nth-child(2) th#D${date}`).dataset.view = DATA_ATR.VIEW.HOV;
                         })();
-                    },
+                    }
 
-                    mouseOut: function mouseout(e) {
+                    /**
+                     * Для активной ячейки вытягиваем значение даты
+                     * Тут можно вытягивать дату первой выделенной ячейки
+                     * и последней и по ним првоерять гостя в БД
+                     * Я вытягиваю дату только одной чейки на покторой нажали ПКМ
+                     * Мне кажется так правильней
+                     */
+                    async function rightMouse() {
+                        let room = target.dataset.room,
+                            date = target.dataset.date,
+                            opts = { types: 'sss', param: [date, date, room] },
+                            select, isAvailableButton, guest;
 
-                        let self = this,
-                            target = e.target;
-
-                        const DATA_ATR = GL.CONST.DATA_ATTR.JOURNAL;
-
-                        (function toggleView() {
-                            let ids = target.dataset.unid ? target.dataset.unid.split(',') : [];
-                            for (let id of ids) {
-                                document.querySelectorAll(`#journal [data-unid='${id}']`).forEach(el => {
-                                    (el.dataset.view === DATA_ATR.VIEW.HOV) && el.removeAttribute('data-view');
-                                });
-                            }
-
-                            let date = target.dataset.date;
-                            if (!date) { return; }
-                            document.querySelector(`#journal > thead tr:nth-child(2) th#D${date}`).removeAttribute('data-view');
-                        })();
-                    },
-
-                    mouseUp: function mouseup(e) {
-
-                        this.selection = '';
-                        GL.DATA.CORE.isMouseDown = false;
-                    },
-                },
-
-                th: {
-
-                    mouseDown: function mousedown(e) {
-
-                        let self = this,
-                            target = e.target;
-
-                        const DATA_ATR = GL.CONST.DATA_ATTR.JOURNAL;
-
-                        target.dataset.view = target.dataset.view == DATA_ATR.VIEW.FIX ? '' : DATA_ATR.VIEW.FIX;
-                        let records = document.querySelector(`#${target.parentNode.id}-records`);
-
-                        if (!records) { return; }
-
-                        let stDisplay = window.getComputedStyle(records).getPropertyValue('display');
-                        if (records.style.display === 'none' || stDisplay === 'none') records.style.display = 'table-row';
-                        else records.style.display = 'none';
-                    },
-                },
-
-            },
-
-            records: {
-                tr: {
-
-                    mouseDown: function mousedown(e) {
-                        let self = this,
-                            target = e.target.closest('.record');
-
-                        if (!target) return;
-
-                        const DATA_ATTR = GL.CONST.DATA_ATTR.JOURNAL;
-
-                        switch (e.which) {
-                            case 1: leftMouse(); return;
-                            case 3: rightMouse(); return;
-                            default: return;
+                        try { select = await new Select('', opts).select('*').from('gl001').where(`dbeg <= ? AND dend >= ? AND room = ?`).connect(); } catch (e) { return; }
+                        if (select.data[0]) {
+                            guest = new Guest(select.data[0]);
+                            isAvailableButton = false;
+                        } else {
+                            guest = new Guest();
+                            (() => {
+                                guest.room = room;
+                                if (!target.dataset.selection) return;
+                                guest.dbeg = CellSelection.getGroup(target.dataset.selection, 'F').dataset.date;
+                                guest.dend = CellSelection.getGroup(target.dataset.selection, 'L').dataset.date;
+                            })();
+                            isAvailableButton = true;
                         }
-
-                        function leftMouse() {
-                            let ids = target.dataset.unid ? target.dataset.unid.split(',') : [];
-                            for (let id of ids) {
-                                document.querySelectorAll(`#journal [data-unid='${id}']`).forEach(el => {
-                                    el.dataset.view = (el.dataset.view === DATA_ATTR.VIEW.HOV) ? DATA_ATTR.VIEW.FIX : DATA_ATTR.VIEW.HOV;
-                                });
-                            }
-                        }
-
-                        async function rightMouse() {
-                            let select;
-                            try {
-                                select = await new Select('', {types: 'i', param: [target.dataset.unid]}).select('*').from('gl001').where(`unid = ?`).connect();
-                            } catch (error) { return; }
-                            if (!select.data.length) return;
-                            let guest = new Guest(select.data[0]);
-                            let rcmenu = new RCMenu({ item: { upd: true, del: true, add: false }, x: e.pageX, y: e.pageY, guest });
-                            rcmenu.bind();
-                            rcmenu.show();
-                        }
-                    },
-
-                    mouseOver: function mouseover(e) {
-                        let self = this,
-                            target = e.target.closest('.record');
-
-                        if (!target) return;
-
-                        const DATA_ATR = GL.CONST.DATA_ATTR.JOURNAL;
-
-                        let ids = target.dataset.unid ? target.dataset.unid.split(',') : [];
-                        for (let id of ids) {
-                            document.querySelectorAll(`#journal [data-unid='${id}']`).forEach(el => {
-                                if (el.dataset.view === DATA_ATR.VIEW.FIX) return;
-                                el.dataset.view = DATA_ATR.VIEW.HOV;
-                            });
-                        }
-                    },
-
-                    mouseOut: function mouseout(e) {
-                        let self = this,
-                            target = e.target.closest('.record');
-
-                        if (!target) return;
-
-                        const DATA_ATR = GL.CONST.DATA_ATTR.JOURNAL;
-
-                        let ids = target.dataset.unid ? target.dataset.unid.split(',') : [];
-                        for (let id of ids) {
-                            document.querySelectorAll(`#journal [data-unid='${id}']`).forEach(el => {
-                                (el.dataset.view === DATA_ATR.VIEW.HOV) && el.removeAttribute('data-view');
-                            });
-                        }
-                    },
-                },
-            },
-
-            control: {
-
-                month: {
-
-                    prev: function prevMonth(e) {
-                        let self = this;
-
-                        (() => {
-                            let date = new Date(self.year, self.month.JSnum, '01');
-                            date.setMonth(date.getMonth() - 1);
-                            self.year = date.getFullYear();
-                            self.month = date.getMonth() + 1;
-                            EVENT_BUS.dispatch(GL.CONST.EVENTS.DIAGRAM.UPD, {});
-                        })();
-
-                        (async () => { await Journal.updateUserConfig(self.year, self.month.num); })();
-
-                        (async () => {
-                            try {
-                                let guest = await Journal.initializeGuestList(self.year, self.month.JSnum);
-                                let guests = [];
-                                guest.data.forEach(g => { guests.push(new Guest(g)); });
-                                self.build();
-                                self.add(guests);
-                           } catch (e) { return; }
-                       })();
-                    },
-
-                    next: function nextMonth(e) {
-                        let self = this;
-
-                        (() => {
-                            let date = new Date(self.year, self.month.JSnum, '01');
-                            date.setMonth(date.getMonth() + 1);
-                            self.year = date.getFullYear();
-                            self.month = date.getMonth() + 1;
-                            EVENT_BUS.dispatch(GL.CONST.EVENTS.DIAGRAM.UPD, {});
-                        })();
-
-                        (async () => { await Journal.updateUserConfig(self.year, self.month.num); })();
-
-                        (async () => {
-                            try {
-                                let guest = await Journal.initializeGuestList(self.year, self.month.JSnum);
-                                let guests = [];
-                                guest.data.forEach(g => { guests.push(new Guest(g)); });
-                                self.build();
-                                self.add(guests);
-                           } catch (e) { return; }
-                       })();
+                        opts = { item: { upd: !isAvailableButton, del: !isAvailableButton, add: isAvailableButton }, x: e.pageX, y: e.pageY, guest };
+                        new RCMenu(opts).bind().show();
                     }
                 },
 
-                pickPeriod: async function pickPeriod(e) {
-                    let self = this;
+                mouseOver: function mouseover(e) {
 
-                    let dialog = new PickPeriod();
-                    dialog.bind();
-                    dialog.setVal({ year: self.year, month: self.month.num });
-                    dialog.show();
-                    try {
-                        var result = await dialog.getPromise();
-                        self.year = result.year;
-                        self.month = result.month.num;
-                        let update = await new Update('', { types: 'ss', param: [self.year, self.month.num] }).update('cf001').set('year = ?, month = ?').where('user = ?').connect(1);
-                        if (!update.status) return;
-                        let select = await Journal.initializeGuestList(self.year, self.month.JSnum);
-                        if (!select.status) return;
-                        let guests = [];
-                        select.data.forEach(g => { guests.push(new Guest(g)); });
-                        self.build();
-                        self.add(guests);
-                        EVENT_BUS.dispatch(GL.CONST.EVENTS.DIAGRAM.UPD, {});
-                    } catch (error) { return; }
+                    let self = this,
+                        target = e.target;
+
+                    const ATTR = self.dataAttr;
+
+                    (function toggleSelection() {
+                        if (!GL.DATA.CORE.isMouseDown) return;
+                        if (target.dataset.status !== ATTR.status.selected && target.dataset.status !== undefined) return;
+                        self.selection ? CellSelection.add(target, self.selection) : CellSelection.del(target);
+                    })();
+
+                    (function toggleView() {
+                        let ids = target.dataset.unid ? target.dataset.unid.split(',') : [];
+                        for (let id of ids) {
+                            document.querySelectorAll(`#journal #journal-tbody [data-unid='${id}']`).forEach(el => {
+                                if (el.dataset.view === ATTR.view.fix) return;
+                                el.dataset.view = ATTR.view.hov;
+                            });
+                        }
+
+                        let date = target.dataset.date;
+                        if (!date) { return; }
+                        document.querySelector(`#journal #journal-thead #days #D${date}`).dataset.view = ATTR.view.hov;
+                    })();
+                },
+
+                mouseOut: function mouseout(e) {
+
+                    let self = this,
+                        target = e.target;
+
+                    const ATTR = self.dataAttr;
+
+                    (function toggleView() {
+                        let ids = target.dataset.unid ? target.dataset.unid.split(',') : [];
+                        for (let id of ids) {
+                            document.querySelectorAll(`#journal #journal-tbody [data-unid='${id}']`).forEach(el => {
+                                (el.dataset.view === ATTR.view.hov) && el.removeAttribute('data-view');
+                            });
+                        }
+
+                        let date = target.dataset.date;
+                        if (!date) { return; }
+                        document.querySelector(`#journal #journal-thead #days #D${date}`).removeAttribute('data-view');
+                    })();
+                },
+
+                mouseUp: function mouseup(e) {
+
+                    this.selection = '';
+                    GL.DATA.CORE.isMouseDown = false;
+                },
+            },
+
+            row: {
+
+                mouseDown: function mousedown(e) {
+
+                    let target = e.target;
+
+                    const ATTR = this.dataAttr;
+
+                    target.dataset.view = target.dataset.view == ATTR.view.fix ? '' : ATTR.view.fix;
+                    try { document.querySelector(`#${target.parentNode.id}-records`).classList.toggle('visible') } catch (e) { }
+                },
+            },
+
+            record: {
+
+                mouseDown: function mousedown(e) {
+                    let self = this,
+                        target = e.target.closest('.record');
+
+                    if (!target) return;
+
+                    const ATTR = self.dataAttr;
+
+                    switch (e.which) {
+                        case 1: leftMouse(); return;
+                        case 3: rightMouse(); return;
+                        default: return;
+                    }
+
+                    function leftMouse() {
+                        let ids = target.dataset.unid ? target.dataset.unid.split(',') : [];
+                        for (let id of ids) {
+                            document.querySelectorAll(`#journal #journal-tbody [data-unid='${id}']`).forEach(el => {
+                                el.dataset.view = (el.dataset.view === ATTR.view.hov) ? ATTR.view.fix : ATTR.view.hov;
+                            });
+                        }
+                    }
+
+                    async function rightMouse() {
+                        let guest = new Guest({ unid: target.dataset.unid }),
+                            gl001 = new GL001();
+                        gl001.entity = guest;
+                        try { guest = await gl001.load(); } catch (e) { return; }
+                        new RCMenu({ item: { upd: true, del: true, add: false }, x: e.pageX, y: e.pageY, guest }).bind().show();
+                    }
+                },
+
+                mouseOver: function mouseover(e) {
+                    let self = this,
+                        target = e.target.closest('.record');
+
+                    if (!target) return;
+
+                    const ATTR = self.dataAttr;
+
+                    let ids = target.dataset.unid ? target.dataset.unid.split(',') : [];
+                    for (let id of ids) {
+                        document.querySelectorAll(`#journal #journal-tbody [data-unid='${id}']`).forEach(el => {
+                            if (el.dataset.view === ATTR.view.fix) return;
+                            el.dataset.view = ATTR.view.hov;
+                        });
+                    }
+                },
+
+                mouseOut: function mouseout(e) {
+                    let self = this,
+                        target = e.target.closest('.record');
+
+                    if (!target) return;
+
+                    const ATTR = self.dataAttr;
+
+                    let ids = target.dataset.unid ? target.dataset.unid.split(',') : [];
+                    for (let id of ids) {
+                        document.querySelectorAll(`#journal #journal-tbody [data-unid='${id}']`).forEach(el => {
+                            (el.dataset.view === ATTR.view.hov) && el.removeAttribute('data-view');
+                        });
+                    }
+                },
+            },
+
+            control: async function(a, e) {
+                let self = this,
+                    journal = document.getElementById('journal');
+
+                a = parseInt(a);
+
+                if (a === 0) {
+                    let dialog = new PickPeriod().bind().setVal({  month: journal.dataset.month, year: journal.dataset.year }).show();
+                    try { dialog = await dialog.promise(); } catch (e) { return; }
+                    journal.dataset.year = dialog.year;
+                    journal.dataset.month = dialog.month.num;
+                } else {
+                    let date = new Date(journal.dataset.year, (journal.dataset.month - 1), '01');
+                    date.setMonth(date.getMonth() + a);
+                    journal.dataset.year = date.getFullYear();
+                    journal.dataset.month = (date.getMonth() + 1);
                 }
+
+                (async () => {
+                    let config = new Config({year: journal.dataset.year, moon: journal.dataset.month}),
+                        cf001 = new CF001();
+                    cf001.entity = config;
+                    try { await cf001.update(); } catch (e) { return; }
+                })();
+
+                (async () => {
+                    let gl001 = new GL001(),
+                        guest = new Guest({
+                            dbeg: new Date(journal.dataset.year, (journal.dataset.month - 1), 1).format('yyyy-mm-dd'),
+                            dend: new Date(journal.dataset.year, journal.dataset.month, 0).format('yyyy-mm-dd')
+                        }),
+                        select, guests = [];
+                    gl001.entity = guest;
+                    try { select = await gl001.load(); } catch (e) { return; }
+                    select.forEach(g => { guests.push(new Guest(g)); });
+                    await self.build();
+                    self.mapping(guests);
+                })();
+
+                setTimeout(() => { EVENT_BUS.dispatch(GL.CONST.EVENTS.DIAGRAM.UPD, {}); }, 0);
             }
         };
     }
-
-    set month(month) { this._month = month; }
-    get month() {
-        return {
-            name: new Date(1900, this._month).toLocaleString(GL.CONST.LOCALE, { month: "long" }),
-            num: UTILS.OVERLAY(this._month, '0', 2),
-            JSnum: UTILS.OVERLAY((this._month - 1), '0', 2)
-        };
-    }
-
-    set year(year) { this._year = year; }
-    get year() { return this._year; }
-
-    set rooms(rooms) { this._rooms = rooms; }
-    get rooms() { return this._rooms; }
-
-    set selection(selection) { this._selection = selection; }
-    get selection() { return this._selection; }
 
     bind (target) {
         super.bind(target);
@@ -610,34 +343,28 @@ class Journal extends DataWrapper {
         let tree =
             [{ tag: 'table', id: 'journal' },
                 [{ tag: 'thead', id: 'journal-thead' },
-                    [{ tag: 'tr', id: 'journal-control-buttons' },
+                    [{ tag: 'tr', class: 'control-row' },
                         [{tag: 'td'},
                             [{ tag: 'table' },
-                                [{ tag: 'tbody' },
-                                    [{ tag: 'tr' },
-                                        [{ tag: 'td' },
-                                            { tag: 'span', id: 'journal-button-month-prev', class: 'button', events: [{ name: 'click', fn: this.cb.control.month.prev, bind: this }] },
-                                        ],
-                                        [{ tag: 'td' },
-                                            [{ tag: 'span', id: 'journal-button-pick-period', class: 'button', events: [{ name: 'click', fn: this.cb.control.pickPeriod, bind: this }] },
-                                                { tag: 'label', id: 'month' },
-                                                { tag: 'label', id: 'year' },
-                                            ],
-                                        ],
-                                        [{ tag: 'td' },
-                                            { tag: 'span', id: 'journal-button-month-next', class: 'button', events: [{ name: 'click', fn: this.cb.control.month.next, bind: this }] },
-                                        ],
+                                [{ tag: 'tr' },
+                                    [{ tag: 'td' },
+                                        { tag: 'span', class: 'button prev', events: [{ name: 'click', fn: this.cb.control.bind(this, -1) }] },
+                                    ],
+                                    [{ tag: 'td' },
+                                        { tag: 'span', class: 'button pick', events: [{ name: 'click', fn: this.cb.control.bind(this, 0) }] },
+                                    ],
+                                    [{ tag: 'td' },
+                                        { tag: 'span', class: 'button next', events: [{ name: 'click', fn: this.cb.control.bind(this, 1) }] },
                                     ],
                                 ],
                             ],
                         ],
                     ],
-                    [{ tag: 'tr', id: 'journal-calendar-days' },
+                    [{ tag: 'tr', id: 'days' },
                         { tag: 'td' },
                     ],
                 ],
-                [{ tag: 'tbody', id: 'journal-tbody' },
-                ],
+                { tag: 'tbody', id: 'journal-tbody' }
             ];
 
         tree = new DOMTree(tree).cultivate();
@@ -647,60 +374,113 @@ class Journal extends DataWrapper {
         const L = this.cb;
         let qsParent, qsChild, qsParentExcl;
 
-        qsParent = '#journal > tbody'; qsChild = 'td'; qsParentExcl = '.records-row';
-        UTILS.SET_DELEGATE('mousedown', qsParent, qsChild, qsParentExcl, L.journal.td.mouseDown.bind(this));
-        UTILS.SET_DELEGATE('mouseover', qsParent, qsChild, qsParentExcl, L.journal.td.mouseOver.bind(this));
-        UTILS.SET_DELEGATE('mouseout', qsParent, qsChild, qsParentExcl, L.journal.td.mouseOut.bind(this));
-        UTILS.SET_DELEGATE('mouseup', qsParent, qsChild, qsParentExcl, L.journal.td.mouseUp.bind(this));
+        qsParent = '#journal #journal-tbody'; qsChild = 'tr td'; qsParentExcl = '.records-wrapper';
+        UTILS.SET_DELEGATE('mousedown', qsParent, qsChild, qsParentExcl, L.cell.mouseDown.bind(this));
+        UTILS.SET_DELEGATE('mouseover', qsParent, qsChild, qsParentExcl, L.cell.mouseOver.bind(this));
+        UTILS.SET_DELEGATE('mouseout', qsParent, qsChild, qsParentExcl, L.cell.mouseOut.bind(this));
+        UTILS.SET_DELEGATE('mouseup', qsParent, qsChild, qsParentExcl, L.cell.mouseUp.bind(this));
 
-        qsParent = '#journal > tbody'; qsChild = 'tr > th'; qsParentExcl = '';
-        UTILS.SET_DELEGATE('mousedown', qsParent, qsChild, qsParentExcl, L.journal.th.mouseDown.bind(this));
+        qsParent = '#journal #journal-tbody'; qsChild = 'tr > th'; qsParentExcl = '';
+        UTILS.SET_DELEGATE('mousedown', qsParent, qsChild, qsParentExcl, L.row.mouseDown.bind(this));
 
-        qsParent = '#journal > tbody'; qsChild = '.records'; qsParentExcl = '';
-        UTILS.SET_DELEGATE('mousedown', qsParent, qsChild, qsParentExcl, L.records.tr.mouseDown.bind(this));
-        UTILS.SET_DELEGATE('mouseover', qsParent, qsChild, qsParentExcl, L.records.tr.mouseOver.bind(this));
-        UTILS.SET_DELEGATE('mouseout', qsParent, qsChild, qsParentExcl, L.records.tr.mouseOut.bind(this));
+        qsParent = '#journal #journal-tbody'; qsChild = 'table.records-container'; qsParentExcl = '';
+        UTILS.SET_DELEGATE('mousedown', qsParent, qsChild, qsParentExcl, L.record.mouseDown.bind(this));
+        UTILS.SET_DELEGATE('mouseover', qsParent, qsChild, qsParentExcl, L.record.mouseOver.bind(this));
+        UTILS.SET_DELEGATE('mouseout', qsParent, qsChild, qsParentExcl, L.record.mouseOut.bind(this));
 
         const E = GL.CONST.EVENTS.JOURNAL;
-        EVENT_BUS.register(E.RC_MENU.ADD, L.rcm.add.bind(this));
-        EVENT_BUS.register(E.RC_MENU.DEL, L.rcm.del.bind(this));
-        EVENT_BUS.register(E.RC_MENU.UPD, L.rcm.upd.bind(this));
+        EVENT_BUS.register(E.RC_MENU.ADD, L.rcm.actA.bind(this, 0));
+        EVENT_BUS.register(E.RC_MENU.DEL, L.rcm.actB.bind(this));
+        EVENT_BUS.register(E.RC_MENU.UPD, L.rcm.actA.bind(this, 1));
     }
 
-    init() {
+    async init() {
         super.init();
 
-        let self = this;
-        (async () => {
-            try {
-                let config = await new Select().select('year, month').from('cf001').join('us001').on('us001.login = cf001.user').where('us001.login = ?').connect(1);
-                self.year = config.data[0].year;
-                self.month = config.data[0].month;
+        let self = this,
+            gl001 = new GL001(),
+            cf001 = new CF001(),
+            guests = [];
 
-                let rooms = await new Select().select('*').from('rm001').connect();
-                self.rooms = rooms.data;
+        try { cf001 = await cf001.load(); } catch (e) { return; }
+        document.getElementById('journal').dataset.year = cf001.year;
+        document.getElementById('journal').dataset.month = cf001.moon;
 
-                let guest = await Journal.initializeGuestList(self.year, self.month.JSnum);
-                let guests = [];
-                guest.data.forEach(g => { guests.push(new Guest(g)); });
-                self.build();
-                self.add(guests);
+        gl001.entity = new Guest({ dbeg: new Date(cf001.year, (cf001.moon - 1), 1).format('yyyy.mm.dd'), dend: new Date(cf001.year, cf001.moon, 0).format('yyyy.mm.dd') });
+        try { gl001 = await gl001.load(); } catch (e) { return; }
+        gl001.forEach(g => { guests.push(new Guest(g)); });
+        await self.build();
+        self.mapping(guests);
 
-                this.finishDataLoad();
-
-            } catch (err) {
-
-                this.finishDataLoad();
-
-                // TODO error
-            }
-        })();
+        this.finishDataLoad();
     }
 
-    beginDataLoad() { super.beginDataLoad(); }
-    finishDataLoad() { super.finishDataLoad(); }
+    async build() {
 
-    add(entries) {
+        return new Promise((resolve, reject) => {
+            let self = this,
+                journal = document.getElementById('journal'),
+                ds      = journal.dataset,
+                tbody   = journal.querySelector('#journal-tbody'),
+                daysRow = journal.querySelector('#days'),
+                days    = new Date(ds.year, ds.month, 0).getDate(),
+                rm001   = new RM001(),
+                rooms   = [];
+
+            (() => {
+                if (tbody) while (tbody.hasChildNodes()) tbody.removeChild(tbody.firstChild);
+                if (daysRow) while (daysRow.hasChildNodes()) daysRow.removeChild(daysRow.firstChild);
+            })();
+
+            (() => {
+                document.querySelector('#journal .control-row td').setAttribute('colspan', (1 + days));
+                journal.querySelector('#journal .control-row .pick').innerText = new Date(ds.year, (ds.month - 1)).toLocaleString(GL.CONST.LOCALE, { month: "long" });
+            })();
+
+            (() => {
+                for (let day = 0; day <= days; day++) {
+                    let th = document.createElement('th');
+                    if (day === 0) {
+                        th.classList.add('blank-cell');
+                    } else {
+                        th.id = `D${ds.year}-${UTILS.OVERLAY(ds.month, '0', 2)}-${UTILS.OVERLAY(day, '0', 2)}`;
+                        th.appendChild(document.createTextNode(day));
+                    }
+                    daysRow.appendChild(th);
+                }
+            })();
+
+            (async () => {
+                try { rm001 = await rm001.load(); } catch (e) { return; }
+                rm001.forEach(el => { rooms.push(new Room(el)); });
+
+                for (let room of rooms) {
+                    let tr = document.createElement('tr');
+                    tr.id = `R${room.room}`;
+                    for (let day = 0; day <= days; day++) {
+                        let node;
+                        if (day === 0) {
+                            node = document.createElement('th');
+                            node.appendChild(document.createTextNode(room.room));
+                        } else {
+                            let date = new Date(ds.year, (ds.month - 1), day).format('yyyy-mm-dd');
+                            node = document.createElement('td');
+                            node.id = `R${room.room}D${date}`;
+                            node.dataset.room = room.room;
+                            node.dataset.date = date;
+                            node.appendChild(document.createTextNode(''));
+                        }
+                        tr.appendChild(node);
+                    }
+                    tbody.appendChild(tr);
+                }
+                resolve();
+            })();
+
+        });
+    }
+
+    mapping(entries) {
 
         let self = this;
 
@@ -711,36 +491,34 @@ class Journal extends DataWrapper {
         }
 
         entries.forEach(guest => {
-            fillJournal(guest);
-            fillRecords(guest);
+            setCell(guest);
+            addRecord(guest);
         });
 
-        function fillJournal(guest) {
+        function setCell(guest) {
+            let ds = document.getElementById('journal').dataset,
+                begda = new Date(guest.dbeg),
+                endda = new Date(guest.dend),
+                curda = new Date();
 
-            let begda = new Date(guest.dbeg.toString()),
-                endda = new Date(guest.dend.toString());
+            for (let date = begda; date <= endda; date.setDate(date.getDate() + 1)) {
 
-            const CURRENT_DATE = new Date();
-            const PERIOD = `${self.year}-${self.month.num}`;
+                if (date.getFullYear() != ds.year || (date.getMonth() + 1) != ds.month) continue;
 
-            for (let tmpda = begda; tmpda <= endda; tmpda.setDate(tmpda.getDate() + 1)) {
-
-                if (!(tmpda.format('yyyy-mm') == PERIOD)) continue;
-
-                let cell = document.querySelector(`#journal #R${guest.room}D${tmpda.format('yyyy-mm-dd')}`);
+                let cell = document.querySelector(`#journal #R${guest.room}D${date.format('yyyy-mm-dd')}`);
 
                 (() => { CellSelection.del(cell); })();
 
                 (() => {
-                    const STATUS = GL.CONST.DATA_ATTR.JOURNAL.STATUS;
+                    const STATUS = self.dataAttr.status;
                     switch (cell.dataset.status) {
-                        case STATUS.REDEEMED:
-                        case STATUS.RESERVED:
-                            cell.dataset.status = STATUS.ADJACENT;
+                        case STATUS.redeemed:
+                        case STATUS.reserved:
+                            cell.dataset.status = STATUS.adjacent;
                             break;
 
                         default:
-                            cell.dataset.status = (tmpda < CURRENT_DATE) ? STATUS.REDEEMED : STATUS.RESERVED;
+                            cell.dataset.status = (date < curda) ? STATUS.redeemed : STATUS.reserved;
                             break;
                     }
                     let unid = cell.dataset.unid ? cell.dataset.unid.split(',') : [];
@@ -775,82 +553,79 @@ class Journal extends DataWrapper {
             }
         }
 
-        function fillRecords(guest) {
+        function addRecord(guest) {
+            let ds = document.getElementById('journal').dataset,
+                days = new Date(ds.year, ds.month, 0).getDate(),
+                field = new GL001().field,
+                tree;
 
-            let tree, days = new Date(self.year, self.month.num, 0).getDate();
-
-            if (!document.getElementById(`R${guest.room}-records`)) {
+            if (!document.querySelector(`#journal R${guest.room}-records`)) {
                 tree =
-                    [{ tag: 'tr', id: `R${guest.room}-records`, class: 'hidden records-row' },
+                    [{ tag: 'tr', id: `R${guest.room}-records`, class: 'records-wrapper' },
                         [{ tag: 'td', colspan: (1 + days) },
-                            [{ tag: 'table', class: 'records' },
-                                { tag: 'tbody' }
-                            ]
+                            { tag: 'table', class: 'records-container' },
                         ]
                     ];
                 tree = new DOMTree(tree).cultivate();
-                let tr = document.querySelector(`#journal > tbody tr#R${guest.room}`);
+                let tr = document.querySelector(`#journal #journal-tbody tr#R${guest.room}`);
                 tr.parentNode.insertBefore(tree, tr.nextSibling);
             }
 
-            const P = GL.CONST.PREFIX.PERSON;
             tree =
                 [{ tag: 'tr', id: `N${guest.unid}`, class: 'record', attr: { 'data-unid': guest.unid } },
-                    { tag: 'td', class: `${P.FIELD} ${P.CELL}-${IGuest.unid}`, textNode: guest.unid },
+                    { tag: 'td', class: `person-field ${field.unid}`, textNode: guest.unid },
                     [{ tag: 'td' },
-                        [{ tag: 'table', class: 'record-detail' },
-                            [{ tag: 'tbody' },
-                                [{ tag: 'tr' },
-                                    [{ tag: 'td', class: `${P.FIELD} person-base-info` },
-                                        { tag: 'a', class: `${P.FIELD} ${P.CELL}-${IGuest.name}`, textNode: guest.name },
-                                        { tag: 'a', class: `${P.FIELD} ${P.CELL}-${IGuest.teln}`, textNode: guest.teln },
-                                    ],
-                                    { tag: 'td', class: `${P.FIELD} person-dates ${P.CELL}-${IGuest.dbeg}`, attr: { value: guest.dbeg }, textNode: new Date(guest.dbeg.toString()).format('dd.mm') },
-                                    { tag: 'td', class: `${P.FIELD} ${P.CELL}-${IGuest.room}`, rowspan: 2, textNode: guest.room },
-                                    { tag: 'td', class: `${P.FIELD} ${P.CELL}-${IGuest.cost}`, textNode: guest.cost },
+                        [{ tag: 'table', class: 'detail' },
+                            [{ tag: 'tr' },
+                                [{ tag: 'td', class: `person-field person-info-basic` },
+                                    { tag: 'a', class: `person-field ${field.name}`, textNode: guest.name },
+                                    { tag: 'a', class: `person-field ${field.teln}`, textNode: guest.teln },
                                 ],
-                                [{ tag: 'tr' },
-                                    [{ tag: 'td', class: `${P.FIELD} person-additional-info` },
-                                        { tag: 'a', class: `${P.FIELD} ${P.CELL}-${IGuest.city}`, textNode: guest.city },
-                                        { tag: 'a', class: `${P.FIELD} ${P.CELL}-${IGuest.fnot}`, textNode: guest.fnot },
-                                    ],
-                                    { tag: 'td', class: `${P.FIELD} person-dates ${P.CELL}-${IGuest.dend}`, attr: { value: guest.dend }, textNode: new Date(guest.dend.toString()).format('dd.mm') },
-                                    { tag: 'td', class: `${P.FIELD} ${P.CELL}-${IGuest.paid}` , textNode: guest.paid },
+                                { tag: 'td', class: `person-field person-dates ${field.dbeg}`, attr: { 'data-date': guest.dbeg }, textNode: new Date(guest.dbeg.toString()).format('dd.mm') },
+                                { tag: 'td', class: `person-field ${field.room}`, rowspan: 2, textNode: guest.room },
+                                { tag: 'td', class: `person-field ${field.cost}`, textNode: guest.cost },
+                            ],
+                            [{ tag: 'tr' },
+                                [{ tag: 'td', class: `person-field person-info-extra` },
+                                    { tag: 'a', class: `person-field ${field.city}`, textNode: guest.city },
+                                    { tag: 'a', class: `person-field ${field.fnot}`, textNode: guest.fnot },
                                 ],
-                                [{ tag: 'tr', style: { display: 'none;'} },
-                                    { tag: 'td', class: `${P.FIELD} ${P.CELL}-${IGuest.days}`, textNode: guest.days },
-                                    { tag: 'td', class: `${P.FIELD} ${P.CELL}-${IGuest.base}`, textNode: guest.base },
-                                    { tag: 'td', class: `${P.FIELD} ${P.CELL}-${IGuest.adjs}`, textNode: guest.adjs }
-                                ]
+                                { tag: 'td', class: `person-field person-dates ${field.dend}`, attr: { 'data-date': guest.dend }, textNode: new Date(guest.dend.toString()).format('dd.mm') },
+                                { tag: 'td', class: `person-field ${field.paid}` , textNode: guest.paid },
+                            ],
+                            [{ tag: 'tr', style: { display: 'none;'} },
+                                { tag: 'td', class: `person-field ${field.days}`, textNode: guest.days },
+                                { tag: 'td', class: `person-field ${field.base}`, textNode: guest.base },
+                                { tag: 'td', class: `person-field ${field.adjs}`, textNode: guest.adjs }
                             ]
                         ]
                     ]
                 ];
             tree = new DOMTree(tree).cultivate();
-            document.querySelector(`#R${guest.room}-records .records tbody`).appendChild(tree);
+            document.querySelector(`#journal #R${guest.room}-records table.records-container`).appendChild(tree);
         }
     }
 
-    del(unid) {
+    remove(unid) {
 
         let self = this;
         const CURRENT_DATE = new Date();
 
         (() => {
-            let record = document.querySelector(`#journal .records #N${unid}`);
+            let record = document.querySelector(`#journal .records-container #N${unid}`);
             record.parentNode.removeChild(record);
         })();
 
         (() => {
-            document.querySelectorAll(`#journal [data-unid*='${unid}']`).forEach(el => {
-                const STATUS = GL.CONST.DATA_ATTR.JOURNAL.STATUS;
+            document.querySelectorAll(`#journal #journal-tbody [data-unid*='${unid}']`).forEach(el => {
+                const STATUS = self.dataAttr.status;
                 el.removeAttribute('data-view');
-                if (el.dataset.status === STATUS.ADJACENT) {
-                    el.dataset.status = (new Date(el.dataset.date) < CURRENT_DATE) ? STATUS.REDEEMED : STATUS.RESERVED;
+                if (el.dataset.status === STATUS.adjacent) {
+                    el.dataset.status = (new Date(el.dataset.date) < CURRENT_DATE) ? STATUS.redeemed : STATUS.reserved;
                     let unids = el.dataset.unid.split(',');
                     unids.splice(unids.indexOf(unid), 1);
                     el.dataset.unid = unids.toString();
-                    let balloon = el.querySelector(`[data-balloon-unid='${unid}']`);
+                    let balloon = el.querySelector(`#journal [data-balloon-unid='${unid}']`);
                     (balloon) && balloon.parentNode.removeChild(balloon);
                 } else {
                     el.removeAttribute('data-status');
@@ -861,18 +636,16 @@ class Journal extends DataWrapper {
         })();
     }
 
-    upd(guest) {
-        /*
-             FIX иногда криво работает.
-            После исправления перетирает статус смежного дня и добавляет лишние balloon.
-            Возможно связанно с аттрибутами data-*...
-        */
-        this.del(guest.unid);
-        this.add(guest);
+    change(guest) {
+
+        (() => {
+            this.remove(guest.unid);
+            this.mapping(guest);
+        })();
 
         (() => {
             let i = 0, pos = [];
-            document.querySelectorAll(`#R${guest.room}-records .record`).forEach(record => {
+            document.querySelectorAll(`#journal #R${guest.room}-records .record`).forEach(record => {
                 pos.push({ id: parseInt(record.dataset.unid, 10), pos: i }); i++;
             });
 
@@ -881,96 +654,54 @@ class Journal extends DataWrapper {
             for (let i = 0; i < pos.length - 1; i++) {
                 for (let j = 0; j < pos.length; j++) {
                     if (pos[i].pos < pos[j].pos) {
-                        let curRow = document.querySelector(`#R${guest.room}-records tr#N${pos[i].id}`),
-                            nextRow = document.querySelector(`#R${guest.room}-records tr#N${pos[j].id}`);
+                        let curRow = document.querySelector(`#journal #R${guest.room}-records tr#N${pos[i].id}`),
+                            nextRow = document.querySelector(`#journal #R${guest.room}-records tr#N${pos[j].id}`);
                         nextRow.parentNode.insertBefore(nextRow, curRow);
                     }
                 }
             }
         })();
     }
+}
 
-    build() {
+class CellSelection {
 
-        let self = this;
+    constructor() { }
 
-        (() => {
-            let journal   = document.getElementById('journal'),
-                labelYear  = journal.querySelector('#year'),
-                labelMonth = journal.querySelector('#month'),
-                tbody      = journal.querySelector('#journal-tbody'),
-                daysRow    = journal.querySelector('#journal-calendar-days');
+    static gen() { return Math.ceil(Math.random() * 100000); }
 
-            if (tbody) while (tbody.hasChildNodes()) tbody.removeChild(tbody.firstChild);
-            if (daysRow) while (daysRow.hasChildNodes()) daysRow.removeChild(daysRow.firstChild);
-
-            while (labelYear.firstChild) labelYear.removeChild(labelYear.firstChild);
-            while (labelMonth.firstChild) labelMonth.removeChild(labelMonth.firstChild);
-        })();
-
-        (() => {
-            const DAYS = new Date(self.year, self.month.num, 0).getDate();
-
-            (() => {
-                document.getElementById('journal-control-buttons').getElementsByTagName('td')[0].setAttribute('colspan', (1 + DAYS));
-
-                let journal    = document.getElementById('journal'),
-                    labelYear  = journal.querySelector('#year'),
-                    labelMonth = journal.querySelector('#month');
-
-                labelYear.appendChild(document.createTextNode(self.year));
-                labelMonth.appendChild(document.createTextNode(self.month.name));
-            })();
-
-            (() => {
-                let daysRow = document.getElementById('journal-calendar-days');
-                for (let day = 0; day <= DAYS; day++) {
-                    let th = document.createElement('th');
-                    if (day === 0) {
-                        th.classList.add('blank-cell');
-                    } else {
-                        th.id = `D${self.year}-${self.month.num}-${UTILS.OVERLAY(day, '0', 2)}`;
-                        th.appendChild(document.createTextNode(day.toString()));
-                    }
-                    daysRow.appendChild(th);
-                }
-            })();
-
-            (() => {
-                let tbody = document.getElementById('journal-tbody');
-                for (let room of self.rooms) {
-                    let tr = document.createElement('tr');
-                    tr.id = `R${room.room}`;
-                    for (let day = 0; day <= DAYS; day++) {
-                        let node;
-                        if (day === 0) {
-                            node = document.createElement('th');
-                            node.appendChild(document.createTextNode(room.room));
-                        } else {
-                            let date = new Date(self.year, self.month.JSnum, day).format('yyyy-mm-dd');
-                            node = document.createElement('td');
-                            node.id = `R${room.room}D${date}`;
-                            node.dataset.room = room.room;
-                            node.dataset.date = date;
-                            node.appendChild(document.createTextNode(''));
-                        }
-                        tr.appendChild(node);
-                    }
-                    tbody.appendChild(tr);
-                }
-            })();
-
-        })();
+    static add(target, selection = 0) {
+        selection = selection ? selection : CellSelection.gen();
+        target.dataset.selection = selection;
+        target.dataset.status = 'selected';
+        CellSelection.enum(selection);
+        return selection;
     }
 
-    static initializeGuestList(year, month) {
-        let begda = new Date(year, month, '01'),
-            endda = new Date(year, month, '01');
-        endda.setMonth(endda.getMonth() + 1);
-        return new Select('', { types: 'ss', param: [endda.format('yyyy-mm-dd'), begda.format('yyyy-mm-dd')] }).select('*').from('gl001').where(`dbeg <= ? AND dend >= ?`).connect();
+    static del(target) {
+        let selection = target.dataset.selection;
+        if (!selection) return;
+        Array.prototype.slice.call(document.querySelectorAll(`#journal [data-selection='${selection}']`)).some(el => {
+            el.innerText = '';
+            el.removeAttribute('data-selection');
+            el.removeAttribute('data-status');
+            return (el.id === target.id);
+        });;
+        CellSelection.enum(selection);
     }
 
-    static updateUserConfig(year, month) {
-        return new Update('', { types: 'ss', param: [year, month] }).update('cf001').set('year = ?, month = ?').where('user = ?').connect(1);
+    static enum(selection) {
+        let i = 1;
+        document.querySelectorAll(`#journal [data-selection='${selection}']`).forEach(el => {
+            while (el.hasChildNodes()) el.removeChild(el.firstChild);
+            el.innerText = (i++);
+        });;
+    }
+
+    static getGroup(selection, pos = 'F;L') {
+        let group = document.querySelectorAll(`#journal [data-selection='${selection}']`);
+        if (pos === 'F') return group[0];
+        else if (pos === 'L') return group[group.length - 1];
+        else return group;
     }
 }

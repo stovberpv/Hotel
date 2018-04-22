@@ -1,42 +1,28 @@
 /*-----------------------------------------------------------------*/
 
 
-table#journal {
+#journal {
     margin-left: auto;
     margin-right: auto;
     background: transparent;
     table-layout: fixed;
-    border-spacing: 3px 8px;
+    border-spacing: 3px 6px;
 }
-table#journal>thead>tr>th,
-table#journal>tbody>tr>th {
+
+#journal #journal-thead th,
+#journal #journal-tbody > tr:not(.records-wrapper) td,
+#journal #journal-tbody tr > th {
+    width: 20px;
+    height: 20px;
+    padding: 4px;
+    border-radius: 3px;
+    text-align: center;
     border: 1px solid rgba(var(--nevada), .5);
+    cursor: pointer;
     font-weight: 200;
-    text-align: center;
-    width: 21px;
-    padding: 4px;
-    border-radius: 3px;
 }
-table#journal>tbody>tr>th {
-    cursor: pointer;
-}
-table#journal>tbody>tr>td {
-    border: 1px solid rgba(var(--nevada), .5);
-    text-align: center;
-    cursor: pointer;
-    width: 21px;
-    padding: 4px;
-    border-radius: 3px;
-}
-table#journal>tbody>tr:hover>th {
-    animation: journal-record-view 5s infinite;
-}
-table#journal>tbody>.records-row>td {
-    border: none;
-    cursor: default;
-    padding: 18px 0px 18px 35px;
-}
-table#journal>tbody>tr:not(.records-row)>td:hover {
+#journal #journal-tbody > tr:hover > th { animation: journal-record-view 5s infinite; }
+#journal #journal-tbody > tr:not(.records-wrapper) td:hover {
     background-color: rgba(var(--school-bus-yellow), 1);
     border: 1px solid transparent;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
@@ -45,115 +31,105 @@ table#journal>tbody>tr:not(.records-row)>td:hover {
     z-index: 1;
 }
 
+#journal #journal-thead th { cursor: default; }
+#journal #journal-thead .blank-cell { border: 1px solid transparent; }
+
+#journal [data-view="hov"],
+#journal [data-view="fix"] { animation: journal-record-view 5s infinite; }
 
 /*-----------------------------------------------------------------*/
 
 
-table#journal>tbody#journal-tbody>tr.hidden {
-    cursor: default;
-    display: none;
+#journal #journal-tbody .records-wrapper { display: none; }
+#journal #journal-tbody .records-wrapper > td {
+    border: none;
+    padding: 18px 0px 18px 35px;
 }
-
-table#journal>tbody#journal-tbody>tr.records-row>td>table.records {
-    cursor: pointer;
-    text-align: center;
-    border-spacing: 3px 8px;
+#journal #journal-tbody .records-wrapper.visible { display: table-row; }
+#journal #journal-tbody .records-container {
+    border-spacing: 3px 6px;
     width: 100%;
-    padding: 0;
-    border-radius: 3px;
-    border-style: solid;
     border-width: 0px;
 }
-table#journal>tbody#journal-tbody>tr.records-row>td>table.records:hover>tbody>tr:hover>td {
-    border: 1px solid transparent;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
-    transition: all 0.3s;
-    transform: translateZ(10px);
-    z-index: 1;
-}
-table#journal>tbody#journal-tbody>tr.records-row>td>table.records>tbody>tr>td {
-    border: 1px solid rgba(var(--nevada), .5);
-}
-table#journal>tbody#journal-tbody>tr.records-row>td>table.records>tbody>tr>td:first-child {
+#journal #journal-tbody .records-container > tr > td { border: 1px solid rgba(var(--nevada), .5); }
+#journal #journal-tbody .record { cursor: pointer; }
+#journal #journal-tbody .record td { padding: 4px; }
+#journal #journal-tbody .record > td:first-child {
     width: 5%;
     border-top-left-radius: 3px;
     border-bottom-left-radius: 3px;
 }
-table#journal>tbody#journal-tbody>tr.records-row>td>table.records>tbody>tr>td:last-child {
+#journal #journal-tbody .record > td:last-child {
     padding: 4px;
     width: 95%;
     border-top-right-radius: 3px;
     border-bottom-right-radius: 3px;
 }
-table#journal>tbody#journal-tbody>tr.records-row>td>table.records [data-status="selected"] {
-    border: 1px solid transparent;
-    animation: journal-record-view 5s infinite;
-}
-table#journal>tbody#journal-tbody>tr.records-row>td>table.records>tbody>tr>td>table.record-detail {
+#journal #journal-tbody .record .unid { text-align: center; }
+#journal #journal-tbody .detail {
     border-collapse: collapse;
     height: 100%;
     width: 100%;
 }
-table#journal>tbody#journal-tbody>tr.records-row>td>table.records>tbody>tr>td>table.record-detail>tbody>tr>td { border: none; }
-table#journal>tbody#journal-tbody>tr.records-row>td>table.records>tbody>tr>td>table.record-detail>tbody>tr>td:first-child { width: 80%; }
-table#journal>tbody#journal-tbody>tr.records-row>td>table.records>tbody>tr>td>table.record-detail>tbody>tr>td:nth-child(2) { width: 8%; }
-table#journal>tbody#journal-tbody>tr.records-row>td>table.records>tbody>tr>td>table.record-detail>tbody>tr>td:nth-child(3) { width: 5%; }
-table#journal>tbody#journal-tbody>tr.records-row>td>table.records>tbody>tr>td>table.record-detail>tbody>tr>td:last-child { width: 7%; }
-table#journal>tbody#journal-tbody>tr.records-row>td>table.records>tbody>tr .person-fields { padding: 0; }
-table#journal>tbody#journal-tbody>tr.records-row>td>table.records>tbody>tr .person-base-info { text-align: left; }
-table#journal>tbody#journal-tbody>tr.records-row>td>table.records>tbody>tr .person-cell-name { font-weight: bold; }
-table#journal>tbody#journal-tbody>tr.records-row>td>table.records>tbody>tr .person-cell-name:after { content: " "; }
-table#journal>tbody#journal-tbody>tr.records-row>td>table.records>tbody>tr .person-cell-teln-number:before {
+#journal #journal-tbody .detail td { border: none; }
+#journal #journal-tbody .detail .person-field { padding: 0; }
+#journal #journal-tbody .detail .person-info-basic {
+    width: 80%;
+    text-align: left;
+}
+#journal #journal-tbody .detail .dbeg { width: 8%; }
+#journal #journal-tbody .detail .room { width: 5%; }
+#journal #journal-tbody .detail .cost { width: 7%; }
+#journal #journal-tbody .detail .name { font-weight: bold; }
+#journal #journal-tbody .detail .name:after { content: " "; }
+#journal #journal-tbody .detail .teln:before {
     vertical-align: middle;
     content: url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" preserveAspectRatio="xMidYMid slice" height="15" width="15" fill="#00a4e4" xmlns="http://www.w3.org/2000/svg"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>');
 }
-table#journal .person-cell-teln-number {
+#journal #journal-tbody .detail .teln {
     font-size: 14px;
     color: rgba(var(--nevada), .8);
 }
-table#journal .person-additional-info {
-    text-align: left;
-}
-table#journal .person-cell-city,
-table#journal .person-cell-fnot {
+#journal #journal-tbody .detail .person-info-extra { text-align: left; }
+#journal #journal-tbody .detail .city,
+#journal #journal-tbody .detail .fnot {
     font-size: 14px;
     color: rgba(var(--nevada), .8);
     text-align: left;
     font-style: italic;
 }
-table#journal .person-cell-city:after { content: " "; }
-table#journal .person-cell-room { color: rgba(var(--cerulean), .5); }
-table#journal .person-cell-room:before {
+#journal #journal-tbody .detail .city:after { content: " "; }
+#journal #journal-tbody .detail .room {
+    text-align: center;
+    color: rgba(var(--cerulean), .5);
+}
+#journal #journal-tbody .detail .room:before {
     display: block;
     content: url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" preserveAspectRatio="xMidYMid slice" height="15" width="15" fill="#00a4e4" xmlns="http://www.w3.org/2000/svg"><path d="M7 13c1.66 0 3-1.34 3-3S8.66 7 7 7s-3 1.34-3 3 1.34 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.21-1.79-4-4-4z"/></svg>');
 }
-table#journal .person-dates { text-align: right; }
-table#journal .person-cell-cost,
-table#journal .person-cell-paid { text-align: right; }
+#journal #journal-tbody .detail .person-dates { text-align: right; }
+#journal #journal-tbody .detail .cost,
+#journal #journal-tbody .detail .paid { text-align: right; }
 
 
 /*-----------------------------------------------------------------*/
 
-
-table#journal .blank-cell { border: 1px solid transparent !important; }
-
-
-/*-----------------------------------------------------------------*/
-
-
-table#journal > tbody#journal-tbody > tr > td[data-status="selected"] { background-color: rgba(var(--malachite), 1); }
-table#journal > tbody#journal-tbody > tr > td[data-status="reserved"] { background-color: rgba(var(--cerulean), 1); }
-table#journal > tbody#journal-tbody > tr > td[data-status="adjacent"] { background-color: rgba(var(--carnation), 1); }
-table#journal > tbody#journal-tbody > tr > td[data-status="redeemed"] { background-color: rgba(var(--nevada), 1); }
-table#journal > tbody#journal-tbody > tr > td[data-status] {
-    border: 1px solid transparent;
-    color: rgba(var(--white), 1);
+/* FIX  сделать что бы границы элементов view и fix оставались */
+#journal #journal-tbody td:not([data-view="view"])[data-status],
+#journal #journal-tbody td:not([data-view="fix"])[data-status] {
+    border: 1px solid transparent !important;
+    color: rgba(var(--white), 1) !important;
 }
+#journal #journal-tbody td[data-status="selected"] { background-color: rgba(var(--malachite), 1); }
+#journal #journal-tbody td[data-status="reserved"] { background-color: rgba(var(--cerulean), 1); }
+#journal #journal-tbody td[data-status="adjacent"] { background-color: rgba(var(--carnation), 1); }
+#journal #journal-tbody td[data-status="redeemed"] { background-color: rgba(var(--nevada), 1); }
+
 
 /*-----------------------------------------------------------------*/
 
 
-table#journal #journal-control-buttons #month {
+#journal #journal-thead .control-row .pick {
     font-family: 'Century Gothic', sans-serif;
     cursor: pointer;
     width: 100%;
@@ -161,38 +137,37 @@ table#journal #journal-control-buttons #month {
     padding: 0;
     margin: 0;
 }
-table#journal #journal-control-buttons #year { display: none; }
-table#journal #journal-control-buttons td {
+#journal #journal-thead .control-row td {
     text-align: center;
     padding: 0;
 }
-table#journal #journal-control-buttons table {
+#journal #journal-thead .control-row table {
     width: 100%;
     border-collapse: collapse;
 }
-table#journal #journal-control-buttons table td:nth-child(2) { width: 90%; }
-table#journal #journal-control-buttons #journal-button-month-prev:hover {
+#journal #journal-thead .control-row table td:nth-child(2) { width: 90%; }
+#journal #journal-thead .control-row .button.prev:hover {
     border-top: 1px solid transparent;
     border-left: 1px solid transparent;
     border-bottom: 1px solid transparent;
 }
-table#journal #journal-control-buttons #journal-button-month-prev:before {
+#journal #journal-thead .control-row .button.prev:before {
     content: '⮘'; /*⮘⮜*/
 }
-table#journal #journal-control-buttons #journal-button-month-next:hover {
+#journal #journal-thead .control-row .button.next:hover {
     border-top: 1px solid transparent;
     border-right: 1px solid transparent;
     border-bottom: 1px solid transparent;
 }
-table#journal #journal-control-buttons #journal-button-month-next:before {
+#journal #journal-thead .control-row .button.next:before {
     content: '⮚'; /*➠⮚⮞*/
 }
-table#journal #journal-control-buttons table {
+#journal #journal-thead .control-row table {
     width: 100%;
     border-collapse: separate;
     border-spacing: 5px;
 }
-table#journal #journal-control-buttons .button {
+#journal #journal-thead .control-row .button {
     display: block;
     outline: none;
     cursor: pointer;
@@ -202,7 +177,7 @@ table#journal #journal-control-buttons .button {
     margin: 0;
     background-color: transparent;
 }
-table#journal #journal-control-buttons .button:hover {
+#journal #journal-thead .control-row .button:hover {
     box-shadow: none;
     transition: none;
     transform: none;
@@ -215,8 +190,8 @@ table#journal #journal-control-buttons .button:hover {
 /*-----------------------------------------------------------------*/
 
 
-table#journal tbody#journal-tbody tr td .balloon-wrapper { position: absolute; }
-table#journal tbody#journal-tbody tr td .balloon-wrapper .balloon-content {
+#journal #journal-tbody .balloon-wrapper { position: absolute; }
+#journal #journal-tbody .balloon-wrapper .balloon-content {
     visibility: hidden;
     width: 200px;
     background-color: rgba(255,255,255, .7);
@@ -229,10 +204,10 @@ table#journal tbody#journal-tbody tr td .balloon-wrapper .balloon-content {
     top: 25px;
     left: -95px;
 }
-table#journal tbody#journal-tbody tr td .balloon-wrapper .balloon {
+#journal #journal-tbody .balloon-wrapper .balloon {
     border-radius: 3px;
 }
-table#journal tbody#journal-tbody tr td .balloon-wrapper .balloon-el {
+#journal #journal-tbody .balloon-wrapper .balloon-el {
     padding: 4px 4px 4px 4px;
     border-radius: 3px;
     display: block;
@@ -241,29 +216,22 @@ table#journal tbody#journal-tbody tr td .balloon-wrapper .balloon-el {
     white-space: nowrap;
     color: rgba(var(--nevada), 1);
 }
-table#journal tbody#journal-tbody tr td .balloon-wrapper .balloon-el-name {
+#journal #journal-tbody .balloon-wrapper .balloon-el-name {
     background-color: rgba(var(--cerulean), 1);
     color: rgba(var(--white), 1);
 }
-table#journal tbody#journal-tbody tr td .balloon-wrapper .balloon-el-unid { display: none; }
-table#journal tbody#journal-tbody tr td .balloon-wrapper .balloon-el-teln:before {content: '☎';}
-table#journal tbody#journal-tbody tr td .balloon-wrapper .balloon-el-fnot:before {content: '✎';}
-table#journal tbody#journal-tbody tr td .balloon-wrapper .balloon-el-city:before {content: '✈';}
-table#journal tbody#journal-tbody tr td .balloon-wrapper .balloon-el-unid:before {content: '№';}
+#journal #journal-tbody .balloon-wrapper .balloon-el-unid { display: none; }
+#journal #journal-tbody .balloon-wrapper .balloon-el-teln:before {content: '☎';}
+#journal #journal-tbody .balloon-wrapper .balloon-el-fnot:before {content: '✎';}
+#journal #journal-tbody .balloon-wrapper .balloon-el-city:before {content: '✈';}
+#journal #journal-tbody .balloon-wrapper .balloon-el-unid:before {content: '№';}
 
-table#journal tbody#journal-tbody tr:not(.records-row) td:hover .balloon-wrapper .balloon-content {
+#journal #journal-tbody tr:not(.records-wrapper) td:hover .balloon-wrapper .balloon-content {
     visibility: visible;
     box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
     transition: all 0.3s;
     transform: translateZ(10px);
 }
-
-
-/*-----------------------------------------------------------------*/
-
-
-table#journal tbody [data-journal-record-view="hov"] { animation: journal-record-view 5s infinite; }
-table#journal tbody [data-journal-record-view="fix"] { animation: journal-record-view 5s infinite; }
 
 
 /*-----------------------------------------------------------------*/

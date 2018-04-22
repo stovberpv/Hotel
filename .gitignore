@@ -51,12 +51,11 @@ Temporary Items
 
 # Project files and folders
 db/conn.php
+res/icons/sandbox
+res/icons/test
 
 # Other files and folders
 *.xml
-
-# IDEA
-.idea/*
 
 #
 node_modules
@@ -67,3 +66,6 @@ node_modules
 #
 package.json
 package-lock.json
+
+#
+.sonarlint
